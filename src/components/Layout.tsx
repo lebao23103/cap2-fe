@@ -74,7 +74,7 @@ export function Layout({ children }: LayoutProps) {
         <nav className="container mx-auto px-6">
           <div className="flex h-16 items-center justify-between">
             {/* Left Side - Logo */}
-            <div className="flex items-center">
+            <div className="flex items-center flex-1">
               <Link to="/" className="group flex items-center space-x-2 transition-all duration-300">
                 {/* Modern Logo */}
                 <div className="relative">
@@ -85,9 +85,6 @@ export function Layout({ children }: LayoutProps) {
                 <div className="flex flex-col">
                   <span className="font-sans text-2xl font-bold text-foreground tracking-tight">
                     Knowly
-                  </span>
-                  <span className="text-xs font-sans text-muted-foreground leading-tight">
-                    Academic reading & exercise sharing platform
                   </span>
                 </div>
               </Link>

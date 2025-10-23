@@ -110,26 +110,30 @@ export default function Home () {
             </Badge>
             
             <h1 className='font-sans text-4xl md:text-6xl font-bold text-foreground mb-6 tracking-tight'>
-              Academic Reading
-              <span className='block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mt-2'>
-                Made Collaborative
+              Knowly - Knowledge Sharing Platform
+              <span className='block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mt-3 leading-tight'>
+                for Academic Reading and Exercises
               </span>
             </h1>
             
             <p className='text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed'>
-              Transform your reading experience with AI-powered insights, collaborative note-sharing, and interactive academic exercises.
+              Join a vibrant community of learners and educators sharing knowledge through collaborative note-taking, an intelligent chatbot system, and interactive academic exercises.
             </p>
             
             <div className='flex flex-col sm:flex-row gap-4 justify-center items-center mb-16'>
-              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 py-6 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all">
+              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 py-6 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 transition-transform duration-300">
                 <Link to='/readnex' className='flex items-center'>
                   <span>Read & Exercise</span>
-                  <ChevronRight className='ml-2 h-5 w-5' />
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" className="px-8 py-6 text-lg font-medium rounded-lg border-2 hover:shadow-lg transition-all">
-                <Link to='/register' className='flex items-center'>
-                  <span>Join Community</span>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 py-6 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 transition-transform duration-300">
+                <Link to='/create' className='flex items-center'>
+                  <span>Create your book</span>
+                </Link>
+              </Button>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 py-6 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 transition-transform duration-300">
+                <Link to='/noteshare' className='flex items-center'>
+                  <span>NoteShare</span>
                 </Link>
               </Button>
             </div>
