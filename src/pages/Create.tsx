@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
+import { fadeInUp } from '@/lib/animations'
+import {
   BookOpen, 
   Upload, 
   FileText, 
@@ -93,12 +94,6 @@ export default function Create() {
     // Here you would typically send the data to your backend
     console.log('Publishing book:', bookData)
     alert('Book published successfully!')
-  }
-
-  const fadeInUp = {
-    initial: { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6, ease: 'easeOut' }
   }
 
   return (

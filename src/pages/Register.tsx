@@ -71,7 +71,7 @@ export default function Register() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="text-center mb-8"
+          className="hidden md:block text-center mb-8"
         >
           <Quote className="h-8 w-8 mx-auto text-primary mb-2" />
           <p className="text-lg italic text-foreground">
@@ -110,7 +110,9 @@ export default function Register() {
                     className="bg-background border-input focus:border-primary"
                     required
                   />
-                  {errors.firstName && <p className="text-sm text-destructive">{errors.firstName}</p>}
+                  <div className="min-h-[20px]">
+                    {errors.firstName && <p className="text-sm text-destructive">{errors.firstName}</p>}
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName" className="text-sm text-foreground">
@@ -126,7 +128,9 @@ export default function Register() {
                     className="bg-background border-input focus:border-primary"
                     required
                   />
-                  {errors.lastName && <p className="text-sm text-destructive">{errors.lastName}</p>}
+                  <div className="min-h-[20px]">
+                    {errors.lastName && <p className="text-sm text-destructive">{errors.lastName}</p>}
+                  </div>
                 </div>
               </div>
               
@@ -144,7 +148,9 @@ export default function Register() {
                   className="bg-background border-input focus:border-primary"
                   required
                 />
-                {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                <div className="min-h-[20px]">
+                  {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                </div>
               </div>
               
               <div className="space-y-2">
@@ -159,7 +165,7 @@ export default function Register() {
                     placeholder="Create your password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="bg-background border-input focus:border-primary pr-10"
+                    className="bg-background border-input focus:border-primary pr-12"
                     required
                   />
                   <Button
@@ -168,11 +174,14 @@ export default function Register() {
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-muted-foreground"
                     onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                   </Button>
                 </div>
-                {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                <div className="min-h-[20px]">
+                  {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                </div>
               </div>
               
               <div className="space-y-2">
@@ -187,7 +196,7 @@ export default function Register() {
                     placeholder="Repeat your password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="bg-background border-input focus:border-primary pr-10"
+                    className="bg-background border-input focus:border-primary pr-12"
                     required
                   />
                   <Button
@@ -196,17 +205,21 @@ export default function Register() {
                     size="sm"
                     className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-muted-foreground"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                   >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                   </Button>
                 </div>
-                {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
+                <div className="min-h-[20px]">
+                  {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
+                </div>
               </div>
               
               <div className="pt-4">
                 <Button 
-                  type="submit" 
-                  className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground text-lg py-6 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg" 
+                  type="submit"
+                  size="lg"
+                  className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" 
                   disabled={isLoading}
                 >
                   {isLoading ? (

@@ -7,9 +7,7 @@ import { Avatar, AvatarFallback } from '../components/ui/avatar'
 import { ScrollArea } from '../components/ui/scroll-area'
 import { 
   Send, 
-  Bot, 
   User, 
-  ArrowLeft, 
   BookOpen, 
   Star,
   Sparkles
@@ -162,51 +160,37 @@ export default function Chatbot() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => window.history.back()}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Dashboard
-              </Button>
-              <div className="flex items-center gap-2">
-                <Bot className="h-5 w-5 text-primary" />
-                <span className="font-semibold">AI Book Assistant</span>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-muted-foreground">Role:</span>
-              <select 
-                value={selectedRole}
-                onChange={(e) => setSelectedRole(e.target.value as 'book advisor' | 'literary expert' | 'book enthusiast')}
-                className="text-sm border rounded px-2 py-1 bg-background"
-              >
-                <option value="book advisor">Book Advisor</option>
-                <option value="literary expert">Literary Expert</option>
-                <option value="book enthusiast">Book Enthusiast</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-6 h-[calc(100vh-140px)]">
+      <main className="container mx-auto px-4 py-6 min-h-[400px] max-h-[calc(100vh-200px)]">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full">
           {/* Chat Area */}
-          <div className="lg:col-span-3 flex flex-col">
+          <div className="lg:col-span-3 flex flex-col flex-grow">
             <Card className="flex-1 flex flex-col">
               <CardHeader className="pb-3">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Sparkles className="h-5 w-5 text-primary" />
-                  Chat with {selectedRole === 'book advisor' ? 'Book Advisor' : 
-                            selectedRole === 'literary expert' ? 'Literary Expert' : 'Book Enthusiast'}
-                </CardTitle>
-                <CardDescription>
-                  Ask me anything about books, get recommendations, or discuss literature!
-                </CardDescription>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      Chat with {selectedRole === 'book advisor' ? 'Book Advisor' : 
+                                selectedRole === 'literary expert' ? 'Literary Expert' : 'Book Enthusiast'}
+                    </CardTitle>
+                    <CardDescription className="mt-1">
+                      Ask me anything about books, get recommendations, or discuss literature!
+                    </CardDescription>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-2">
+                    <span className="text-sm text-muted-foreground">Mode:</span>
+                    <select 
+                      value={selectedRole}
+                      onChange={(e) => setSelectedRole(e.target.value as 'book advisor' | 'literary expert' | 'book enthusiast')}
+                      className="text-sm border rounded px-2 py-1 bg-background"
+                      aria-label="Select chat mode"
+                    >
+                      <option value="book advisor">Book Advisor</option>
+                      <option value="literary expert">Literary Expert</option>
+                      <option value="book enthusiast">Book Enthusiast</option>
+                    </select>
+                  </div>
+                </div>
               </CardHeader>
               
               <CardContent className="flex-1 flex flex-col p-0">
@@ -225,7 +209,7 @@ export default function Chatbot() {
                           </Avatar>
                         )}
                         
-                        <div className={`max-w-[70%] ${message.type === 'user' ? 'order-first' : ''}`}>
+                        <div className={`max-w-[85%] sm:max-w-[70%] md:max-w-[60%] ${message.type === 'user' ? 'order-first' : ''}`}>
                           <div 
                             className={`rounded-lg px-4 py-2 ${
                               message.type === 'user' 
@@ -295,8 +279,9 @@ export default function Chatbot() {
                       onClick={handleSendMessage} 
                       disabled={isLoading || !inputMessage.trim()}
                       size="icon"
+                      aria-label="Send message"
                     >
-                      <Send className="h-4 w-4" />
+                      <Send className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </div>
                 </div>
@@ -305,7 +290,7 @@ export default function Chatbot() {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-4">
+          <div className="hidden lg:block space-y-4">
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">Quick Suggestions</CardTitle>
