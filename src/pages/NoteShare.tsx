@@ -1,7 +1,8 @@
 import React, { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { 
+import { fadeInUp, stagger } from '@/lib/animations'
+import {
   BookOpen, 
   Heart, 
   Star, 

@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { fadeInUp, stagger } from '@/lib/animations'
 import { 
   BookOpen, 
   Heart, 
@@ -306,12 +307,6 @@ export default function ReadNEx() {
     }
   }
 
-  const fadeInUp = {
-    initial: { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6, ease: 'easeOut' }
-  }
-
   return (
     <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -403,7 +398,7 @@ export default function ReadNEx() {
             </div>
 
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               
               {/* Genre Filter */}
               <div className="space-y-2">
@@ -503,7 +498,7 @@ export default function ReadNEx() {
           transition={{ delay: 0.4, duration: 0.6 }}
         >
           {viewMode === 'grid' ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
               {filteredBooks.map((book) => (
                 <motion.div
                   key={book.id}

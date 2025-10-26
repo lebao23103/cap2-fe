@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { fadeInUp, stagger } from '@/lib/animations'
 import {
   BookOpen,
   Feather,
@@ -20,19 +21,6 @@ import {
 } from 'lucide-react'
 
 export default function Home () {
-  const fadeInUp = {
-    initial: { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6, ease: 'easeOut' }
-  }
-
-  const stagger = {
-    animate: {
-      transition: {
-        staggerChildren: 0.1
-      }
-    }
-  }
 
   // Sample book data for featured books
   const featuredBooks = [
@@ -126,12 +114,12 @@ export default function Home () {
                   <span>Read & Exercise</span>
                 </Link>
               </Button>
-              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 py-6 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 transition-transform duration-300">
+              <Button size="lg" variant="outline" className="px-8 py-6 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300">
                 <Link to='/create' className='flex items-center'>
                   <span>Create your book</span>
                 </Link>
               </Button>
-              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 py-6 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 transition-transform duration-300">
+              <Button size="lg" variant="outline" className="px-8 py-6 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300">
                 <Link to='/noteshare' className='flex items-center'>
                   <span>NoteShare</span>
                 </Link>
@@ -143,7 +131,7 @@ export default function Home () {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.6 }}
-              className='grid grid-cols-2 md:grid-cols-4 gap-6'
+              className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6'
             >
               {[
                 { label: 'Academic Books', value: '25,000', icon: BookOpen },
@@ -184,7 +172,7 @@ export default function Home () {
             </p>
           </motion.div>
 
-          <motion.div {...stagger} className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div {...stagger} className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {featuredBooks.map((book) => (
               <motion.div key={book.id} {...fadeInUp}>
                 <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group border-0 shadow-lg rounded-xl">

@@ -5,7 +5,6 @@ import { Badge } from '../components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { Progress } from '../components/ui/progress'
 import {
-  ArrowLeft,
   Users,
   BookOpen,
   Star,
@@ -164,28 +163,15 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => window.history.back()}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Dashboard
-              </Button>
-              <div className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-primary" />
-                <span className="font-semibold">Admin Dashboard</span>
-              </div>
-            </div>
-            <Badge variant="secondary" className="bg-primary/10 text-primary">
-              Administrator
-            </Badge>
-          </div>
-        </div>
-      </header>
-
       <main className="container mx-auto px-4 py-8">
+        {/* Page Title */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3">
+            <Activity className="h-8 w-8 text-primary" />
+            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          </div>
+          <p className="text-muted-foreground mt-2">Manage users, content, and platform settings</p>
+        </div>
         {/* Overview Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card>
