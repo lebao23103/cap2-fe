@@ -4,26 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
 import { Badge } from '../components/ui/badge'
 import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from '../components/ui/dropdown-menu'
-import { 
   BookOpen, 
   Heart, 
   MessageCircle, 
-  Star, 
-  User, 
-  LogOut, 
-  Settings, 
-  Moon, 
-  Sun,
-  ChevronDown
+  Star
 } from 'lucide-react'
-import { useTheme } from '../components/theme-provider'
 import { useNavigate } from 'react-router-dom'
 
 interface Book {
@@ -44,7 +29,6 @@ export default function Dashboard() {
   const [recommendations, setRecommendations] = useState<Book[]>([])
   const [favorites, setFavorites] = useState<Book[]>([])
   const [readingHistory, setReadingHistory] = useState<Book[]>([])
-  const { theme, setTheme } = useTheme()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -81,10 +65,6 @@ export default function Dashboard() {
     setReadingHistory(mockBooks.slice(1, 3))
   }, [])
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark')
-  }
-
   const BookCard = ({ book }: { book: Book }) => (
     <Card className="group hover:shadow-lg transition-shadow duration-200">
       <CardContent className="p-4">
@@ -119,62 +99,11 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                Knowly
-              </h1>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={toggleTheme} aria-label="Toggle dark mode" aria-pressed={theme === 'dark'}>
-                {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              </Button>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2">
-                    <Avatar className="w-8 h-8">
-                      <AvatarImage src={user.avatar} />
-                      <AvatarFallback>
-                        {user.name.split(' ').map(n => n[0]).join('')}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="hidden sm:inline">{user.name}</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <LogOut className="mr-2 h-4 w-4" />
-                    Log out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">
-            Welcome back, {user.name.split(' ')[0]}! 👋
+            Welcome back, {user.name.split(' ')[0]}! <span role="img" aria-label="waving hand">👋</span>
           </h2>
           <p className="text-muted-foreground">
             Discover your next favorite book with AI-powered recommendations
@@ -185,7 +114,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Button 
             variant="outline" 
-            className="h-20 flex flex-col gap-2"
+            className="min-h-20 flex flex-col gap-2 items-center justify-center"
             onClick={() => navigate('/reading-history')}
           >
             <BookOpen className="h-6 w-6" />
@@ -193,7 +122,7 @@ export default function Dashboard() {
           </Button>
           <Button 
             variant="outline" 
-            className="h-20 flex flex-col gap-2"
+            className="min-h-20 flex flex-col gap-2 items-center justify-center"
             onClick={() => navigate('/favorites')}
           >
             <Heart className="h-6 w-6" />
@@ -201,7 +130,7 @@ export default function Dashboard() {
           </Button>
           <Button 
             variant="outline" 
-            className="h-20 flex flex-col gap-2"
+            className="min-h-20 flex flex-col gap-2 items-center justify-center"
             onClick={() => navigate('/chatbot')}
           >
             <MessageCircle className="h-6 w-6" />
