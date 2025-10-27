@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Star, Heart, BookOpen, Clock, Eye } from 'lucide-react';
+import { Star, Heart, BookOpen, Eye } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { GlassCard } from '@/components/ui/glass-card';
 import { Badge } from '@/components/ui/badge';

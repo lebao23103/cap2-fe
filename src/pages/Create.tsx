@@ -34,6 +34,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
+import { Progress } from '@/components/ui/progress'
+import { useToast } from '@/components/ui/use-toast'
+import { validateImageFile, validateBookFile, formatFileSize } from '@/lib/fileValidation'
 
 // Book creation interface
 interface BookData {
@@ -77,23 +80,71 @@ export default function Create() {
   const [activeTab, setActiveTab] = useState('info')
   const [previewMode, setPreviewMode] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const { toast } = useToast()
 
   const handleInputChange = (field: keyof BookData, value: string) => {
     setBookData(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleFileUpload = (field: 'coverImage' | 'bookFile', file: File) => {
+  const handleFileUpload = (field: 'coverImage' | 'bookFile', file: File | null) => {
+    if (!file) {
+      setBookData(prev => ({ ...prev, [field]: null }))
+      return
+    }
+
+    // Validate file based on type
+    const validation = field === 'coverImage' 
+      ? validateImageFile(file)
+      : validateBookFile(file)
+
+    if (!validation.valid) {
+      toast({
+        title: "Invalid File",
+        description: validation.error,
+        variant: "destructive"
+      })
+      return
+    }
+
+    // File is valid, update state
     setBookData(prev => ({ ...prev, [field]: file }))
+    toast({
+      title: "File Uploaded",
+      description: `${file.name} (${formatFileSize(file.size)}) uploaded successfully`,
+    })
   }
 
   const handlePublish = async () => {
     setIsUploading(true)
-    // Simulate upload process
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    setIsUploading(false)
-    // Here you would typically send the data to your backend
-    console.log('Publishing book:', bookData)
-    alert('Book published successfully!')
+    setUploadProgress(0)
+    
+    try {
+      // Simulate upload process with progress
+      for (let i = 0; i <= 100; i += 10) {
+        setUploadProgress(i)
+        await new Promise(resolve => setTimeout(resolve, 200))
+      }
+      
+      // Here you would typically send the data to your backend
+      console.log('Publishing book:', bookData)
+      
+      toast({
+        title: "Success!",
+        description: "Your book has been published successfully.",
+      })
+      
+      setIsUploading(false)
+      setUploadProgress(0)
+    } catch (error) {
+      setIsUploading(false)
+      setUploadProgress(0)
+      toast({
+        title: "Upload Failed",
+        description: "There was an error publishing your book. Please try again.",
+        variant: "destructive"
+      })
+    }
   }
 
   return (
@@ -312,7 +363,7 @@ export default function Create() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => handleFileUpload('coverImage', null as any)}
+                              onClick={() => handleFileUpload('coverImage', null)}
                               className="mt-2"
                             >
                               Remove
@@ -361,7 +412,7 @@ export default function Create() {
                             <Button 
                               variant="outline" 
                               size="sm" 
-                              onClick={() => handleFileUpload('bookFile', null as any)}
+                              onClick={() => handleFileUpload('bookFile', null)}
                               className="mt-2"
                             >
                               Remove
@@ -491,8 +542,17 @@ export default function Create() {
                 <ChevronRight className="h-4 w-4 ml-2" />
               </Button>
             ) : (
-              <div className="flex flex-col gap-4">
-                <Button variant="outline" size="lg">
+              <div className="flex flex-col gap-4 w-full max-w-md">
+                {isUploading && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm text-muted-foreground">
+                      <span>Uploading...</span>
+                      <span>{uploadProgress}%</span>
+                    </div>
+                    <Progress value={uploadProgress} className="w-full" />
+                  </div>
+                )}
+                <Button variant="outline" size="lg" disabled={isUploading}>
                   <Save className="h-4 w-4 mr-2" />
                   Save Draft
                 </Button>

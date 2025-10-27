@@ -8,6 +8,7 @@ import { ScrollArea } from '../components/ui/scroll-area'
 import { 
   Send, 
   User, 
+  Bot,
   BookOpen, 
   Star,
   Sparkles

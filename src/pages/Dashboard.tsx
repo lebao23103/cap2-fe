@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
-import { Badge } from '../components/ui/badge'
+import { BookCard, type BookData } from '../components/ui/book-card'
 import { 
   BookOpen, 
   Heart, 
@@ -11,29 +10,20 @@ import {
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
-interface Book {
-  id: string
-  title: string
-  author: string
-  cover: string
-  rating: number
-  genre: string[]
-}
-
 export default function Dashboard() {
   const [user] = useState({
     name: 'John Doe',
     email: 'john@example.com',
     avatar: ''
   })
-  const [recommendations, setRecommendations] = useState<Book[]>([])
-  const [favorites, setFavorites] = useState<Book[]>([])
-  const [readingHistory, setReadingHistory] = useState<Book[]>([])
+  const [recommendations, setRecommendations] = useState<BookData[]>([])
+  const [favorites, setFavorites] = useState<BookData[]>([])
+  const [readingHistory, setReadingHistory] = useState<BookData[]>([])
   const navigate = useNavigate()
 
   useEffect(() => {
     // TODO: Fetch user data and recommendations from API
-    const mockBooks: Book[] = [
+    const mockBooks: BookData[] = [
       {
         id: '1',
         title: 'The Great Gatsby',
@@ -65,37 +55,6 @@ export default function Dashboard() {
     setReadingHistory(mockBooks.slice(1, 3))
   }, [])
 
-  const BookCard = ({ book }: { book: Book }) => (
-    <Card className="group hover:shadow-lg transition-shadow duration-200">
-      <CardContent className="p-4">
-        <div className="flex gap-4">
-          <img 
-            src={book.cover} 
-            alt={book.title} 
-            loading="lazy"
-            width={64}
-            height={80}
-            className="w-16 h-20 object-cover rounded-md"
-          />
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm line-clamp-2">{book.title}</h3>
-            <p className="text-sm text-muted-foreground">{book.author}</p>
-            <div className="flex items-center gap-1 mt-1">
-              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-              <span className="text-xs text-muted-foreground">{book.rating}</span>
-            </div>
-            <div className="flex gap-1 mt-2">
-              {book.genre.slice(0, 2).map((g) => (
-                <Badge key={g} variant="secondary" className="text-xs">
-                  {g}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  )
 
   return (
     <div className="min-h-screen bg-background">
@@ -139,18 +98,20 @@ export default function Dashboard() {
         </div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Recommendations */}
-          <div>
+          <div className="lg:col-span-2">
             <h3 className="text-xl font-semibold mb-4">Recommended for You</h3>
             <div className="space-y-4">
               {recommendations.map((book) => (
-                <BookCard key={book.id} book={book} />
+                <BookCard key={book.id} book={book} size="md" />
               ))}
             </div>
-            <Button className="w-full mt-4" variant="outline">
-              View More Recommendations
-            </Button>
+            <div className="flex justify-center mt-6">
+              <Button className="max-w-xs" variant="outline">
+                View More Recommendations
+              </Button>
+            </div>
           </div>
 
           {/* Sidebar */}
@@ -163,24 +124,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {readingHistory.map((book) => (
-                  <div key={book.id} className="flex gap-3">
-                    <img 
-                      src={book.cover} 
-                      alt={book.title} 
-                      loading="lazy"
-                      width={48}
-                      height={64}
-                      className="w-12 h-16 object-cover rounded"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm line-clamp-1">{book.title}</h4>
-                      <p className="text-xs text-muted-foreground">{book.author}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        <span className="text-xs text-muted-foreground">{book.rating}</span>
-                      </div>
-                    </div>
-                  </div>
+                  <BookCard key={book.id} book={book} size="sm" />
                 ))}
               </CardContent>
             </Card>
@@ -193,21 +137,7 @@ export default function Dashboard() {
               </CardHeader>
               <CardContent className="space-y-3">
                 {favorites.map((book) => (
-                  <div key={book.id} className="flex gap-3">
-                    <img 
-                      src={book.cover} 
-                      alt={book.title} 
-                      className="w-12 h-16 object-cover rounded"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm line-clamp-1">{book.title}</h4>
-                      <p className="text-xs text-muted-foreground">{book.author}</p>
-                      <div className="flex items-center gap-1 mt-1">
-                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                        <span className="text-xs text-muted-foreground">{book.rating}</span>
-                      </div>
-                    </div>
-                  </div>
+                  <BookCard key={book.id} book={book} size="sm" />
                 ))}
               </CardContent>
             </Card>

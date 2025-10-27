@@ -89,7 +89,7 @@ export default function Home () {
   return (
     <div className='relative min-h-screen overflow-hidden bg-background'>
       {/* Hero Section */}
-      <section className='relative py-16 px-4 sm:px-6 lg:px-8'>
+      <section className='relative py-24 px-4 sm:px-6 lg:px-8'>
         <div className='max-w-6xl mx-auto text-center relative'>
           <motion.div {...fadeInUp}>
             <Badge variant="secondary" className="mb-4 px-3 py-1 rounded-full">
@@ -104,7 +104,7 @@ export default function Home () {
               </span>
             </h1>
             
-            <p className='text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed'>
+            <p className='text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed text-left sm:text-center'>
               Join a vibrant community of learners and educators sharing knowledge through collaborative note-taking, an intelligent chatbot system, and interactive academic exercises.
             </p>
             
@@ -157,7 +157,7 @@ export default function Home () {
       </section>
 
       {/* Featured Books Section */}
-      <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-muted/50">
+      <section className="relative py-16 px-4 sm:px-6 lg:px-8 bg-muted/50">
         <div className="max-w-7xl mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
             <Badge variant="outline" className="mb-4">
@@ -215,7 +215,7 @@ export default function Home () {
       </section>
 
       {/* Services Section */}
-      <section className='py-24 px-4 sm:px-6 lg:px-8'>
+      <section className='py-16 px-4 sm:px-6 lg:px-8'>
         <div className='max-w-7xl mx-auto'>
           <motion.div {...fadeInUp} className='text-center mb-16'>
             <h2 className='font-sans text-3xl md:text-4xl font-bold text-foreground mb-4'>
@@ -270,7 +270,7 @@ export default function Home () {
       </section>
 
       {/* Testimonials Section */}
-      <section className='relative py-24 px-4 sm:px-6 lg:px-8 bg-muted/50'>
+      <section className='relative py-16 px-4 sm:px-6 lg:px-8 bg-muted/50'>
         <div className='max-w-7xl mx-auto'>
           <motion.div {...fadeInUp} className='text-center mb-16'>
             <h2 className='font-sans text-3xl md:text-4xl font-bold text-foreground mb-4'>
@@ -290,7 +290,7 @@ export default function Home () {
                     <p className='text-muted-foreground mb-6 italic text-lg leading-relaxed'>
                       "{testimonial.content}"
                     </p>
-                    <div className='border-t border-border pt-4'>
+                    <div className='border-t border-border pt-6'>
                       <div className='flex items-center'>
                         <Avatar className='h-12 w-12 mr-4'>
                           <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
@@ -317,7 +317,7 @@ export default function Home () {
       </section>
 
       {/* CTA Section */}
-      <section className='py-24 px-4 sm:px-6 lg:px-8'>
+      <section className='py-16 px-4 sm:px-6 lg:px-8'>
         <div className='max-w-4xl mx-auto'>
           <motion.div {...fadeInUp} className="text-center">
             <Card className="p-12 border-0 shadow-2xl rounded-2xl bg-gradient-to-br from-primary/5 to-secondary/5">
@@ -325,15 +325,16 @@ export default function Home () {
                 <CardTitle className='font-sans text-3xl md:text-4xl font-bold text-foreground mb-4'>
                   Join the Knowledge Revolution
                 </CardTitle>
+                <CardDescription className='text-lg text-muted-foreground mb-8 max-w-2xl mx-auto'>
+                  Connect with learners worldwide and transform how you engage with academic content
+                </CardDescription>
               </CardHeader>
               <CardContent className="p-0">
-                <p className='text-lg text-muted-foreground mb-8 max-w-2xl mx-auto'>
-                  Connect with learners worldwide and transform how you engage with academic content
-                </p>
-                <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 py-6 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all">
-                    <Link to='/register'>
+                <div className='flex flex-col gap-4 items-center'>
+                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                    <Link to='/register' className="flex items-center">
                       Join Knowly
+                      <ChevronRight className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>
                   <p className='text-sm text-muted-foreground'>
