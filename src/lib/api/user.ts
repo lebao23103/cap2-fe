@@ -1,5 +1,5 @@
 import apiClient from './config';
-import { Book } from './books';
+import type { Book } from './books';
 
 export interface UserProfile {
   id: number;

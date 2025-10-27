@@ -17,13 +17,6 @@ type ToasterToast = ToastProps & {
 
 // Action types are defined inline in the Action union type below
 // Keeping original structure for clarity even if unused
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-type ActionTypes = {
-  ADD_TOAST: "ADD_TOAST",
-  UPDATE_TOAST: "UPDATE_TOAST",
-  DISMISS_TOAST: "DISMISS_TOAST",
-  REMOVE_TOAST: "REMOVE_TOAST",
-}
 
 let count = 0
 

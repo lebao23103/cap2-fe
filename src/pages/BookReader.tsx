@@ -1,18 +1,12 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import { 
-  BookOpen, 
   Bookmark, 
   Heart, 
   ChevronLeft, 
   ChevronRight,
   Settings,
   StickyNote,
-  Highlighter,
-  Volume2,
-  Play,
-  Pause,
   ArrowLeft,
   Target,
   Eye,
@@ -22,7 +16,6 @@ import {
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { 
   DropdownMenu, 
@@ -121,7 +114,6 @@ export default function BookReader() {
   const [newNote, setNewNote] = useState("")
   const [fontSize, setFontSize] = useState(16)
   const [isBookmarked, setIsBookmarked] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
 
   useEffect(() => {
     setIsBookmarked(bookData.bookmarks.includes(currentPage))

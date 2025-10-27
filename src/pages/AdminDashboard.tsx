@@ -132,11 +132,10 @@ export default function AdminDashboard() {
   }, [])
 
   // TODO: Implement when backend is ready
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleUserAction = (userId: string, action: 'approve' | 'reject' | 'delete') => {
-    // TODO: API call to perform user action
-    console.log(`${action} user ${userId}`)
-  }
+  // const handleUserAction = (userId: string, action: 'approve' | 'reject' | 'delete') => {
+  //   // TODO: API call to perform user action
+  //   console.log(`${action} user ${userId}`)
+  // }
 
   const handleBookAction = (bookId: string, action: 'approve' | 'reject' | 'delete') => {
     // TODO: API call to perform book action

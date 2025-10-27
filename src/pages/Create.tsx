@@ -1,20 +1,16 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { fadeInUp } from '@/lib/animations'
 import {
-  BookOpen, 
   Upload, 
   FileText, 
   Image, 
   Save, 
   Eye, 
   User, 
-  Calendar,
   Tag,
   Globe,
   Users,
-  Plus,
-  X,
   Check,
   AlertCircle,
   ChevronRight
@@ -78,7 +74,6 @@ export default function Create() {
   })
 
   const [activeTab, setActiveTab] = useState('info')
-  const [previewMode, setPreviewMode] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const { toast } = useToast()

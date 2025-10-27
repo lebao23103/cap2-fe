@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { Eye, EyeOff, BookOpen, Quote, KeyRound } from 'lucide-react'
+import { Eye, EyeOff, BookOpen, KeyRound } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function Login() {
@@ -31,35 +31,37 @@ export default function Login() {
         transition={{ duration: 0.5 }} 
         className="w-full max-w-md relative z-10"
       >
-        {/* Modern Quote */}
+        {/* Hero Quote */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="hidden md:block text-center mb-8"
+          className="hidden md:block text-center mb-8 px-4"
         >
-          <Quote className="h-8 w-8 mx-auto text-primary mb-2" />
-          <p className="text-lg italic text-foreground">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+            <BookOpen className="h-8 w-8 text-primary" />
+          </div>
+          <p className="text-lg italic text-foreground font-medium">
             "Books are a uniquely portable magic."
           </p>
-          <p className="text-sm text-muted-foreground mt-1">— Stephen King</p>
+          <p className="text-sm text-muted-foreground mt-2">— Stephen King</p>
         </motion.div>
 
         <Card className="w-full border-0 shadow-xl bg-card">
-          <CardHeader className="text-center pb-8">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <KeyRound className="h-6 w-6 text-primary" />
+          <CardHeader className="text-center pb-2 pt-6">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <KeyRound className="h-5 w-5 text-primary" />
             </div>
-            <CardTitle className="text-3xl text-foreground">
+            <CardTitle className="text-xl text-foreground">
               Welcome Back
             </CardTitle>
-            <p className="text-muted-foreground mt-2">
+            <p className="text-xs text-muted-foreground mt-1">
               Enter your credentials to continue your literary journey
             </p>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-2">
+          <CardContent className="px-6 pb-6">
+            <form onSubmit={handleSubmit} className="space-y-2">
+              <div className="space-y-0.5">
                 <Label htmlFor="email" className="text-sm text-foreground">
                   Email Address
                 </Label>
@@ -69,21 +71,21 @@ export default function Login() {
                   placeholder="your.name@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-background border-input focus:border-primary"
+                  className="bg-background border-input focus:border-primary h-9"
                   required
                 />
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-0.5">
                 <div className="flex justify-between items-center">
                   <Label htmlFor="password" className="text-sm text-foreground">
                     Password
                   </Label>
                   <Link 
                     to="/forgot-password" 
-                    className="text-sm text-primary hover:text-primary/80 underline underline-offset-2"
+                    className="text-xs text-primary hover:text-primary/80 underline underline-offset-2"
                   >
-                    Forgot Password?
+                    Forgot?
                   </Link>
                 </div>
                 <div className="relative">
@@ -93,31 +95,30 @@ export default function Login() {
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="bg-background border-input focus:border-primary pr-12"
+                    className="bg-background border-input focus:border-primary pr-10 h-9"
                     required
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-muted-foreground"
+                    className="absolute right-0 top-0 h-9 px-2 hover:bg-transparent text-muted-foreground"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4" aria-hidden="true" />
+                      <EyeOff className="h-3.5 w-3.5" aria-hidden="true" />
                     ) : (
-                      <Eye className="h-4 w-4" aria-hidden="true" />
+                      <Eye className="h-3.5 w-3.5" aria-hidden="true" />
                     )}
                   </Button>
                 </div>
               </div>
               
-              <div className="pt-4">
+              <div className="pt-0.5">
                 <Button 
                   type="submit"
-                  size="lg"
-                  className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" 
+                  className="w-full h-10 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" 
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -135,16 +136,16 @@ export default function Login() {
               </div>
             </form>
             
-            <div className="mt-8 pt-6 border-t border-border">
-              <p className="text-center text-sm text-muted-foreground">
-                New to our platform?
+            <div className="mt-4 pt-3 border-t border-border">
+              <p className="text-center text-xs text-muted-foreground">
+                New to our platform?{' '}
+                <Link 
+                  to="/register" 
+                  className="text-primary hover:text-primary/80 underline underline-offset-4"
+                >
+                  Create an account
+                </Link>
               </p>
-              <Link 
-                to="/register" 
-                className="block text-center mt-2 text-primary hover:text-primary/80 underline underline-offset-4"
-              >
-                Create an account
-              </Link>
             </div>
           </CardContent>
         </Card>

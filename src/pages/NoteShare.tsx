@@ -1,16 +1,13 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { fadeInUp, stagger } from '@/lib/animations'
 import {
   BookOpen, 
-  Heart, 
   Star, 
   Filter, 
   Search, 
   Grid3x3, 
   List,
-  Eye,
   StickyNote,
   ChevronDown,
   Users,
@@ -18,13 +15,11 @@ import {
   ThumbsUp,
   Share2,
   Calendar,
-  User,
-  BookmarkCheck,
   Feather,
   Quote
 } from 'lucide-react'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'

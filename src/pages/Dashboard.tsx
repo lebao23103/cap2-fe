@@ -5,8 +5,7 @@ import { BookCard, type BookData } from '../components/ui/book-card'
 import { 
   BookOpen, 
   Heart, 
-  MessageCircle, 
-  Star
+  MessageCircle
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 

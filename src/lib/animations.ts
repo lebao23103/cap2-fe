@@ -22,15 +22,19 @@ import type { Variants } from 'framer-motion'
 export const fadeInUp: Variants = {
   initial: { 
     opacity: 0, 
-    y: 30 
+    y: 30,
+    transition: { 
+      duration: 0.6, 
+      ease: 'easeOut' 
+    }
   },
   animate: { 
     opacity: 1, 
-    y: 0 
-  },
-  transition: { 
-    duration: 0.6, 
-    ease: 'easeOut' 
+    y: 0,
+    transition: { 
+      duration: 0.6, 
+      ease: 'easeOut' 
+    }
   }
 }
 
@@ -62,19 +66,27 @@ export const stagger: Variants = {
 export const slideInRight: Variants = {
   initial: { 
     x: 100, 
-    opacity: 0 
+    opacity: 0,
+    transition: { 
+      duration: 0.4, 
+      ease: 'easeOut' 
+    }
   },
   animate: { 
     x: 0, 
-    opacity: 1 
+    opacity: 1,
+    transition: { 
+      duration: 0.4, 
+      ease: 'easeOut' 
+    }
   },
   exit: { 
     x: 100, 
-    opacity: 0 
-  },
-  transition: { 
-    duration: 0.4, 
-    ease: 'easeOut' 
+    opacity: 0,
+    transition: { 
+      duration: 0.4, 
+      ease: 'easeOut' 
+    }
   }
 }
 
@@ -86,19 +98,27 @@ export const slideInRight: Variants = {
 export const slideInLeft: Variants = {
   initial: { 
     x: -100, 
-    opacity: 0 
+    opacity: 0,
+    transition: { 
+      duration: 0.4, 
+      ease: 'easeOut' 
+    }
   },
   animate: { 
     x: 0, 
-    opacity: 1 
+    opacity: 1,
+    transition: { 
+      duration: 0.4, 
+      ease: 'easeOut' 
+    }
   },
   exit: { 
     x: -100, 
-    opacity: 0 
-  },
-  transition: { 
-    duration: 0.4, 
-    ease: 'easeOut' 
+    opacity: 0,
+    transition: { 
+      duration: 0.4, 
+      ease: 'easeOut' 
+    }
   }
 }
 
@@ -110,19 +130,27 @@ export const slideInLeft: Variants = {
 export const scaleIn: Variants = {
   initial: { 
     scale: 0.9, 
-    opacity: 0 
+    opacity: 0,
+    transition: { 
+      duration: 0.3, 
+      ease: 'easeOut' 
+    }
   },
   animate: { 
     scale: 1, 
-    opacity: 1 
+    opacity: 1,
+    transition: { 
+      duration: 0.3, 
+      ease: 'easeOut' 
+    }
   },
   exit: { 
     scale: 0.9, 
-    opacity: 0 
-  },
-  transition: { 
-    duration: 0.3, 
-    ease: 'easeOut' 
+    opacity: 0,
+    transition: { 
+      duration: 0.3, 
+      ease: 'easeOut' 
+    }
   }
 }
 
@@ -133,16 +161,22 @@ export const scaleIn: Variants = {
  */
 export const fade: Variants = {
   initial: { 
-    opacity: 0 
+    opacity: 0,
+    transition: { 
+      duration: 0.2 
+    }
   },
   animate: { 
-    opacity: 1 
+    opacity: 1,
+    transition: { 
+      duration: 0.2 
+    }
   },
   exit: { 
-    opacity: 0 
-  },
-  transition: { 
-    duration: 0.2 
+    opacity: 0,
+    transition: { 
+      duration: 0.2 
+    }
   }
 }
 
@@ -154,17 +188,23 @@ export const fade: Variants = {
 export const bounceIn: Variants = {
   initial: { 
     scale: 0,
-    opacity: 0
+    opacity: 0,
+    transition: {
+      type: 'spring',
+      stiffness: 260,
+      damping: 20,
+      duration: 0.5
+    }
   },
   animate: { 
     scale: 1,
-    opacity: 1
-  },
-  transition: {
-    type: 'spring',
-    stiffness: 260,
-    damping: 20,
-    duration: 0.5
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 260,
+      damping: 20,
+      duration: 0.5
+    }
   }
 }
 
@@ -219,15 +259,19 @@ export const tapPress = {
 export const rotateIn: Variants = {
   initial: {
     rotate: -180,
-    opacity: 0
+    opacity: 0,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut'
+    }
   },
   animate: {
     rotate: 0,
-    opacity: 1
-  },
-  transition: {
-    duration: 0.5,
-    ease: 'easeOut'
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      ease: 'easeOut'
+    }
   }
 }
 
@@ -239,19 +283,27 @@ export const rotateIn: Variants = {
 export const pageTransition: Variants = {
   initial: {
     opacity: 0,
-    y: 20
+    y: 20,
+    transition: {
+      duration: 0.4,
+      ease: 'easeInOut'
+    }
   },
   animate: {
     opacity: 1,
-    y: 0
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: 'easeInOut'
+    }
   },
   exit: {
     opacity: 0,
-    y: -20
-  },
-  transition: {
-    duration: 0.4,
-    ease: 'easeInOut'
+    y: -20,
+    transition: {
+      duration: 0.4,
+      ease: 'easeInOut'
+    }
   }
 }
 

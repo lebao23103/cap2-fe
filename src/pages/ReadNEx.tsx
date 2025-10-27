@@ -1,7 +1,7 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { fadeInUp, stagger } from '@/lib/animations'
+import { fadeInUp } from '@/lib/animations'
 import { 
   BookOpen, 
   Heart, 
@@ -11,25 +11,19 @@ import {
   Grid3x3, 
   List,
   Eye,
-  Bookmark,
   ChevronDown,
-  TrendingUp,
-  TrendingDown,
   Play,
   Clock,
-  FileText,
   CheckCircle,
   Award,
   BookmarkCheck,
   StickyNote,
-  Target,
-  History
+  Target
 } from 'lucide-react'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   DropdownMenu, 
   DropdownMenuContent, 

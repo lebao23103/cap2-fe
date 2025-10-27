@@ -1,5 +1,5 @@
 import apiClient from './config';
-import { Book } from './books';
+import type { Book } from './books';
 
 export type ChatRole = 'book advisor' | 'literary expert' | 'book enthusiast';
 
