@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { Mail, ArrowLeft, Quote, KeyRound, CheckCircle } from 'lucide-react'
+import { Card, CardContent, CardHeader } from '../components/ui/card'
+import { Mail, ArrowLeft, Quote, KeyRound, CheckCircle, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { ModernButton } from '../components/ui/modern'
 
 export default function ResetPassword() {
   const [email, setEmail] = useState('')
@@ -32,7 +32,13 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-background p-4 overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4 overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 -left-20 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-20 w-72 h-72 bg-secondary/5 rounded-full blur-3xl" />
+      </div>
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }} 
@@ -46,80 +52,97 @@ export default function ResetPassword() {
           transition={{ delay: 0.2 }}
           className="text-center mb-8"
         >
-          <Quote className="h-8 w-8 mx-auto text-primary mb-2" />
-          <p className="text-lg italic text-foreground">
+          <div className="relative inline-block mb-4">
+            <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
+            <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20 shadow-lg">
+              <Quote className="h-8 w-8 text-primary" />
+            </div>
+          </div>
+          <p className="text-lg font-semibold text-foreground mb-2">
             "Memory is the diary that we all carry about with us."
           </p>
-          <p className="text-sm text-muted-foreground mt-1">— Oscar Wilde</p>
+          <p className="text-sm text-muted-foreground">— Oscar Wilde</p>
         </motion.div>
 
-        <Card className="w-full border-0 shadow-xl bg-card">
-          <CardHeader className="text-center pb-8">
-            <div className="flex items-center justify-center gap-3 mb-4">
+        <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm">
+          <CardHeader className="text-center pb-8 pt-8 border-b border-border/30">
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+              className="inline-flex items-center justify-center w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br shadow-lg"
+              style={{
+                backgroundColor: isEmailSent ? 'rgba(34, 197, 94, 0.1)' : 'var(--primary-rgb, rgba(59, 130, 246, 0.1))',
+                borderColor: isEmailSent ? 'rgba(34, 197, 94, 0.2)' : 'var(--primary-rgb, rgba(59, 130, 246, 0.2))'
+              }}
+            >
               {isEmailSent ? (
-                <CheckCircle className="h-6 w-6 text-green-600" />
+                <CheckCircle className="h-10 w-10 text-green-600" />
               ) : (
-                <KeyRound className="h-6 w-6 text-primary" />
+                <KeyRound className="h-10 w-10 text-primary" />
               )}
-            </div>
-            <CardTitle className="text-3xl text-foreground">
+            </motion.div>
+            <h2 className="text-3xl font-bold text-foreground mb-2">
               {isEmailSent ? 'Check Your Email' : 'Reset Password'}
-            </CardTitle>
-            <p className="text-muted-foreground mt-2">
+            </h2>
+            <p className="text-sm text-muted-foreground">
               {isEmailSent 
                 ? 'We have sent password reset instructions to your email address'
                 : 'Enter your email address and we will send you a link to reset your password'
               }
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-8 pb-8 pt-6">
             {isEmailSent ? (
               <div className="space-y-6">
                 <div className="text-center space-y-4">
-                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                    <Mail className="h-8 w-8 text-green-600" />
+                  <div className="relative inline-block">
+                    <div className="absolute inset-0 bg-green-500/10 blur-2xl rounded-full" />
+                    <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-green-500/15 to-green-500/5 border border-green-500/20 shadow-lg">
+                      <Mail className="h-10 w-10 text-green-600" />
+                    </div>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-3">
                     <p className="text-sm text-muted-foreground">
                       Password reset instructions have been sent to:
                     </p>
-                    <p className="font-semibold text-foreground">
+                    <p className="text-lg font-bold text-foreground">
                       {email}
                     </p>
                   </div>
-                  <div className="bg-muted p-4 rounded-lg border border-border">
-                    <p className="text-xs text-muted-foreground">
-                      <strong>Didn't receive the email?</strong> Check your spam folder or wait a few minutes. 
-                      The email might take some time to arrive.
+                  <div className="bg-gradient-to-br from-muted/50 to-muted/30 p-5 rounded-xl border border-border/50 shadow-sm">
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      <strong className="font-semibold">Didn't receive the email?</strong><br/>
+                      Check your spam folder or wait a few minutes. The email might take some time to arrive.
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <Button 
+                  <ModernButton
                     onClick={handleResendEmail}
-                    variant="outline"
-                    className="w-full border-input hover:bg-accent text-foreground"
+                    variant="secondary"
+                    icon={Mail}
+                    className="w-full h-11"
                   >
-                    <Mail className="h-4 w-4 mr-2" />
                     Resend Email
-                  </Button>
+                  </ModernButton>
                   
                   <Link to="/login">
-                    <Button 
-                      variant="outline"
-                      className="w-full border-input hover:bg-accent text-foreground"
+                    <ModernButton 
+                      variant="ghost"
+                      icon={ArrowLeft}
+                      className="w-full h-11"
                     >
-                      <ArrowLeft className="h-4 w-4 mr-2" />
                       Back to Login
-                    </Button>
+                    </ModernButton>
                   </Link>
                 </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm text-foreground">
+                  <Label htmlFor="email" className="text-sm font-semibold text-foreground">
                     Email Address
                   </Label>
                   <Input
@@ -128,7 +151,7 @@ export default function ResetPassword() {
                     placeholder="your.name@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-background border-input focus:border-primary"
+                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-12 rounded-xl transition-all"
                     required
                   />
                   <p className="text-xs text-muted-foreground">
@@ -137,38 +160,33 @@ export default function ResetPassword() {
                 </div>
                 
                 <div className="pt-2">
-                  <Button 
-                    type="submit" 
-                    className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground text-lg py-6 shadow-lg hover:shadow-xl transition-all duration-300 rounded-lg" 
-                    disabled={isLoading}
+                  <ModernButton
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    icon={Sparkles}
+                    isLoading={isLoading}
+                    className="w-full h-13 text-base shadow-lg hover:shadow-xl"
                   >
-                    {isLoading ? (
-                      <span className="flex items-center justify-center gap-2">
-                        <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                        Sending Instructions...
-                      </span>
-                    ) : (
-                      <span className="flex items-center justify-center gap-2">
-                        <Mail className="h-5 w-5" />
-                        Send Reset Instructions
-                      </span>
-                    )}
-                  </Button>
+                    {isLoading ? 'Sending instructions...' : 'Send Reset Link'}
+                  </ModernButton>
                 </div>
               </form>
             )}
             
             {!isEmailSent && (
-              <div className="mt-8 pt-6 border-t border-border">
-                <p className="text-center text-sm text-muted-foreground">
+              <div className="mt-8 pt-6 border-t border-border/30">
+                <p className="text-center text-sm text-muted-foreground mb-3">
                   Remember your password?
                 </p>
-                <Link 
-                  to="/login" 
-                  className="block text-center mt-2 text-primary hover:text-primary/80 underline underline-offset-4"
-                >
-                  <ArrowLeft className="h-4 w-4 inline mr-1" />
-                  Back to login
+                <Link to="/login">
+                  <ModernButton 
+                    variant="ghost"
+                    icon={ArrowLeft}
+                    className="w-full"
+                  >
+                    Back to Login
+                  </ModernButton>
                 </Link>
               </div>
             )}

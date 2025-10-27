@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { Eye, EyeOff, BookOpen, Feather } from 'lucide-react'
+import { Card, CardContent, CardHeader } from '../components/ui/card'
+import { Eye, EyeOff, BookOpen, Sparkles, UserPlus } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { ModernButton } from '../components/ui/modern'
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -59,7 +59,13 @@ export default function Register() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-background p-4 overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4 overflow-hidden">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 -left-20 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 -right-20 w-72 h-72 bg-secondary/5 rounded-full blur-3xl" />
+      </div>
+
       <motion.div 
         initial={{ opacity: 0, y: 20 }} 
         animate={{ opacity: 1, y: 0 }} 
@@ -73,33 +79,40 @@ export default function Register() {
           transition={{ delay: 0.2 }}
           className="hidden md:block text-center mb-8 px-4"
         >
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-            <BookOpen className="h-8 w-8 text-primary" />
+          <div className="relative inline-block mb-4">
+            <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
+            <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20 shadow-lg">
+              <BookOpen className="h-10 w-10 text-primary" />
+            </div>
           </div>
-          <p className="text-lg italic text-foreground font-medium">
+          <p className="text-xl font-semibold text-foreground mb-2">
             "A reader lives a thousand lives before he dies."
           </p>
-          <p className="text-sm text-muted-foreground mt-2">— George R.R. Martin</p>
+          <p className="text-sm text-muted-foreground">— George R.R. Martin</p>
         </motion.div>
 
-        <Card className="w-full border-0 shadow-xl bg-card">
-          <CardHeader className="text-center pb-2 pt-6">
-            <div className="flex items-center justify-center gap-2 mb-1">
-              <Feather className="h-4 w-4 text-primary" />
-              <CardTitle className="text-xl text-foreground">
-                Create Account
-              </CardTitle>
-              <Feather className="h-4 w-4 text-primary scale-x-[-1]" />
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Create your account to begin your reading journey
+        <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm">
+          <CardHeader className="text-center pb-6 pt-8 border-b border-border/30">
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
+              className="inline-flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg"
+            >
+              <UserPlus className="h-8 w-8 text-primary" />
+            </motion.div>
+            <h2 className="text-2xl font-bold text-foreground mb-2">
+              Create Your Account
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Join our community of readers and start your journey
             </p>
           </CardHeader>
-          <CardContent className="px-6 pb-6">
-            <form onSubmit={handleSubmit} className="space-y-2">
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-0.5">
-                  <Label htmlFor="firstName" className="text-sm text-foreground">
+          <CardContent className="px-8 pb-8 pt-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstName" className="text-sm font-semibold text-foreground">
                     First Name
                   </Label>
                   <Input
@@ -109,15 +122,13 @@ export default function Register() {
                     placeholder="John"
                     value={formData.firstName}
                     onChange={handleChange}
-                    className="bg-background border-input focus:border-primary h-9"
+                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
                     required
                   />
-                  <div className="min-h-[12px]">
-                    {errors.firstName && <p className="text-xs text-destructive">{errors.firstName}</p>}
-                  </div>
+                  {errors.firstName && <p className="text-xs text-destructive font-medium">{errors.firstName}</p>}
                 </div>
-                <div className="space-y-0.5">
-                  <Label htmlFor="lastName" className="text-sm text-foreground">
+                <div className="space-y-2">
+                  <Label htmlFor="lastName" className="text-sm font-semibold text-foreground">
                     Last Name
                   </Label>
                   <Input
@@ -127,17 +138,15 @@ export default function Register() {
                     placeholder="Doe"
                     value={formData.lastName}
                     onChange={handleChange}
-                    className="bg-background border-input focus:border-primary h-9"
+                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
                     required
                   />
-                  <div className="min-h-[12px]">
-                    {errors.lastName && <p className="text-xs text-destructive">{errors.lastName}</p>}
-                  </div>
+                  {errors.lastName && <p className="text-xs text-destructive font-medium">{errors.lastName}</p>}
                 </div>
               </div>
               
-              <div className="space-y-0.5">
-                <Label htmlFor="email" className="text-sm text-foreground">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-sm font-semibold text-foreground">
                   Email Address
                 </Label>
                 <Input
@@ -147,16 +156,14 @@ export default function Register() {
                   placeholder="john.doe@example.com"
                   value={formData.email}
                   onChange={handleChange}
-                  className="bg-background border-input focus:border-primary h-9"
+                  className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
                   required
                 />
-                <div className="min-h-[12px]">
-                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-                </div>
+                {errors.email && <p className="text-xs text-destructive font-medium">{errors.email}</p>}
               </div>
               
-              <div className="space-y-0.5">
-                <Label htmlFor="password" className="text-sm text-foreground">
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-sm font-semibold text-foreground">
                   Password
                 </Label>
                 <div className="relative">
@@ -167,27 +174,23 @@ export default function Register() {
                     placeholder="Create your password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="bg-background border-input focus:border-primary pr-10 h-9"
+                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
                     required
                   />
-                  <Button
+                  <button
                     type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-9 px-2 hover:bg-transparent text-muted-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    {showPassword ? <EyeOff className="h-3.5 w-3.5" aria-hidden="true" /> : <Eye className="h-3.5 w-3.5" aria-hidden="true" />}
-                  </Button>
+                    {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
+                  </button>
                 </div>
-                <div className="min-h-[12px]">
-                  {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
-                </div>
+                {errors.password && <p className="text-xs text-destructive font-medium">{errors.password}</p>}
               </div>
               
-              <div className="space-y-0.5">
-                <Label htmlFor="confirmPassword" className="text-sm text-foreground">
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-sm font-semibold text-foreground">
                   Confirm Password
                 </Label>
                 <div className="relative">
@@ -198,54 +201,43 @@ export default function Register() {
                     placeholder="Repeat your password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="bg-background border-input focus:border-primary pr-10 h-9"
+                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
                     required
                   />
-                  <Button
+                  <button
                     type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-9 px-2 hover:bg-transparent text-muted-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                   >
-                    {showConfirmPassword ? <EyeOff className="h-3.5 w-3.5" aria-hidden="true" /> : <Eye className="h-3.5 w-3.5" aria-hidden="true" />}
-                  </Button>
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
+                  </button>
                 </div>
-                <div className="min-h-[12px]">
-                  {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword}</p>}
-                </div>
+                {errors.confirmPassword && <p className="text-xs text-destructive font-medium">{errors.confirmPassword}</p>}
               </div>
               
-              <div className="pt-0.5">
-                <Button 
+              <div className="pt-2">
+                <ModernButton
                   type="submit"
-                  className="w-full h-10 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" 
-                  disabled={isLoading}
+                  variant="primary"
+                  size="lg"
+                  icon={Sparkles}
+                  isLoading={isLoading}
+                  className="w-full h-12 text-base shadow-lg hover:shadow-xl"
                 >
-                  {isLoading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                      Creating Account...
-                    </span>
-                  ) : (
-                    <span className="flex items-center justify-center gap-2">
-                      <BookOpen className="h-5 w-5" />
-                      Create Account
-                    </span>
-                  )}
-                </Button>
+                  {isLoading ? 'Creating your account...' : 'Create Account'}
+                </ModernButton>
               </div>
             </form>
             
-            <div className="mt-4 pt-3 border-t border-border">
-              <p className="text-center text-xs text-muted-foreground">
+            <div className="mt-6 pt-6 border-t border-border/30">
+              <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{' '}
                 <Link 
                   to="/login" 
-                  className="text-primary hover:text-primary/80 underline underline-offset-4"
+                  className="text-primary hover:text-primary/80 font-semibold transition-colors"
                 >
-                  Sign in to your account
+                  Sign in
                 </Link>
               </p>
             </div>
