@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { ChatWidget } from '@/components/ChatWidget';
 import { useAuth } from '@/contexts/AuthContext';
+import { ModernButton } from '@/components/ui/modern/ModernButton';
 import {
   BookOpen,
   User,
@@ -70,20 +71,25 @@ export function Layout({ children }: LayoutProps) {
       </div>
 
       {/* Header/Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <nav className="container mx-auto px-6">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-sm">
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" />
+        
+        <nav className="container mx-auto px-6 relative">
           <div className="flex h-16 items-center justify-between">
             {/* Left Side - Logo */}
             <div className="flex items-center flex-1">
-              <Link to="/" className="group flex items-center space-x-2 transition-all duration-300">
-                {/* Modern Logo */}
+              <Link to="/" className="group flex items-center space-x-3 transition-all duration-300 hover:scale-[1.02]">
+                {/* Modern Logo with enhanced effects */}
                 <div className="relative">
-                  <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-indigo-500 to-cyan-400 flex items-center justify-center">
-                    <BookOpen className="h-6 w-6 text-white" strokeWidth={2} />
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-indigo-500/20 to-cyan-400/20 blur-lg group-hover:blur-xl transition-all duration-300" />
+                  <div className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-400 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:rotate-3">
+                    <BookOpen className="h-6 w-6 text-white" strokeWidth={2.5} />
                   </div>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-sans text-2xl font-bold text-foreground tracking-tight">
+                  <span className="font-sans text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent tracking-tight group-hover:from-primary group-hover:to-primary/70 transition-all duration-300">
                     Knowly
                   </span>
                 </div>
@@ -92,61 +98,61 @@ export function Layout({ children }: LayoutProps) {
 
             {/* Center - Navigation Menu */}
             <div className="hidden md:flex items-center flex-1 justify-center">
-              <div className="flex items-center space-x-6">
+              <div className="flex items-center space-x-2 bg-muted/30 backdrop-blur-sm rounded-2xl p-1.5 border border-border/50 shadow-sm">
                 <Link
                   to="/"
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     isActivePath('/')
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      ? 'bg-background text-primary shadow-sm border border-border/50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                   }`}
                 >
                   <Home className="h-4 w-4" />
-                  Home
+                  <span>Home</span>
                 </Link>
                 <Link
                   to="/readnex"
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     isActivePath('/readnex')
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      ? 'bg-background text-primary shadow-sm border border-border/50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                   }`}
                 >
                   <Library className="h-4 w-4" />
-                  ReadNEx
+                  <span>ReadNEx</span>
                 </Link>
                 <Link
                   to="/create"
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     isActivePath('/create')
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      ? 'bg-background text-primary shadow-sm border border-border/50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                   }`}
                 >
                   <Plus className="h-4 w-4" />
-                  Create
+                  <span>Create</span>
                 </Link>
                 <Link
                   to="/noteshare"
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     isActivePath('/noteshare')
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      ? 'bg-background text-primary shadow-sm border border-border/50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                   }`}
                 >
                   <Sparkles className="h-4 w-4" />
-                  NoteShare
+                  <span>NoteShare</span>
                 </Link>
                 <Link
                   to="/about"
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     isActivePath('/about')
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
+                      ? 'bg-background text-primary shadow-sm border border-border/50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                   }`}
                 >
                   <Info className="h-4 w-4" />
-                  About
+                  <span>About</span>
                 </Link>
               </div>
             </div>
@@ -218,22 +224,23 @@ export function Layout({ children }: LayoutProps) {
                     </div>
                   </>
                 ) : (
-                  <div className="hidden md:flex items-center gap-4">
-                    <Button 
-                      variant="ghost" 
-                      className="text-foreground hover:text-primary" 
-                      asChild
+                  <div className="hidden md:flex items-center gap-3">
+                    <ModernButton
+                      variant="ghost"
+                      size="md"
+                      className="text-foreground hover:text-primary font-semibold"
+                      onClick={() => navigate('/login')}
                     >
-                      <Link to="/login">Sign In</Link>
-                    </Button>
-                    <Button 
-                      className="bg-gradient-to-r from-primary to-secondary text-primary-foreground font-medium px-4 shadow-md hover:shadow-lg transition-all duration-300 rounded-lg" 
-                      asChild
+                      Sign In
+                    </ModernButton>
+                    <ModernButton
+                      variant="primary"
+                      size="md"
+                      className="bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 text-white border-0 shadow-md hover:shadow-lg font-semibold"
+                      onClick={() => navigate('/register')}
                     >
-                      <Link to="/register">
-                        Get Started
-                      </Link>
-                    </Button>
+                      Get Started
+                    </ModernButton>
                   </div>
                 )}
               </div>
@@ -376,44 +383,107 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Footer - Contact Information */}
       {!isAuthenticated && (
-        <footer className="border-t bg-muted/50 py-8">
-          <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-3 gap-8">
+        <footer className="relative border-t border-border/40 bg-muted/30 backdrop-blur-sm py-12 mt-20">
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-transparent pointer-events-none" />
+          
+          <div className="container mx-auto px-6 relative">
+            <div className="grid md:grid-cols-3 gap-12">
               {/* Company Info */}
-              <div>
-                <h3 className="font-sans text-lg font-bold text-foreground mb-4">Knowly</h3>
-                <p className="text-sm text-muted-foreground mb-2">
+              <div className="space-y-4">
+                <div className="flex items-center gap-3 group">
+                  <div className="relative">
+                    <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-indigo-500/20 to-cyan-400/20 blur-md" />
+                    <div className="relative h-8 w-8 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-400 flex items-center justify-center shadow-md">
+                      <BookOpen className="h-5 w-5 text-white" strokeWidth={2.5} />
+                    </div>
+                  </div>
+                  <h3 className="font-sans text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                    Knowly
+                  </h3>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Knowledge Sharing Platform for Academic Reading and Exercises
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  © 2025 Knowly. Built with ❤️ for learners.
-                </p>
+                <div className="pt-2 flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>© 2025 Knowly.</span>
+                  <span className="text-red-500">❤️</span>
+                  <span>Built for learners.</span>
+                </div>
               </div>
               
               {/* Contact Information */}
-              <div>
-                <h4 className="font-semibold text-foreground mb-4">Contact Us</h4>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>📧 Email: support@knowly.com</p>
-                  <p>📞 Phone: +84 (028) 1234-5678</p>
-                  <p>📍 Address: 123 Knowledge Street, Learning City</p>
-                  <p>🕒 Hours: Mon-Fri 9AM-6PM (GMT+7)</p>
+              <div className="space-y-4">
+                <h4 className="font-semibold text-foreground text-base mb-5 tracking-tight">Contact Us</h4>
+                <div className="space-y-3 text-sm text-muted-foreground">
+                  <div className="flex items-start gap-3 group hover:text-foreground transition-colors">
+                    <span className="text-base">📧</span>
+                    <div>
+                      <p className="font-medium">Email</p>
+                      <p className="text-xs">support@knowly.com</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 group hover:text-foreground transition-colors">
+                    <span className="text-base">📞</span>
+                    <div>
+                      <p className="font-medium">Phone</p>
+                      <p className="text-xs">+84 (028) 1234-5678</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 group hover:text-foreground transition-colors">
+                    <span className="text-base">📍</span>
+                    <div>
+                      <p className="font-medium">Address</p>
+                      <p className="text-xs">123 Knowledge Street, Learning City</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-3 group hover:text-foreground transition-colors">
+                    <span className="text-base">🕒</span>
+                    <div>
+                      <p className="font-medium">Hours</p>
+                      <p className="text-xs">Mon-Fri 9AM-6PM (GMT+7)</p>
+                    </div>
+                  </div>
                 </div>
               </div>
               
               {/* Quick Links */}
-              <div>
-                <h4 className="font-semibold text-foreground mb-4">Quick Links</h4>
-                <div className="space-y-2 text-sm">
-                  <Link to="/about" className="block text-muted-foreground hover:text-foreground transition-colors">
-                    About Us
+              <div className="space-y-4">
+                <h4 className="font-semibold text-foreground text-base mb-5 tracking-tight">Quick Links</h4>
+                <div className="space-y-3 text-sm">
+                  <Link 
+                    to="/about" 
+                    className="group flex items-center gap-2 text-muted-foreground hover:text-primary transition-all duration-300"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary/50 group-hover:bg-primary group-hover:scale-125 transition-all" />
+                    <span className="group-hover:translate-x-0.5 transition-transform">About Us</span>
                   </Link>
-                  <Link to="/faq" className="block text-muted-foreground hover:text-foreground transition-colors">
-                    FAQ
+                  <Link 
+                    to="/faq" 
+                    className="group flex items-center gap-2 text-muted-foreground hover:text-primary transition-all duration-300"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary/50 group-hover:bg-primary group-hover:scale-125 transition-all" />
+                    <span className="group-hover:translate-x-0.5 transition-transform">FAQ</span>
                   </Link>
-                  <Link to="/contact" className="block text-muted-foreground hover:text-foreground transition-colors">
-                    Contact Form
+                  <Link 
+                    to="/contact" 
+                    className="group flex items-center gap-2 text-muted-foreground hover:text-primary transition-all duration-300"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary/50 group-hover:bg-primary group-hover:scale-125 transition-all" />
+                    <span className="group-hover:translate-x-0.5 transition-transform">Contact Form</span>
                   </Link>
+                </div>
+              </div>
+            </div>
+            
+            {/* Bottom Divider */}
+            <div className="mt-12 pt-8 border-t border-border/40">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
+                <p>All rights reserved. Empowering learners worldwide.</p>
+                <div className="flex items-center gap-4">
+                  <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
+                  <span className="text-border">•</span>
+                  <Link to="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
                 </div>
               </div>
             </div>

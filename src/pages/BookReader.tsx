@@ -11,12 +11,18 @@ import {
   Target,
   Eye,
   Clock,
-  Star
+  Star,
+  Edit,
+  Trash2,
+  Share2,
+  Highlighter,
+  FileText
 } from 'lucide-react'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { ModernButton, StatCard, SectionHeader } from '@/components/ui/modern'
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -41,6 +47,8 @@ interface BookNote {
   note: string
   page: number
   timestamp: string
+  color?: 'yellow' | 'blue' | 'green' | 'pink'
+  isPublic?: boolean
 }
 
 interface BookData {
@@ -94,7 +102,18 @@ const mockBookData: BookData = {
       text: "Every book provides a chance to try another life you could have lived",
       note: "This is such a profound concept - the idea that books can show us alternate versions of ourselves",
       page: 1,
-      timestamp: "2024-10-01T10:30:00"
+      timestamp: "2024-10-01T10:30:00",
+      color: "yellow",
+      isPublic: false
+    },
+    {
+      id: "2",
+      text: "Between life and death there is a library",
+      note: "The central metaphor of the book - so powerful!",
+      page: 1,
+      timestamp: "2024-10-01T11:00:00",
+      color: "blue",
+      isPublic: true
     }
   ],
   bookmarks: [1, 5],
@@ -114,6 +133,9 @@ export default function BookReader() {
   const [newNote, setNewNote] = useState("")
   const [fontSize, setFontSize] = useState(16)
   const [isBookmarked, setIsBookmarked] = useState(false)
+  const [highlightColor, setHighlightColor] = useState<'yellow' | 'blue' | 'green' | 'pink'>('yellow')
+  const [editingNote, setEditingNote] = useState<BookNote | null>(null)
+  const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null)
 
   useEffect(() => {
     setIsBookmarked(bookData.bookmarks.includes(currentPage))
@@ -147,23 +169,178 @@ export default function BookReader() {
 
   const saveNote = () => {
     if (selectedText && newNote) {
-      const note: BookNote = {
-        id: Date.now().toString(),
-        text: selectedText,
-        note: newNote,
-        page: currentPage,
-        timestamp: new Date().toISOString()
+      if (editingNote) {
+        // Update existing note
+        setBookData(prev => ({
+          ...prev,
+          notes: prev.notes.map(n => 
+            n.id === editingNote.id 
+              ? { ...n, note: newNote, color: highlightColor }
+              : n
+          )
+        }))
+        setEditingNote(null)
+      } else {
+        // Create new note
+        const note: BookNote = {
+          id: Date.now().toString(),
+          text: selectedText,
+          note: newNote,
+          page: currentPage,
+          timestamp: new Date().toISOString(),
+          color: highlightColor,
+          isPublic: false
+        }
+        
+        setBookData(prev => ({
+          ...prev,
+          notes: [...prev.notes, note]
+        }))
       }
-      
-      setBookData(prev => ({
-        ...prev,
-        notes: [...prev.notes, note]
-      }))
       
       setShowNoteDialog(false)
       setSelectedText("")
       setNewNote("")
+      setHighlightColor('yellow')
     }
+  }
+
+  const deleteNote = (noteId: string) => {
+    setBookData(prev => ({
+      ...prev,
+      notes: prev.notes.filter(n => n.id !== noteId)
+    }))
+  }
+
+  const editNote = (note: BookNote) => {
+    setEditingNote(note)
+    setSelectedText(note.text)
+    setNewNote(note.note)
+    setHighlightColor(note.color || 'yellow')
+    setShowNoteDialog(true)
+  }
+
+  const shareNote = (noteId: string) => {
+    setBookData(prev => ({
+      ...prev,
+      notes: prev.notes.map(n => 
+        n.id === noteId ? { ...n, isPublic: !n.isPublic } : n
+      )
+    }))
+  }
+
+  const getHighlightClass = (color: string) => {
+    const colors = {
+      yellow: 'bg-amber-200 dark:bg-amber-500/30',
+      blue: 'bg-blue-200 dark:bg-blue-500/30',
+      green: 'bg-green-200 dark:bg-green-500/30',
+      pink: 'bg-pink-200 dark:bg-pink-500/30'
+    }
+    return colors[color as keyof typeof colors] || colors.yellow
+  }
+
+  // Render text with inline highlights for notes
+  const renderTextWithHighlights = (text: string, pageNum: number) => {
+    const pageNotes = bookData.notes.filter(note => note.page === pageNum)
+    
+    if (pageNotes.length === 0) {
+      return text
+    }
+
+    // Sort notes by text position in content
+    const sortedNotes = [...pageNotes].sort((a, b) => {
+      const posA = text.indexOf(a.text)
+      const posB = text.indexOf(b.text)
+      return posA - posB
+    })
+
+    const parts: Array<{text: string, highlighted?: boolean, note?: BookNote}> = []
+    let lastIndex = 0
+
+    sortedNotes.forEach(note => {
+      const startIndex = text.indexOf(note.text, lastIndex)
+      
+      if (startIndex !== -1) {
+        // Add text before highlight
+        if (startIndex > lastIndex) {
+          parts.push({ text: text.slice(lastIndex, startIndex) })
+        }
+        
+        // Add highlighted text
+        parts.push({ 
+          text: note.text, 
+          highlighted: true, 
+          note: note 
+        })
+        
+        lastIndex = startIndex + note.text.length
+      }
+    })
+
+    // Add remaining text
+    if (lastIndex < text.length) {
+      parts.push({ text: text.slice(lastIndex) })
+    }
+
+    return (
+      <>
+        {parts.map((part, index) => {
+          if (part.highlighted && part.note) {
+            const colorStyles = {
+              yellow: {
+                bg: 'bg-amber-200/40 dark:bg-amber-400/15',
+                hover: 'hover:bg-amber-300/50 dark:hover:bg-amber-400/25',
+                shadow: 'hover:shadow-amber-200/50 dark:hover:shadow-amber-400/20',
+                icon: 'text-amber-600 dark:text-amber-400'
+              },
+              blue: {
+                bg: 'bg-blue-200/40 dark:bg-blue-400/15',
+                hover: 'hover:bg-blue-300/50 dark:hover:bg-blue-400/25',
+                shadow: 'hover:shadow-blue-200/50 dark:hover:shadow-blue-400/20',
+                icon: 'text-blue-600 dark:text-blue-400'
+              },
+              green: {
+                bg: 'bg-green-200/40 dark:bg-green-400/15',
+                hover: 'hover:bg-green-300/50 dark:hover:bg-green-400/25',
+                shadow: 'hover:shadow-green-200/50 dark:hover:shadow-green-400/20',
+                icon: 'text-green-600 dark:text-green-400'
+              },
+              pink: {
+                bg: 'bg-pink-200/40 dark:bg-pink-400/15',
+                hover: 'hover:bg-pink-300/50 dark:hover:bg-pink-400/25',
+                shadow: 'hover:shadow-pink-200/50 dark:hover:shadow-pink-400/20',
+                icon: 'text-pink-600 dark:text-pink-400'
+              }
+            }
+            const style = colorStyles[part.note.color || 'yellow']
+            
+            return (
+              <mark
+                key={index}
+                className={`${style.bg} ${style.hover} ${style.shadow} px-1 py-0.5 rounded cursor-pointer transition-all duration-200 relative group hover:shadow-sm no-underline`}
+                onClick={() => setCurrentPage(part.note!.page)}
+                style={{ 
+                  textDecorationLine: 'none',
+                  boxDecorationBreak: 'clone',
+                  WebkitBoxDecorationBreak: 'clone'
+                }}
+              >
+                <span className="relative inline">
+                  {part.text}
+                  <span 
+                    className={`absolute -top-2 -right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none ${style.icon}`}
+                    title={part.note.note}
+                  >
+                    <StickyNote className="h-3.5 w-3.5 drop-shadow-sm" />
+                  </span>
+                </span>
+              </mark>
+            )
+          }
+          return <span key={index}>{part.text}</span>
+        })}
+      </>
+    )
   }
 
   const toggleBookmark = () => {
@@ -189,222 +366,467 @@ export default function BookReader() {
 
   const renderStars = (rating: number) => {
     return (
-      <div className="flex items-center gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`h-4 w-4 ${
-              star <= rating 
-                ? 'fill-yellow-400 text-yellow-400' 
-                : 'text-gray-300'
-            }`}
-          />
-        ))}
-        <span className="ml-1 text-sm text-gray-600 dark:text-gray-400">
-          {rating.toFixed(1)}
-        </span>
+      <div className="flex items-center gap-0.5">
+        {[1, 2, 3, 4, 5].map((star) => {
+          const isFilled = star <= Math.floor(rating)
+          const isHalfFilled = star === Math.ceil(rating) && rating % 1 !== 0
+          
+          return (
+            <div key={star} className="relative">
+              <Star
+                className={`h-4 w-4 transition-colors ${
+                  isFilled
+                    ? 'fill-yellow-400 text-yellow-400' 
+                    : isHalfFilled
+                    ? 'fill-yellow-400/50 text-yellow-400'
+                    : 'fill-muted text-muted-foreground/20'
+                }`}
+              />
+            </div>
+          )
+        })}
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-parchment-50 dark:bg-ink-950">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-parchment-100 dark:bg-ink-900 border-b border-parchment-200 dark:border-ink-700 p-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => navigate('/readnex')}>
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Library
-            </Button>
-            <div>
-              <h1 className="font-display text-xl font-bold text-ink-900 dark:text-parchment-100">
-                {bookData.title}
-              </h1>
-              <p className="text-sm text-ink-600 dark:text-parchment-400">
-                by {bookData.author}
-              </p>
+      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-lg">
+        <div className="p-4">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <ModernButton
+                icon={ArrowLeft}
+                size="sm"
+                onClick={() => navigate('/readnex')}
+              >
+                Library
+              </ModernButton>
+              <div className="border-l border-border/50 pl-4">
+                <h1 className="text-lg font-bold text-foreground line-clamp-1">
+                  {bookData.title}
+                </h1>
+                <p className="text-xs text-muted-foreground font-medium">
+                  by {bookData.author}
+                </p>
+              </div>
+            </div>
+          
+            <div className="flex items-center gap-2">
+              <button
+                onClick={toggleBookmark}
+                className={`group p-2.5 rounded-lg border transition-all duration-300 ${
+                  isBookmarked 
+                    ? 'border-amber-500/30 bg-gradient-to-br from-amber-500/15 to-amber-500/5 text-amber-600 dark:text-amber-500 shadow-sm' 
+                    : 'border-transparent hover:border-amber-500/20 hover:bg-amber-500/5'
+                }`}
+              >
+                <Bookmark className={`h-4 w-4 transition-transform duration-300 group-hover:scale-110 ${isBookmarked ? 'fill-current' : ''}`} />
+              </button>
+              
+              <button
+                onClick={toggleFavorite}
+                className={`group p-2.5 rounded-lg border transition-all duration-300 ${
+                  bookData.isFavorite 
+                    ? 'border-rose-500/30 bg-gradient-to-br from-rose-500/15 to-rose-500/5 text-rose-600 dark:text-rose-500 shadow-sm' 
+                    : 'border-transparent hover:border-rose-500/20 hover:bg-rose-500/5'
+                }`}
+              >
+                <Heart className={`h-4 w-4 transition-transform duration-300 group-hover:scale-110 ${bookData.isFavorite ? 'fill-current' : ''}`} />
+              </button>
+              
+              {bookData.hasQuiz && (
+                <ModernButton
+                  icon={Target}
+                  size="sm"
+                  onClick={goToQuiz}
+                  className="ml-1 border-purple-500/30 bg-gradient-to-r from-purple-500/15 via-purple-500/10 to-purple-500/5 hover:from-purple-500/25 hover:via-purple-500/20 hover:to-purple-500/10 text-purple-600 dark:text-purple-400"
+                >
+                  Take Quiz
+                </ModernButton>
+              )}
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="group p-2.5 rounded-lg border border-transparent hover:border-border/30 hover:bg-muted/50 transition-all duration-300">
+                    <Settings className="h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel className="text-xs uppercase tracking-wider">Font Size</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setFontSize(14)} className="cursor-pointer">
+                    <span className={fontSize === 14 ? 'font-bold text-primary' : 'font-medium'}>Small (14px)</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setFontSize(16)} className="cursor-pointer">
+                    <span className={fontSize === 16 ? 'font-bold text-primary' : 'font-medium'}>Medium (16px)</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setFontSize(18)} className="cursor-pointer">
+                    <span className={fontSize === 18 ? 'font-bold text-primary' : 'font-medium'}>Large (18px)</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setFontSize(20)} className="cursor-pointer">
+                    <span className={fontSize === 20 ? 'font-bold text-primary' : 'font-medium'}>Extra Large (20px)</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
-          
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleBookmark}
-              className={isBookmarked ? 'text-amber-600' : ''}
-            >
-              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
-            </Button>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleFavorite}
-              className={bookData.isFavorite ? 'text-red-600' : ''}
-            >
-              <Heart className={`h-4 w-4 ${bookData.isFavorite ? 'fill-current' : ''}`} />
-            </Button>
-            
-            {bookData.hasQuiz && (
-              <Button variant="outline" size="sm" onClick={goToQuiz}>
-                <Target className="h-4 w-4 mr-2" />
-                Take Quiz
-              </Button>
-            )}
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>Reading Settings</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => setFontSize(14)}>
-                  Small Font
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFontSize(16)}>
-                  Medium Font
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setFontSize(18)}>
-                  Large Font
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
         
-        {/* Progress Bar */}
-        <div className="max-w-4xl mx-auto mt-4">
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-ink-600 dark:text-parchment-400">
-              Page {currentPage} of {bookData.totalPages}
-            </span>
-            <Progress value={bookData.readingProgress} className="flex-1" />
-            <span className="text-sm text-ink-600 dark:text-parchment-400">
-              {bookData.readingProgress}%
-            </span>
+          {/* Progress Bar */}
+          <div className="max-w-6xl mx-auto mt-4 pt-4 border-t border-border/30">
+            <div className="flex items-center gap-4">
+              <div className="px-3 py-1.5 rounded-lg bg-muted/50 border border-border/30">
+                <span className="text-xs font-bold text-foreground">
+                  {currentPage}
+                </span>
+                <span className="text-xs text-muted-foreground mx-1">/</span>
+                <span className="text-xs font-medium text-muted-foreground">
+                  {bookData.totalPages}
+                </span>
+              </div>
+              <div className="flex-1">
+                <Progress value={bookData.readingProgress} className="h-2" />
+              </div>
+              <div className="px-3 py-1.5 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                <span className="text-xs font-bold text-primary">
+                  {bookData.readingProgress}%
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-3">
-            <Card className="min-h-[600px]">
-              <CardContent className="p-8">
-                <div 
-                  className="prose prose-lg max-w-none text-justify leading-relaxed"
-                  style={{ fontSize: `${fontSize}px`, lineHeight: '1.8' }}
-                  onMouseUp={handleTextSelection}
-                >
-                  {bookData.content[currentPage - 1]}
-                </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
+          {/* Main Content - Reading Area */}
+          <div className="xl:col-span-8">
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm overflow-hidden">
+              <CardContent className="p-0">
+                {/* Reading Container */}
+                <div className="min-h-[calc(100vh-280px)] flex flex-col">
+                  {/* Text Content */}
+                  <div 
+                    className="flex-1 p-8 md:p-12 lg:p-16"
+                    style={{ 
+                      maxWidth: '65ch', 
+                      marginLeft: 'auto', 
+                      marginRight: 'auto',
+                      width: '100%'
+                    }}
+                  >
+                    <div 
+                      className="prose prose-lg dark:prose-invert max-w-none leading-relaxed selection:bg-amber-300 selection:text-amber-950 dark:selection:bg-amber-500 dark:selection:text-white transition-all duration-300"
+                      style={{ 
+                        fontSize: `${fontSize}px`, 
+                        lineHeight: '1.85',
+                        letterSpacing: '0.015em',
+                        textAlign: 'justify',
+                        hyphens: 'auto',
+                        textRendering: 'optimizeLegibility',
+                        WebkitFontSmoothing: 'antialiased',
+                        MozOsxFontSmoothing: 'grayscale'
+                      }}
+                      onMouseUp={handleTextSelection}
+                    >
+                      {renderTextWithHighlights(bookData.content[currentPage - 1], currentPage)}
+                    </div>
+                  </div>
                 
-                {/* Navigation */}
-                <div className="flex justify-between items-center mt-8 pt-6 border-t">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => handlePageChange('prev')}
-                    disabled={currentPage === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-2" />
-                    Previous
-                  </Button>
-                  
-                  <span className="text-sm text-gray-500">
-                    Page {currentPage} of {bookData.totalPages}
-                  </span>
-                  
-                  <Button 
-                    variant="outline" 
-                    onClick={() => handlePageChange('next')}
-                    disabled={currentPage === bookData.totalPages}
-                  >
-                    Next
-                    <ChevronRight className="h-4 w-4 ml-2" />
-                  </Button>
+                  {/* Navigation Footer */}
+                  <div className="px-8 md:px-12 lg:px-16 pb-8 pt-6 border-t border-border/30 bg-gradient-to-b from-transparent to-muted/20">
+                    <div className="flex items-center justify-between gap-4" style={{ maxWidth: '65ch', marginLeft: 'auto', marginRight: 'auto', width: '100%' }}>
+                      <Button 
+                        variant="ghost"
+                        size="lg"
+                        onClick={() => handlePageChange('prev')}
+                        disabled={currentPage === 1}
+                        className="group relative overflow-hidden px-5 py-2.5 rounded-xl border border-border/50 hover:border-primary/30 bg-gradient-to-r from-background via-background to-background/95 hover:from-primary/5 hover:via-primary/3 hover:to-transparent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-border/50 transition-all duration-300 shadow-sm hover:shadow-md"
+                      >
+                        <div className="flex items-center gap-2">
+                          <ChevronLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-300" />
+                          <span className="hidden sm:inline font-semibold">Previous</span>
+                        </div>
+                      </Button>
+                      
+                      <div className="flex items-center gap-2">
+                        <div className="relative overflow-hidden px-6 py-3 bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 rounded-xl border border-primary/30 shadow-md">
+                          <div className="flex items-center gap-2.5">
+                            <span className="text-base font-bold text-primary">
+                              {currentPage}
+                            </span>
+                            <div className="h-4 w-px bg-border/50"></div>
+                            <span className="text-sm font-medium text-muted-foreground">
+                              {bookData.totalPages}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Button 
+                        variant="ghost"
+                        size="lg"
+                        onClick={() => handlePageChange('next')}
+                        disabled={currentPage === bookData.totalPages}
+                        className="group relative overflow-hidden px-5 py-2.5 rounded-xl border border-border/50 hover:border-primary/30 bg-gradient-to-r from-background via-background to-background/95 hover:from-primary/5 hover:via-primary/3 hover:to-transparent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-border/50 transition-all duration-300 shadow-sm hover:shadow-md"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="hidden sm:inline font-semibold">Next</span>
+                          <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                        </div>
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
           </div>
           
-          {/* Sidebar */}
-          <div className="space-y-6">
+          {/* Sidebar - Reading Tools & Notes */}
+          <div className="xl:col-span-4 space-y-5">
             {/* Book Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Book Information</CardTitle>
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm hover:shadow-2xl transition-shadow duration-300">
+              <CardHeader className="pb-4 border-b border-border/30">
+                <SectionHeader title="Book Details" variant="primary" />
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm">{bookData.readingTime}</span>
+              <CardContent className="pt-6 space-y-5">
+                <StatCard 
+                  icon={Clock} 
+                  label="Reading Time" 
+                  value={bookData.readingTime}
+                  variant="primary"
+                />
+                
+                <StatCard 
+                  icon={Eye} 
+                  label="Progress" 
+                  value={`${bookData.readingProgress}%`}
+                  variant="success"
+                >
+                  <div className="h-2 bg-muted/30 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full transition-all duration-500"
+                      style={{ width: `${bookData.readingProgress}%` }}
+                    />
+                  </div>
+                </StatCard>
+                
+                <div className="group relative overflow-hidden rounded-xl border border-amber-500/10 bg-gradient-to-br from-amber-500/5 via-amber-500/3 to-transparent p-4 hover:border-amber-500/20 hover:shadow-md transition-all duration-300">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="flex-shrink-0 p-3 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/10 shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300">
+                        <Star className="h-5 w-5 text-amber-600 dark:text-amber-500" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-1">Rating</p>
+                        <div>{renderStars(bookData.rating)}</div>
+                      </div>
+                    </div>
+                    <span className="text-2xl font-bold text-foreground">{bookData.rating}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-gray-500" />
-                  <span className="text-sm">{bookData.readingProgress}% Complete</span>
-                </div>
-                {renderStars(bookData.rating)}
               </CardContent>
             </Card>
             
             {/* Notes */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <StickyNote className="h-5 w-5" />
-                  My Notes ({bookData.notes.length})
-                </CardTitle>
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm hover:shadow-2xl transition-shadow duration-300">
+              <CardHeader className="pb-4 border-b border-border/30">
+                <SectionHeader 
+                  title="My Notes" 
+                  icon={StickyNote}
+                  badge={bookData.notes.length}
+                  variant="warning"
+                  action={
+                    <ModernButton
+                      icon={FileText}
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        setSelectedText("Add a note...")
+                        setShowNoteDialog(true)
+                      }}
+                      className="hover:bg-amber-500/10 hover:text-amber-600 dark:hover:text-amber-400"
+                    >
+                      New
+                    </ModernButton>
+                  }
+                />
               </CardHeader>
-              <CardContent className="space-y-3">
-                {bookData.notes.map((note) => (
-                  <div key={note.id} className="border-l-4 border-amber-400 pl-3 py-2">
-                    <p className="text-sm font-medium text-gray-800 dark:text-gray-200">
-                      "{note.text}"
+              <CardContent className="pt-5 space-y-3 max-h-[500px] overflow-y-auto custom-scrollbar">
+                {bookData.notes.map((note) => {
+                  const colorStyles = {
+                    blue: {
+                      border: 'border-l-blue-500',
+                      bg: 'bg-gradient-to-r from-blue-50/80 via-blue-50/40 to-transparent dark:from-blue-950/30 dark:via-blue-950/15 dark:to-transparent',
+                      accent: 'bg-blue-500',
+                      iconBg: 'bg-blue-100 dark:bg-blue-900/30',
+                      iconColor: 'text-blue-600 dark:text-blue-400'
+                    },
+                    green: {
+                      border: 'border-l-green-500',
+                      bg: 'bg-gradient-to-r from-green-50/80 via-green-50/40 to-transparent dark:from-green-950/30 dark:via-green-950/15 dark:to-transparent',
+                      accent: 'bg-green-500',
+                      iconBg: 'bg-green-100 dark:bg-green-900/30',
+                      iconColor: 'text-green-600 dark:text-green-400'
+                    },
+                    pink: {
+                      border: 'border-l-pink-500',
+                      bg: 'bg-gradient-to-r from-pink-50/80 via-pink-50/40 to-transparent dark:from-pink-950/30 dark:via-pink-950/15 dark:to-transparent',
+                      accent: 'bg-pink-500',
+                      iconBg: 'bg-pink-100 dark:bg-pink-900/30',
+                      iconColor: 'text-pink-600 dark:text-pink-400'
+                    },
+                    yellow: {
+                      border: 'border-l-amber-500',
+                      bg: 'bg-gradient-to-r from-amber-50/80 via-amber-50/40 to-transparent dark:from-amber-950/30 dark:via-amber-950/15 dark:to-transparent',
+                      accent: 'bg-amber-500',
+                      iconBg: 'bg-amber-100 dark:bg-amber-900/30',
+                      iconColor: 'text-amber-600 dark:text-amber-400'
+                    }
+                  };
+                  
+                  const style = colorStyles[note.color as keyof typeof colorStyles] || colorStyles.yellow;
+                  
+                  return (
+                    <div 
+                      key={note.id} 
+                      className={`group relative overflow-hidden border-l-[3px] ${style.border} ${style.bg} rounded-lg p-4 transition-all duration-300 hover:shadow-lg cursor-pointer backdrop-blur-sm`}
+                      onMouseEnter={() => setHoveredNoteId(note.id)}
+                      onMouseLeave={() => setHoveredNoteId(null)}
+                      onClick={() => setCurrentPage(note.page)}
+                    >
+                      {/* Highlighted Text */}
+                      <div className="flex items-start gap-3 mb-3">
+                        <div className={`flex-shrink-0 p-2 rounded-lg ${style.iconBg} shadow-sm`}>
+                          <StickyNote className={`h-3.5 w-3.5 ${style.iconColor}`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-foreground leading-snug">
+                            "{note.text}"
+                          </p>
+                          {note.isPublic && (
+                            <div className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md text-[10px] font-medium">
+                              <Share2 className="h-2.5 w-2.5" />
+                              Shared
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
+                      {/* Note Content */}
+                      <p className="text-xs text-muted-foreground leading-relaxed mb-3 pl-11">
+                        {note.note}
+                      </p>
+                      
+                      {/* Footer */}
+                      <div className="flex items-center justify-between pl-11">
+                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground/70 font-medium">
+                          <span className="px-2 py-0.5 bg-background/50 rounded-md">Page {note.page}</span>
+                          <span>·</span>
+                          <span>{new Date(note.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                        </div>
+                        
+                        {/* Action Buttons - Show on hover */}
+                        {hoveredNoteId === note.id && (
+                          <div className="flex gap-1 animate-in fade-in duration-200">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 hover:bg-background/80 hover:text-primary transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                editNote(note)
+                              }}
+                            >
+                              <Edit className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 hover:bg-background/80 hover:text-green-600 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                shareNote(note.id)
+                              }}
+                            >
+                              <Share2 className={`h-3 w-3 ${note.isPublic ? 'text-green-600 dark:text-green-500' : ''}`} />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 w-7 p-0 hover:bg-red-100 dark:hover:bg-red-950/50 hover:text-red-600 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                deleteNote(note.id)
+                              }}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+                {bookData.notes.length === 0 && (
+                  <div className="text-center py-12">
+                    <div className="relative inline-block">
+                      <div className="absolute inset-0 bg-amber-500/10 blur-2xl rounded-full" />
+                      <div className="relative p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/20">
+                        <StickyNote className="h-10 w-10 mx-auto text-amber-500" />
+                      </div>
+                    </div>
+                    <p className="text-sm font-semibold text-foreground mt-4">
+                      No notes yet
                     </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      {note.note}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      Page {note.page} • {new Date(note.timestamp).toLocaleDateString()}
+                    <p className="text-xs text-muted-foreground mt-2 max-w-[200px] mx-auto">
+                      Select text while reading to create your first note
                     </p>
                   </div>
-                ))}
-                {bookData.notes.length === 0 && (
-                  <p className="text-sm text-gray-500">
-                    No notes yet. Select text to add a note.
-                  </p>
                 )}
               </CardContent>
             </Card>
             
             {/* Bookmarks */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Bookmark className="h-5 w-5" />
-                  Bookmarks ({bookData.bookmarks.length})
-                </CardTitle>
+            <Card className="border-0 shadow-xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm hover:shadow-2xl transition-shadow duration-300">
+              <CardHeader className="pb-4 border-b border-border/30">
+                <SectionHeader 
+                  title="Bookmarks" 
+                  icon={Bookmark}
+                  badge={bookData.bookmarks.length}
+                  variant="warning"
+                />
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-5">
                 <div className="space-y-2">
                   {bookData.bookmarks.map((page) => (
                     <Button
                       key={page}
                       variant="ghost"
                       size="sm"
-                      className="w-full justify-start"
+                      className="group w-full justify-start text-sm hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-50/50 dark:hover:from-amber-950/20 dark:hover:to-amber-950/10 hover:text-amber-700 dark:hover:text-amber-400 transition-all duration-200"
                       onClick={() => setCurrentPage(page)}
                     >
-                      Page {page}
+                      <Bookmark className="h-3 w-3 mr-2 fill-current group-hover:scale-110 transition-transform duration-200" />
+                      <span className="font-medium">Page {page}</span>
                     </Button>
                   ))}
                   {bookData.bookmarks.length === 0 && (
-                    <p className="text-sm text-gray-500">No bookmarks yet.</p>
+                    <div className="text-center py-12">
+                      <div className="relative inline-block">
+                        <div className="absolute inset-0 bg-amber-500/10 blur-2xl rounded-full" />
+                        <div className="relative p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/20">
+                          <Bookmark className="h-10 w-10 mx-auto text-amber-500" />
+                        </div>
+                      </div>
+                      <p className="text-sm font-semibold text-foreground mt-4">
+                        No bookmarks yet
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-2 max-w-[200px] mx-auto">
+                        Bookmark pages to quickly return to them later
+                      </p>
+                    </div>
                   )}
                 </div>
               </CardContent>
@@ -413,47 +835,118 @@ export default function BookReader() {
         </div>
       </div>
       
-      {/* Note Dialog */}
-      <Dialog open={showNoteDialog} onOpenChange={setShowNoteDialog}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Add Note</DialogTitle>
-            <DialogDescription>
-              Add your thoughts about the selected text passage.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
+      {/* Note Dialog - Enhanced */}
+      <Dialog open={showNoteDialog} onOpenChange={(open) => {
+        setShowNoteDialog(open)
+        if (!open) {
+          setSelectedText("")
+          setNewNote("")
+          setEditingNote(null)
+          setHighlightColor('yellow')
+        }
+      }}>
+        <DialogContent className="sm:max-w-[550px] p-0 gap-0 overflow-hidden">
+          <div className="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent p-6 border-b border-border/50">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-xl">
+                <div className="p-2 rounded-lg bg-amber-500/20">
+                  <StickyNote className="h-5 w-5 text-amber-600 dark:text-amber-500" />
+                </div>
+                {editingNote ? 'Edit Note' : 'Add Note'}
+              </DialogTitle>
+              <DialogDescription className="text-sm">
+                {editingNote ? 'Update your note and highlight color' : 'Add your thoughts about the selected text passage'}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          <div className="p-6 space-y-5">
+            {/* Selected Text */}
             <div>
-              <label className="text-sm font-medium">Selected Text:</label>
-              <p className="text-sm bg-muted p-3 rounded-md mt-2">
+              <label className="text-sm font-semibold flex items-center gap-2 mb-2">
+                <Highlighter className="h-4 w-4 text-amber-600 dark:text-amber-500" />
+                Selected Text
+              </label>
+              <div className={`text-sm p-4 rounded-xl border-2 ${getHighlightClass(highlightColor)} font-medium`}>
                 "{selectedText}"
-              </p>
+              </div>
             </div>
+
+            {/* Highlight Color Selector */}
             <div>
-              <label className="text-sm font-medium">Your Note:</label>
+              <label className="text-sm font-semibold block mb-3">Highlight Color</label>
+              <div className="flex gap-3">
+                {(['yellow', 'blue', 'green', 'pink'] as const).map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setHighlightColor(color)}
+                    className={`group relative w-12 h-12 rounded-xl border-2 transition-all duration-300 ${
+                      highlightColor === color 
+                        ? 'border-foreground scale-110 shadow-lg ring-4 ring-offset-2 ring-offset-background' 
+                        : 'border-border hover:scale-105 hover:border-foreground/50'
+                    } ${
+                      color === 'yellow' ? 'bg-gradient-to-br from-amber-300 to-amber-400 ring-amber-200' :
+                      color === 'blue' ? 'bg-gradient-to-br from-blue-300 to-blue-400 ring-blue-200' :
+                      color === 'green' ? 'bg-gradient-to-br from-green-300 to-green-400 ring-green-200' :
+                      'bg-gradient-to-br from-pink-300 to-pink-400 ring-pink-200'
+                    }`}
+                    aria-label={`${color} highlight`}
+                  >
+                    {highlightColor === color && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-3 h-3 bg-foreground rounded-full" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Note Textarea */}
+            <div>
+              <label className="text-sm font-semibold flex items-center gap-2 mb-2">
+                <FileText className="h-4 w-4 text-amber-600 dark:text-amber-500" />
+                Your Note
+              </label>
               <Textarea
                 value={newNote}
                 onChange={(e) => setNewNote(e.target.value)}
-                placeholder="Add your thoughts about this passage..."
-                className="mt-2"
-                rows={4}
+                placeholder="Write your insights, questions, or thoughts about this passage..."
+                className="min-h-[120px] resize-none rounded-xl"
+                rows={5}
               />
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-muted-foreground">
+                  {newNote.length} characters
+                </p>
+                {newNote.length > 500 && (
+                  <p className="text-xs text-amber-600 dark:text-amber-500 font-medium">
+                    Consider keeping notes concise
+                  </p>
+                )}
+              </div>
             </div>
           </div>
-          <DialogFooter>
-            <Button 
-              variant="outline" 
+          <DialogFooter className="gap-2 p-6 bg-muted/30 border-t border-border/50">
+            <ModernButton
+              variant="ghost"
               onClick={() => {
                 setShowNoteDialog(false)
                 setSelectedText("")
                 setNewNote("")
+                setEditingNote(null)
+                setHighlightColor('yellow')
               }}
             >
               Cancel
-            </Button>
-            <Button onClick={saveNote} disabled={!newNote.trim()}>
-              Save Note
-            </Button>
+            </ModernButton>
+            <ModernButton
+              onClick={saveNote} 
+              disabled={!newNote.trim()}
+              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white border-0 shadow-md hover:shadow-lg"
+              icon={StickyNote}
+            >
+              {editingNote ? 'Update Note' : 'Save Note'}
+            </ModernButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
