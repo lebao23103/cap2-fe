@@ -11,8 +11,18 @@ import {
   Bot,
   BookOpen, 
   Star,
-  Sparkles
+  Sparkles,
+  Menu,
+  X
 } from 'lucide-react'
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuLabel, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from '../components/ui/dropdown-menu'
 
 interface Message {
   id: string
@@ -43,6 +53,7 @@ export default function Chatbot() {
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [selectedRole, setSelectedRole] = useState<'book advisor' | 'literary expert' | 'book enthusiast'>('book advisor')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -131,7 +142,7 @@ export default function Chatbot() {
   }
 
   const BookRecommendation = ({ book }: { book: Book }) => (
-    <Card className="mb-3 hover:shadow-md transition-shadow cursor-pointer">
+    <Card className="mb-4 hover:shadow-md transition-shadow cursor-pointer">
       <CardContent className="p-3">
         <div className="flex gap-3">
           <img 
@@ -168,7 +179,7 @@ export default function Chatbot() {
             <Card className="flex-1 flex flex-col">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="flex-1">
                     <CardTitle className="text-lg flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-primary" />
                       Chat with {selectedRole === 'book advisor' ? 'Book Advisor' : 
@@ -178,18 +189,39 @@ export default function Chatbot() {
                       Ask me anything about books, get recommendations, or discuss literature!
                     </CardDescription>
                   </div>
-                  <div className="hidden sm:flex items-center gap-2">
-                    <span className="text-sm text-muted-foreground">Mode:</span>
-                    <select 
-                      value={selectedRole}
-                      onChange={(e) => setSelectedRole(e.target.value as 'book advisor' | 'literary expert' | 'book enthusiast')}
-                      className="text-sm border rounded px-2 py-1 bg-background"
-                      aria-label="Select chat mode"
+                  <div className="flex items-center gap-2">
+                    {/* Mode Selector Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          Mode
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Select Chat Mode</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => setSelectedRole('book advisor')}>
+                          {selectedRole === 'book advisor' && '✓ '}Book Advisor
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSelectedRole('literary expert')}>
+                          {selectedRole === 'literary expert' && '✓ '}Literary Expert
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setSelectedRole('book enthusiast')}>
+                          {selectedRole === 'book enthusiast' && '✓ '}Book Enthusiast
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                    
+                    {/* Mobile Sidebar Toggle */}
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="lg:hidden"
+                      onClick={() => setSidebarOpen(!sidebarOpen)}
+                      aria-label="Toggle sidebar"
                     >
-                      <option value="book advisor">Book Advisor</option>
-                      <option value="literary expert">Literary Expert</option>
-                      <option value="book enthusiast">Book Enthusiast</option>
-                    </select>
+                      {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -275,6 +307,7 @@ export default function Chatbot() {
                       onChange={(e) => setInputMessage(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                       disabled={isLoading}
+                      maxLength={500}
                     />
                     <Button 
                       onClick={handleSendMessage} 
@@ -285,13 +318,30 @@ export default function Chatbot() {
                       <Send className="h-4 w-4" aria-hidden="true" />
                     </Button>
                   </div>
+                  {inputMessage.length > 400 && (
+                    <p className="text-xs text-muted-foreground mt-1 text-right">
+                      {inputMessage.length}/500 characters
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* Sidebar */}
-          <div className="hidden lg:block space-y-4">
+          {/* Sidebar - Collapsible on mobile */}
+          <div className={`${sidebarOpen ? 'fixed inset-0 z-50 bg-black/50 lg:relative lg:bg-transparent' : 'hidden'} lg:block space-y-4`}>
+            <div className={`${sidebarOpen ? 'fixed right-0 top-0 bottom-0 w-80 bg-background shadow-xl p-4 overflow-y-auto' : ''} lg:relative lg:w-auto lg:p-0 lg:shadow-none space-y-4`}>
+              {sidebarOpen && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="lg:hidden absolute top-2 right-2"
+                  onClick={() => setSidebarOpen(false)}
+                  aria-label="Close sidebar"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             <Card>
               <CardHeader>
                 <CardTitle className="text-sm">Quick Suggestions</CardTitle>
@@ -335,6 +385,7 @@ export default function Chatbot() {
                 </div>
               </CardContent>
             </Card>
+            </div>
           </div>
         </div>
       </main>

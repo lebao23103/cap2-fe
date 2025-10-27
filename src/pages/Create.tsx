@@ -31,6 +31,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
+import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { validateImageFile, validateBookFile, formatFileSize } from '@/lib/fileValidation'
 
@@ -76,6 +77,7 @@ export default function Create() {
   const [activeTab, setActiveTab] = useState('info')
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
   const { toast } = useToast()
 
   const handleInputChange = (field: keyof BookData, value: string) => {
@@ -110,7 +112,39 @@ export default function Create() {
     })
   }
 
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {}
+    
+    if (!bookData.title.trim()) {
+      errors.title = 'Title is required'
+    }
+    if (!bookData.author.trim()) {
+      errors.author = 'Author name is required'
+    }
+    if (!bookData.description.trim()) {
+      errors.description = 'Description is required'
+    } else if (bookData.description.length < 50) {
+      errors.description = 'Description must be at least 50 characters'
+    }
+    if (!bookData.year || parseInt(bookData.year) < 1000 || parseInt(bookData.year) > new Date().getFullYear() + 1) {
+      errors.year = 'Please enter a valid year'
+    }
+    
+    setValidationErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
   const handlePublish = async () => {
+    if (!validateForm()) {
+      toast({
+        title: "Validation Error",
+        description: "Please fix the errors before publishing.",
+        variant: "destructive"
+      })
+      setActiveTab('info')
+      return
+    }
+    
     setIsUploading(true)
     setUploadProgress(0)
     
@@ -201,27 +235,39 @@ export default function Create() {
                     {/* Title */}
                     <div className="space-y-2">
                       <Label htmlFor="title">Book Title *</Label>
-                      <input
+                      <Input
                         id="title"
                         type="text"
                         placeholder="Enter your book title..."
                         value={bookData.title}
-                        onChange={(e) => handleInputChange('title', e.target.value)}
-                        className="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                        onChange={(e) => {
+                          handleInputChange('title', e.target.value)
+                          setValidationErrors(prev => ({ ...prev, title: '' }))
+                        }}
+                        className={validationErrors.title ? 'border-red-500' : ''}
                       />
+                      {validationErrors.title && (
+                        <p className="text-xs text-red-500">{validationErrors.title}</p>
+                      )}
                     </div>
 
                     {/* Author */}
                     <div className="space-y-2">
                       <Label htmlFor="author">Author *</Label>
-                      <input
+                      <Input
                         id="author"
                         type="text"
                         placeholder="Your name or pen name..."
                         value={bookData.author}
-                        onChange={(e) => handleInputChange('author', e.target.value)}
-                        className="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                        onChange={(e) => {
+                          handleInputChange('author', e.target.value)
+                          setValidationErrors(prev => ({ ...prev, author: '' }))
+                        }}
+                        className={validationErrors.author ? 'border-red-500' : ''}
                       />
+                      {validationErrors.author && (
+                        <p className="text-xs text-red-500">{validationErrors.author}</p>
+                      )}
                     </div>
 
                     {/* Genre */}
@@ -252,14 +298,20 @@ export default function Create() {
                     {/* Year */}
                     <div className="space-y-2">
                       <Label htmlFor="year">Publication Year *</Label>
-                      <input
+                      <Input
                         id="year"
                         type="number"
                         placeholder="2024"
                         value={bookData.year}
-                        onChange={(e) => handleInputChange('year', e.target.value)}
-                        className="w-full px-3 py-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground"
+                        onChange={(e) => {
+                          handleInputChange('year', e.target.value)
+                          setValidationErrors(prev => ({ ...prev, year: '' }))
+                        }}
+                        className={validationErrors.year ? 'border-red-500' : ''}
                       />
+                      {validationErrors.year && (
+                        <p className="text-xs text-red-500">{validationErrors.year}</p>
+                      )}
                     </div>
 
                     {/* Language */}
@@ -318,11 +370,22 @@ export default function Create() {
                     <Label htmlFor="description">Book Description *</Label>
                     <Textarea
                       id="description"
-                      placeholder="Write a compelling description of your book..."
+                      placeholder="Write a compelling description of your book (minimum 50 characters)..."
                       value={bookData.description}
-                      onChange={(e) => handleInputChange('description', e.target.value)}
-                      className="min-h-[120px] bg-background border-input"
+                      onChange={(e) => {
+                        handleInputChange('description', e.target.value)
+                        setValidationErrors(prev => ({ ...prev, description: '' }))
+                      }}
+                      className={`min-h-[120px] bg-background border-input ${validationErrors.description ? 'border-red-500' : ''}`}
                     />
+                    <div className="flex justify-between items-center">
+                      {validationErrors.description && (
+                        <p className="text-xs text-red-500">{validationErrors.description}</p>
+                      )}
+                      <p className="text-xs text-muted-foreground ml-auto">
+                        {bookData.description.length} characters
+                      </p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -518,15 +581,29 @@ export default function Create() {
           {/* Action Buttons */}
           <div className="mt-8 flex flex-col items-center gap-4">
             {activeTab === 'info' ? (
-              <Button 
-                variant="outline" 
-                size="lg"
-                onClick={() => setActiveTab('media')}
-                disabled={!bookData.title || !bookData.author || !bookData.description}
-              >
-                Continue to Upload Files
-                <ChevronRight className="h-4 w-4 ml-2" />
-              </Button>
+              <div className="flex flex-col items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="lg"
+                  onClick={() => {
+                    if (validateForm()) {
+                      setActiveTab('media')
+                    } else {
+                      toast({
+                        title: "Validation Error",
+                        description: "Please complete all required fields correctly.",
+                        variant: "destructive"
+                      })
+                    }
+                  }}
+                >
+                  Continue to Upload Files
+                  <ChevronRight className="h-4 w-4 ml-2" />
+                </Button>
+                {(!bookData.title || !bookData.author || !bookData.description) && (
+                  <p className="text-xs text-muted-foreground">Complete all required (*) fields to continue</p>
+                )}
+              </div>
             ) : activeTab === 'media' ? (
               <Button 
                 variant="outline" 
