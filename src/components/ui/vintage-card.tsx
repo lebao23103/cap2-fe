@@ -1,6 +1,5 @@
 import * as React from 'react'
 import { cn } from '@/lib/utils'
-import { motion } from 'framer-motion'
 
 interface VintageCardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: 'paper' | 'leather' | 'aged' | 'manuscript'
@@ -47,11 +46,8 @@ const VintageCard = React.forwardRef<HTMLDivElement, VintageCardProps>(
     )
 
     return (
-      <motion.div
+      <div
         ref={ref}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
         className={cn(baseStyles, variants[variant], hoverStyles, className)}
         {...props}
       >
@@ -64,7 +60,7 @@ const VintageCard = React.forwardRef<HTMLDivElement, VintageCardProps>(
           </>
         )}
         <div className='relative z-10'>{children}</div>
-      </motion.div>
+      </div>
     )
   }
 )

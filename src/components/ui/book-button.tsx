@@ -78,7 +78,6 @@ interface BookButtonProps
 
 const BookButton = React.forwardRef<HTMLButtonElement, BookButtonProps>(
   ({ className, variant, size, ornate, asChild = false, withBookmark = false, children, ...props }, ref) => {
-    const Comp = asChild ? Slot : 'div'
 
     // If children is a Link or similar element, don't wrap in button
     const isLinkChild = React.isValidElement(children) && (
@@ -119,13 +118,11 @@ const BookButton = React.forwardRef<HTMLButtonElement, BookButtonProps>(
 
     if (asChild) {
       return (
-        <Comp
+        <Slot
           className={cn(bookButtonVariants({ variant, size, ornate, className }))}
-          ref={ref}
-          {...props}
         >
           {children}
-        </Comp>
+        </Slot>
       )
     }
 

@@ -82,7 +82,7 @@ export default function Chatbot() {
     }, 1500)
   }
 
-  const generateBotResponse = (userInput: string, role: string): string => {
+  const generateBotResponse = (_userInput: string, role: string): string => {
     const responses = {
       'book advisor': [
         "Based on your interests, I'd recommend checking out some contemporary fiction. Have you read anything by Haruki Murakami?",
