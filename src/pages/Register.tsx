@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { Eye, EyeOff, BookOpen, Feather, Quote } from 'lucide-react'
+import { Eye, EyeOff, BookOpen, Feather } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 export default function Register() {
@@ -66,37 +66,39 @@ export default function Register() {
         transition={{ duration: 0.5 }} 
         className="w-full max-w-lg relative z-10"
       >
-        {/* Modern Quote */}
+        {/* Hero Quote */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          className="hidden md:block text-center mb-8"
+          className="hidden md:block text-center mb-8 px-4"
         >
-          <Quote className="h-8 w-8 mx-auto text-primary mb-2" />
-          <p className="text-lg italic text-foreground">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+            <BookOpen className="h-8 w-8 text-primary" />
+          </div>
+          <p className="text-lg italic text-foreground font-medium">
             "A reader lives a thousand lives before he dies."
           </p>
-          <p className="text-sm text-muted-foreground mt-1">— George R.R. Martin</p>
+          <p className="text-sm text-muted-foreground mt-2">— George R.R. Martin</p>
         </motion.div>
 
         <Card className="w-full border-0 shadow-xl bg-card">
-          <CardHeader className="text-center pb-8">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Feather className="h-5 w-5 text-primary" />
-              <CardTitle className="text-3xl text-foreground">
+          <CardHeader className="text-center pb-2 pt-6">
+            <div className="flex items-center justify-center gap-2 mb-1">
+              <Feather className="h-4 w-4 text-primary" />
+              <CardTitle className="text-xl text-foreground">
                 Create Account
               </CardTitle>
-              <Feather className="h-5 w-5 text-primary scale-x-[-1]" />
+              <Feather className="h-4 w-4 text-primary scale-x-[-1]" />
             </div>
-            <p className="text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Create your account to begin your reading journey
             </p>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
+          <CardContent className="px-6 pb-6">
+            <form onSubmit={handleSubmit} className="space-y-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-0.5">
                   <Label htmlFor="firstName" className="text-sm text-foreground">
                     First Name
                   </Label>
@@ -107,14 +109,14 @@ export default function Register() {
                     placeholder="John"
                     value={formData.firstName}
                     onChange={handleChange}
-                    className="bg-background border-input focus:border-primary"
+                    className="bg-background border-input focus:border-primary h-9"
                     required
                   />
-                  <div className="min-h-[20px]">
-                    {errors.firstName && <p className="text-sm text-destructive">{errors.firstName}</p>}
+                  <div className="min-h-[12px]">
+                    {errors.firstName && <p className="text-xs text-destructive">{errors.firstName}</p>}
                   </div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-0.5">
                   <Label htmlFor="lastName" className="text-sm text-foreground">
                     Last Name
                   </Label>
@@ -125,16 +127,16 @@ export default function Register() {
                     placeholder="Doe"
                     value={formData.lastName}
                     onChange={handleChange}
-                    className="bg-background border-input focus:border-primary"
+                    className="bg-background border-input focus:border-primary h-9"
                     required
                   />
-                  <div className="min-h-[20px]">
-                    {errors.lastName && <p className="text-sm text-destructive">{errors.lastName}</p>}
+                  <div className="min-h-[12px]">
+                    {errors.lastName && <p className="text-xs text-destructive">{errors.lastName}</p>}
                   </div>
                 </div>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-0.5">
                 <Label htmlFor="email" className="text-sm text-foreground">
                   Email Address
                 </Label>
@@ -145,15 +147,15 @@ export default function Register() {
                   placeholder="john.doe@example.com"
                   value={formData.email}
                   onChange={handleChange}
-                  className="bg-background border-input focus:border-primary"
+                  className="bg-background border-input focus:border-primary h-9"
                   required
                 />
-                <div className="min-h-[20px]">
-                  {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
+                <div className="min-h-[12px]">
+                  {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
                 </div>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-0.5">
                 <Label htmlFor="password" className="text-sm text-foreground">
                   Password
                 </Label>
@@ -165,26 +167,26 @@ export default function Register() {
                     placeholder="Create your password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="bg-background border-input focus:border-primary pr-12"
+                    className="bg-background border-input focus:border-primary pr-10 h-9"
                     required
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-muted-foreground"
+                    className="absolute right-0 top-0 h-9 px-2 hover:bg-transparent text-muted-foreground"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
+                    {showPassword ? <EyeOff className="h-3.5 w-3.5" aria-hidden="true" /> : <Eye className="h-3.5 w-3.5" aria-hidden="true" />}
                   </Button>
                 </div>
-                <div className="min-h-[20px]">
-                  {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+                <div className="min-h-[12px]">
+                  {errors.password && <p className="text-xs text-destructive">{errors.password}</p>}
                 </div>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-0.5">
                 <Label htmlFor="confirmPassword" className="text-sm text-foreground">
                   Confirm Password
                 </Label>
@@ -196,30 +198,29 @@ export default function Register() {
                     placeholder="Repeat your password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="bg-background border-input focus:border-primary pr-12"
+                    className="bg-background border-input focus:border-primary pr-10 h-9"
                     required
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent text-muted-foreground"
+                    className="absolute right-0 top-0 h-9 px-2 hover:bg-transparent text-muted-foreground"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                   >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
+                    {showConfirmPassword ? <EyeOff className="h-3.5 w-3.5" aria-hidden="true" /> : <Eye className="h-3.5 w-3.5" aria-hidden="true" />}
                   </Button>
                 </div>
-                <div className="min-h-[20px]">
-                  {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
+                <div className="min-h-[12px]">
+                  {errors.confirmPassword && <p className="text-xs text-destructive">{errors.confirmPassword}</p>}
                 </div>
               </div>
               
-              <div className="pt-4">
+              <div className="pt-0.5">
                 <Button 
                   type="submit"
-                  size="lg"
-                  className="w-full bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" 
+                  className="w-full h-10 bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300" 
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -237,16 +238,16 @@ export default function Register() {
               </div>
             </form>
             
-            <div className="mt-8 pt-6 border-t border-border">
-              <p className="text-center text-sm text-muted-foreground">
-                Already have an account?
+            <div className="mt-4 pt-3 border-t border-border">
+              <p className="text-center text-xs text-muted-foreground">
+                Already have an account?{' '}
+                <Link 
+                  to="/login" 
+                  className="text-primary hover:text-primary/80 underline underline-offset-4"
+                >
+                  Sign in to your account
+                </Link>
               </p>
-              <Link 
-                to="/login" 
-                className="block text-center mt-2 text-primary hover:text-primary/80 underline underline-offset-4"
-              >
-                Sign in to your account
-              </Link>
             </div>
           </CardContent>
         </Card>

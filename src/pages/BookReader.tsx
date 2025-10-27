@@ -33,6 +33,14 @@ import {
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
 import { Progress } from '@/components/ui/progress'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 interface BookNote {
   id: string
@@ -414,50 +422,49 @@ export default function BookReader() {
       </div>
       
       {/* Note Dialog */}
-      {showNoteDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4"
-          >
-            <h3 className="text-lg font-semibold mb-4">Add Note</h3>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">Selected Text:</label>
-                <p className="text-sm bg-gray-100 dark:bg-gray-700 p-2 rounded mt-1">
-                  "{selectedText}"
-                </p>
-              </div>
-              <div>
-                <label className="text-sm font-medium">Your Note:</label>
-                <Textarea
-                  value={newNote}
-                  onChange={(e) => setNewNote(e.target.value)}
-                  placeholder="Add your thoughts about this passage..."
-                  className="mt-1"
-                  rows={3}
-                />
-              </div>
-              <div className="flex gap-3">
-                <Button onClick={saveNote} disabled={!newNote.trim()}>
-                  Save Note
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    setShowNoteDialog(false)
-                    setSelectedText("")
-                    setNewNote("")
-                  }}
-                >
-                  Cancel
-                </Button>
-              </div>
+      <Dialog open={showNoteDialog} onOpenChange={setShowNoteDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add Note</DialogTitle>
+            <DialogDescription>
+              Add your thoughts about the selected text passage.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-medium">Selected Text:</label>
+              <p className="text-sm bg-muted p-3 rounded-md mt-2">
+                "{selectedText}"
+              </p>
             </div>
-          </motion.div>
-        </div>
-      )}
+            <div>
+              <label className="text-sm font-medium">Your Note:</label>
+              <Textarea
+                value={newNote}
+                onChange={(e) => setNewNote(e.target.value)}
+                placeholder="Add your thoughts about this passage..."
+                className="mt-2"
+                rows={4}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => {
+                setShowNoteDialog(false)
+                setSelectedText("")
+                setNewNote("")
+              }}
+            >
+              Cancel
+            </Button>
+            <Button onClick={saveNote} disabled={!newNote.trim()}>
+              Save Note
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

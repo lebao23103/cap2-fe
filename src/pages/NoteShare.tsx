@@ -226,7 +226,7 @@ export default function NoteShare() {
   }, [filters])
 
   const filteredBooks = useMemo(() => {
-    let filtered = mockUserBooks.filter(book => 
+    const filtered = mockUserBooks.filter(book => 
       book.title.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       book.author.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       book.description.toLowerCase().includes(filters.searchTerm.toLowerCase())
