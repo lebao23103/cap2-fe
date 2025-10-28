@@ -10,18 +10,25 @@ import {
   List,
   StickyNote,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Users,
   MessageCircle,
   ThumbsUp,
   Share2,
   Calendar,
   Feather,
-  Quote
+  Quote,
+  Eye,
+  X,
+  Copy,
+  Check
 } from 'lucide-react'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { ModernButton } from '@/components/ui/modern'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   DropdownMenu, 
@@ -31,6 +38,17 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 
 // Shared Note interface
 interface SharedNote {
@@ -190,6 +208,11 @@ interface FilterState {
 export default function NoteShare() {
   const [activeTab, setActiveTab] = useState('notes')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
+  const [selectedNote, setSelectedNote] = useState<SharedNote | null>(null)
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
+  const [previewPage, setPreviewPage] = useState(1)
+  const [copiedQuote, setCopiedQuote] = useState(false)
+  const [showNotePopover, setShowNotePopover] = useState(false)
   const [filters, setFilters] = useState<FilterState>({
     noteFilter: "All",
     bookSort: "Latest",
@@ -250,6 +273,173 @@ export default function NoteShare() {
     console.log(`Toggle like for note ${noteId}`)
   }
 
+  const copyQuoteToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedQuote(true)
+      setTimeout(() => setCopiedQuote(false), 2000)
+    })
+  }
+
+  // Mock book content - In production, fetch from API
+  const mockBookContent: { [key: string]: string[] } = {
+    "1": [
+      "Between life and death there is a library, and within that library, the shelves go on forever. Every book provides a chance to try another life you could have lived. To see how things would be different if you had made other choices. Would you have done anything different, if you had the chance to undo your regrets?",
+      "Nora Seed finds herself faced with this decision. Faced with the possibility of changing her life for a new one, following a different career, undoing old breakups, realizing her dreams of becoming a glaciologist; she must search within herself as she travels through the Midnight Library to decide what is truly fulfilling in life, and what makes it worth living in the first place.",
+      "The Midnight Library is a thought-provoking novel about all the choices that go into a life well lived, from the internationally bestselling author of Reasons to Stay Alive and How To Stop Time."
+    ],
+    "5": [
+      "Habits are the compound interest of self-improvement. The same way that money multiplies through compound interest, the effects of your habits multiply as you repeat them.",
+      "You do not rise to the level of your goals. You fall to the level of your systems. Your goal is your desired outcome. Your system is the collection of daily habits that will get you there.",
+      "Every action you take is a vote for the type of person you wish to become. No single instance will transform your beliefs, but as the votes build up, so does the evidence of your new identity."
+    ],
+    "2": [
+      "I'm pretty sure I'm screwed. That's my considered opinion. Screwed. The scientific term for my situation is: completely and utterly screwed.",
+      "My name is Ryland Grace. I'm a... teacher? No, wait. I'm something else now. An astronaut? Memory is a funny thing. It comes back in pieces, fragments, and sometimes not at all.",
+      "So here I am, alone in space, with spotty memories and a problem to solve. The good news? I'm a scientist. The bad news? This problem might be unsolvable."
+    ]
+  }
+
+  const handleNoteClick = (note: SharedNote) => {
+    setSelectedNote(note)
+    setPreviewPage(note.page)
+    setIsPreviewOpen(true)
+  }
+
+  const handlePreviewPageChange = (direction: 'next' | 'prev') => {
+    if (!selectedNote) return
+    const bookContent = mockBookContent[selectedNote.bookId] || []
+    const maxPage = Math.ceil(bookContent.length / 1) // Simplified: 1 page per content block
+    
+    if (direction === 'next' && previewPage < maxPage) {
+      setPreviewPage(prev => prev + 1)
+    } else if (direction === 'prev' && previewPage > 1) {
+      setPreviewPage(prev => prev - 1)
+    }
+  }
+
+  const renderHighlightedText = (text: string, note: SharedNote | null) => {
+    if (!note) return <span>{text}</span>
+    
+    // Only highlight on the page where the note was created
+    const pageIndex = previewPage - 1
+    const notePageIndex = Math.ceil(note.page / 5) - 1 // Map actual page to content index
+    
+    if (pageIndex !== notePageIndex && pageIndex !== 0) {
+      return <span>{text}</span>
+    }
+
+    const noteTextIndex = text.indexOf(note.noteText)
+    if (noteTextIndex === -1) {
+      return <span>{text}</span>
+    }
+
+    return (
+      <>
+        <span>{text.substring(0, noteTextIndex)}</span>
+        <Popover open={showNotePopover} onOpenChange={setShowNotePopover}>
+          <PopoverTrigger asChild>
+            <mark className="bg-amber-200/40 dark:bg-amber-400/15 hover:bg-amber-300/50 dark:hover:bg-amber-400/25 px-1 py-0.5 rounded cursor-pointer transition-all duration-200">
+              {note.noteText}
+            </mark>
+          </PopoverTrigger>
+          <PopoverContent className="w-96 p-0 border-0 shadow-2xl" align="start">
+            <Card className="border-0 shadow-none bg-gradient-to-br from-amber-50/40 via-background to-background dark:from-amber-950/20 dark:via-background dark:to-background">
+              <div className="border-l-4 border-l-amber-500 dark:border-l-amber-600">
+                <CardContent className="p-4">
+                  {/* User Info */}
+                  <div className="flex items-center gap-3 mb-3 pb-3 border-b border-border/30">
+                    <img
+                      src={note.userAvatar}
+                      alt={note.userName}
+                      className="w-8 h-8 rounded-full border-2 border-amber-500/30 shadow-sm"
+                    />
+                    <div className="flex-1">
+                      <p className="text-sm font-bold text-foreground">{note.userName}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(note.sharedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </p>
+                    </div>
+                    <Badge variant="outline" className="text-xs bg-background/50">
+                      Page {note.page}
+                    </Badge>
+                  </div>
+
+                  {/* Highlighted Quote */}
+                  <div className="mb-3 relative group">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Quote className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                      <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
+                        Highlighted
+                      </span>
+                    </div>
+                    <blockquote className="text-sm text-foreground/90 italic leading-relaxed pl-3 border-l-2 border-amber-400">
+                      "{note.noteText}"
+                    </blockquote>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        copyQuoteToClipboard(note.noteText)
+                      }}
+                      className="absolute -right-1 -top-1 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0 rounded-lg"
+                    >
+                      {copiedQuote ? (
+                        <Check className="h-3 w-3 text-green-600" />
+                      ) : (
+                        <Copy className="h-3 w-3" />
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* Personal Note */}
+                  {note.userNote && (
+                    <div className="mb-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <StickyNote className="h-3.5 w-3.5 text-primary" />
+                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                          Note
+                        </span>
+                      </div>
+                      <p className="text-sm text-foreground/80 leading-relaxed pl-3">
+                        {note.userNote}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Engagement */}
+                  <div className="flex items-center gap-3 pt-3 border-t border-border/30">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        toggleLike(note.id)
+                      }}
+                      className={`h-7 gap-1.5 hover:bg-rose-50 dark:hover:bg-rose-950/30 ${note.isLiked ? 'text-rose-600' : 'text-muted-foreground'}`}
+                    >
+                      <ThumbsUp className={`h-3 w-3 ${note.isLiked ? 'fill-current' : ''}`} />
+                      <span className="text-xs font-semibold">{note.likes}</span>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 gap-1.5 hover:bg-blue-50 dark:hover:bg-blue-950/30 text-muted-foreground"
+                    >
+                      <MessageCircle className="h-3 w-3" />
+                      <span className="text-xs font-semibold">{note.comments}</span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </div>
+            </Card>
+          </PopoverContent>
+        </Popover>
+        <span>{text.substring(noteTextIndex + note.noteText.length)}</span>
+      </>
+    )
+  }
+
   const renderStars = (rating: number) => {
     return (
       <div className="flex items-center gap-1">
@@ -270,25 +460,23 @@ export default function NoteShare() {
     )
   }
 
-  const fadeInUp = {
-    initial: { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6, ease: 'easeOut' }
-  }
-
   return (
-    <div className="min-h-screen bg-background py-8">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
-        <motion.div {...fadeInUp} className="mb-8 text-center">
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8 text-center"
+        >
           <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="h-px w-16 bg-primary" />
-            <h1 className="font-sans text-4xl md:text-6xl font-bold mb-6 tracking-tight">
-              <span className="text-foreground">Note</span>
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">Share</span>
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-primary" />
+            <h1 className="font-sans text-4xl md:text-6xl font-bold tracking-tight">
+              <span className="bg-gradient-to-r from-foreground via-primary to-secondary bg-clip-text text-transparent">NoteShare</span>
             </h1>
-            <div className="h-px w-16 bg-primary" />
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-primary" />
           </div>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             A community space for sharing book insights and discovering user-created content
@@ -302,9 +490,11 @@ export default function NoteShare() {
           transition={{ delay: 0.1, duration: 0.6 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
         >
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
             <CardContent className="p-4 text-center">
-              <StickyNote className="h-8 w-8 mx-auto mb-2 text-amber-600" />
+              <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500/10 to-amber-500/5 w-fit mx-auto mb-2">
+                <StickyNote className="h-8 w-8 text-amber-600" />
+              </div>
               <div className="text-2xl font-bold text-foreground">
                 {mockSharedNotes.length}
               </div>
@@ -312,9 +502,11 @@ export default function NoteShare() {
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
             <CardContent className="p-4 text-center">
-              <Feather className="h-8 w-8 mx-auto mb-2 text-green-600" />
+              <div className="p-3 rounded-xl bg-gradient-to-br from-green-500/10 to-green-500/5 w-fit mx-auto mb-2">
+                <Feather className="h-8 w-8 text-green-600" />
+              </div>
               <div className="text-2xl font-bold text-foreground">
                 {mockUserBooks.length}
               </div>
@@ -322,9 +514,11 @@ export default function NoteShare() {
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
             <CardContent className="p-4 text-center">
-              <Users className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-500/5 w-fit mx-auto mb-2">
+                <Users className="h-8 w-8 text-blue-600" />
+              </div>
               <div className="text-2xl font-bold text-foreground">
                 {new Set([...mockSharedNotes.map(n => n.userName), ...mockUserBooks.map(b => b.author)]).size}
               </div>
@@ -332,9 +526,11 @@ export default function NoteShare() {
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 hover:scale-[1.02]">
             <CardContent className="p-4 text-center">
-              <ThumbsUp className="h-8 w-8 mx-auto mb-2 text-red-600" />
+              <div className="p-3 rounded-xl bg-gradient-to-br from-rose-500/10 to-rose-500/5 w-fit mx-auto mb-2">
+                <ThumbsUp className="h-8 w-8 text-rose-600" />
+              </div>
               <div className="text-2xl font-bold text-foreground">
                 {mockSharedNotes.reduce((sum, note) => sum + note.likes, 0)}
               </div>
@@ -357,7 +553,7 @@ export default function NoteShare() {
               placeholder="Search notes, books, or users..."
               value={filters.searchTerm}
               onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground placeholder:text-muted-foreground"
+              className="w-full pl-10 pr-4 py-3 border border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary/50 bg-background/50 backdrop-blur-sm shadow-sm text-foreground placeholder:text-muted-foreground transition-all"
             />
           </div>
         </motion.div>
@@ -369,14 +565,16 @@ export default function NoteShare() {
           transition={{ delay: 0.3, duration: 0.6 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8">
-              <TabsTrigger value="notes" className="flex items-center gap-2">
+            <TabsList className="grid w-full grid-cols-2 mb-8 h-12 bg-muted/50 backdrop-blur-sm border border-border/50 shadow-sm rounded-xl">
+              <TabsTrigger value="notes" className="flex items-center gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-md transition-all">
                 <Quote className="h-4 w-4" />
-                Shared Notes ({filteredNotes.length})
+                <span className="hidden sm:inline">Shared Notes ({filteredNotes.length})</span>
+                <span className="sm:hidden">Notes ({filteredNotes.length})</span>
               </TabsTrigger>
-              <TabsTrigger value="books" className="flex items-center gap-2">
+              <TabsTrigger value="books" className="flex items-center gap-2 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-md transition-all">
                 <BookOpen className="h-4 w-4" />
-                User Books ({filteredBooks.length})
+                <span className="hidden sm:inline">User Books ({filteredBooks.length})</span>
+                <span className="sm:hidden">Books ({filteredBooks.length})</span>
               </TabsTrigger>
             </TabsList>
 
@@ -386,11 +584,10 @@ export default function NoteShare() {
               <div className="mb-6 flex flex-wrap gap-4 items-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex items-center gap-2">
-                      <Filter className="h-4 w-4" />
+                    <ModernButton variant="secondary" icon={Filter} className="gap-2 bg-card/50 backdrop-blur-sm border-border/50">
                       {filters.noteFilter}
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
+                      <ChevronDown className="h-4 w-4 ml-2" />
+                    </ModernButton>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuLabel>Filter Notes</DropdownMenuLabel>
@@ -406,7 +603,7 @@ export default function NoteShare() {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Badge variant="outline" className="text-sm">
+                <Badge className="bg-primary/10 text-primary border-0 text-sm font-semibold px-3 py-1.5">
                   {filteredNotes.length} notes
                 </Badge>
               </div>
@@ -420,7 +617,7 @@ export default function NoteShare() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
                   >
-                    <Card className="hover:shadow-lg transition-all duration-300 border-0 shadow-lg">
+                    <Card className="hover:shadow-2xl transition-all duration-300 border-0 shadow-xl bg-card/50 backdrop-blur-sm rounded-2xl hover:scale-[1.01]">
                       <CardContent className="p-6">
                         <div className="flex gap-6">
                           {/* Book Cover */}
@@ -436,12 +633,9 @@ export default function NoteShare() {
                           <div className="flex-1">
                             <div className="flex items-start justify-between mb-3">
                               <div>
-                                <Link 
-                                  to={`/book/${note.bookId}/read`}
-                                  className="text-lg font-semibold text-foreground hover:text-primary transition-colors"
-                                >
+                                <h3 className="text-lg font-semibold text-foreground">
                                   {note.bookTitle}
-                                </Link>
+                                </h3>
                                 <p className="text-sm text-muted-foreground">
                                   by {note.bookAuthor} • Page {note.page}
                                 </p>
@@ -477,12 +671,15 @@ export default function NoteShare() {
                                 </span>
                               </div>
 
-                              <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-2">
                                 <Button
                                   variant="ghost"
                                   size="sm"
-                                  onClick={() => toggleLike(note.id)}
-                                  className={note.isLiked ? "text-red-600" : ""}
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    toggleLike(note.id)
+                                  }}
+                                  className={note.isLiked ? "text-rose-600" : ""}
                                 >
                                   <ThumbsUp className={`h-4 w-4 mr-1 ${note.isLiked ? 'fill-current' : ''}`} />
                                   {note.likes}
@@ -491,9 +688,15 @@ export default function NoteShare() {
                                   <MessageCircle className="h-4 w-4 mr-1" />
                                   {note.comments}
                                 </Button>
-                                <Button variant="ghost" size="sm">
-                                  <Share2 className="h-4 w-4" />
-                                </Button>
+                                <ModernButton
+                                  variant="primary"
+                                  size="sm"
+                                  icon={Eye}
+                                  onClick={() => handleNoteClick(note)}
+                                  className="ml-2"
+                                >
+                                  Preview
+                                </ModernButton>
                               </div>
                             </div>
                           </div>
@@ -511,11 +714,10 @@ export default function NoteShare() {
               <div className="mb-6 flex flex-wrap gap-4 items-center justify-between">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="flex items-center gap-2">
-                      <Filter className="h-4 w-4" />
+                    <ModernButton variant="secondary" icon={Filter} className="gap-2 bg-card/50 backdrop-blur-sm border-border/50">
                       Sort: {filters.bookSort}
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
+                      <ChevronDown className="h-4 w-4 ml-2" />
+                    </ModernButton>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
                     <DropdownMenuLabel>Sort Books</DropdownMenuLabel>
@@ -531,24 +733,24 @@ export default function NoteShare() {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-sm">
+                <div className="flex items-center gap-3">
+                  <Badge className="bg-primary/10 text-primary border-0 text-sm font-semibold px-3 py-1.5">
                     {filteredBooks.length} books
                   </Badge>
-                  <div className="flex rounded-lg border border-input overflow-hidden">
+                  <div className="flex rounded-xl border border-border/50 overflow-hidden shadow-sm bg-card/50 backdrop-blur-sm">
                     <Button
                       variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                      size="sm"
+                      size="default"
                       onClick={() => setViewMode('grid')}
-                      className="rounded-none"
+                      className="rounded-none px-4 h-10"
                     >
                       <Grid3x3 className="h-4 w-4" />
                     </Button>
                     <Button
                       variant={viewMode === 'list' ? 'default' : 'ghost'}
-                      size="sm"
+                      size="default"
                       onClick={() => setViewMode('list')}
-                      className="rounded-none"
+                      className="rounded-none px-4 h-10"
                     >
                       <List className="h-4 w-4" />
                     </Button>
@@ -566,7 +768,7 @@ export default function NoteShare() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4 }}
                     >
-                      <Card className="h-full hover:shadow-xl transition-all duration-300 group border-0 shadow-lg rounded-xl">
+                      <Card className="h-full hover:shadow-2xl transition-all duration-300 group border-0 shadow-xl bg-card/50 backdrop-blur-sm rounded-2xl hover:scale-[1.02]">
                         <div className="relative aspect-[3/4] overflow-hidden rounded-t-xl">
                           <img
                             src={book.coverImage}
@@ -574,17 +776,16 @@ export default function NoteShare() {
                             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                           />
                           <div className="absolute top-2 left-2">
-                            <Badge className="bg-emerald-600 text-white text-xs">
+                            <Badge className="bg-emerald-600/90 backdrop-blur-sm text-white text-xs shadow-lg">
                               ✍️ User Created
                             </Badge>
                           </div>
-                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <Button size="sm" asChild className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:shadow-lg">
-                              <Link to={`/book/${book.id}/read`}>
-                                <BookOpen className="h-4 w-4 mr-2" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                            <Link to={`/book/${book.id}/read`}>
+                              <ModernButton size="lg" icon={BookOpen} className="bg-white text-gray-900 hover:bg-white/90 shadow-2xl">
                                 Read Now
-                              </Link>
-                            </Button>
+                              </ModernButton>
+                            </Link>
                           </div>
                         </div>
                         
@@ -620,7 +821,7 @@ export default function NoteShare() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4 }}
                     >
-                      <Card className="hover:shadow-lg transition-all duration-300 border-0 shadow-lg">
+                      <Card className="hover:shadow-2xl transition-all duration-300 border-0 shadow-xl bg-card/50 backdrop-blur-sm rounded-2xl hover:scale-[1.01]">
                         <CardContent className="p-6">
                           <div className="flex gap-6">
                             <div className="flex-shrink-0 w-24 h-32">
@@ -659,20 +860,12 @@ export default function NoteShare() {
                                 </span>
                               </div>
                               
-                              <div className="flex items-center justify-between">
-                                <div className="flex flex-wrap gap-1">
-                                  {book.tags.slice(0, 3).map((tag, index) => (
-                                    <Badge key={index} variant="secondary" className="text-xs">
-                                      {tag}
-                                    </Badge>
-                                  ))}
-                                </div>
-                                <Button size="sm" asChild className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:shadow-lg">
-                                  <Link to={`/book/${book.id}/read`}>
-                                    <BookOpen className="h-4 w-4 mr-2" />
+                              <div className="flex items-center justify-end">
+                                <Link to={`/book/${book.id}/read`}>
+                                  <ModernButton size="sm" icon={BookOpen} className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:shadow-xl">
                                     Read Now
-                                  </Link>
-                                </Button>
+                                  </ModernButton>
+                                </Link>
                               </div>
                             </div>
                           </div>
@@ -685,6 +878,149 @@ export default function NoteShare() {
             </TabsContent>
           </Tabs>
         </motion.div>
+
+        {/* Book Preview Dialog */}
+        <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+          <DialogContent className="max-w-4xl h-[85vh] p-0 bg-gradient-to-br from-background via-background to-muted/20 border-0 shadow-2xl rounded-3xl overflow-hidden">
+            {selectedNote && (
+              <div className="flex flex-col h-full">
+                {/* Compact Header */}
+                <div className="sticky top-0 z-10 bg-card/95 backdrop-blur-xl border-b border-border/50 shadow-lg p-4">
+                  <div className="flex items-center justify-between gap-4 mb-3">
+                    <div className="flex-1 min-w-0">
+                      <DialogTitle className="text-xl font-bold bg-gradient-to-r from-foreground to-primary bg-clip-text text-transparent truncate mb-1">
+                        {selectedNote.bookTitle}
+                      </DialogTitle>
+                      <DialogDescription className="text-sm text-muted-foreground truncate">
+                        by {selectedNote.bookAuthor}
+                      </DialogDescription>
+                    </div>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <Link to={`/book/${selectedNote.bookId}/read`}>
+                        <ModernButton 
+                          size="sm" 
+                          icon={BookOpen}
+                          className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:shadow-xl whitespace-nowrap"
+                        >
+                          Open Reader
+                        </ModernButton>
+                      </Link>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setIsPreviewOpen(false)}
+                        className="rounded-full h-8 w-8 flex-shrink-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* User Info - Compact Single Line */}
+                  <div className="flex items-center gap-2 text-xs">
+                    <img
+                      src={selectedNote.userAvatar}
+                      alt={selectedNote.userName}
+                      className="w-6 h-6 rounded-full border-2 border-primary/20"
+                    />
+                    <span className="font-semibold text-foreground">{selectedNote.userName}'s note</span>
+                    <span className="text-muted-foreground">•</span>
+                    <span className="text-muted-foreground">
+                      {new Date(selectedNote.sharedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Book Content - Scrollable Area */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar">
+                  <div className="p-4 pb-8">
+                    <Card className="border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm">
+                      <CardContent className="p-0">
+                        {/* Reading Container */}
+                        <div className="flex flex-col">
+                          {/* Text Content */}
+                          <div 
+                            className="flex-1 p-6 md:p-8"
+                            style={{ 
+                              maxWidth: '65ch', 
+                              marginLeft: 'auto', 
+                              marginRight: 'auto',
+                              width: '100%'
+                            }}
+                          >
+                            <div 
+                              className="prose prose-lg dark:prose-invert max-w-none leading-relaxed selection:bg-amber-300 selection:text-amber-950 dark:selection:bg-amber-500 dark:selection:text-white transition-all duration-300"
+                              style={{ 
+                                fontSize: '16px', 
+                                lineHeight: '1.85',
+                                letterSpacing: '0.015em',
+                                textAlign: 'justify',
+                                hyphens: 'auto',
+                                textRendering: 'optimizeLegibility',
+                                WebkitFontSmoothing: 'antialiased',
+                                MozOsxFontSmoothing: 'grayscale'
+                              } as React.CSSProperties}
+                            >
+                              {renderHighlightedText(
+                                mockBookContent[selectedNote.bookId]?.[previewPage - 1] || 'Content not available',
+                                selectedNote
+                              )}
+                            </div>
+                          </div>
+                        
+                          {/* Navigation Footer */}
+                          <div className="px-6 md:px-8 pb-6 pt-4 border-t border-border/30 bg-gradient-to-b from-transparent to-muted/20">
+                            <div className="flex items-center justify-between gap-4" style={{ maxWidth: '65ch', marginLeft: 'auto', marginRight: 'auto', width: '100%' }}>
+                              <Button 
+                                variant="ghost"
+                                size="lg"
+                                onClick={() => handlePreviewPageChange('prev')}
+                                disabled={previewPage === 1}
+                                className="group relative overflow-hidden px-5 py-2.5 rounded-xl border border-border/50 hover:border-primary/30 bg-gradient-to-r from-background via-background to-background/95 hover:from-primary/5 hover:via-primary/3 hover:to-transparent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-border/50 transition-all duration-300 shadow-sm hover:shadow-md"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <ChevronLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform duration-300" />
+                                  <span className="hidden sm:inline font-semibold">Previous</span>
+                                </div>
+                              </Button>
+                              
+                              <div className="flex items-center gap-2">
+                                <div className="relative overflow-hidden px-6 py-3 bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 rounded-xl border border-primary/30 shadow-md">
+                                  <div className="flex items-center gap-2.5">
+                                    <span className="text-base font-bold text-primary">
+                                      {previewPage}
+                                    </span>
+                                    <div className="h-4 w-px bg-border/50"></div>
+                                    <span className="text-sm font-medium text-muted-foreground">
+                                      {mockBookContent[selectedNote.bookId]?.length || 0}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <Button 
+                                variant="ghost"
+                                size="lg"
+                                onClick={() => handlePreviewPageChange('next')}
+                                disabled={previewPage === (mockBookContent[selectedNote.bookId]?.length || 0)}
+                                className="group relative overflow-hidden px-5 py-2.5 rounded-xl border border-border/50 hover:border-primary/30 bg-gradient-to-r from-background via-background to-background/95 hover:from-primary/5 hover:via-primary/3 hover:to-transparent disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-border/50 transition-all duration-300 shadow-sm hover:shadow-md"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <span className="hidden sm:inline font-semibold">Next</span>
+                                  <ChevronRight className="h-5 w-5 group-hover:translate-x-1 transition-transform duration-300" />
+                                </div>
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )
