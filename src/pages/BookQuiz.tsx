@@ -1,15 +1,17 @@
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { 
   Target, 
   ArrowLeft, 
   CheckCircle, 
+  XCircle, 
   Clock,
   Award,
   RotateCcw,
   BookOpen,
   ChevronRight,
+  Star,
   Play
 } from 'lucide-react'
 
@@ -155,6 +157,7 @@ export default function BookQuiz() {
   const [timeLeft, setTimeLeft] = useState(quizData.timeLimit * 60) // Convert to seconds
   const [quizStarted, setQuizStarted] = useState(false)
   const [score, setScore] = useState(0)
+  const [showExplanation, setShowExplanation] = useState<{[key: string]: boolean}>({})
 
   // Timer effect
   useEffect(() => {
@@ -186,14 +189,30 @@ export default function BookQuiz() {
   }
 
   const handleAnswerSelect = (answerIndex: number | string) => {
-    const newAnswers = [...selectedAnswers]
-    newAnswers[currentQuestion] = answerIndex
-    setSelectedAnswers(newAnswers)
+    // Only allow answer selection if not already answered
+    if (selectedAnswers[currentQuestion] === null) {
+      const newAnswers = [...selectedAnswers]
+      newAnswers[currentQuestion] = answerIndex
+      setSelectedAnswers(newAnswers)
+      
+      // Show explanation immediately after selecting an answer
+      setShowExplanation(prev => ({
+        ...prev,
+        [currentQuestion]: true
+      }))
+    }
   }
 
   const nextQuestion = () => {
     if (currentQuestion < quizData.questions.length - 1) {
       setCurrentQuestion(prev => prev + 1)
+      // Keep explanation visible if answer was already selected
+      if (selectedAnswers[currentQuestion + 1] !== null) {
+        setShowExplanation(prev => ({
+          ...prev,
+          [currentQuestion + 1]: true
+        }))
+      }
     } else {
       finishQuiz()
     }
@@ -202,6 +221,13 @@ export default function BookQuiz() {
   const prevQuestion = () => {
     if (currentQuestion > 0) {
       setCurrentQuestion(prev => prev - 1)
+      // Keep explanation visible if answer was already selected
+      if (selectedAnswers[currentQuestion - 1] !== null) {
+        setShowExplanation(prev => ({
+          ...prev,
+          [currentQuestion - 1]: true
+        }))
+      }
     }
   }
 
@@ -483,26 +509,92 @@ export default function BookQuiz() {
               {question.options && (
                 <div className="space-y-3">
                   {question.options.map((option, index) => (
-                    <Button
-                      key={index}
-                      variant={selectedAnswers[currentQuestion] === index ? "default" : "outline"}
-                      className="w-full text-left justify-start h-auto p-4"
-                      onClick={() => handleAnswerSelect(index)}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                    <div key={index} className="space-y-2">
+                      <Button
+                        variant={
                           selectedAnswers[currentQuestion] === index 
-                            ? 'bg-primary border-primary text-primary-foreground' 
-                            : 'border-gray-300'
-                        }`}>
-                          {selectedAnswers[currentQuestion] === index && (
-                            <CheckCircle className="h-4 w-4" />
-                          )}
+                            ? "default" 
+                            : selectedAnswers[currentQuestion] !== null
+                              ? "secondary"
+                              : "outline"
+                        }
+                        className="w-full text-left justify-start h-auto p-4"
+                        onClick={() => handleAnswerSelect(index)}
+                        disabled={selectedAnswers[currentQuestion] !== null}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                            selectedAnswers[currentQuestion] === index 
+                              ? 'bg-primary border-primary text-primary-foreground' 
+                              : selectedAnswers[currentQuestion] !== null
+                                ? 'bg-gray-200 border-gray-300'
+                                : 'border-gray-300'
+                          }`}>
+                            {selectedAnswers[currentQuestion] === index && (
+                              <CheckCircle className="h-4 w-4" />
+                            )}
+                            {selectedAnswers[currentQuestion] !== null && index === question.correctAnswer && selectedAnswers[currentQuestion] !== index && (
+                              <span className="text-xs font-bold">✓</span>
+                            )}
+                          </div>
+                          <span>{option}</span>
                         </div>
-                        <span>{option}</span>
-                      </div>
-                    </Button>
+                      </Button>
+                      
+                      {/* Explanation for selected answer */}
+                      {showExplanation[currentQuestion] && selectedAnswers[currentQuestion] === index && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className={`p-3 rounded-lg text-sm ${
+                            index === question.correctAnswer 
+                              ? 'bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800' 
+                              : 'bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800'
+                          }`}
+                        >
+                          <div className="flex items-start gap-2">
+                            {index === question.correctAnswer ? (
+                              <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
+                            ) : (
+                              <XCircle className="h-4 w-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                            )}
+                            <div>
+                              <p className="font-medium mb-1">
+                                {index === question.correctAnswer ? 'Correct!' : 'Incorrect'}
+                              </p>
+                              <p className="text-gray-700 dark:text-gray-300">
+                                {question.explanation}
+                              </p>
+                              {index !== question.correctAnswer && (
+                                <p className="text-sm text-green-700 dark:text-green-300 mt-2 font-medium">
+                                  Correct answer: {question.options?.[Number(question.correctAnswer)]}
+                                </p>
+                              )}
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">
+                                This concept is explored throughout the book, particularly in chapters discussing life choices and regret.
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </div>
                   ))}
+                  
+                  {/* Show correct answer if question is answered but explanation is not shown */}
+                  {selectedAnswers[currentQuestion] !== null && !showExplanation[currentQuestion] && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full text-left justify-start text-blue-600 dark:text-blue-400"
+                      onClick={() => setShowExplanation(prev => ({
+                        ...prev,
+                        [currentQuestion]: true
+                      }))}
+                    >
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      Show explanation and correct answer
+                    </Button>
+                  )}
                 </div>
               )}
               
