@@ -6,7 +6,6 @@ import {
   BookOpen, 
   Heart, 
   Star, 
-  Filter, 
   Search, 
   Grid3x3, 
   List,
@@ -188,18 +187,6 @@ const mockBooks: Book[] = [
 ]
 
 // Filter options
-const genres = [
-  "All", 
-  "Fiction", 
-  "Sci-Fi", 
-  "Romance", 
-  "Mystery", 
-  "Fantasy", 
-  "Thriller", 
-  "Biography", 
-  "Self-Help", 
-  "Literary Fiction"
-]
 const statusFilters = [
   "All", 
   "Currently Reading", 
@@ -211,7 +198,6 @@ const statusFilters = [
 ]
 
 interface FilterState {
-  genre: string
   statusFilter: string
   searchTerm: string
 }
@@ -219,7 +205,6 @@ interface FilterState {
 export default function ReadNEx() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [filters, setFilters] = useState<FilterState>({
-    genre: "All",
     statusFilter: "All",
     searchTerm: ""
   })
@@ -227,8 +212,6 @@ export default function ReadNEx() {
   // Filter books based on current filters
   const filteredBooks = useMemo(() => {
     return mockBooks.filter(book => {
-      const matchesGenre = filters.genre === "All" || book.genre === filters.genre
-      
       let matchesStatus = true
       if (filters.statusFilter === "Currently Reading") {
         matchesStatus = book.readingProgress! > 0 && book.readingProgress! < 100
@@ -248,7 +231,7 @@ export default function ReadNEx() {
         book.title.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
         book.author.toLowerCase().includes(filters.searchTerm.toLowerCase())
       
-      return matchesGenre && matchesStatus && matchesSearch
+      return matchesStatus && matchesSearch
     })
   }, [filters])
 
@@ -366,114 +349,95 @@ export default function ReadNEx() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="mb-8"
         >
-          <div className="bg-card rounded-lg p-6 shadow-md border-0">
-            
-            {/* Search Bar */}
-            <div className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                <input
-                  type="text"
-                  placeholder="Search books by title or author..."
-                  value={filters.searchTerm}
-                  onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-input rounded-md focus:ring-2 focus:ring-primary focus:border-transparent bg-background text-foreground placeholder:text-muted-foreground"
-                />
-              </div>
-            </div>
-
-            {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
+            <CardContent className="p-6">
               
-              {/* Genre Filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  Genre
-                </label>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-full justify-between">
-                      {filters.genre}
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-full">
-                    <DropdownMenuLabel>Select Genre</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {genres.map((genre) => (
-                      <DropdownMenuItem
-                        key={genre}
-                        onClick={() => handleFilterChange('genre', genre)}
-                      >
-                        {genre}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              {/* Status Filter */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <BookmarkCheck className="h-4 w-4" />
-                  Reading Status
-                </label>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="w-full justify-between">
-                      {filters.statusFilter}
-                      <ChevronDown className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-full">
-                    <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    {statusFilters.map((status) => (
-                      <DropdownMenuItem
-                        key={status}
-                        onClick={() => handleFilterChange('statusFilter', status)}
-                      >
-                        {status}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-
-              {/* View Mode & Results Count */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground flex items-center gap-2">
-                  <Grid3x3 className="h-4 w-4" />
-                  View Mode
-                </label>
-                <div className="flex items-center justify-between">
-                  <div className="flex rounded-lg border border-input overflow-hidden">
-                    <Button
-                      variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewMode('grid')}
-                      className="rounded-none"
-                    >
-                      <Grid3x3 className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant={viewMode === 'list' ? 'default' : 'ghost'}
-                      size="sm"
-                      onClick={() => setViewMode('list')}
-                      className="rounded-none"
-                    >
-                      <List className="h-4 w-4" />
-                    </Button>
-                  </div>
-                  <Badge variant="outline" className="text-sm ml-2">
-                    {filteredBooks.length} books
-                  </Badge>
+              {/* Search Bar - Full Width */}
+              <div className="mb-6">
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search books by title or author..."
+                    value={filters.searchTerm}
+                    onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
+                    className="w-full pl-12 pr-4 py-3 text-base border border-input rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background/50 text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50"
+                  />
                 </div>
               </div>
 
-            </div>
-          </div>
+              {/* Filters Row */}
+              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+                
+                {/* Status Filter */}
+                <div className="flex-1 w-full space-y-2">
+                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <BookmarkCheck className="h-4 w-4 text-primary" />
+                    Reading Status
+                  </label>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-between h-11 rounded-xl hover:bg-primary/5 hover:border-primary/50 transition-colors"
+                      >
+                        <span className="font-medium">{filters.statusFilter}</span>
+                        <ChevronDown className="h-4 w-4 opacity-50" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56" align="start">
+                      <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      {statusFilters.map((status) => (
+                        <DropdownMenuItem
+                          key={status}
+                          onClick={() => handleFilterChange('statusFilter', status)}
+                          className="cursor-pointer"
+                        >
+                          {status}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+
+                {/* View Mode */}
+                <div className="flex-1 w-full sm:w-auto space-y-2">
+                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <Grid3x3 className="h-4 w-4 text-primary" />
+                    View Mode
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <div className="flex rounded-xl border border-input overflow-hidden shadow-sm">
+                      <Button
+                        variant={viewMode === 'grid' ? 'default' : 'ghost'}
+                        size="default"
+                        onClick={() => setViewMode('grid')}
+                        className="rounded-none px-6 h-11"
+                      >
+                        <Grid3x3 className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant={viewMode === 'list' ? 'default' : 'ghost'}
+                        size="default"
+                        onClick={() => setViewMode('list')}
+                        className="rounded-none px-6 h-11"
+                      >
+                        <List className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <Badge 
+                      variant="secondary" 
+                      className="text-sm font-semibold px-3 py-1.5 bg-primary/10 text-primary border-0"
+                    >
+                      {filteredBooks.length} books
+                    </Badge>
+                  </div>
+                </div>
+
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Books Grid/List */}
@@ -545,13 +509,6 @@ export default function ReadNEx() {
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                      </div>
-
-                      {/* Top Left Badge - Genre */}
-                      <div className="absolute top-3 left-3">
-                        <Badge className="bg-primary/90 backdrop-blur-md text-primary-foreground text-xs font-medium px-2.5 py-1 shadow-lg border border-white/20">
-                          {book.genre}
-                        </Badge>
                       </div>
 
                       {/* Top Right Badge - Consolidated Status/Progress */}

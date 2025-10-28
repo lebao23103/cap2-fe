@@ -40,6 +40,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 
 interface BookNote {
   id: string
@@ -136,6 +141,11 @@ export default function BookReader() {
   const [highlightColor, setHighlightColor] = useState<'yellow' | 'blue' | 'green' | 'pink'>('yellow')
   const [editingNote, setEditingNote] = useState<BookNote | null>(null)
   const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null)
+  const [showReviewDialog, setShowReviewDialog] = useState(false)
+  const [userRating, setUserRating] = useState(0)
+  const [hoveredRating, setHoveredRating] = useState(0)
+  const [reviewText, setReviewText] = useState("")
+  const [hasSubmittedReview, setHasSubmittedReview] = useState(false)
 
   useEffect(() => {
     setIsBookmarked(bookData.bookmarks.includes(currentPage))
@@ -143,8 +153,14 @@ export default function BookReader() {
 
   const handlePageChange = (direction: 'next' | 'prev') => {
     if (direction === 'next' && currentPage < bookData.totalPages) {
-      setCurrentPage(prev => prev + 1)
-      updateReadingProgress(currentPage + 1)
+      const nextPage = currentPage + 1
+      setCurrentPage(nextPage)
+      updateReadingProgress(nextPage)
+      
+      // Show review dialog when reaching the last page for the first time
+      if (nextPage === bookData.totalPages && !hasSubmittedReview) {
+        setTimeout(() => setShowReviewDialog(true), 500)
+      }
     } else if (direction === 'prev' && currentPage > 1) {
       setCurrentPage(prev => prev - 1)
     }
@@ -229,6 +245,27 @@ export default function BookReader() {
     }))
   }
 
+  const submitReview = () => {
+    if (userRating > 0 && reviewText.trim()) {
+      // Round rating to 1 decimal place
+      const roundedRating = Math.round(userRating * 10) / 10
+      
+      // In a real app, this would send to the backend
+      console.log('Review submitted:', {
+        bookId: id,
+        rating: roundedRating,
+        review: reviewText,
+        timestamp: new Date().toISOString()
+      })
+      
+      setHasSubmittedReview(true)
+      setShowReviewDialog(false)
+      
+      // Show success message (you can use toast here)
+      alert(`Thank you for your ${roundedRating.toFixed(1)} star review!`)
+    }
+  }
+
   const getHighlightClass = (color: string) => {
     const colors = {
       yellow: 'bg-amber-200 dark:bg-amber-500/30',
@@ -288,53 +325,105 @@ export default function BookReader() {
           if (part.highlighted && part.note) {
             const colorStyles = {
               yellow: {
-                bg: 'bg-amber-200/40 dark:bg-amber-400/15',
-                hover: 'hover:bg-amber-300/50 dark:hover:bg-amber-400/25',
-                shadow: 'hover:shadow-amber-200/50 dark:hover:shadow-amber-400/20',
-                icon: 'text-amber-600 dark:text-amber-400'
+                bg: 'bg-amber-200/50 dark:bg-amber-400/20',
+                hover: 'hover:bg-amber-300/60 dark:hover:bg-amber-400/30',
+                icon: 'text-amber-700 dark:text-amber-300',
+                iconBg: 'bg-amber-600/20 dark:bg-amber-400/25',
+                popoverBg: 'from-amber-50/80 via-amber-50/40 to-transparent dark:from-amber-950/30 dark:via-amber-950/15 dark:to-transparent',
+                popoverBorder: 'border-l-amber-500'
               },
               blue: {
-                bg: 'bg-blue-200/40 dark:bg-blue-400/15',
-                hover: 'hover:bg-blue-300/50 dark:hover:bg-blue-400/25',
-                shadow: 'hover:shadow-blue-200/50 dark:hover:shadow-blue-400/20',
-                icon: 'text-blue-600 dark:text-blue-400'
+                bg: 'bg-blue-200/50 dark:bg-blue-400/20',
+                hover: 'hover:bg-blue-300/60 dark:hover:bg-blue-400/30',
+                icon: 'text-blue-700 dark:text-blue-300',
+                iconBg: 'bg-blue-600/20 dark:bg-blue-400/25',
+                popoverBg: 'from-blue-50/80 via-blue-50/40 to-transparent dark:from-blue-950/30 dark:via-blue-950/15 dark:to-transparent',
+                popoverBorder: 'border-l-blue-500'
               },
               green: {
-                bg: 'bg-green-200/40 dark:bg-green-400/15',
-                hover: 'hover:bg-green-300/50 dark:hover:bg-green-400/25',
-                shadow: 'hover:shadow-green-200/50 dark:hover:shadow-green-400/20',
-                icon: 'text-green-600 dark:text-green-400'
+                bg: 'bg-green-200/50 dark:bg-green-400/20',
+                hover: 'hover:bg-green-300/60 dark:hover:bg-green-400/30',
+                icon: 'text-green-700 dark:text-green-300',
+                iconBg: 'bg-green-600/20 dark:bg-green-400/25',
+                popoverBg: 'from-green-50/80 via-green-50/40 to-transparent dark:from-green-950/30 dark:via-green-950/15 dark:to-transparent',
+                popoverBorder: 'border-l-green-500'
               },
               pink: {
-                bg: 'bg-pink-200/40 dark:bg-pink-400/15',
-                hover: 'hover:bg-pink-300/50 dark:hover:bg-pink-400/25',
-                shadow: 'hover:shadow-pink-200/50 dark:hover:shadow-pink-400/20',
-                icon: 'text-pink-600 dark:text-pink-400'
+                bg: 'bg-pink-200/50 dark:bg-pink-400/20',
+                hover: 'hover:bg-pink-300/60 dark:hover:bg-pink-400/30',
+                icon: 'text-pink-700 dark:text-pink-300',
+                iconBg: 'bg-pink-600/20 dark:bg-pink-400/25',
+                popoverBg: 'from-pink-50/80 via-pink-50/40 to-transparent dark:from-pink-950/30 dark:via-pink-950/15 dark:to-transparent',
+                popoverBorder: 'border-l-pink-500'
               }
             }
             const style = colorStyles[part.note.color || 'yellow']
             
             return (
-              <mark
-                key={index}
-                className={`${style.bg} ${style.hover} ${style.shadow} px-1 py-0.5 rounded cursor-pointer transition-all duration-200 relative group hover:shadow-sm no-underline`}
-                onClick={() => setCurrentPage(part.note!.page)}
-                style={{ 
-                  textDecorationLine: 'none',
-                  boxDecorationBreak: 'clone',
-                  WebkitBoxDecorationBreak: 'clone'
-                }}
-              >
-                <span className="relative inline">
-                  {part.text}
-                  <span 
-                    className={`absolute -top-2 -right-5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none ${style.icon}`}
-                    title={part.note.note}
+              <Popover key={index}>
+                <PopoverTrigger asChild>
+                  <mark
+                    className={`
+                      ${style.bg} ${style.hover}
+                      inline px-0.5 mx-px
+                      rounded-sm
+                      cursor-pointer transition-colors duration-150
+                      relative group
+                      no-underline border-0
+                      text-[inherit] leading-[inherit]
+                    `}
+                    style={{ 
+                      textDecorationLine: 'none',
+                      boxDecorationBreak: 'clone',
+                      WebkitBoxDecorationBreak: 'clone',
+                      verticalAlign: 'baseline'
+                    }}
                   >
-                    <StickyNote className="h-3.5 w-3.5 drop-shadow-sm" />
-                  </span>
-                </span>
-              </mark>
+                    {part.text}
+                  </mark>
+                </PopoverTrigger>
+                <PopoverContent 
+                  className="w-80 p-0 overflow-hidden shadow-xl border-0"
+                  side="top"
+                  align="start"
+                  sideOffset={8}
+                >
+                  <div className={`bg-gradient-to-r ${style.popoverBg} border-l-[3px] ${style.popoverBorder} p-4`}>
+                    <div className="flex items-start gap-2 mb-3">
+                      <div className={`flex-shrink-0 ${style.iconBg} p-1.5 rounded-lg`}>
+                        <StickyNote className={`h-4 w-4 ${style.icon}`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-muted-foreground mb-1">Highlighted Text</p>
+                        <p className="text-sm font-semibold text-foreground leading-snug">
+                          "{part.note.text}"
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-muted-foreground">Your Note</p>
+                      <p className="text-sm text-foreground leading-relaxed">
+                        {part.note.note}
+                      </p>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/50">
+                      <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                        <span className="px-2 py-0.5 bg-background/50 rounded-md font-medium">Page {part.note.page}</span>
+                        <span>·</span>
+                        <span>{new Date(part.note.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                      </div>
+                      {part.note.isPublic && (
+                        <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md text-[10px] font-medium">
+                          <Share2 className="h-2.5 w-2.5" />
+                          Shared
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
             )
           }
           return <span key={index}>{part.text}</span>
@@ -444,6 +533,17 @@ export default function BookReader() {
                   className="ml-1 border-purple-500/30 bg-gradient-to-r from-purple-500/15 via-purple-500/10 to-purple-500/5 hover:from-purple-500/25 hover:via-purple-500/20 hover:to-purple-500/10 text-purple-600 dark:text-purple-400"
                 >
                   Take Quiz
+                </ModernButton>
+              )}
+              
+              {bookData.readingProgress === 100 && (
+                <ModernButton
+                  icon={Star}
+                  size="sm"
+                  onClick={() => setShowReviewDialog(true)}
+                  className="ml-1 border-amber-500/30 bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-amber-500/5 hover:from-amber-500/25 hover:via-amber-500/20 hover:to-amber-500/10 text-amber-600 dark:text-amber-400"
+                >
+                  {hasSubmittedReview ? 'View Review' : 'Write Review'}
                 </ModernButton>
               )}
               
@@ -946,6 +1046,240 @@ export default function BookReader() {
               icon={StickyNote}
             >
               {editingNote ? 'Update Note' : 'Save Note'}
+            </ModernButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Review Dialog */}
+      <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
+        <DialogContent className="sm:max-w-[580px] max-h-[90vh] p-0 gap-0 overflow-hidden flex flex-col">
+          <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-4 border-b border-border/50 flex-shrink-0">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-xl">
+                <div className="p-1.5 rounded-lg bg-primary/20">
+                  <Star className="h-5 w-5 text-primary fill-current" />
+                </div>
+                You've Finished the Book!
+              </DialogTitle>
+              <DialogDescription className="text-sm mt-1.5">
+                Share your thoughts and rate "{bookData.title}" to help other readers
+              </DialogDescription>
+            </DialogHeader>
+          </div>
+          
+          <div className="p-4 space-y-4 overflow-y-auto flex-1">
+            {/* Rating Section */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-sm font-semibold">
+                  Your Rating
+                </label>
+                {userRating > 0 && (
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-500/10 to-amber-500/5 border border-amber-500/20">
+                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                    <span className="text-base font-bold text-amber-600 dark:text-amber-400">
+                      {userRating.toFixed(1)}
+                    </span>
+                  </div>
+                )}
+              </div>
+              
+              {/* Star Display */}
+              <div className="flex items-center justify-center gap-1 mb-4 p-3 rounded-xl bg-gradient-to-br from-amber-500/5 via-transparent to-transparent border border-border/50">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const displayRating = hoveredRating > 0 ? hoveredRating : userRating
+                  const baseRating = Math.floor(displayRating)
+                  const isFullStar = star <= baseRating
+                  const isPartialStar = star === baseRating + 1 && (displayRating % 1 > 0)
+                  const partialFill = isPartialStar ? (displayRating % 1) * 100 : 0
+                  
+                  return (
+                    <button
+                      key={star}
+                      onClick={() => setUserRating(star)}
+                      onMouseEnter={() => setHoveredRating(star)}
+                      onMouseLeave={() => setHoveredRating(0)}
+                      className="group transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none relative"
+                      aria-label={`Rate ${star} stars`}
+                    >
+                      <Star
+                        className={`h-10 w-10 transition-all duration-200 drop-shadow-sm ${
+                          isFullStar
+                            ? 'fill-amber-400 text-amber-400 group-hover:fill-amber-500 group-hover:text-amber-500'
+                            : 'fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700 group-hover:fill-gray-300 dark:group-hover:fill-gray-600'
+                        }`}
+                      />
+                      {isPartialStar && (
+                        <div 
+                          className="absolute inset-0 overflow-hidden pointer-events-none"
+                          style={{ clipPath: `inset(0 ${100 - partialFill}% 0 0)` }}
+                        >
+                          <Star className="h-10 w-10 fill-amber-400 text-amber-400 drop-shadow-sm" />
+                        </div>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+              
+              {/* Fine-tune Slider */}
+              {userRating > 0 && (
+                <div className="space-y-2.5 p-3 rounded-xl bg-muted/30 border border-border/50">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-foreground flex items-center gap-1.5">
+                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      Fine-tune your rating
+                    </span>
+                    <div className="flex gap-1.5">
+                      <button
+                        onClick={() => {
+                          const newRating = Math.max(0.5, userRating - 0.1)
+                          setUserRating(Math.round(newRating * 10) / 10)
+                        }}
+                        className="w-6 h-6 rounded-md bg-background hover:bg-muted border border-border/50 flex items-center justify-center transition-colors"
+                        aria-label="Decrease rating"
+                      >
+                        <span className="text-base font-bold">−</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          const newRating = Math.min(5.0, userRating + 0.1)
+                          setUserRating(Math.round(newRating * 10) / 10)
+                        }}
+                        className="w-6 h-6 rounded-md bg-background hover:bg-muted border border-border/50 flex items-center justify-center transition-colors"
+                        aria-label="Increase rating"
+                      >
+                        <span className="text-base font-bold">+</span>
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="relative pt-0.5">
+                    <input
+                      type="range"
+                      min="0.5"
+                      max="5.0"
+                      step="0.1"
+                      value={userRating}
+                      onChange={(e) => {
+                        const value = parseFloat(e.target.value)
+                        setUserRating(Math.round(value * 10) / 10)
+                      }}
+                      className="w-full h-2 rounded-full appearance-none cursor-pointer transition-all"
+                      style={{
+                        background: `linear-gradient(to right, 
+                          rgb(251, 191, 36) 0%, 
+                          rgb(251, 191, 36) ${((userRating - 0.5) / 4.5) * 100}%, 
+                          rgb(229, 231, 235) ${((userRating - 0.5) / 4.5) * 100}%, 
+                          rgb(229, 231, 235) 100%
+                        )`,
+                        WebkitAppearance: 'none',
+                      }}
+                    />
+                  </div>
+                  
+                  <div className="flex justify-between items-center text-[10px]">
+                    <span className="text-muted-foreground">0.5</span>
+                    <div className="flex gap-3 text-muted-foreground">
+                      <span className="hover:text-foreground cursor-pointer transition-colors" onClick={() => setUserRating(2.0)}>2.0</span>
+                      <span className="hover:text-foreground cursor-pointer transition-colors" onClick={() => setUserRating(3.0)}>3.0</span>
+                      <span className="hover:text-foreground cursor-pointer transition-colors" onClick={() => setUserRating(4.0)}>4.0</span>
+                    </div>
+                    <span className="text-muted-foreground">5.0</span>
+                  </div>
+                  
+                  {/* Quick Rating Buttons */}
+                  <div className="flex gap-1.5 pt-2 border-t border-border/50">
+                    <span className="text-[10px] text-muted-foreground mr-1 self-center">Quick:</span>
+                    {[3.0, 3.5, 4.0, 4.5, 5.0].map((rating) => (
+                      <button
+                        key={rating}
+                        onClick={() => setUserRating(rating)}
+                        className={`flex-1 px-1.5 py-1 text-[11px] font-semibold rounded-md transition-all ${
+                          userRating === rating
+                            ? 'bg-amber-500 text-white shadow-md'
+                            : 'bg-background hover:bg-muted border border-border/50'
+                        }`}
+                      >
+                        {rating.toFixed(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {userRating === 0 && (
+                <div className="text-center py-2 rounded-xl bg-muted/30 border border-dashed border-border">
+                  <p className="text-xs text-muted-foreground">
+                    👆 Click on the stars above to rate this book
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Review Text Section */}
+            <div>
+              <label className="text-sm font-semibold flex items-center gap-1.5 mb-1.5">
+                <FileText className="h-3.5 w-3.5 text-primary" />
+                Your Review
+              </label>
+              <Textarea
+                value={reviewText}
+                onChange={(e) => setReviewText(e.target.value)}
+                placeholder="What did you think about this book? Share your insights, favorite moments, or overall impressions..."
+                className="min-h-[100px] resize-none rounded-xl text-sm"
+                rows={4}
+              />
+              <div className="flex items-center justify-between mt-1.5">
+                <p className="text-[10px] text-muted-foreground">
+                  {reviewText.length} characters
+                </p>
+                {reviewText.length < 50 && reviewText.length > 0 && (
+                  <p className="text-[10px] text-amber-600 dark:text-amber-500 font-medium">
+                    Try to write at least 50 characters
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Book Info Summary */}
+            <div className="rounded-xl bg-muted/50 p-3 border border-border/50">
+              <h4 className="font-semibold text-sm mb-1">{bookData.title}</h4>
+              <p className="text-xs text-muted-foreground mb-2">by {bookData.author}</p>
+              <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <Clock className="h-3 w-3" />
+                  <span>{bookData.readingTime}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <FileText className="h-3 w-3" />
+                  <span>{bookData.totalPages} pages</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <StickyNote className="h-3 w-3" />
+                  <span>{bookData.notes.length} notes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="gap-2 p-4 bg-muted/30 border-t border-border/50 flex-shrink-0">
+            <ModernButton
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowReviewDialog(false)}
+            >
+              Maybe Later
+            </ModernButton>
+            <ModernButton
+              size="sm"
+              onClick={submitReview}
+              disabled={userRating === 0 || reviewText.trim().length < 10}
+              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground border-0 shadow-md hover:shadow-lg"
+              icon={Star}
+            >
+              Submit Review
             </ModernButton>
           </DialogFooter>
         </DialogContent>
