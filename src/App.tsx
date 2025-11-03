@@ -20,6 +20,7 @@ import Chatbot from './pages/Chatbot'
 import Favorites from './pages/Favorites'
 import ReadingHistory from './pages/ReadingHistory'
 import AdminDashboard from './pages/AdminDashboard'
+import BookDetail from './pages/BookDetail'
 import './App.css'
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/readnex" element={<ReadNEx />} />
                 <Route path="/noteshare" element={<NoteShare />} />
+                <Route path="/book/:id" element={<BookDetail />} />
                 <Route path="/book/:id/read" element={<BookReader />} />
                 <Route path="/book/:id/quiz" element={<BookQuiz />} />
                 <Route path="/create" element={<Create />} />

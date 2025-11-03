@@ -151,11 +151,11 @@ export default function Chatbot() {
             className="w-12 h-16 object-cover rounded"
           />
           <div className="flex-1">
-            <h4 className="font-semibold text-sm">{book.title}</h4>
-            <p className="text-xs text-muted-foreground">{book.author}</p>
+            <h4 className="font-semibold text-sm text-gray-900 dark:text-foreground">{book.title}</h4>
+            <p className="text-xs text-gray-600 dark:text-muted-foreground">{book.author}</p>
             <div className="flex items-center gap-1 mt-1">
               <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-              <span className="text-xs text-muted-foreground">{book.rating}</span>
+              <span className="text-xs text-gray-600 dark:text-muted-foreground">{book.rating}</span>
             </div>
             <div className="flex gap-1 mt-1">
               {book.genre.slice(0, 2).map((g) => (
@@ -180,12 +180,12 @@ export default function Chatbot() {
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
-                    <CardTitle className="text-lg flex items-center gap-2">
+                    <CardTitle className="text-lg text-gray-900 dark:text-foreground flex items-center gap-2">
                       <Sparkles className="h-5 w-5 text-primary" />
                       Chat with {selectedRole === 'book advisor' ? 'Book Advisor' : 
                                 selectedRole === 'literary expert' ? 'Literary Expert' : 'Book Enthusiast'}
                     </CardTitle>
-                    <CardDescription className="mt-1">
+                    <CardDescription className="mt-1 text-gray-600 dark:text-muted-foreground">
                       Ask me anything about books, get recommendations, or discuss literature!
                     </CardDescription>
                   </div>

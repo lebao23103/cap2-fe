@@ -114,11 +114,11 @@ export default function Favorites() {
             className="w-16 h-20 object-cover rounded-md"
           />
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm line-clamp-2">{book.title}</h3>
-            <p className="text-sm text-muted-foreground">{book.author}</p>
+            <h3 className="font-semibold text-sm text-gray-900 dark:text-foreground line-clamp-2">{book.title}</h3>
+            <p className="text-sm text-gray-600 dark:text-muted-foreground">{book.author}</p>
             <div className="flex items-center gap-1 mt-1">
               <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-              <span className="text-xs text-muted-foreground">{book.rating}</span>
+              <span className="text-xs text-gray-600 dark:text-muted-foreground">{book.rating}</span>
             </div>
             <div className="flex gap-1 mt-2">
               {book.genre.slice(0, 2).map((g) => (
@@ -127,7 +127,7 @@ export default function Favorites() {
                 </Badge>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-xs text-gray-500 dark:text-muted-foreground mt-2">
               Added: {new Date(book.dateAdded).toLocaleDateString()}
             </p>
           </div>
@@ -137,7 +137,7 @@ export default function Favorites() {
             onClick={() => handleRemoveFavorite(book.id)}
             className="opacity-0 group-hover:opacity-100 transition-opacity"
           >
-            <Trash2 className="h-4 w-4 text-red-500" />
+            <Trash2 className="h-4 w-4 text-red-600 dark:text-red-500" />
           </Button>
         </div>
       </CardContent>
@@ -152,15 +152,15 @@ export default function Favorites() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" onClick={() => window.history.back()}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
+                <ArrowLeft className="mr-2 h-4 w-4 text-gray-600 dark:text-foreground" />
                 Back to Dashboard
               </Button>
               <div className="flex items-center gap-2">
                 <Heart className="h-5 w-5 text-red-500" />
-                <span className="font-semibold">My Favorites</span>
+                <span className="font-semibold text-gray-900 dark:text-foreground">My Favorites</span>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-gray-600 dark:text-muted-foreground">
               {filteredFavorites.length} of {favorites.length} books
             </div>
           </div>
@@ -172,7 +172,7 @@ export default function Favorites() {
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search your favorites..."
                 value={searchTerm}
@@ -181,7 +181,7 @@ export default function Favorites() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Filter className="h-4 w-4 text-gray-400 dark:text-muted-foreground" />
               <select
                 value={selectedGenre}
                 onChange={(e) => setSelectedGenre(e.target.value)}
@@ -199,11 +199,11 @@ export default function Favorites() {
         {/* Favorites Grid */}
         {filteredFavorites.length === 0 ? (
           <div className="text-center py-12">
-            <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">
+            <Heart className="h-12 w-12 text-gray-400 dark:text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-foreground">
               {searchTerm || selectedGenre !== 'all' ? 'No matching favorites' : 'No favorites yet'}
             </h3>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-gray-600 dark:text-muted-foreground mb-4">
               {searchTerm || selectedGenre !== 'all'
                 ? 'Try adjusting your search or filter criteria.'
                 : 'Start adding books to your favorites from the dashboard or book details page.'
@@ -229,7 +229,7 @@ export default function Favorites() {
             <Card>
               <CardContent className="p-6 text-center">
                 <div className="text-2xl font-bold text-primary">{favorites.length}</div>
-                <div className="text-sm text-muted-foreground">Total Favorites</div>
+                <div className="text-sm text-gray-600 dark:text-muted-foreground">Total Favorites</div>
               </CardContent>
             </Card>
             <Card>
@@ -237,7 +237,7 @@ export default function Favorites() {
                 <div className="text-2xl font-bold text-primary">
                   {allGenres.length}
                 </div>
-                <div className="text-sm text-muted-foreground">Different Genres</div>
+                <div className="text-sm text-gray-600 dark:text-muted-foreground">Different Genres</div>
               </CardContent>
             </Card>
             <Card>
@@ -245,7 +245,7 @@ export default function Favorites() {
                 <div className="text-2xl font-bold text-primary">
                   {(favorites.reduce((sum, book) => sum + book.rating, 0) / favorites.length).toFixed(1)}
                 </div>
-                <div className="text-sm text-muted-foreground">Average Rating</div>
+                <div className="text-sm text-gray-600 dark:text-muted-foreground">Average Rating</div>
               </CardContent>
             </Card>
           </div>
