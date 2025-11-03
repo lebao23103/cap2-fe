@@ -85,10 +85,10 @@ export default function Register() {
               <BookOpen className="h-10 w-10 text-primary" />
             </div>
           </div>
-          <p className="text-xl font-semibold text-foreground mb-2">
+          <p className="text-xl font-semibold text-gray-900 dark:text-foreground mb-2">
             "A reader lives a thousand lives before he dies."
           </p>
-          <p className="text-sm text-muted-foreground">— George R.R. Martin</p>
+          <p className="text-sm text-gray-600 dark:text-muted-foreground">— George R.R. Martin</p>
         </motion.div>
 
         <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm">
@@ -101,10 +101,10 @@ export default function Register() {
             >
               <UserPlus className="h-8 w-8 text-primary" />
             </motion.div>
-            <h2 className="text-2xl font-bold text-foreground mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-foreground mb-2">
               Create Your Account
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-600 dark:text-muted-foreground">
               Join our community of readers and start your journey
             </p>
           </CardHeader>
@@ -112,7 +112,7 @@ export default function Register() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-sm font-semibold text-foreground">
+                  <Label htmlFor="firstName" className="text-sm font-semibold text-gray-900 dark:text-foreground">
                     First Name
                   </Label>
                   <Input
@@ -128,7 +128,7 @@ export default function Register() {
                   {errors.firstName && <p className="text-xs text-destructive font-medium">{errors.firstName}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-sm font-semibold text-foreground">
+                  <Label htmlFor="lastName" className="text-sm font-semibold text-gray-900 dark:text-foreground">
                     Last Name
                   </Label>
                   <Input
@@ -146,7 +146,7 @@ export default function Register() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-foreground">
+                <Label htmlFor="email" className="text-sm font-semibold text-gray-900 dark:text-foreground">
                   Email Address
                 </Label>
                 <Input
@@ -163,7 +163,7 @@ export default function Register() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold text-foreground">
+                <Label htmlFor="password" className="text-sm font-semibold text-gray-900 dark:text-foreground">
                   Password
                 </Label>
                 <div className="relative">
@@ -179,7 +179,7 @@ export default function Register() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
@@ -190,7 +190,7 @@ export default function Register() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-semibold text-foreground">
+                <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-900 dark:text-foreground">
                   Confirm Password
                 </Label>
                 <div className="relative">
@@ -206,7 +206,7 @@ export default function Register() {
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                   >
@@ -231,7 +231,7 @@ export default function Register() {
             </form>
             
             <div className="mt-6 pt-6 border-t border-border/30">
-              <p className="text-center text-sm text-muted-foreground">
+              <p className="text-center text-sm text-gray-600 dark:text-muted-foreground">
                 Already have an account?{' '}
                 <Link 
                   to="/login" 

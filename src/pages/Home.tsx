@@ -96,14 +96,14 @@ export default function Home () {
               Modern Learning Platform
             </Badge>
             
-            <h1 className='font-sans text-4xl md:text-6xl font-bold text-foreground mb-6 tracking-tight'>
+            <h1 className='font-sans text-4xl md:text-6xl font-bold text-gray-900 dark:text-foreground mb-6 tracking-tight'>
               Knowly - Knowledge Sharing Platform
               <span className='block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mt-3 leading-tight'>
                 for Academic Reading and Exercises
               </span>
             </h1>
             
-            <p className='text-lg md:text-xl text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed text-left sm:text-center'>
+            <p className='text-lg md:text-xl text-gray-600 dark:text-muted-foreground mb-10 max-w-3xl mx-auto leading-relaxed text-left sm:text-center'>
               Join a vibrant community of learners and educators sharing knowledge through collaborative note-taking, an intelligent chatbot system, and interactive academic exercises.
             </p>
             
@@ -142,10 +142,10 @@ export default function Home () {
                   <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 text-primary mx-auto mb-4">
                     <stat.icon className="h-6 w-6" />
                   </div>
-                  <div className='font-sans text-2xl font-bold text-foreground mb-1'>
+                  <div className='font-sans text-2xl font-bold text-gray-900 dark:text-foreground mb-1'>
                     {stat.value}
                   </div>
-                  <div className='text-sm text-muted-foreground'>
+                  <div className='text-sm text-gray-600 dark:text-muted-foreground'>
                     {stat.label}
                   </div>
                 </motion.div>
@@ -163,10 +163,10 @@ export default function Home () {
               <TrendingUp className="mr-2 h-4 w-4" />
               Trending Now
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-4">
               Featured Academic Resources
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-gray-600 dark:text-muted-foreground max-w-2xl mx-auto">
               Curated educational content for deeper learning
             </p>
           </motion.div>
@@ -192,8 +192,8 @@ export default function Home () {
                     </div>
                   </div>
                   <CardHeader className="pb-3">
-                    <CardTitle className="text-lg line-clamp-1">{book.title}</CardTitle>
-                    <p className="text-sm text-muted-foreground">{book.author}</p>
+                    <CardTitle className="text-lg text-gray-900 dark:text-foreground line-clamp-1">{book.title}</CardTitle>
+                    <p className="text-sm text-gray-600 dark:text-muted-foreground">{book.author}</p>
                   </CardHeader>
                   <CardContent>
                     <CardDescription className="line-clamp-2 mb-4 text-sm">
@@ -217,10 +217,10 @@ export default function Home () {
       <section className='py-16 px-4 sm:px-6 lg:px-8'>
         <div className='max-w-7xl mx-auto'>
           <motion.div {...fadeInUp} className='text-center mb-16'>
-            <h2 className='font-sans text-3xl md:text-4xl font-bold text-foreground mb-4'>
+            <h2 className='font-sans text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-4'>
               Our Services
             </h2>
-            <p className='text-lg text-muted-foreground max-w-2xl mx-auto mb-12'>
+            <p className='text-lg text-gray-600 dark:text-muted-foreground max-w-2xl mx-auto mb-12'>
               A curated experience for the modern learner
             </p>
           </motion.div>
@@ -253,10 +253,10 @@ export default function Home () {
                       <service.icon className="h-8 w-8 text-primary" />
                     </div>
                     <CardHeader className="p-0 mb-4">
-                      <CardTitle className="text-xl">{service.title}</CardTitle>
+                      <CardTitle className="text-xl text-gray-900 dark:text-foreground">{service.title}</CardTitle>
                     </CardHeader>
                     <CardContent className="p-0">
-                      <p className="text-muted-foreground">
+                      <p className="text-gray-600 dark:text-muted-foreground">
                         {service.description}
                       </p>
                     </CardContent>
@@ -272,10 +272,10 @@ export default function Home () {
       <section className='relative py-16 px-4 sm:px-6 lg:px-8 bg-muted/50'>
         <div className='max-w-7xl mx-auto'>
           <motion.div {...fadeInUp} className='text-center mb-16'>
-            <h2 className='font-sans text-3xl md:text-4xl font-bold text-foreground mb-4'>
+            <h2 className='font-sans text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-4'>
               What Our Academic Community Says
             </h2>
-            <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
+            <p className='text-lg text-gray-600 dark:text-muted-foreground max-w-2xl mx-auto'>
               "Knowledge shared is knowledge multiplied"
             </p>
           </motion.div>
@@ -286,7 +286,7 @@ export default function Home () {
                 <Card className="h-full relative p-6 border-0 shadow-lg rounded-xl">
                   <CardContent className="p-0">
                     <Quote className="h-8 w-8 text-primary mb-4" />
-                    <p className='text-muted-foreground mb-6 italic text-lg leading-relaxed'>
+                    <p className='text-gray-600 dark:text-muted-foreground mb-6 italic text-lg leading-relaxed'>
                       "{testimonial.content}"
                     </p>
                     <div className='border-t border-border pt-6'>
@@ -298,10 +298,10 @@ export default function Home () {
                           </AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className='font-medium text-foreground'>
+                          <p className='font-medium text-gray-900 dark:text-foreground'>
                             {testimonial.name}
                           </p>
-                          <p className='text-sm text-muted-foreground'>
+                          <p className='text-sm text-gray-600 dark:text-muted-foreground'>
                             {testimonial.role}
                           </p>
                         </div>
@@ -321,10 +321,10 @@ export default function Home () {
           <motion.div {...fadeInUp} className="text-center">
             <Card className="p-12 border-0 shadow-2xl rounded-2xl bg-gradient-to-br from-primary/5 to-secondary/5">
               <CardHeader className="p-0 mb-6">
-                <CardTitle className='font-sans text-3xl md:text-4xl font-bold text-foreground mb-4'>
+                <CardTitle className='font-sans text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-4'>
                   Join the Knowledge Revolution
                 </CardTitle>
-                <CardDescription className='text-lg text-muted-foreground mb-8 max-w-2xl mx-auto'>
+                <CardDescription className='text-lg text-gray-600 dark:text-muted-foreground mb-8 max-w-2xl mx-auto'>
                   Connect with learners worldwide and transform how you engage with academic content
                 </CardDescription>
               </CardHeader>
@@ -336,7 +336,7 @@ export default function Home () {
                       <ChevronRight className="ml-2 h-5 w-5" />
                     </Link>
                   </Button>
-                  <p className='text-sm text-muted-foreground'>
+                  <p className='text-sm text-gray-500 dark:text-muted-foreground'>
                     Free to join • Academic focus • Collaborative learning
                   </p>
                 </div>

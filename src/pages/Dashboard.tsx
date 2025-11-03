@@ -60,10 +60,10 @@ export default function Dashboard() {
       <main className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2">
+          <h2 className="text-3xl font-bold mb-2 text-gray-900 dark:text-foreground">
             Welcome back, {user.name.split(' ')[0]}! <span role="img" aria-label="waving hand">👋</span>
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-gray-600 dark:text-muted-foreground">
             Discover your next favorite book with AI-powered recommendations
           </p>
         </div>
@@ -75,7 +75,7 @@ export default function Dashboard() {
             className="min-h-20 flex flex-col gap-2 items-center justify-center"
             onClick={() => navigate('/reading-history')}
           >
-            <BookOpen className="h-6 w-6" />
+            <BookOpen className="h-6 w-6 text-gray-600 dark:text-foreground" />
             Continue Reading
           </Button>
           <Button 
@@ -83,7 +83,7 @@ export default function Dashboard() {
             className="min-h-20 flex flex-col gap-2 items-center justify-center"
             onClick={() => navigate('/favorites')}
           >
-            <Heart className="h-6 w-6" />
+            <Heart className="h-6 w-6 text-gray-600 dark:text-foreground" />
             My Favorites
           </Button>
           <Button 
@@ -91,7 +91,7 @@ export default function Dashboard() {
             className="min-h-20 flex flex-col gap-2 items-center justify-center"
             onClick={() => navigate('/chatbot')}
           >
-            <MessageCircle className="h-6 w-6" />
+            <MessageCircle className="h-6 w-6 text-gray-600 dark:text-foreground" />
             Chat with AI
           </Button>
         </div>
@@ -100,7 +100,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Recommendations */}
           <div className="lg:col-span-2">
-            <h3 className="text-xl font-semibold mb-4">Recommended for You</h3>
+            <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-foreground">Recommended for You</h3>
             <div className="space-y-4">
               {recommendations.map((book) => (
                 <BookCard key={book.id} book={book} size="md" />
@@ -118,8 +118,8 @@ export default function Dashboard() {
             {/* Reading History */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">Continue Reading</CardTitle>
-                <CardDescription>Your recent books</CardDescription>
+                <CardTitle className="text-lg text-gray-900 dark:text-foreground">Continue Reading</CardTitle>
+                <CardDescription className="text-gray-600 dark:text-muted-foreground">Your recent books</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {readingHistory.map((book) => (
@@ -131,8 +131,8 @@ export default function Dashboard() {
             {/* Favorites */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-lg">My Favorites</CardTitle>
-                <CardDescription>Your saved books</CardDescription>
+                <CardTitle className="text-lg text-gray-900 dark:text-foreground">My Favorites</CardTitle>
+                <CardDescription className="text-gray-600 dark:text-muted-foreground">Your saved books</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
                 {favorites.map((book) => (
