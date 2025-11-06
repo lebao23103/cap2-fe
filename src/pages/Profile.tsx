@@ -256,17 +256,17 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="container mx-auto px-4 max-w-7xl">
+    <div className="min-h-screen bg-background py-4 sm:py-6 md:py-8">
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
         {/* Profile Header Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm mb-8 overflow-hidden">
+          <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm mb-6 sm:mb-8 overflow-hidden">
             {/* Cover Photo */}
-            <div className="h-32 bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20 relative">
+            <div className="h-24 sm:h-32 bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20 relative">
               {!isEditing && (
                 <Button
                   variant="ghost"
@@ -279,11 +279,11 @@ export default function Profile() {
               )}
             </div>
 
-            <CardContent className="p-6">
-              <div className="flex flex-col md:flex-row items-start gap-6">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex flex-col md:flex-row items-start gap-4 sm:gap-6">
                 {/* Avatar */}
-                <div className="relative -mt-16 md:-mt-20">
-                  <Avatar className="h-24 w-24 md:h-32 md:w-32 ring-4 ring-background">
+                <div className="relative -mt-12 sm:-mt-16 md:-mt-20">
+                  <Avatar className="h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-32 ring-4 ring-background">
                     <AvatarImage src={user?.email ? `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}` : undefined} />
                     <AvatarFallback className="text-2xl">
                       {user?.first_name?.[0]}{user?.last_name?.[0]}
@@ -312,6 +312,7 @@ export default function Profile() {
                             id="firstName"
                             value={formData.firstName}
                             onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                            autoComplete="given-name"
                           />
                         </div>
                         <div className="space-y-2">
@@ -320,6 +321,7 @@ export default function Profile() {
                             id="lastName"
                             value={formData.lastName}
                             onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                            autoComplete="family-name"
                           />
                         </div>
                       </div>
@@ -331,16 +333,17 @@ export default function Profile() {
                           onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                           rows={3}
                           maxLength={200}
+                          aria-describedby="bio-hint"
                         />
-                        <p className="text-xs text-muted-foreground">
+                        <p id="bio-hint" className="text-xs text-muted-foreground">
                           {formData.bio.length}/200 characters
                         </p>
                       </div>
                       <div className="flex gap-3 pt-2">
-                        <Button onClick={handleSave} disabled={isSaving}>
+                        <Button onClick={handleSave} disabled={isSaving} aria-label={isSaving ? 'Saving profile changes' : 'Save profile changes'}>
                           {isSaving ? 'Saving...' : 'Save Changes'}
                         </Button>
-                        <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
+                        <Button variant="outline" onClick={handleCancel} disabled={isSaving} aria-label="Cancel editing">
                           Cancel
                         </Button>
                       </div>
@@ -349,10 +352,10 @@ export default function Profile() {
                     // View Mode
                     <>
                       <div>
-                        <h1 className="text-2xl md:text-3xl font-bold">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
                           {formData.firstName} {formData.lastName}
                         </h1>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mt-1">
                           <Mail className="h-4 w-4" />
                           {formData.email}
                         </div>
@@ -381,7 +384,7 @@ export default function Profile() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8"
         >
           <StatCard
             icon={BookOpen}
@@ -410,9 +413,9 @@ export default function Profile() {
         </motion.div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
           {/* Left Column - Achievements & Activity */}
-          <div className="lg:col-span-2 space-y-8">
+          <div className="lg:col-span-2 space-y-6 lg:space-y-8">
             {/* Achievements */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -427,7 +430,7 @@ export default function Profile() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                     {achievements.map((achievement) => (
                       <div
                         key={achievement.id}
@@ -503,7 +506,7 @@ export default function Profile() {
           </div>
 
           {/* Right Column - Quick Stats */}
-          <div className="space-y-8">
+          <div className="space-y-6 lg:space-y-8">
             {/* Reading Streak */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -551,6 +554,7 @@ export default function Profile() {
                     variant="ghost"
                     className="w-full justify-start"
                     onClick={() => (window.location.href = '/favorites')}
+                    aria-label="View my favorites"
                   >
                     My Favorites
                   </Button>
@@ -558,6 +562,7 @@ export default function Profile() {
                     variant="ghost"
                     className="w-full justify-start"
                     onClick={() => (window.location.href = '/reading-history')}
+                    aria-label="View reading history"
                   >
                     Reading History
                   </Button>
@@ -565,6 +570,7 @@ export default function Profile() {
                     variant="ghost"
                     className="w-full justify-start"
                     onClick={() => (window.location.href = '/settings')}
+                    aria-label="Open account settings"
                   >
                     Account Settings
                   </Button>

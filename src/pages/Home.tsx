@@ -178,8 +178,9 @@ export default function Home () {
                   <div className="relative aspect-[3/4] overflow-hidden rounded-t-xl">
                     <img
                       src={book.coverImage}
-                      alt={book.title}
+                      alt={`${book.title} by ${book.author} - Book cover`}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
                     />
                     <div className="absolute top-3 right-3">
                       <Badge variant="secondary">{book.genre}</Badge>
@@ -200,9 +201,13 @@ export default function Home () {
                       {book.description}
                     </CardDescription>
                     <Button size="sm" className="w-full" asChild>
-                      <Link to={`/book/${book.id}`} className="flex items-center justify-center">
-                        <BookOpen className="h-4 w-4 mr-2" />
-                        <span>Read More</span>
+                      <Link 
+                        to={`/book/${book.id}`} 
+                        className="flex items-center justify-center"
+                        aria-label={`View details for ${book.title}`}
+                      >
+                        <BookOpen className="h-4 w-4 mr-2" aria-hidden="true" />
+                        <span>View Details</span>
                       </Link>
                     </Button>
                   </CardContent>
@@ -292,7 +297,7 @@ export default function Home () {
                     <div className='border-t border-border pt-6'>
                       <div className='flex items-center'>
                         <Avatar className='h-12 w-12 mr-4'>
-                          <AvatarImage src={testimonial.avatar} alt={testimonial.name} />
+                          <AvatarImage src={testimonial.avatar} alt={`${testimonial.name} profile picture`} />
                           <AvatarFallback className='bg-primary/10 text-primary'>
                             {testimonial.name.split(' ').map(n => n[0]).join('')}
                           </AvatarFallback>
