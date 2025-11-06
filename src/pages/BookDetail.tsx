@@ -309,9 +309,9 @@ export default function BookDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-background">
-      <div className="container mx-auto px-4 md:px-6 py-8 max-w-5xl">
+      <div className="container mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8 max-w-5xl">
         {/* Back Button */}
-        <div className="flex justify-start mb-6">
+        <div className="flex justify-start mb-4 sm:mb-6">
           <Button
             variant="outline"
             className="bg-white dark:bg-card !text-gray-900 dark:!text-foreground border-gray-300 dark:border-border hover:bg-gray-100 dark:hover:bg-muted transition-colors shadow-sm"
@@ -323,16 +323,17 @@ export default function BookDetail() {
         </div>
 
         {/* Hero Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Book Cover - Left Side */}
           <div className="lg:col-span-4">
-            <div className="bg-white dark:bg-card rounded-lg shadow-sm border border-border/50 overflow-hidden sticky top-4 transition-shadow hover:shadow-md">
+            <div className="bg-white dark:bg-card rounded-lg shadow-sm border border-border/50 overflow-hidden lg:sticky lg:top-4 transition-shadow hover:shadow-md">
               <img
                 src={book.cover_image}
-                alt={book.title}
+                alt={`${book.title} by ${book.author} - Book cover`}
                 className="w-full aspect-[2/3] object-cover"
+                loading="lazy"
               />
-              <div className="p-4 space-y-2">
+              <div className="p-3 sm:p-4 space-y-2">
                 <Button 
                   size="lg" 
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm hover:shadow"
@@ -347,9 +348,11 @@ export default function BookDetail() {
                     variant="outline" 
                     className="flex-1 hover:bg-muted/50 transition-colors"
                     onClick={handleToggleFavorite}
+                    aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
                   >
                     <Heart
                       className={`h-4 w-4 transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-foreground'}`}
+                      aria-hidden="true"
                     />
                   </Button>
                   <Button 
@@ -357,8 +360,9 @@ export default function BookDetail() {
                     variant="outline" 
                     className="flex-1 hover:bg-muted/50 transition-colors"
                     onClick={handleShare}
+                    aria-label="Share book"
                   >
-                    <Share2 className="h-4 w-4 text-gray-600 dark:text-foreground" />
+                    <Share2 className="h-4 w-4 text-gray-600 dark:text-foreground" aria-hidden="true" />
                   </Button>
                 </div>
                 <Button 
@@ -374,25 +378,25 @@ export default function BookDetail() {
           </div>
 
           {/* Book Info - Right Side */}
-          <div className="lg:col-span-8 space-y-4">
+          <div className="lg:col-span-8 space-y-3 sm:space-y-4">
             {/* Title and Author */}
             <div>
-              <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-foreground">
+              <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-gray-900 dark:text-foreground leading-tight">
                 {book.title}
               </h1>
-              <p className="text-base text-gray-600 dark:text-muted-foreground mb-3">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-muted-foreground mb-3">
                 by {book.author}
               </p>
 
               {/* Rating */}
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <div className="flex items-center gap-1">
                   {renderStarRating(book.rating)}
                 </div>
-                <span className="text-lg font-bold text-gray-900 dark:text-foreground">
+                <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-foreground">
                   {book.rating.toFixed(1)}
                 </span>
-                <span className="text-sm text-gray-600 dark:text-muted-foreground">
+                <span className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">
                   {book.reviews_count?.toLocaleString()} reviews
                 </span>
               </div>
@@ -422,7 +426,7 @@ export default function BookDetail() {
             </div>
 
             {/* Book Metadata */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               <div className="space-y-1">
                 <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase">Language</p>
                 <p className="text-sm font-semibold text-gray-900 dark:text-foreground">{book.language || 'English'}</p>

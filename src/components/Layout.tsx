@@ -71,15 +71,15 @@ export function Layout({ children }: LayoutProps) {
       </div>
 
       {/* Header/Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-sm">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-sm" role="banner">
         {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" aria-hidden="true" />
         
-        <nav className="container mx-auto px-6 relative">
+        <nav className="container mx-auto px-6 relative" role="navigation" aria-label="Main navigation">
           <div className="flex h-16 items-center justify-between">
             {/* Left Side - Logo */}
             <div className="flex items-center flex-1">
-              <Link to="/" className="group flex items-center space-x-3 transition-all duration-300 hover:scale-[1.02]">
+              <Link to="/" className="group flex items-center space-x-3 transition-all duration-300 hover:scale-[1.02]" aria-label="Knowly home">
                 {/* Modern Logo with enhanced effects */}
                 <div className="relative">
                   {/* Glow effect */}
@@ -106,8 +106,9 @@ export function Layout({ children }: LayoutProps) {
                       ? 'bg-background text-primary shadow-sm border border-border/50'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
                   }`}
+                  aria-current={isActivePath('/') ? 'page' : undefined}
                 >
-                  <Home className="h-4 w-4" />
+                  <Home className="h-4 w-4" aria-hidden="true" />
                   <span>Home</span>
                 </Link>
                 <Link
@@ -117,8 +118,9 @@ export function Layout({ children }: LayoutProps) {
                       ? 'bg-background text-primary shadow-sm border border-border/50'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
                   }`}
+                  aria-current={isActivePath('/readnex') ? 'page' : undefined}
                 >
-                  <Library className="h-4 w-4" />
+                  <Library className="h-4 w-4" aria-hidden="true" />
                   <span>ReadNEx</span>
                 </Link>
                 <Link
@@ -128,8 +130,9 @@ export function Layout({ children }: LayoutProps) {
                       ? 'bg-background text-primary shadow-sm border border-border/50'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
                   }`}
+                  aria-current={isActivePath('/create') ? 'page' : undefined}
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-4 w-4" aria-hidden="true" />
                   <span>Create</span>
                 </Link>
                 <Link
@@ -139,8 +142,9 @@ export function Layout({ children }: LayoutProps) {
                       ? 'bg-background text-primary shadow-sm border border-border/50'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
                   }`}
+                  aria-current={isActivePath('/noteshare') ? 'page' : undefined}
                 >
-                  <Sparkles className="h-4 w-4" />
+                  <Sparkles className="h-4 w-4" aria-hidden="true" />
                   <span>NoteShare</span>
                 </Link>
                 <Link
@@ -150,8 +154,9 @@ export function Layout({ children }: LayoutProps) {
                       ? 'bg-background text-primary shadow-sm border border-border/50'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
                   }`}
+                  aria-current={isActivePath('/about') ? 'page' : undefined}
                 >
-                  <Info className="h-4 w-4" />
+                  <Info className="h-4 w-4" aria-hidden="true" />
                   <span>About</span>
                 </Link>
               </div>
@@ -164,8 +169,9 @@ export function Layout({ children }: LayoutProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="md:hidden"
+                  className="md:hidden min-h-[44px] min-w-[44px]"
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
                 >
                   {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </Button>
@@ -176,7 +182,7 @@ export function Layout({ children }: LayoutProps) {
                     <div className="hidden md:block">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="flex items-center gap-2">
+                          <Button variant="ghost" className="flex items-center gap-2" aria-label="User menu">
                             <Avatar className="h-8 w-8">
                               <AvatarImage src={user?.email ? `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}` : undefined} />
                               <AvatarFallback>
@@ -248,67 +254,67 @@ export function Layout({ children }: LayoutProps) {
 
           {/* Mobile Navigation Menu */}
           {isMobileMenuOpen && (
-            <div className="md:hidden pb-4 pt-2">
-              <div className="flex flex-col space-y-3">
+            <div className="md:hidden pb-4 pt-2 border-t border-border/40">
+              <div className="flex flex-col space-y-2">
                 {/* Public Navigation Links */}
                 <Link
                   to="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
                     isActivePath('/')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
                   }`}
                 >
-                  <Home className="h-4 w-4" />
+                  <Home className="h-5 w-5" />
                   Home
                 </Link>
                 <Link
                   to="/readnex"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
                     isActivePath('/readnex')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
                   }`}
                 >
-                  <Library className="h-4 w-4" />
+                  <Library className="h-5 w-5" />
                   ReadNEx
                 </Link>
                 <Link
                   to="/create"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
                     isActivePath('/create')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
                   }`}
                 >
-                  <Plus className="h-4 w-4" />
+                  <Plus className="h-5 w-5" />
                   Create
                 </Link>
                 <Link
                   to="/noteshare"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
                     isActivePath('/noteshare')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
                   }`}
                 >
-                  <Sparkles className="h-4 w-4" />
+                  <Sparkles className="h-5 w-5" />
                   NoteShare
                 </Link>
                 <Link
                   to="/about"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
                     isActivePath('/about')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
                   }`}
                 >
-                  <Info className="h-4 w-4" />
+                  <Info className="h-5 w-5" />
                   About
                 </Link>
 
@@ -323,13 +329,13 @@ export function Layout({ children }: LayoutProps) {
                           key={item.path}
                           to={item.path}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
+                          className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
                             isActivePath(item.path)
                               ? 'bg-primary/10 text-primary'
                               : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
                           }`}
                         >
-                          <Icon className="h-4 w-4" />
+                          <Icon className="h-5 w-5" />
                           {item.label}
                         </Link>
                       );
@@ -337,9 +343,9 @@ export function Layout({ children }: LayoutProps) {
                     <div className="h-px bg-border my-2" />
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent rounded-lg transition-all"
+                      className="flex items-center gap-3 px-4 py-3 text-base font-medium text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent rounded-lg transition-all min-h-[44px] w-full text-left"
                     >
-                      <LogOut className="h-4 w-4" />
+                      <LogOut className="h-5 w-5" />
                       Log out
                     </button>
                   </>
@@ -348,10 +354,11 @@ export function Layout({ children }: LayoutProps) {
                 {!isAuthenticated && (
                   <>
                     <div className="h-px bg-border my-2" />
-                    <div className="flex flex-col space-y-3 px-3">
+                    <div className="flex flex-col space-y-2 px-3">
                       <Button 
                         variant="outline" 
-                        className="w-full justify-center"
+                        size="lg"
+                        className="w-full justify-center min-h-[44px]"
                         asChild
                       >
                         <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
@@ -359,7 +366,8 @@ export function Layout({ children }: LayoutProps) {
                         </Link>
                       </Button>
                       <Button 
-                        className="bg-gradient-to-r from-primary to-secondary text-primary-foreground w-full justify-center"
+                        size="lg"
+                        className="bg-gradient-to-r from-primary to-secondary text-primary-foreground w-full justify-center min-h-[44px]"
                         asChild
                       >
                         <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
@@ -382,7 +390,7 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Footer - Contact Information */}
       {!isAuthenticated && (
-        <footer className="relative border-t border-border/40 bg-muted/30 backdrop-blur-sm py-12 mt-20">
+        <footer className="relative border-t border-border/40 bg-muted/30 backdrop-blur-sm py-12 mt-20" role="contentinfo">
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-transparent pointer-events-none" />
           

@@ -74,10 +74,10 @@ export default function Login() {
             </p>
           </CardHeader>
           <CardContent className="px-8 pb-8 pt-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" aria-label="Sign in form">
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Email Address
+                  Email Address <span className="text-destructive" aria-label="required">*</span>
                 </Label>
                 <Input
                   id="email"
@@ -87,13 +87,15 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
                   required
+                  aria-required="true"
+                  autoComplete="email"
                 />
               </div>
               
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
                   <Label htmlFor="password" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                    Password
+                    Password <span className="text-destructive" aria-label="required">*</span>
                   </Label>
                   <Link 
                     to="/forgot-password" 
@@ -111,6 +113,8 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
                     required
+                    aria-required="true"
+                    autoComplete="current-password"
                   />
                   <button
                     type="button"

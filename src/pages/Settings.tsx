@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { LiveRegion } from '@/components/ui/live-region';
 
 interface Settings {
   // Account
@@ -50,6 +51,7 @@ export default function Settings() {
   const [loading, setLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
+  const [statusMessage, setStatusMessage] = useState('');
   
   // Load settings from localStorage or use defaults
   const [settings, setSettings] = useState<Settings>(() => {
@@ -84,6 +86,7 @@ export default function Settings() {
 
   const handleSave = async () => {
     setLoading(true);
+    setStatusMessage('Saving settings...');
     
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -92,6 +95,7 @@ export default function Settings() {
     setSettings(tempSettings);
     setHasChanges(false);
     setLoading(false);
+    setStatusMessage('Settings saved successfully');
     
     toast({
       title: 'Settings saved',
@@ -109,6 +113,7 @@ export default function Settings() {
     setTempSettings(settings);
     setHasChanges(false);
     setShowDiscardDialog(false);
+    setStatusMessage('Changes discarded');
     
     toast({
       title: 'Changes discarded',
@@ -118,7 +123,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen pt-20 pb-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -126,11 +131,11 @@ export default function Settings() {
           transition={{ duration: 0.5 }}
         >
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-2">
               Settings
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               Manage your account settings and preferences
             </p>
           </div>
@@ -140,17 +145,18 @@ export default function Settings() {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mb-6 p-4 rounded-lg border border-primary/20 bg-primary/5 flex items-center justify-between"
+              className="mb-4 sm:mb-6 p-3 sm:p-4 rounded-lg border border-primary/20 bg-primary/5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0"
             >
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 You have unsaved changes
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-2 w-full sm:w-auto">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleCancel}
                   disabled={loading}
+                  className="flex-1 sm:flex-none"
                 >
                   Cancel
                 </Button>
@@ -158,15 +164,16 @@ export default function Settings() {
                   size="sm"
                   onClick={handleSave}
                   disabled={loading}
+                  className="flex-1 sm:flex-none"
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
                       Saving...
                     </>
                   ) : (
                     <>
-                      <Save className="mr-2 h-4 w-4" />
+                      <Save className="mr-2 h-4 w-4" aria-hidden="true" />
                       Save Changes
                     </>
                   )}
@@ -178,36 +185,36 @@ export default function Settings() {
           {/* Settings Tabs */}
           <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-white/20">
             <Tabs defaultValue="account" className="w-full">
-              <CardHeader>
-                <TabsList className="grid w-full grid-cols-5 lg:grid-cols-5">
-                  <TabsTrigger value="account" className="flex items-center gap-2">
-                    <User className="h-4 w-4" />
-                    <span className="hidden sm:inline">Account</span>
+              <CardHeader className="pb-0">
+                <TabsList className="grid w-full grid-cols-5 lg:grid-cols-5 h-auto">
+                  <TabsTrigger value="account" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-3 text-xs sm:text-sm">
+                    <User className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline text-xs sm:text-sm">Account</span>
                   </TabsTrigger>
-                  <TabsTrigger value="preferences" className="flex items-center gap-2">
-                    <Palette className="h-4 w-4" />
-                    <span className="hidden sm:inline">Preferences</span>
+                  <TabsTrigger value="preferences" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-3 text-xs sm:text-sm">
+                    <Palette className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline text-xs sm:text-sm">Prefs</span>
                   </TabsTrigger>
-                  <TabsTrigger value="reading" className="flex items-center gap-2">
-                    <BookOpen className="h-4 w-4" />
-                    <span className="hidden sm:inline">Reading</span>
+                  <TabsTrigger value="reading" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-3 text-xs sm:text-sm">
+                    <BookOpen className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline text-xs sm:text-sm">Reading</span>
                   </TabsTrigger>
-                  <TabsTrigger value="privacy" className="flex items-center gap-2">
-                    <Shield className="h-4 w-4" />
-                    <span className="hidden sm:inline">Privacy</span>
+                  <TabsTrigger value="privacy" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-3 text-xs sm:text-sm">
+                    <Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline text-xs sm:text-sm">Privacy</span>
                   </TabsTrigger>
-                  <TabsTrigger value="notifications" className="flex items-center gap-2">
-                    <Bell className="h-4 w-4" />
-                    <span className="hidden sm:inline">Notifications</span>
+                  <TabsTrigger value="notifications" className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-1 sm:px-3 text-xs sm:text-sm">
+                    <Bell className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <span className="hidden xs:inline text-xs sm:text-sm">Notify</span>
                   </TabsTrigger>
                 </TabsList>
               </CardHeader>
 
-              <CardContent className="pt-6">
+              <CardContent className="pt-4 sm:pt-6">
                 {/* Account Settings */}
-                <TabsContent value="account" className="space-y-6">
+                <TabsContent value="account" className="space-y-4 sm:space-y-6">
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Account Information</h3>
+                    <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Account Information</h3>
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="name">Display Name</Label>
@@ -216,6 +223,7 @@ export default function Settings() {
                           value={tempSettings.name}
                           onChange={(e) => handleChange('name', e.target.value)}
                           placeholder="Your name"
+                          autoComplete="name"
                         />
                       </div>
                       
@@ -227,6 +235,7 @@ export default function Settings() {
                           value={tempSettings.email}
                           onChange={(e) => handleChange('email', e.target.value)}
                           placeholder="your.email@example.com"
+                          autoComplete="email"
                         />
                       </div>
                       
@@ -243,24 +252,24 @@ export default function Settings() {
                     </div>
                   </div>
 
-                  <div className="pt-6 border-t">
-                    <h3 className="text-lg font-semibold mb-4">Password</h3>
-                    <Button variant="outline">Change Password</Button>
+                  <div className="pt-4 sm:pt-6 border-t">
+                    <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Password</h3>
+                    <Button variant="outline" size="sm" className="w-full sm:w-auto">Change Password</Button>
                   </div>
 
-                  <div className="pt-6 border-t">
-                    <h3 className="text-lg font-semibold mb-2 text-destructive">Danger Zone</h3>
-                    <p className="text-sm text-muted-foreground mb-4">
+                  <div className="pt-4 sm:pt-6 border-t">
+                    <h3 className="text-base sm:text-lg font-semibold mb-2 text-destructive">Danger Zone</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground mb-3 sm:mb-4">
                       Once you delete your account, there is no going back. Please be certain.
                     </p>
-                    <Button variant="destructive">Delete Account</Button>
+                    <Button variant="destructive" size="sm" className="w-full sm:w-auto">Delete Account</Button>
                   </div>
                 </TabsContent>
 
                 {/* Preferences */}
-                <TabsContent value="preferences" className="space-y-6">
+                <TabsContent value="preferences" className="space-y-4 sm:space-y-6">
                   <div>
-                    <h3 className="text-lg font-semibold mb-4">Appearance</h3>
+                    <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Appearance</h3>
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="theme">Theme</Label>
@@ -348,8 +357,8 @@ export default function Settings() {
 
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <Label htmlFor="autoBookmark">Auto-bookmark</Label>
-                          <p className="text-xs text-muted-foreground">
+                        <Label htmlFor="autoBookmark">Auto-bookmark</Label>
+                          <p className="text-xs text-muted-foreground" id="autoBookmark-desc">
                             Automatically save your reading progress
                           </p>
                         </div>
@@ -357,6 +366,7 @@ export default function Settings() {
                           id="autoBookmark"
                           checked={tempSettings.autoBookmark}
                           onCheckedChange={(checked) => handleChange('autoBookmark', checked)}
+                          aria-describedby="autoBookmark-desc"
                         />
                       </div>
                     </div>
@@ -389,8 +399,8 @@ export default function Settings() {
 
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <Label htmlFor="dataSharing">Data Sharing</Label>
-                          <p className="text-xs text-muted-foreground">
+                        <Label htmlFor="dataSharing">Data Sharing</Label>
+                          <p className="text-xs text-muted-foreground" id="dataSharing-desc">
                             Share reading data with partners
                           </p>
                         </div>
@@ -398,13 +408,14 @@ export default function Settings() {
                           id="dataSharing"
                           checked={tempSettings.dataSharing}
                           onCheckedChange={(checked) => handleChange('dataSharing', checked)}
+                          aria-describedby="dataSharing-desc"
                         />
                       </div>
 
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <Label htmlFor="analyticsConsent">Analytics</Label>
-                          <p className="text-xs text-muted-foreground">
+                        <Label htmlFor="analyticsConsent">Analytics</Label>
+                          <p className="text-xs text-muted-foreground" id="analyticsConsent-desc">
                             Help us improve by sharing usage data
                           </p>
                         </div>
@@ -412,6 +423,7 @@ export default function Settings() {
                           id="analyticsConsent"
                           checked={tempSettings.analyticsConsent}
                           onCheckedChange={(checked) => handleChange('analyticsConsent', checked)}
+                          aria-describedby="analyticsConsent-desc"
                         />
                       </div>
                     </div>
@@ -436,8 +448,8 @@ export default function Settings() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <Label htmlFor="emailNotifications">Email Notifications</Label>
-                          <p className="text-xs text-muted-foreground">
+                        <Label htmlFor="emailNotifications">Email Notifications</Label>
+                          <p className="text-xs text-muted-foreground" id="emailNotifications-desc">
                             Receive notifications via email
                           </p>
                         </div>
@@ -445,13 +457,14 @@ export default function Settings() {
                           id="emailNotifications"
                           checked={tempSettings.emailNotifications}
                           onCheckedChange={(checked) => handleChange('emailNotifications', checked)}
+                          aria-describedby="emailNotifications-desc"
                         />
                       </div>
 
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <Label htmlFor="pushNotifications">Push Notifications</Label>
-                          <p className="text-xs text-muted-foreground">
+                        <Label htmlFor="pushNotifications">Push Notifications</Label>
+                          <p className="text-xs text-muted-foreground" id="pushNotifications-desc">
                             Receive push notifications on your device
                           </p>
                         </div>
@@ -459,13 +472,14 @@ export default function Settings() {
                           id="pushNotifications"
                           checked={tempSettings.pushNotifications}
                           onCheckedChange={(checked) => handleChange('pushNotifications', checked)}
+                          aria-describedby="pushNotifications-desc"
                         />
                       </div>
 
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <Label htmlFor="inAppNotifications">In-App Notifications</Label>
-                          <p className="text-xs text-muted-foreground">
+                        <Label htmlFor="inAppNotifications">In-App Notifications</Label>
+                          <p className="text-xs text-muted-foreground" id="inAppNotifications-desc">
                             Show notifications within the app
                           </p>
                         </div>
@@ -473,6 +487,7 @@ export default function Settings() {
                           id="inAppNotifications"
                           checked={tempSettings.inAppNotifications}
                           onCheckedChange={(checked) => handleChange('inAppNotifications', checked)}
+                          aria-describedby="inAppNotifications-desc"
                         />
                       </div>
                     </div>
@@ -483,8 +498,8 @@ export default function Settings() {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <Label htmlFor="notifyOnComments">Comments</Label>
-                          <p className="text-xs text-muted-foreground">
+                        <Label htmlFor="notifyOnComments">Comments</Label>
+                          <p className="text-xs text-muted-foreground" id="notifyOnComments-desc">
                             Notify when someone comments on your notes
                           </p>
                         </div>
@@ -492,13 +507,14 @@ export default function Settings() {
                           id="notifyOnComments"
                           checked={tempSettings.notifyOnComments}
                           onCheckedChange={(checked) => handleChange('notifyOnComments', checked)}
+                          aria-describedby="notifyOnComments-desc"
                         />
                       </div>
 
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <Label htmlFor="notifyOnFollows">Follows</Label>
-                          <p className="text-xs text-muted-foreground">
+                        <Label htmlFor="notifyOnFollows">Follows</Label>
+                          <p className="text-xs text-muted-foreground" id="notifyOnFollows-desc">
                             Notify when someone follows you
                           </p>
                         </div>
@@ -506,13 +522,14 @@ export default function Settings() {
                           id="notifyOnFollows"
                           checked={tempSettings.notifyOnFollows}
                           onCheckedChange={(checked) => handleChange('notifyOnFollows', checked)}
+                          aria-describedby="notifyOnFollows-desc"
                         />
                       </div>
 
                       <div className="flex items-center justify-between py-2">
                         <div className="space-y-0.5">
-                          <Label htmlFor="notifyOnRecommendations">Recommendations</Label>
-                          <p className="text-xs text-muted-foreground">
+                        <Label htmlFor="notifyOnRecommendations">Recommendations</Label>
+                          <p className="text-xs text-muted-foreground" id="notifyOnRecommendations-desc">
                             Notify when you receive book recommendations
                           </p>
                         </div>
@@ -520,6 +537,7 @@ export default function Settings() {
                           id="notifyOnRecommendations"
                           checked={tempSettings.notifyOnRecommendations}
                           onCheckedChange={(checked) => handleChange('notifyOnRecommendations', checked)}
+                          aria-describedby="notifyOnRecommendations-desc"
                         />
                       </div>
                     </div>
@@ -540,8 +558,13 @@ export default function Settings() {
         description="You have unsaved changes. Are you sure you want to discard them?"
         confirmText="Discard"
         cancelText="Keep Editing"
-        variant="destructive"
+        variant="danger"
       />
+      
+      {/* Live Region for Screen Reader Announcements */}
+      {statusMessage && (
+        <LiveRegion message={statusMessage} politeness="polite" />
+      )}
     </div>
   );
 }

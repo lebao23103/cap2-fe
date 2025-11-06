@@ -949,8 +949,8 @@ export default function BookReader() {
           <div className="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent p-6 border-b border-border/50">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-xl">
-                <div className="p-2 rounded-lg bg-amber-500/20">
-                  <StickyNote className="h-5 w-5 text-amber-600 dark:text-amber-500" />
+                <div className="p-2 rounded-lg bg-amber-500/20" aria-hidden="true">
+                  <StickyNote className="h-5 w-5 text-amber-600 dark:text-amber-500" aria-hidden="true" />
                 </div>
                 {editingNote ? 'Edit Note' : 'Add Note'}
               </DialogTitle>
@@ -963,7 +963,7 @@ export default function BookReader() {
             {/* Selected Text */}
             <div>
               <label className="text-sm font-semibold flex items-center gap-2 mb-2">
-                <Highlighter className="h-4 w-4 text-amber-600 dark:text-amber-500" />
+                <Highlighter className="h-4 w-4 text-amber-600 dark:text-amber-500" aria-hidden="true" />
                 Selected Text
               </label>
               <div className={`text-sm p-4 rounded-xl border-2 ${getHighlightClass(highlightColor)} font-medium`}>
@@ -1004,7 +1004,7 @@ export default function BookReader() {
             {/* Note Textarea */}
             <div>
               <label className="text-sm font-semibold flex items-center gap-2 mb-2">
-                <FileText className="h-4 w-4 text-amber-600 dark:text-amber-500" />
+                <FileText className="h-4 w-4 text-amber-600 dark:text-amber-500" aria-hidden="true" />
                 Your Note
               </label>
               <Textarea
@@ -1057,8 +1057,8 @@ export default function BookReader() {
           <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-4 border-b border-border/50 flex-shrink-0">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-xl">
-                <div className="p-1.5 rounded-lg bg-primary/20">
-                  <Star className="h-5 w-5 text-primary fill-current" />
+                <div className="p-1.5 rounded-lg bg-primary/20" aria-hidden="true">
+                  <Star className="h-5 w-5 text-primary fill-current" aria-hidden="true" />
                 </div>
                 You've Finished the Book!
               </DialogTitle>

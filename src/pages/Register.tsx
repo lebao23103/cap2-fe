@@ -19,6 +19,7 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
+  const [formSubmitted, setFormSubmitted] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -47,6 +48,7 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setFormSubmitted(true)
     
     if (!validateForm()) return
 
@@ -109,11 +111,11 @@ export default function Register() {
             </p>
           </CardHeader>
           <CardContent className="px-8 pb-8 pt-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4" aria-label="Registration form" noValidate>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                    First Name
+                    First Name <span className="text-destructive" aria-label="required">*</span>
                   </Label>
                   <Input
                     id="firstName"
@@ -124,12 +126,20 @@ export default function Register() {
                     onChange={handleChange}
                     className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
                     required
+                    aria-required="true"
+                    aria-invalid={errors.firstName ? 'true' : 'false'}
+                    aria-describedby={errors.firstName ? 'firstName-error' : undefined}
+                    autoComplete="given-name"
                   />
-                  {errors.firstName && <p className="text-xs text-destructive font-medium">{errors.firstName}</p>}
+                  {errors.firstName && (
+                    <p id="firstName-error" role="alert" className="text-xs text-destructive font-medium">
+                      {errors.firstName}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                    Last Name
+                    Last Name <span className="text-destructive" aria-label="required">*</span>
                   </Label>
                   <Input
                     id="lastName"
@@ -140,14 +150,22 @@ export default function Register() {
                     onChange={handleChange}
                     className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
                     required
+                    aria-required="true"
+                    aria-invalid={errors.lastName ? 'true' : 'false'}
+                    aria-describedby={errors.lastName ? 'lastName-error' : undefined}
+                    autoComplete="family-name"
                   />
-                  {errors.lastName && <p className="text-xs text-destructive font-medium">{errors.lastName}</p>}
+                  {errors.lastName && (
+                    <p id="lastName-error" role="alert" className="text-xs text-destructive font-medium">
+                      {errors.lastName}
+                    </p>
+                  )}
                 </div>
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Email Address
+                  Email Address <span className="text-destructive" aria-label="required">*</span>
                 </Label>
                 <Input
                   id="email"
@@ -158,13 +176,21 @@ export default function Register() {
                   onChange={handleChange}
                   className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
                   required
+                  aria-required="true"
+                  aria-invalid={errors.email ? 'true' : 'false'}
+                  aria-describedby={errors.email ? 'email-error' : undefined}
+                  autoComplete="email"
                 />
-                {errors.email && <p className="text-xs text-destructive font-medium">{errors.email}</p>}
+                {errors.email && (
+                  <p id="email-error" role="alert" className="text-xs text-destructive font-medium">
+                    {errors.email}
+                  </p>
+                )}
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Password
+                  Password <span className="text-destructive" aria-label="required">*</span>
                 </Label>
                 <div className="relative">
                   <Input
@@ -176,6 +202,10 @@ export default function Register() {
                     onChange={handleChange}
                     className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
                     required
+                    aria-required="true"
+                    aria-invalid={errors.password ? 'true' : 'false'}
+                    aria-describedby={errors.password ? 'password-error password-hint' : 'password-hint'}
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
@@ -186,12 +216,19 @@ export default function Register() {
                     {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                   </button>
                 </div>
-                {errors.password && <p className="text-xs text-destructive font-medium">{errors.password}</p>}
+                <p id="password-hint" className="text-xs text-muted-foreground">
+                  Must be at least 6 characters
+                </p>
+                {errors.password && (
+                  <p id="password-error" role="alert" className="text-xs text-destructive font-medium">
+                    {errors.password}
+                  </p>
+                )}
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Confirm Password
+                  Confirm Password <span className="text-destructive" aria-label="required">*</span>
                 </Label>
                 <div className="relative">
                   <Input
@@ -203,6 +240,10 @@ export default function Register() {
                     onChange={handleChange}
                     className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
                     required
+                    aria-required="true"
+                    aria-invalid={errors.confirmPassword ? 'true' : 'false'}
+                    aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
+                    autoComplete="new-password"
                   />
                   <button
                     type="button"
@@ -213,7 +254,11 @@ export default function Register() {
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                   </button>
                 </div>
-                {errors.confirmPassword && <p className="text-xs text-destructive font-medium">{errors.confirmPassword}</p>}
+                {errors.confirmPassword && (
+                  <p id="confirmPassword-error" role="alert" className="text-xs text-destructive font-medium">
+                    {errors.confirmPassword}
+                  </p>
+                )}
               </div>
               
               <div className="pt-2">

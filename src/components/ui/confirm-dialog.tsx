@@ -85,8 +85,8 @@ export function ConfirmDialog({
         <DialogHeader>
           {/* Icon */}
           <div className="flex items-center gap-4 mb-2">
-            <div className={cn('p-3 rounded-xl', config.iconBg)}>
-              <Icon className={cn('h-6 w-6', config.iconColor)} strokeWidth={2} />
+            <div className={cn('p-3 rounded-xl', config.iconBg)} aria-hidden="true">
+              <Icon className={cn('h-6 w-6', config.iconColor)} strokeWidth={2} aria-hidden="true" />
             </div>
             <DialogTitle className="text-xl">{title}</DialogTitle>
           </div>
@@ -113,7 +113,7 @@ export function ConfirmDialog({
           >
             {isLoading || loading ? (
               <>
-                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
                 Loading...
               </>
             ) : (

@@ -110,8 +110,9 @@ export default function Favorites() {
         <div className="flex gap-4">
           <img
             src={book.cover}
-            alt={book.title}
+            alt={`${book.title} by ${book.author} - Book cover`}
             className="w-16 h-20 object-cover rounded-md"
+            loading="lazy"
           />
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-sm text-gray-900 dark:text-foreground line-clamp-2">{book.title}</h3>
@@ -136,8 +137,9 @@ export default function Favorites() {
             size="sm"
             onClick={() => handleRemoveFavorite(book.id)}
             className="opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label={`Remove ${book.title} from favorites`}
           >
-            <Trash2 className="h-4 w-4 text-red-600 dark:text-red-500" />
+            <Trash2 className="h-4 w-4 text-red-600 dark:text-red-500" aria-hidden="true" />
           </Button>
         </div>
       </CardContent>
