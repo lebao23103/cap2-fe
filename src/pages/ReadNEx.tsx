@@ -368,37 +368,37 @@ export default function ReadNEx() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="mb-8"
         >
-          <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6">
+          <Card className="border border-border/50 bg-card/50 backdrop-blur-sm rounded-xl">
+            <CardContent className="p-4">
               
-              {/* Search Bar - Full Width */}
-              <div className="mb-6">
+              {/* Search Bar - Compact */}
+              <div className="mb-4">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-muted-foreground" />
                   <input
                     type="text"
                     placeholder="Search books by title or author..."
                     value={filters.searchTerm}
                     onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 text-base border border-input rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background/50 text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50"
+                    className="w-full pl-10 pr-4 py-2.5 text-sm border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-background text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50"
                   />
                 </div>
               </div>
 
               {/* Filters Row */}
-              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+              <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
                 
                 {/* Status Filter */}
-                <div className="flex-1 w-full space-y-2">
-                  <label className="text-sm font-semibold text-gray-900 dark:text-foreground flex items-center gap-2">
-                    <BookmarkCheck className="h-4 w-4 text-primary" />
+                <div className="flex-1 w-full space-y-1.5">
+                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                    <BookmarkCheck className="h-3.5 w-3.5 text-primary" />
                     Reading Status
                   </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button 
                         variant="outline" 
-                        className="w-full justify-between h-11 rounded-xl hover:bg-primary/5 hover:border-primary/50 transition-colors"
+                        className="w-full justify-between h-9 rounded-lg hover:bg-primary/5 hover:border-primary/50 transition-colors text-sm"
                       >
                         <span className="font-medium">{filters.statusFilter}</span>
                         <ChevronDown className="h-4 w-4 opacity-50" />
@@ -421,33 +421,33 @@ export default function ReadNEx() {
                 </div>
 
                 {/* View Mode */}
-                <div className="flex-1 w-full sm:w-auto space-y-2">
-                  <label className="text-sm font-semibold text-gray-900 dark:text-foreground flex items-center gap-2">
-                    <Grid3x3 className="h-4 w-4 text-primary" />
+                <div className="flex-1 w-full sm:w-auto space-y-1.5">
+                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                    <Grid3x3 className="h-3.5 w-3.5 text-primary" />
                     View Mode
                   </label>
-                  <div className="flex items-center gap-3">
-                    <div className="flex rounded-xl border border-input overflow-hidden shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="flex rounded-lg border border-input overflow-hidden">
                       <Button
                         variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                        size="default"
+                        size="sm"
                         onClick={() => setViewMode('grid')}
-                        className="rounded-none px-6 h-11"
+                        className="rounded-none px-4 h-9"
                       >
                         <Grid3x3 className="h-4 w-4" />
                       </Button>
                       <Button
                         variant={viewMode === 'list' ? 'default' : 'ghost'}
-                        size="default"
+                        size="sm"
                         onClick={() => setViewMode('list')}
-                        className="rounded-none px-6 h-11"
+                        className="rounded-none px-4 h-9"
                       >
                         <List className="h-4 w-4" />
                       </Button>
                     </div>
                     <Badge 
                       variant="secondary" 
-                      className="text-sm font-semibold px-3 py-1.5 bg-primary/10 text-primary border-0"
+                      className="text-xs font-semibold px-2.5 py-1 bg-primary/10 text-primary border-0"
                     >
                       {filteredBooks.length} books
                     </Badge>
