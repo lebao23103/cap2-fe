@@ -547,13 +547,13 @@ export default function NoteShare() {
           className="mb-8"
         >
           <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
               placeholder="Search notes, books, or users..."
               value={filters.searchTerm}
               onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary/50 bg-background/50 backdrop-blur-sm shadow-sm text-foreground placeholder:text-muted-foreground transition-all"
+              className="w-full pl-10 pr-4 py-2.5 text-sm border-2 border-input rounded-lg focus:outline-none focus:ring-[3px] focus:ring-primary/20 focus:border-primary bg-background text-foreground placeholder:text-muted-foreground transition-all duration-200"
             />
           </div>
         </motion.div>
