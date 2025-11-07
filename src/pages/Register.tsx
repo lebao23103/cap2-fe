@@ -1,13 +1,13 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
+import { Link, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
-import { Eye, EyeOff, BookOpen, Sparkles, UserPlus } from 'lucide-react'
+import { BookOpen, UserPlus } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { ModernButton } from '../components/ui/modern'
+import { FormInput, SubmitButton, PasswordStrengthIndicator, usePasswordStrength } from '../components/auth'
+import { useErrorAnnouncement, useSuccessAnnouncement } from '../hooks/useAnnounce'
 
 export default function Register() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -18,46 +18,111 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [formSubmitted, setFormSubmitted] = useState(false)
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
+  const [generalError, setGeneralError] = useState('')
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }))
+  // Password strength check
+  const passwordStrength = usePasswordStrength(formData.password)
+
+  // Accessibility: Announce errors and success
+  useErrorAnnouncement(generalError)
+  useSuccessAnnouncement(isSuccess, 'Registration successful! Redirecting...')
+
+  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setFormData(prev => ({ ...prev, [field]: value }))
+    setGeneralError('')
+    
+    // Real-time validation if field has been touched
+    if (touched[field]) {
+      validateField(field, value)
     }
   }
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
+  const handleBlur = (field: string) => () => {
+    setTouched(prev => ({ ...prev, [field]: true }))
+    validateField(field, formData[field as keyof typeof formData])
+  }
 
-    if (!formData.firstName) newErrors.firstName = 'First name is required'
-    if (!formData.lastName) newErrors.lastName = 'Last name is required'
-    if (!formData.email) newErrors.email = 'Email is required'
-    if (!formData.password) newErrors.password = 'Password is required'
-    if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters'
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match'
+  const validateField = (field: string, value: string) => {
+    let error = ''
+
+    switch (field) {
+      case 'firstName':
+        if (!value.trim()) error = 'First name is required'
+        break
+      case 'lastName':
+        if (!value.trim()) error = 'Last name is required'
+        break
+      case 'email':
+        if (!value) {
+          error = 'Email is required'
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          error = 'Please enter a valid email address'
+        }
+        break
+      case 'password':
+        if (!value) {
+          error = 'Password is required'
+        } else if (value.length < 6) {
+          error = 'Password must be at least 6 characters'
+        } else if (passwordStrength.score < 2) {
+          error = 'Please choose a stronger password'
+        }
+        break
+      case 'confirmPassword':
+        if (!value) {
+          error = 'Please confirm your password'
+        } else if (value !== formData.password) {
+          error = 'Passwords do not match'
+        }
+        break
     }
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
+    setErrors(prev => ({ ...prev, [field]: error }))
+    return !error
+  }
+
+  const validateForm = () => {
+    const fields = ['firstName', 'lastName', 'email', 'password', 'confirmPassword']
+    const results = fields.map(field => validateField(field, formData[field as keyof typeof formData]))
+    return results.every(Boolean)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setFormSubmitted(true)
+    
+    // Mark all fields as touched
+    const allFields = ['firstName', 'lastName', 'email', 'password', 'confirmPassword']
+    setTouched(Object.fromEntries(allFields.map(f => [f, true])))
     
     if (!validateForm()) return
 
     setIsLoading(true)
+    setGeneralError('')
     
-    // TODO: Implement registration API call
-    console.log('Registration attempt:', formData)
-    
-    setIsLoading(false)
+    try {
+      // TODO: Implement registration API call
+      console.log('Registration attempt:', formData)
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      // Simulate success
+      setIsSuccess(true)
+      
+      // Redirect after success animation
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 1500)
+      
+    } catch (error) {
+      setGeneralError('Registration failed. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -111,167 +176,119 @@ export default function Register() {
             </p>
           </CardHeader>
           <CardContent className="px-8 pb-8 pt-6">
-            <form onSubmit={handleSubmit} className="space-y-4" aria-label="Registration form" noValidate>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                    First Name <span className="text-destructive" aria-label="required">*</span>
-                  </Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    placeholder="John"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
-                    required
-                    aria-required="true"
-                    aria-invalid={errors.firstName ? 'true' : 'false'}
-                    aria-describedby={errors.firstName ? 'firstName-error' : undefined}
-                    autoComplete="given-name"
-                  />
-                  {errors.firstName && (
-                    <p id="firstName-error" role="alert" className="text-xs text-destructive font-medium">
-                      {errors.firstName}
-                    </p>
-                  )}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                    Last Name <span className="text-destructive" aria-label="required">*</span>
-                  </Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    placeholder="Doe"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
-                    required
-                    aria-required="true"
-                    aria-invalid={errors.lastName ? 'true' : 'false'}
-                    aria-describedby={errors.lastName ? 'lastName-error' : undefined}
-                    autoComplete="family-name"
-                  />
-                  {errors.lastName && (
-                    <p id="lastName-error" role="alert" className="text-xs text-destructive font-medium">
-                      {errors.lastName}
-                    </p>
-                  )}
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Email Address <span className="text-destructive" aria-label="required">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="john.doe@example.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
-                  required
-                  aria-required="true"
-                  aria-invalid={errors.email ? 'true' : 'false'}
-                  aria-describedby={errors.email ? 'email-error' : undefined}
-                  autoComplete="email"
-                />
-                {errors.email && (
-                  <p id="email-error" role="alert" className="text-xs text-destructive font-medium">
-                    {errors.email}
-                  </p>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Password <span className="text-destructive" aria-label="required">*</span>
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Create your password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
-                    required
-                    aria-required="true"
-                    aria-invalid={errors.password ? 'true' : 'false'}
-                    aria-describedby={errors.password ? 'password-error password-hint' : 'password-hint'}
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
-                  </button>
-                </div>
-                <p id="password-hint" className="text-xs text-muted-foreground">
-                  Must be at least 6 characters
-                </p>
-                {errors.password && (
-                  <p id="password-error" role="alert" className="text-xs text-destructive font-medium">
-                    {errors.password}
-                  </p>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Confirm Password <span className="text-destructive" aria-label="required">*</span>
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    placeholder="Repeat your password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
-                    required
-                    aria-required="true"
-                    aria-invalid={errors.confirmPassword ? 'true' : 'false'}
-                    aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
-                    autoComplete="new-password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
-                  </button>
-                </div>
-                {errors.confirmPassword && (
-                  <p id="confirmPassword-error" role="alert" className="text-xs text-destructive font-medium">
-                    {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
-              
-              <div className="pt-2">
-                <ModernButton
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  icon={Sparkles}
-                  isLoading={isLoading}
-                  className="w-full h-12 text-base shadow-lg hover:shadow-xl"
+            <form onSubmit={handleSubmit} className="space-y-5" aria-label="Registration form" noValidate>
+              {/* General error message */}
+              {generalError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
+                  role="alert"
                 >
-                  {isLoading ? 'Creating your account...' : 'Create Account'}
-                </ModernButton>
+                  <p className="text-sm text-destructive font-medium">{generalError}</p>
+                </motion.div>
+              )}
+
+              {/* Name fields in grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <FormInput
+                  label="First Name"
+                  type="text"
+                  placeholder="John"
+                  value={formData.firstName}
+                  onChange={handleChange('firstName')}
+                  onBlur={handleBlur('firstName')}
+                  error={touched.firstName ? errors.firstName : ''}
+                  success={touched.firstName && !errors.firstName && formData.firstName.length > 0}
+                  disabled={isLoading || isSuccess}
+                  required
+                  autoComplete="given-name"
+                />
+                <FormInput
+                  label="Last Name"
+                  type="text"
+                  placeholder="Doe"
+                  value={formData.lastName}
+                  onChange={handleChange('lastName')}
+                  onBlur={handleBlur('lastName')}
+                  error={touched.lastName ? errors.lastName : ''}
+                  success={touched.lastName && !errors.lastName && formData.lastName.length > 0}
+                  disabled={isLoading || isSuccess}
+                  required
+                  autoComplete="family-name"
+                />
+              </div>
+              
+              {/* Email field */}
+              <FormInput
+                label="Email Address"
+                type="email"
+                placeholder="john.doe@example.com"
+                value={formData.email}
+                onChange={handleChange('email')}
+                onBlur={handleBlur('email')}
+                error={touched.email ? errors.email : ''}
+                success={touched.email && !errors.email && formData.email.length > 0}
+                disabled={isLoading || isSuccess}
+                required
+                autoComplete="email"
+              />
+              
+              {/* Password field with strength indicator */}
+              <div>
+                <FormInput
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Create your password"
+                  value={formData.password}
+                  onChange={handleChange('password')}
+                  onBlur={handleBlur('password')}
+                  error={touched.password ? errors.password : ''}
+                  success={touched.password && !errors.password && passwordStrength.score >= 2}
+                  showPasswordToggle
+                  showPassword={showPassword}
+                  onPasswordToggle={() => setShowPassword(!showPassword)}
+                  disabled={isLoading || isSuccess}
+                  required
+                  autoComplete="new-password"
+                />
+                {/* Password strength indicator */}
+                <PasswordStrengthIndicator
+                  password={formData.password}
+                  show={formData.password.length > 0}
+                  className="mt-2"
+                />
+              </div>
+              
+              {/* Confirm password field */}
+              <FormInput
+                label="Confirm Password"
+                type={showConfirmPassword ? 'text' : 'password'}
+                placeholder="Repeat your password"
+                value={formData.confirmPassword}
+                onChange={handleChange('confirmPassword')}
+                onBlur={handleBlur('confirmPassword')}
+                error={touched.confirmPassword ? errors.confirmPassword : ''}
+                success={touched.confirmPassword && !errors.confirmPassword && formData.confirmPassword === formData.password}
+                showPasswordToggle
+                showPassword={showConfirmPassword}
+                onPasswordToggle={() => setShowConfirmPassword(!showConfirmPassword)}
+                disabled={isLoading || isSuccess}
+                required
+                autoComplete="new-password"
+              />
+              
+              {/* Submit button with loading and success states */}
+              <div className="pt-2">
+                <SubmitButton
+                  loading={isLoading}
+                  success={isSuccess}
+                  loadingText="Creating your account..."
+                  successText="Success! Redirecting..."
+                  className="h-12 text-base shadow-lg hover:shadow-xl"
+                >
+                  Create Account
+                </SubmitButton>
               </div>
             </form>
             

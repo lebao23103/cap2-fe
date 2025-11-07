@@ -1,26 +1,109 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
+import { Link, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
-import { Eye, EyeOff, BookOpen, KeyRound, Sparkles } from 'lucide-react'
+import { BookOpen, KeyRound } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { ModernButton } from '../components/ui/modern'
+import { FormInput, SubmitButton } from '../components/auth'
+import { useErrorAnnouncement, useSuccessAnnouncement } from '../hooks/useAnnounce'
 
 export default function Login() {
+  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [generalError, setGeneralError] = useState('')
+
+  // Accessibility: Announce errors and success
+  useErrorAnnouncement(generalError)
+  useSuccessAnnouncement(isSuccess, 'Login successful! Redirecting...')
+
+  // Real-time email validation
+  const validateEmail = (value: string) => {
+    if (!value) {
+      setEmailError('Email is required')
+      return false
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(value)) {
+      setEmailError('Please enter a valid email address')
+      return false
+    }
+    setEmailError('')
+    return true
+  }
+
+  // Real-time password validation
+  const validatePassword = (value: string) => {
+    if (!value) {
+      setPasswordError('Password is required')
+      return false
+    }
+    if (value.length < 6) {
+      setPasswordError('Password must be at least 6 characters')
+      return false
+    }
+    setPasswordError('')
+    return true
+  }
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setEmail(value)
+    setGeneralError('') // Clear general error on input
+    // Only validate if user has already interacted with the field
+    if (email || value) {
+      validateEmail(value)
+    }
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setPassword(value)
+    setGeneralError('') // Clear general error on input
+    // Only validate if user has already interacted with the field
+    if (password || value) {
+      validatePassword(value)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate all fields
+    const isEmailValid = validateEmail(email)
+    const isPasswordValid = validatePassword(password)
+    
+    if (!isEmailValid || !isPasswordValid) {
+      return
+    }
+
     setIsLoading(true)
+    setGeneralError('')
     
-    // TODO: Implement login API call
-    console.log('Login attempt:', { email, password })
-    
-    setIsLoading(false)
+    try {
+      // TODO: Implement login API call
+      console.log('Login attempt:', { email, password })
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      // Simulate success
+      setIsSuccess(true)
+      
+      // Redirect after success animation
+      setTimeout(() => {
+        navigate('/dashboard')
+      }, 1000)
+      
+    } catch (error) {
+      setGeneralError('Invalid email or password. Please try again.')
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -74,74 +157,77 @@ export default function Login() {
             </p>
           </CardHeader>
           <CardContent className="px-8 pb-8 pt-6">
-            <form onSubmit={handleSubmit} className="space-y-4" aria-label="Sign in form">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Email Address <span className="text-destructive" aria-label="required">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
-                  required
-                  aria-required="true"
-                  autoComplete="email"
-                />
-              </div>
+            <form onSubmit={handleSubmit} className="space-y-5" aria-label="Sign in form">
+              {/* General error message */}
+              {generalError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
+                  role="alert"
+                >
+                  <p className="text-sm text-destructive font-medium">{generalError}</p>
+                </motion.div>
+              )}
+
+              {/* Email field with validation */}
+              <FormInput
+                label="Email Address"
+                type="email"
+                placeholder="your.name@example.com"
+                value={email}
+                onChange={handleEmailChange}
+                onBlur={() => validateEmail(email)}
+                error={emailError}
+                success={!emailError && email.length > 0}
+                disabled={isLoading || isSuccess}
+                required
+                autoComplete="email"
+              />
               
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="password" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                    Password <span className="text-destructive" aria-label="required">*</span>
-                  </Label>
+              {/* Password field with toggle */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-medium">
+                    Password <span className="text-destructive">*</span>
+                  </span>
                   <Link 
                     to="/forgot-password" 
                     className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                    tabIndex={isLoading || isSuccess ? -1 : 0}
                   >
                     Forgot password?
                   </Link>
                 </div>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
-                    required
-                    aria-required="true"
-                    autoComplete="current-password"
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" aria-hidden="true" />
-                    ) : (
-                      <Eye className="h-4 w-4" aria-hidden="true" />
-                    )}
-                  </button>
-                </div>
+                <FormInput
+                  label=""
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  onBlur={() => validatePassword(password)}
+                  error={passwordError}
+                  success={!passwordError && password.length >= 6}
+                  showPasswordToggle
+                  showPassword={showPassword}
+                  onPasswordToggle={() => setShowPassword(!showPassword)}
+                  disabled={isLoading || isSuccess}
+                  required
+                  autoComplete="current-password"
+                />
               </div>
               
+              {/* Submit button with loading and success states */}
               <div className="pt-2">
-                <ModernButton
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  icon={Sparkles}
-                  isLoading={isLoading}
-                  className="w-full h-12 text-base shadow-lg hover:shadow-xl"
+                <SubmitButton
+                  loading={isLoading}
+                  success={isSuccess}
+                  loadingText="Signing you in..."
+                  successText="Success! Redirecting..."
+                  className="h-12 text-base shadow-lg hover:shadow-xl"
                 >
-                  {isLoading ? 'Signing you in...' : 'Sign In'}
-                </ModernButton>
+                  Sign In
+                </SubmitButton>
               </div>
             </form>
             
