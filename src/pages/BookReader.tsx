@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Bookmark, 
   Heart, 
@@ -16,7 +17,10 @@ import {
   Trash2,
   Share2,
   Highlighter,
-  FileText
+  FileText,
+  Sun,
+  Moon,
+  Palette
 } from 'lucide-react'
 
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -146,13 +150,60 @@ export default function BookReader() {
   const [hoveredRating, setHoveredRating] = useState(0)
   const [reviewText, setReviewText] = useState("")
   const [hasSubmittedReview, setHasSubmittedReview] = useState(false)
+  const [theme, setTheme] = useState<'light' | 'dark' | 'sepia'>('light')
+  const [pageDirection, setPageDirection] = useState<'forward' | 'backward'>('forward')
 
   useEffect(() => {
     setIsBookmarked(bookData.bookmarks.includes(currentPage))
   }, [currentPage, bookData.bookmarks])
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input/textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return
+      }
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          if (currentPage > 1) {
+            setPageDirection('backward')
+            handlePageChange('prev')
+          }
+          break
+        case 'ArrowRight':
+          if (currentPage < bookData.totalPages) {
+            setPageDirection('forward')
+            handlePageChange('next')
+          }
+          break
+        case 'b':
+        case 'B':
+          toggleBookmark()
+          break
+        case '+':
+        case '=':
+          setFontSize(prev => Math.min(prev + 2, 24))
+          break
+        case '-':
+        case '_':
+          setFontSize(prev => Math.max(prev - 2, 12))
+          break
+        case 'Escape':
+          if (showNoteDialog) setShowNoteDialog(false)
+          if (showReviewDialog) setShowReviewDialog(false)
+          break
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [currentPage, bookData.totalPages, showNoteDialog, showReviewDialog])
+
   const handlePageChange = (direction: 'next' | 'prev') => {
     if (direction === 'next' && currentPage < bookData.totalPages) {
+      setPageDirection('forward')
       const nextPage = currentPage + 1
       setCurrentPage(nextPage)
       updateReadingProgress(nextPage)
@@ -162,6 +213,7 @@ export default function BookReader() {
         setTimeout(() => setShowReviewDialog(true), 500)
       }
     } else if (direction === 'prev' && currentPage > 1) {
+      setPageDirection('backward')
       setCurrentPage(prev => prev - 1)
     }
   }
@@ -274,6 +326,15 @@ export default function BookReader() {
       pink: 'bg-pink-200 dark:bg-pink-500/30'
     }
     return colors[color as keyof typeof colors] || colors.yellow
+  }
+
+  const getThemeStyles = () => {
+    const themes = {
+      light: { bg: 'bg-white', text: 'text-gray-900', cardBg: 'from-white via-white to-gray-50' },
+      dark: { bg: 'bg-gray-900', text: 'text-gray-100', cardBg: 'from-gray-900 via-gray-900 to-gray-800' },
+      sepia: { bg: 'bg-amber-50', text: 'text-amber-950', cardBg: 'from-amber-50 via-amber-50 to-amber-100' }
+    }
+    return themes[theme]
   }
 
   // Render text with inline highlights for notes
@@ -554,6 +615,22 @@ export default function BookReader() {
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel className="text-xs uppercase tracking-wider">Reading Theme</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setTheme('light')} className="cursor-pointer">
+                    <Sun className="h-4 w-4 mr-2" />
+                    <span className={theme === 'light' ? 'font-bold text-primary' : 'font-medium'}>Light</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme('dark')} className="cursor-pointer">
+                    <Moon className="h-4 w-4 mr-2" />
+                    <span className={theme === 'dark' ? 'font-bold text-primary' : 'font-medium'}>Dark</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setTheme('sepia')} className="cursor-pointer">
+                    <Palette className="h-4 w-4 mr-2" />
+                    <span className={theme === 'sepia' ? 'font-bold text-primary' : 'font-medium'}>Sepia</span>
+                  </DropdownMenuItem>
+                  
+                  <DropdownMenuSeparator />
                   <DropdownMenuLabel className="text-xs uppercase tracking-wider">Font Size</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={() => setFontSize(14)} className="cursor-pointer">
@@ -602,37 +679,59 @@ export default function BookReader() {
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
           {/* Main Content - Reading Area */}
           <div className="xl:col-span-8">
-            <Card className="border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm overflow-hidden">
+            <Card className={`border-0 shadow-2xl bg-gradient-to-br ${getThemeStyles().cardBg} backdrop-blur-sm overflow-hidden transition-colors duration-500`}>
               <CardContent className="p-0">
                 {/* Reading Container */}
                 <div className="min-h-[calc(100vh-280px)] flex flex-col">
-                  {/* Text Content */}
-                  <div 
-                    className="flex-1 p-8 md:p-12 lg:p-16"
-                    style={{ 
-                      maxWidth: '65ch', 
-                      marginLeft: 'auto', 
-                      marginRight: 'auto',
-                      width: '100%'
-                    }}
-                  >
-                    <div 
-                      className="prose prose-lg dark:prose-invert max-w-none leading-relaxed selection:bg-amber-300 selection:text-amber-950 dark:selection:bg-amber-500 dark:selection:text-white transition-all duration-300"
-                      style={{ 
-                        fontSize: `${fontSize}px`, 
-                        lineHeight: '1.85',
-                        letterSpacing: '0.015em',
-                        textAlign: 'justify',
-                        hyphens: 'auto',
-                        textRendering: 'optimizeLegibility',
-                        WebkitFontSmoothing: 'antialiased',
-                        MozOsxFontSmoothing: 'grayscale'
+                  {/* Text Content with Page Turn Animation */}
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={currentPage}
+                      initial={{ 
+                        opacity: 0, 
+                        x: pageDirection === 'forward' ? 100 : -100,
+                        scale: 0.98
                       }}
-                      onMouseUp={handleTextSelection}
+                      animate={{ 
+                        opacity: 1, 
+                        x: 0,
+                        scale: 1
+                      }}
+                      exit={{ 
+                        opacity: 0, 
+                        x: pageDirection === 'forward' ? -100 : 100,
+                        scale: 0.98
+                      }}
+                      transition={{ 
+                        duration: 0.3,
+                        ease: [0.25, 0.1, 0.25, 1]
+                      }}
+                      className="flex-1 p-8 md:p-12 lg:p-16"
+                      style={{ 
+                        maxWidth: '65ch', 
+                        marginLeft: 'auto', 
+                        marginRight: 'auto',
+                        width: '100%'
+                      }}
                     >
-                      {renderTextWithHighlights(bookData.content[currentPage - 1], currentPage)}
-                    </div>
-                  </div>
+                      <div 
+                        className={`prose prose-lg dark:prose-invert max-w-none leading-relaxed selection:bg-amber-300 selection:text-amber-950 dark:selection:bg-amber-500 dark:selection:text-white transition-all duration-300 ${getThemeStyles().text}`}
+                        style={{ 
+                          fontSize: `${fontSize}px`, 
+                          lineHeight: '1.85',
+                          letterSpacing: '0.015em',
+                          textAlign: 'justify',
+                          hyphens: 'auto',
+                          textRendering: 'optimizeLegibility',
+                          WebkitFontSmoothing: 'antialiased',
+                          MozOsxFontSmoothing: 'grayscale'
+                        }}
+                        onMouseUp={handleTextSelection}
+                      >
+                        {renderTextWithHighlights(bookData.content[currentPage - 1], currentPage)}
+                      </div>
+                    </motion.div>
+                  </AnimatePresence>
                 
                   {/* Navigation Footer */}
                   <div className="px-8 md:px-12 lg:px-16 pb-8 pt-6 border-t border-border/30 bg-gradient-to-b from-transparent to-muted/20">
