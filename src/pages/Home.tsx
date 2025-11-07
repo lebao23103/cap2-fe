@@ -29,8 +29,7 @@ export default function Home () {
       author: "Matt Haig",
       coverImage: "/api/placeholder/200/300",
       rating: 4.5,
-      description: "Between life and death there is a library, and within that library, the shelves go on forever.",
-      genre: "Fiction"
+      description: "Between life and death there is a library, and within that library, the shelves go on forever."
     },
     {
       id: "2",
@@ -38,8 +37,7 @@ export default function Home () {
       author: "Andy Weir",
       coverImage: "/api/placeholder/200/300",
       rating: 4.8,
-      description: "A lone astronaut must save humanity from an extinction-level threat.",
-      genre: "Sci-Fi"
+      description: "A lone astronaut must save humanity from an extinction-level threat."
     },
     {
       id: "3",
@@ -47,8 +45,7 @@ export default function Home () {
       author: "Kazuo Ishiguro",
       coverImage: "/api/placeholder/200/300",
       rating: 4.2,
-      description: "A thrilling coming-of-age story about an Artificial Friend and her quest to save the family she loves.",
-      genre: "Literary Fiction"
+      description: "A thrilling coming-of-age story about an Artificial Friend and her quest to save the family she loves."
     },
     {
       id: "4",
@@ -56,8 +53,7 @@ export default function Home () {
       author: "Taylor Jenkins Reid",
       coverImage: "/api/placeholder/200/300",
       rating: 4.7,
-      description: "Aging Hollywood icon finally tells her story of fame, fortune, and scandalous relationships.",
-      genre: "Romance"
+      description: "Aging Hollywood icon finally tells her story of fame, fortune, and scandalous relationships."
     }
   ]
 
@@ -182,9 +178,6 @@ export default function Home () {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
                     />
-                    <div className="absolute top-3 right-3">
-                      <Badge variant="secondary">{book.genre}</Badge>
-                    </div>
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
                       <div className="flex items-center gap-1 mb-2">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
