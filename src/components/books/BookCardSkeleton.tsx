@@ -42,9 +42,6 @@ export function BookCardSkeleton() {
           <Skeleton className="h-4 w-8 ml-2" />
         </div>
         
-        {/* Genre Badge */}
-        <Skeleton className="h-6 w-20 rounded-full" />
-        
         {/* Description */}
         <div className="space-y-2">
           <Skeleton className="h-3 w-full" />
