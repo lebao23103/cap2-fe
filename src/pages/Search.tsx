@@ -6,8 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BookCard } from '@/components/ui/book-card'
-import { EmptyState } from '@/components/ui/empty-state'
-import { BookGridSkeleton } from '@/components/ui/loading-state'
+import { BookCardsLoadingSkeleton, BooksEmptyState } from '@/components/books'
 import { 
   Search as SearchIcon, 
   Filter, 
@@ -313,16 +312,14 @@ export default function Search() {
 
         {/* Results */}
         {loading ? (
-          <BookGridSkeleton count={12} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <BookCardsLoadingSkeleton count={12} />
+          </div>
         ) : filteredBooks.length === 0 ? (
-          <EmptyState
-            icon={BookOpen}
-            title="No books found"
-            description={searchQuery ? `No results for "${searchQuery}". Try different keywords or adjust your filters.` : "Start searching to discover books."}
-            action={{
-              label: 'Clear Filters',
-              onClick: clearFilters
-            }}
+          <BooksEmptyState
+            type="no-results"
+            searchTerm={searchQuery}
+            onClearFilters={clearFilters}
           />
         ) : (
           <>
