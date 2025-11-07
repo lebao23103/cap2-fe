@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
-import { BookOpen, KeyRound } from 'lucide-react'
+import { BookOpen, KeyRound, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { FormInput, SubmitButton } from '../components/auth'
+import { FormInput } from '../components/auth'
+import { ModernButton } from '../components/ui/modern'
 import { useErrorAnnouncement, useSuccessAnnouncement } from '../hooks/useAnnounce'
 
 export default function Login() {
@@ -188,19 +189,16 @@ export default function Login() {
               {/* Password field with toggle */}
               <div>
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium">
-                    Password <span className="text-destructive">*</span>
-                  </span>
                   <Link 
                     to="/forgot-password" 
-                    className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                    className="text-xs text-primary hover:text-primary/80 font-medium transition-colors ml-auto"
                     tabIndex={isLoading || isSuccess ? -1 : 0}
                   >
                     Forgot password?
                   </Link>
                 </div>
                 <FormInput
-                  label=""
+                  label="Password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Enter your password"
                   value={password}
@@ -219,15 +217,19 @@ export default function Login() {
               
               {/* Submit button with loading and success states */}
               <div className="pt-2">
-                <SubmitButton
-                  loading={isLoading}
-                  success={isSuccess}
+                <ModernButton
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  icon={Sparkles}
+                  isLoading={isLoading}
+                  isSuccess={isSuccess}
                   loadingText="Signing you in..."
                   successText="Success! Redirecting..."
-                  className="h-12 text-base shadow-lg hover:shadow-xl"
+                  className="w-full h-12 text-base shadow-lg hover:shadow-xl"
                 >
                   Sign In
-                </SubmitButton>
+                </ModernButton>
               </div>
             </form>
             

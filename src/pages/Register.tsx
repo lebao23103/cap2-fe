@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
-import { BookOpen, UserPlus } from 'lucide-react'
+import { BookOpen, UserPlus, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { FormInput, SubmitButton, PasswordStrengthIndicator, usePasswordStrength } from '../components/auth'
+import { FormInput, PasswordStrengthIndicator, usePasswordStrength } from '../components/auth'
+import { ModernButton } from '../components/ui/modern'
 import { useErrorAnnouncement, useSuccessAnnouncement } from '../hooks/useAnnounce'
 
 export default function Register() {
@@ -280,15 +281,19 @@ export default function Register() {
               
               {/* Submit button with loading and success states */}
               <div className="pt-2">
-                <SubmitButton
-                  loading={isLoading}
-                  success={isSuccess}
+                <ModernButton
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  icon={Sparkles}
+                  isLoading={isLoading}
+                  isSuccess={isSuccess}
                   loadingText="Creating your account..."
                   successText="Success! Redirecting..."
-                  className="h-12 text-base shadow-lg hover:shadow-xl"
+                  className="w-full h-12 text-base shadow-lg hover:shadow-xl"
                 >
                   Create Account
-                </SubmitButton>
+                </ModernButton>
               </div>
             </form>
             
