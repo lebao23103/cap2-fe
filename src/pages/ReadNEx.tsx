@@ -380,7 +380,7 @@ export default function ReadNEx() {
                     placeholder="Search books by title or author..."
                     value={filters.searchTerm}
                     onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 text-sm border border-input rounded-lg focus:ring-2 focus:ring-primary focus:border-primary bg-background text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50"
+                    className="w-full pl-10 pr-4 py-2.5 text-sm border border-input rounded-lg focus:outline-none focus:border-primary bg-background text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50"
                   />
                 </div>
               </div>
