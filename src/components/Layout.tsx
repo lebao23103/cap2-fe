@@ -241,7 +241,7 @@ export function Layout({ children }: LayoutProps) {
                     </ModernButton>
                     <Button
                       size="lg"
-                      className="bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 text-white hover:opacity-90 border-0 shadow-md hover:shadow-lg font-semibold transition-all"
+                      className="bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 border-0 shadow-lg hover:shadow-xl font-semibold transition-all duration-300"
                       onClick={() => navigate('/register')}
                     >
                       Get Started

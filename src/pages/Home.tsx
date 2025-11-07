@@ -104,17 +104,17 @@ export default function Home () {
             </p>
             
             <div className='flex flex-col sm:flex-row gap-4 justify-center items-center mb-16'>
-              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 py-6 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 transition-transform duration-300">
+              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 duration-300">
                 <Link to='/readnex' className='flex items-center'>
                   <span>Read & Exercise</span>
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="px-8 py-6 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300">
+              <Button size="lg" variant="outline" className="px-8 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300">
                 <Link to='/create' className='flex items-center'>
                   <span>Create your book</span>
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="px-8 py-6 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300">
+              <Button size="lg" variant="outline" className="px-8 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300">
                 <Link to='/noteshare' className='flex items-center'>
                   <span>NoteShare</span>
                 </Link>
@@ -134,7 +134,7 @@ export default function Home () {
                 { label: 'Study Notes', value: '5,200', icon: BookMarked },
                 { label: 'Since', value: '2025', icon: Scroll }
               ].map((stat, index) => (
-                <motion.div key={index} whileHover={{ y: -5 }} className="bg-card rounded-xl p-6 shadow-md border">
+                <motion.div key={index} whileHover={{ y: -5 }} className="bg-card rounded-xl p-6 border-0 shadow-lg hover:shadow-xl transition-shadow">
                   <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 text-primary mx-auto mb-4">
                     <stat.icon className="h-6 w-6" />
                   </div>
@@ -170,7 +170,7 @@ export default function Home () {
           <motion.div {...stagger} className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {featuredBooks.map((book) => (
               <motion.div key={book.id} {...fadeInUp}>
-                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group border-0 shadow-lg rounded-xl">
+                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group rounded-xl">
                   <div className="relative aspect-[3/4] overflow-hidden rounded-t-xl">
                     <img
                       src={book.coverImage}
@@ -246,7 +246,7 @@ export default function Home () {
             ].map((service, index) => (
               <motion.div key={index} {...fadeInUp}>
                 <Link to={service.link}>
-                  <Card className="h-full p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 shadow-lg rounded-xl">
+                  <Card className="h-full p-6 text-center border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-xl">
                     <div className="mx-auto mb-6 p-4 bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center">
                       <service.icon className="h-8 w-8 text-primary" />
                     </div>
@@ -328,7 +328,7 @@ export default function Home () {
               </CardHeader>
               <CardContent className="p-0">
                 <div className='flex flex-col gap-4 items-center'>
-                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 duration-300">
                     <Link to='/register' className="flex items-center">
                       Join Knowly
                       <ChevronRight className="ml-2 h-5 w-5" />

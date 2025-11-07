@@ -320,7 +320,7 @@ export default function ReadNEx() {
           transition={{ delay: 0.1, duration: 0.6 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
         >
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg rounded-xl">
             <CardContent className="p-4 text-center">
               <BookOpen className="h-8 w-8 mx-auto mb-2 text-primary" />
               <div className="text-2xl font-bold text-gray-900 dark:text-foreground">
@@ -330,7 +330,7 @@ export default function ReadNEx() {
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg rounded-xl">
             <CardContent className="p-4 text-center">
               <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-600" />
               <div className="text-2xl font-bold text-gray-900 dark:text-foreground">
@@ -340,7 +340,7 @@ export default function ReadNEx() {
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg rounded-xl">
             <CardContent className="p-4 text-center">
               <Heart className="h-8 w-8 mx-auto mb-2 text-red-600" />
               <div className="text-2xl font-bold text-gray-900 dark:text-foreground">
@@ -350,7 +350,7 @@ export default function ReadNEx() {
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
+          <Card className="border-0 shadow-lg rounded-xl">
             <CardContent className="p-4 text-center">
               <Target className="h-8 w-8 mx-auto mb-2 text-purple-600" />
               <div className="text-2xl font-bold text-gray-900 dark:text-foreground">
@@ -499,7 +499,7 @@ export default function ReadNEx() {
                   }}
                   className="group"
                 >
-                  <Card className="h-full hover:shadow-2xl transition-all duration-300 overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm rounded-2xl">
+                  <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden rounded-xl">
                     <Link to={`/book/${book.id}`} className="relative aspect-[2/3] overflow-hidden block">
                       <img
                         src={book.coverImage}
