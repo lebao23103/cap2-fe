@@ -398,9 +398,9 @@ export default function ReadNEx() {
                     <DropdownMenuTrigger asChild>
                       <Button 
                         variant="outline" 
-                        className="w-full justify-between h-9 rounded-lg hover:bg-primary/5 hover:border-primary/50 transition-colors text-sm text-gray-900 dark:text-gray-100 font-medium"
+                        className="w-full justify-between h-9 rounded-lg hover:bg-primary/5 hover:border-primary/50 transition-colors text-sm"
                       >
-                        <span>{filters.statusFilter}</span>
+                        <span className="font-medium text-gray-900 dark:text-foreground">{filters.statusFilter}</span>
                         <ChevronDown className="h-4 w-4 opacity-50" />
                       </Button>
                     </DropdownMenuTrigger>
