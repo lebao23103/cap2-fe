@@ -19,6 +19,7 @@ import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import booksService, { type Book, type Review } from '@/lib/api/books';
 import { useToast } from '@/components/ui/use-toast';
+import { BookDetailSkeleton, BooksErrorState } from '@/components/books';
 
 export default function BookDetail() {
   const { id } = useParams<{ id: string }>();
@@ -29,6 +30,7 @@ export default function BookDetail() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [relatedBooks, setRelatedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
   
   // Review form state
@@ -46,6 +48,7 @@ export default function BookDetail() {
   const loadBookData = async () => {
     try {
       setLoading(true);
+      setError(null);
       
       // TODO: Connect to real API
       // const bookData = await booksService.getBookById(Number(id));
@@ -128,16 +131,18 @@ export default function BookDetail() {
       setBook(mockBook);
       setReviews(mockReviews);
       setRelatedBooks(mockRelatedBooks);
-    } catch (error) {
-      console.error('Error loading book:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load book details',
-        variant: 'destructive',
-      });
+    } catch (err) {
+      console.error('Error loading book:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load book details';
+      setError(errorMessage);
+      setBook(null);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRetry = () => {
+    loadBookData();
   };
 
   const handleStartReading = () => {
@@ -275,17 +280,23 @@ export default function BookDetail() {
   };
 
   if (loading) {
+    return <BookDetailSkeleton />;
+  }
+
+  if (error) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-background">
         <div className="container mx-auto px-4 py-8 max-w-5xl">
-          <div className="animate-pulse grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-4 bg-muted h-[500px] rounded-lg" />
-            <div className="lg:col-span-8 space-y-4">
-              <div className="bg-muted h-10 w-3/4 rounded-lg" />
-              <div className="bg-muted h-6 w-1/2 rounded-lg" />
-              <div className="bg-muted h-32 w-full rounded-lg" />
-            </div>
+          <div className="mb-6">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/readnex')}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Library
+            </Button>
           </div>
+          <BooksErrorState error={error} onRetry={handleRetry} />
         </div>
       </div>
     );
@@ -293,12 +304,14 @@ export default function BookDetail() {
 
   if (!book) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-3xl font-bold mb-4">Book Not Found</h1>
-        <p className="text-muted-foreground mb-8">
-          The book you're looking for doesn't exist or has been removed.
-        </p>
-        <Button onClick={() => navigate('/readnex')}>Back to Library</Button>
+      <div className="min-h-screen bg-gray-50 dark:bg-background">
+        <div className="container mx-auto px-4 py-16 text-center">
+          <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-foreground">Book Not Found</h1>
+          <p className="text-muted-foreground mb-8">
+            The book you're looking for doesn't exist or has been removed.
+          </p>
+          <Button onClick={() => navigate('/readnex')}>Back to Library</Button>
+        </div>
       </div>
     );
   }
