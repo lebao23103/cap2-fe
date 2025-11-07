@@ -125,7 +125,7 @@ export function useAnnounce(options: UseAnnounceOptions = {}) {
 
       // Update politeness level if changed
       const currentPoliteness = liveRegionRef.current.getAttribute('aria-live')
-      if (currentPoliteness !== politeness && politeness !== 'off') {
+      if (currentPoliteness !== politeness) {
         liveRegionRef.current.setAttribute('aria-live', politeness)
       }
 

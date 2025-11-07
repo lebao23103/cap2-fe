@@ -60,8 +60,8 @@ export const SubmitButton = React.forwardRef<HTMLButtonElement, SubmitButtonProp
     ref
   ) => {
     // Announce loading and success states to screen readers
-    useLoadingAnnouncement(loading, loadingText)
-    useSuccessAnnouncement(success, successText || 'Success')
+    useLoadingAnnouncement(loading || false, loadingText)
+    useSuccessAnnouncement(success || false, successText || 'Success')
 
     // Display text based on state
     const displayText = React.useMemo(() => {

@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
   Star,
   Heart,
@@ -8,16 +7,13 @@ import {
   Share2,
   ThumbsUp,
   Flag,
-  Target,
   ArrowLeft
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
-import booksService, { type Book, type Review } from '@/lib/api/books';
+import type { Book, Review } from '@/lib/api/books';
 import { useToast } from '@/components/ui/use-toast';
 import { BookDetailSkeleton, BooksErrorState } from '@/components/books';
 
@@ -28,7 +24,7 @@ export default function BookDetail() {
 
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [relatedBooks, setRelatedBooks] = useState<Book[]>([]);
+  const [, setRelatedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -226,7 +222,7 @@ export default function BookDetail() {
     }
   };
 
-  const handleMarkHelpful = (reviewId: number) => {
+  const handleMarkHelpful = (_reviewId: number) => {
     // TODO: Connect to API
     toast({
       title: 'Marked as helpful',
@@ -234,7 +230,7 @@ export default function BookDetail() {
     });
   };
 
-  const handleReportReview = (reviewId: number) => {
+  const handleReportReview = (_reviewId: number) => {
     // TODO: Connect to API
     toast({
       title: 'Review reported',
@@ -572,3 +568,5 @@ export default function BookDetail() {
     </div>
   );
 }
+
+

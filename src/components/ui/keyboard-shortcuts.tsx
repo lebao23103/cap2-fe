@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Keyboard, Search, BookOpen, Menu, ArrowUp, ArrowDown } from 'lucide-react'
+import { Keyboard, Search, BookOpen, Menu, ArrowUp } from 'lucide-react'
 
 interface Shortcut {
   keys: string[]
@@ -155,3 +155,6 @@ export function KeyboardShortcutsProvider() {
 
   return <KeyboardShortcutsDialog open={isOpen} onOpenChange={setIsOpen} />
 }
+
+
+

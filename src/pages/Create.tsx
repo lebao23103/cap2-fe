@@ -7,7 +7,7 @@ import {
   Image, 
   Save, 
   Eye, 
-  User, 
+  // User, 
   Tag,
   Globe,
   Users,
@@ -481,7 +481,7 @@ export default function Create() {
                               variant="ghost"
                               size="sm" 
                               onClick={() => handleFileUpload('coverImage', null)}
-                              className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400 border border-red-200 dark:border-red-900"
+                              className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400"
                             >
                               Remove Image
                             </ModernButton>
@@ -509,7 +509,7 @@ export default function Create() {
                             />
                             <ModernButton
                               icon={Upload}
-                              variant="outline"
+                              variant="secondary"
                               className="border-primary/30 hover:bg-primary/10 hover:border-primary/50"
                               onClick={() => document.getElementById('cover-upload')?.click()}
                             >
@@ -547,7 +547,7 @@ export default function Create() {
                               variant="ghost"
                               size="sm" 
                               onClick={() => handleFileUpload('bookFile', null)}
-                              className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400 border border-red-200 dark:border-red-900"
+                              className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400"
                             >
                               Remove File
                             </ModernButton>
@@ -575,7 +575,7 @@ export default function Create() {
                             />
                             <ModernButton
                               icon={Upload}
-                              variant="outline"
+                              variant="secondary"
                               className="border-purple-500/30 hover:bg-purple-500/10 hover:border-purple-500/50"
                               onClick={() => document.getElementById('book-upload')?.click()}
                             >
@@ -716,7 +716,7 @@ export default function Create() {
                   </div>
                 )}
                 <ModernButton 
-                  variant="outline" 
+                  variant="secondary" 
                   size="lg" 
                   icon={Save}
                   disabled={isUploading}
@@ -741,3 +741,4 @@ export default function Create() {
     </div>
   )
 }
+

@@ -15,7 +15,7 @@ import {
   Users,
   MessageCircle,
   ThumbsUp,
-  Share2,
+  // Share2,
   Calendar,
   Feather,
   Quote,
@@ -1025,3 +1025,6 @@ export default function NoteShare() {
     </div>
   )
 }
+
+
+

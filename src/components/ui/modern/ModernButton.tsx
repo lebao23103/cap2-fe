@@ -33,8 +33,8 @@ export const ModernButton = forwardRef<HTMLButtonElement, ModernButtonProps>(
   }, ref) => {
     
     // Accessibility: Announce loading and success states
-    useLoadingAnnouncement(isLoading, loadingText || 'Loading...')
-    useSuccessAnnouncement(isSuccess, successText || 'Success')
+    useLoadingAnnouncement(isLoading || false, loadingText || 'Loading...')
+    useSuccessAnnouncement(isSuccess || false, successText || 'Success')
     
     const baseStyles = "group relative overflow-hidden rounded-xl border transition-all duration-300 font-semibold inline-flex items-center justify-center gap-2"
     

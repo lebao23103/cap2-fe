@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { 
@@ -11,7 +11,7 @@ import {
   RotateCcw,
   BookOpen,
   ChevronRight,
-  Star,
+  // Star,
   Play
 } from 'lucide-react'
 
@@ -637,3 +637,6 @@ export default function BookQuiz() {
     </div>
   )
 }
+
+
+

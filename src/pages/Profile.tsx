@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  User,
+  // User,
   Mail,
-  Calendar,
+  // Calendar,
   BookOpen,
   Clock,
   Award,
@@ -583,3 +583,6 @@ export default function Profile() {
     </div>
   );
 }
+
+
+

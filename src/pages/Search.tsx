@@ -11,7 +11,7 @@ import {
   Search as SearchIcon, 
   Filter, 
   X, 
-  BookOpen,
+  // BookOpen,
   SlidersHorizontal,
   Grid3x3,
   List
@@ -390,3 +390,5 @@ export default function Search() {
     </div>
   )
 }
+
+
