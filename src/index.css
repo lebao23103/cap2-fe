@@ -71,6 +71,16 @@
 }
 
 @layer components {
+  /* Full-width utilities for backgrounds */
+  .full-width-bg {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
   .line-clamp-1 {
     overflow: hidden;
     display: -webkit-box;

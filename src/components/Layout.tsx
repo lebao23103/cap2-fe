@@ -71,7 +71,7 @@ export function Layout({ children }: LayoutProps) {
       </div>
 
       {/* Header/Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-sm" role="banner">
+      <header className="sticky top-0 z-50 w-screen border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-sm" role="banner">
         {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" aria-hidden="true" />
         
@@ -390,7 +390,7 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Footer - Contact Information */}
       {!isAuthenticated && (
-        <footer className="relative border-t border-border/40 bg-muted/30 backdrop-blur-sm py-12 mt-20" role="contentinfo">
+        <footer className="relative w-screen border-t border-border/40 bg-muted/30 backdrop-blur-sm py-12 mt-20" role="contentinfo">
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-transparent pointer-events-none" />
           
