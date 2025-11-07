@@ -390,7 +390,7 @@ export default function ReadNEx() {
                 
                 {/* Status Filter */}
                 <div className="flex-1 w-full space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                  <label className="text-xs font-semibold text-gray-900 dark:text-gray-200 flex items-center gap-1.5">
                     <BookmarkCheck className="h-3.5 w-3.5 text-primary" />
                     Reading Status
                   </label>
@@ -398,9 +398,9 @@ export default function ReadNEx() {
                     <DropdownMenuTrigger asChild>
                       <Button 
                         variant="outline" 
-                        className="w-full justify-between h-9 rounded-lg hover:bg-primary/5 hover:border-primary/50 transition-colors text-sm"
+                        className="w-full justify-between h-9 rounded-lg hover:bg-primary/5 hover:border-primary/50 transition-colors text-sm text-gray-900 dark:text-gray-100 font-medium"
                       >
-                        <span className="font-medium">{filters.statusFilter}</span>
+                        <span>{filters.statusFilter}</span>
                         <ChevronDown className="h-4 w-4 opacity-50" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -422,7 +422,7 @@ export default function ReadNEx() {
 
                 {/* View Mode */}
                 <div className="flex-1 w-full sm:w-auto space-y-1.5">
-                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300 flex items-center gap-1.5">
+                  <label className="text-xs font-semibold text-gray-900 dark:text-gray-200 flex items-center gap-1.5">
                     <Grid3x3 className="h-3.5 w-3.5 text-primary" />
                     View Mode
                   </label>
