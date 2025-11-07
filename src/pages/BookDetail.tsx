@@ -58,7 +58,6 @@ export default function BookDetail() {
         id: Number(id),
         title: 'The Great Gatsby',
         author: 'F. Scott Fitzgerald',
-        genre: 'Classic, Fiction, Romance',
         language: 'English',
         description: 'A classic novel set in the Jazz Age that explores themes of wealth, love, and the American Dream. The story follows the mysterious millionaire Jay Gatsby and his obsession with Daisy Buchanan.',
         cover_image: `https://picsum.photos/seed/${id}/400/600`,
@@ -101,7 +100,6 @@ export default function BookDetail() {
           id: 2,
           title: 'To Kill a Mockingbird',
           author: 'Harper Lee',
-          genre: 'Classic, Fiction',
           description: 'A gripping tale of racial injustice and childhood innocence.',
           cover_image: 'https://picsum.photos/seed/2/300/450',
           rating: 4.8,
@@ -111,7 +109,6 @@ export default function BookDetail() {
           id: 3,
           title: '1984',
           author: 'George Orwell',
-          genre: 'Dystopian, Science Fiction',
           description: 'A haunting vision of a totalitarian future.',
           cover_image: 'https://picsum.photos/seed/3/300/450',
           rating: 4.6,
@@ -121,7 +118,6 @@ export default function BookDetail() {
           id: 4,
           title: 'Pride and Prejudice',
           author: 'Jane Austen',
-          genre: 'Classic, Romance',
           description: 'A timeless romance exploring love and social class.',
           cover_image: 'https://picsum.photos/seed/4/300/450',
           rating: 4.7,
@@ -399,18 +395,6 @@ export default function BookDetail() {
                 <span className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">
                   {book.reviews_count?.toLocaleString()} reviews
                 </span>
-              </div>
-
-              {/* Genres */}
-              <div className="flex flex-wrap gap-2">
-                {book.genre?.split(',').map((genre, i) => (
-                  <Badge 
-                    key={i} 
-                    className="bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/70 transition-colors cursor-default"
-                  >
-                    {genre.trim()}
-                  </Badge>
-                ))}
               </div>
             </div>
 

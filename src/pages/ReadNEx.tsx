@@ -42,7 +42,6 @@ interface Book {
   rating: number
   readCount: number
   description: string
-  genre: string
   year: number
   language: string
   ageGroup: string
@@ -67,7 +66,6 @@ const mockBooks: Book[] = [
     rating: 4.5,
     readCount: 12420,
     description: "Between life and death there is a library, and within that library, the shelves go on forever.",
-    genre: "Fiction",
     year: 2020,
     language: "English",
     ageGroup: "Adult",
@@ -88,7 +86,6 @@ const mockBooks: Book[] = [
     rating: 4.8,
     readCount: 18750,
     description: "A lone astronaut must save humanity from an extinction-level threat.",
-    genre: "Sci-Fi",
     year: 2021,
     language: "English",
     ageGroup: "Adult",
@@ -108,7 +105,6 @@ const mockBooks: Book[] = [
     rating: 4.2,
     readCount: 9800,
     description: "A thrilling coming-of-age story about an Artificial Friend.",
-    genre: "Literary Fiction",
     year: 2021,
     language: "English",
     ageGroup: "Young Adult",
@@ -129,7 +125,6 @@ const mockBooks: Book[] = [
     rating: 4.7,
     readCount: 25600,
     description: "Aging Hollywood icon finally tells her story of fame and fortune.",
-    genre: "Romance",
     year: 2017,
     language: "English",
     ageGroup: "Adult",
@@ -150,7 +145,6 @@ const mockBooks: Book[] = [
     rating: 4.6,
     readCount: 31200,
     description: "An easy & proven way to build good habits & break bad ones.",
-    genre: "Self-Help",
     year: 2018,
     language: "English",
     ageGroup: "Adult",
@@ -171,7 +165,6 @@ const mockBooks: Book[] = [
     rating: 4.3,
     readCount: 14500,
     description: "Four unlikely friends meet weekly to investigate cold cases.",
-    genre: "Mystery",
     year: 2020,
     language: "English",
     ageGroup: "Adult",
