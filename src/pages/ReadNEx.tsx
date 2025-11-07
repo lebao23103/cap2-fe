@@ -24,6 +24,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { BookCardsLoadingSkeleton, BooksEmptyState, BooksErrorState } from '@/components/books'
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -201,6 +202,31 @@ export default function ReadNEx() {
     statusFilter: "All",
     searchTerm: ""
   })
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Simulate initial data loading
+  useState(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1500)
+    return () => clearTimeout(timer)
+  })
+
+  const handleClearFilters = () => {
+    setFilters({
+      statusFilter: "All",
+      searchTerm: ""
+    })
+  }
+
+  const handleRetry = () => {
+    setError(null)
+    setIsLoading(true)
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 1500)
+  }
 
   // Filter books based on current filters
   const filteredBooks = useMemo(() => {
@@ -439,17 +465,41 @@ export default function ReadNEx() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.6 }}
         >
-          {viewMode === 'grid' ? (
+          {/* Error State */}
+          {error ? (
+            <BooksErrorState error={error} onRetry={handleRetry} />
+          ) : /* Loading State */
+          isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredBooks.map((book) => (
+              <BookCardsLoadingSkeleton count={8} />
+            </div>
+          ) : /* Empty State */
+          filteredBooks.length === 0 ? (
+            <BooksEmptyState 
+              type="no-results"
+              searchTerm={filters.searchTerm}
+              onClearFilters={handleClearFilters}
+            />
+          ) : /* Books Grid/List */
+          viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredBooks.map((book, index) => (
                 <motion.div
                   key={book.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ 
+                    duration: 0.4,
+                    delay: index * 0.05, // Stagger effect
+                    ease: [0.25, 0.1, 0.25, 1]
+                  }}
+                  whileHover={{ 
+                    y: -8,
+                    transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }
+                  }}
                   className="group"
                 >
-                  <Card className="h-full hover:shadow-2xl transition-all duration-300 overflow-hidden group-hover:scale-[1.02] border border-border/50 bg-card/50 backdrop-blur-sm rounded-2xl">
+                  <Card className="h-full hover:shadow-2xl transition-all duration-300 overflow-hidden border border-border/50 bg-card/50 backdrop-blur-sm rounded-2xl">
                     <Link to={`/book/${book.id}`} className="relative aspect-[2/3] overflow-hidden block">
                       <img
                         src={book.coverImage}
@@ -575,23 +625,6 @@ export default function ReadNEx() {
             </div>
           )}
         </motion.div>
-
-        {/* No Results */}
-        {filteredBooks.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-12"
-          >
-            <BookOpen className="h-16 w-16 mx-auto text-gray-400 dark:text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-foreground mb-2">
-              No books found
-            </h3>
-            <p className="text-gray-600 dark:text-muted-foreground">
-              Try adjusting your search criteria or filters to find more books.
-            </p>
-          </motion.div>
-        )}
       </div>
     </div>
   )
