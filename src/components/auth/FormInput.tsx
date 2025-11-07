@@ -101,10 +101,10 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             disabled={disabled || loading}
             required={required}
             className={cn(
-              // Base styles
-              'transition-all duration-200 pr-10',
+              // Base styles - matching Reset Password styling
+              'bg-background/50 border-border/50 h-12 rounded-xl transition-all pr-10',
               // Focus styles
-              'focus:ring-2 focus:ring-primary/20',
+              'focus:border-primary/50 focus:ring-2 focus:ring-primary/20',
               // Error state
               error && [
                 'border-destructive',
