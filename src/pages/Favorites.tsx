@@ -189,7 +189,7 @@ export default function Favorites() {
                 onChange={(e) => setSelectedGenre(e.target.value)}
                 className="border rounded px-3 py-2 bg-background text-sm"
               >
-                <option value="all">All Genres</option>
+                <option value="all">All Genres/</option>
                 {allGenres.map((genre) => (
                   <option key={genre} value={genre}>{genre}</option>
                 ))}
