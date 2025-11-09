@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Star,
   Heart,
@@ -8,34 +8,40 @@ import {
   Share2,
   ThumbsUp,
   Flag,
-  Target,
-  ArrowLeft
+  ArrowLeft,
+  CheckCircle2
 } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
-import booksService, { type Book, type Review } from '@/lib/api/books';
+import type { Book, Review } from '@/lib/api/books';
 import { useToast } from '@/components/ui/use-toast';
+import { BookDetailSkeleton, BooksErrorState } from '@/components/books';
+import { useAnnounce } from '@/hooks/useAnnounce';
+import { getLoadingAriaAttributes } from '@/utils/accessibility';
 
 export default function BookDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const announce = useAnnounce();
 
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [relatedBooks, setRelatedBooks] = useState<Book[]>([]);
+  const [, setRelatedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [favoritingState, setFavoritingState] = useState<'idle' | 'loading' | 'success'>('idle');
+  const [sharingState, setSharingState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   
   // Review form state
   const [userRating, setUserRating] = useState(0);
   const [userReview, setUserReview] = useState('');
   const [hoveredRating, setHoveredRating] = useState(0);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSubmitState, setReviewSubmitState] = useState<'idle' | 'success' | 'error'>('idle');
 
   useEffect(() => {
     if (id) {
@@ -46,6 +52,7 @@ export default function BookDetail() {
   const loadBookData = async () => {
     try {
       setLoading(true);
+      setError(null);
       
       // TODO: Connect to real API
       // const bookData = await booksService.getBookById(Number(id));
@@ -58,7 +65,6 @@ export default function BookDetail() {
         id: Number(id),
         title: 'The Great Gatsby',
         author: 'F. Scott Fitzgerald',
-        genre: 'Classic, Fiction, Romance',
         language: 'English',
         description: 'A classic novel set in the Jazz Age that explores themes of wealth, love, and the American Dream. The story follows the mysterious millionaire Jay Gatsby and his obsession with Daisy Buchanan.',
         cover_image: `https://picsum.photos/seed/${id}/400/600`,
@@ -101,7 +107,6 @@ export default function BookDetail() {
           id: 2,
           title: 'To Kill a Mockingbird',
           author: 'Harper Lee',
-          genre: 'Classic, Fiction',
           description: 'A gripping tale of racial injustice and childhood innocence.',
           cover_image: 'https://picsum.photos/seed/2/300/450',
           rating: 4.8,
@@ -111,7 +116,6 @@ export default function BookDetail() {
           id: 3,
           title: '1984',
           author: 'George Orwell',
-          genre: 'Dystopian, Science Fiction',
           description: 'A haunting vision of a totalitarian future.',
           cover_image: 'https://picsum.photos/seed/3/300/450',
           rating: 4.6,
@@ -121,7 +125,6 @@ export default function BookDetail() {
           id: 4,
           title: 'Pride and Prejudice',
           author: 'Jane Austen',
-          genre: 'Classic, Romance',
           description: 'A timeless romance exploring love and social class.',
           cover_image: 'https://picsum.photos/seed/4/300/450',
           rating: 4.7,
@@ -132,16 +135,18 @@ export default function BookDetail() {
       setBook(mockBook);
       setReviews(mockReviews);
       setRelatedBooks(mockRelatedBooks);
-    } catch (error) {
-      console.error('Error loading book:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to load book details',
-        variant: 'destructive',
-      });
+    } catch (err) {
+      console.error('Error loading book:', err);
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load book details';
+      setError(errorMessage);
+      setBook(null);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRetry = () => {
+    loadBookData();
   };
 
   const handleStartReading = () => {
@@ -152,35 +157,74 @@ export default function BookDetail() {
     navigate(`/book/${id}/quiz`);
   };
 
-  const handleToggleFavorite = () => {
-    // TODO: Connect to favorites API
-    setIsFavorited(!isFavorited);
-    toast({
-      title: isFavorited ? 'Removed from favorites' : 'Added to favorites',
-      description: isFavorited
-        ? 'Book removed from your favorites'
-        : 'Book added to your favorites',
-    });
-  };
-
-  const handleShare = async () => {
+  const handleToggleFavorite = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      setFavoritingState('loading');
+      const newFavoritedState = !isFavorited;
+      
+      // TODO: Connect to favorites API
+      // await booksService.toggleFavorite(Number(id));
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      setIsFavorited(newFavoritedState);
+      setFavoritingState('success');
+      
+      const message = newFavoritedState ? 'Added to favorites' : 'Removed from favorites';
+      announce(message, 'polite');
+      
       toast({
-        title: 'Link copied!',
-        description: 'Book link copied to clipboard',
+        title: message,
+        description: newFavoritedState
+          ? 'Book added to your favorites'
+          : 'Book removed from your favorites',
       });
+      
+      // Reset state after animation
+      setTimeout(() => setFavoritingState('idle'), 2000);
     } catch (error) {
+      setFavoritingState('idle');
+      announce('Failed to update favorites', 'assertive');
       toast({
         title: 'Error',
-        description: 'Failed to copy link',
+        description: 'Failed to update favorites',
         variant: 'destructive',
       });
     }
   };
 
+  const handleShare = async () => {
+    try {
+      setSharingState('loading');
+      await navigator.clipboard.writeText(window.location.href);
+      
+      setSharingState('success');
+      announce('Link copied to clipboard', 'polite');
+      
+      toast({
+        title: 'Link copied!',
+        description: 'Book link copied to clipboard',
+      });
+      
+      setTimeout(() => setSharingState('idle'), 2000);
+    } catch (error) {
+      setSharingState('error');
+      announce('Failed to copy link', 'assertive');
+      
+      toast({
+        title: 'Error',
+        description: 'Failed to copy link',
+        variant: 'destructive',
+      });
+      
+      setTimeout(() => setSharingState('idle'), 2000);
+    }
+  };
+
   const handleSubmitReview = async () => {
     if (!userRating) {
+      announce('Please select a rating before submitting', 'assertive');
       toast({
         title: 'Rating required',
         description: 'Please select a rating before submitting',
@@ -190,6 +234,7 @@ export default function BookDetail() {
     }
 
     if (userReview.length < 50) {
+      announce('Review must be at least 50 characters', 'assertive');
       toast({
         title: 'Review too short',
         description: 'Please write at least 50 characters',
@@ -200,12 +245,21 @@ export default function BookDetail() {
 
     try {
       setSubmittingReview(true);
+      setReviewSubmitState('idle');
+      announce('Submitting review', 'polite');
+      
       // TODO: Connect to real API
       // await booksService.addReview(Number(id), {
       //   rating: userRating,
       //   comment: userReview,
       // });
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
+      setReviewSubmitState('success');
+      announce('Review submitted successfully', 'polite');
+      
       toast({
         title: 'Review submitted!',
         description: 'Thank you for your feedback',
@@ -213,19 +267,28 @@ export default function BookDetail() {
 
       setUserRating(0);
       setUserReview('');
+      
+      // Reset success state
+      setTimeout(() => setReviewSubmitState('idle'), 3000);
+      
       loadBookData(); // Reload to show new review
     } catch (error) {
+      setReviewSubmitState('error');
+      announce('Failed to submit review', 'assertive');
+      
       toast({
         title: 'Error',
         description: 'Failed to submit review',
         variant: 'destructive',
       });
+      
+      setTimeout(() => setReviewSubmitState('idle'), 3000);
     } finally {
       setSubmittingReview(false);
     }
   };
 
-  const handleMarkHelpful = (reviewId: number) => {
+  const handleMarkHelpful = (_reviewId: number) => {
     // TODO: Connect to API
     toast({
       title: 'Marked as helpful',
@@ -233,7 +296,7 @@ export default function BookDetail() {
     });
   };
 
-  const handleReportReview = (reviewId: number) => {
+  const handleReportReview = (_reviewId: number) => {
     // TODO: Connect to API
     toast({
       title: 'Review reported',
@@ -279,17 +342,23 @@ export default function BookDetail() {
   };
 
   if (loading) {
+    return <BookDetailSkeleton />;
+  }
+
+  if (error) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-background">
-        <div className="container mx-auto px-4 py-8 max-w-5xl">
-          <div className="animate-pulse grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-4 bg-muted h-[500px] rounded-lg" />
-            <div className="lg:col-span-8 space-y-4">
-              <div className="bg-muted h-10 w-3/4 rounded-lg" />
-              <div className="bg-muted h-6 w-1/2 rounded-lg" />
-              <div className="bg-muted h-32 w-full rounded-lg" />
-            </div>
+        <div className="container mx-auto py-8 max-w-5xl">
+          <div className="mb-6">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/readnex')}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Library
+            </Button>
           </div>
+          <BooksErrorState error={error} onRetry={handleRetry} />
         </div>
       </div>
     );
@@ -297,19 +366,21 @@ export default function BookDetail() {
 
   if (!book) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-3xl font-bold mb-4">Book Not Found</h1>
-        <p className="text-muted-foreground mb-8">
-          The book you're looking for doesn't exist or has been removed.
-        </p>
-        <Button onClick={() => navigate('/readnex')}>Back to Library</Button>
+      <div className="min-h-screen bg-gray-50 dark:bg-background">
+        <div className="container mx-auto py-16 text-center">
+          <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-foreground">Book Not Found</h1>
+          <p className="text-muted-foreground mb-8">
+            The book you're looking for doesn't exist or has been removed.
+          </p>
+          <Button onClick={() => navigate('/readnex')}>Back to Library</Button>
+        </div>
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-background">
-      <div className="container mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8 max-w-5xl">
+      <div className="container mx-auto py-4 sm:py-6 md:py-8 max-w-5xl">
         {/* Back Button */}
         <div className="flex justify-start mb-4 sm:mb-6">
           <Button
@@ -343,27 +414,97 @@ export default function BookDetail() {
                   Start Reading
                 </Button>
                 <div className="flex gap-2">
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="flex-1 hover:bg-muted/50 transition-colors"
-                    onClick={handleToggleFavorite}
-                    aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-                  >
-                    <Heart
-                      className={`h-4 w-4 transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-foreground'}`}
-                      aria-hidden="true"
-                    />
-                  </Button>
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="flex-1 hover:bg-muted/50 transition-colors"
-                    onClick={handleShare}
-                    aria-label="Share book"
-                  >
-                    <Share2 className="h-4 w-4 text-gray-600 dark:text-foreground" aria-hidden="true" />
-                  </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="flex-1 hover:bg-muted/50 transition-all duration-200 group relative"
+                  onClick={handleToggleFavorite}
+                  disabled={favoritingState === 'loading'}
+                  aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                  {...getLoadingAriaAttributes(favoritingState === 'loading', 'Updating favorites')}
+                  data-testid="favorite-button"
+                >
+                  <AnimatePresence mode="wait">
+                    {favoritingState === 'loading' ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1, rotate: 360 }}
+                        exit={{ scale: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+                      />
+                    ) : favoritingState === 'success' ? (
+                      <motion.div
+                        key="success"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0 }}
+                      >
+                        <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="heart"
+                        initial={false}
+                        animate={isFavorited ? { scale: [1, 1.2, 1] } : {}}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <Heart
+                          className={`h-4 w-4 transition-all duration-300 ${
+                            isFavorited 
+                              ? 'fill-red-500 text-red-500' 
+                              : 'text-gray-600 dark:text-foreground group-hover:scale-110'
+                          }`}
+                          aria-hidden="true"
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="flex-1 hover:bg-muted/50 transition-all duration-200 group relative"
+                  onClick={handleShare}
+                  disabled={sharingState === 'loading'}
+                  aria-label="Share book"
+                  {...getLoadingAriaAttributes(sharingState === 'loading', 'Copying link')}
+                  data-testid="share-button"
+                >
+                  <AnimatePresence mode="wait">
+                    {sharingState === 'loading' ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1, rotate: 360 }}
+                        exit={{ scale: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+                      />
+                    ) : sharingState === 'success' ? (
+                      <motion.div
+                        key="success"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0 }}
+                      >
+                        <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="share"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Share2 
+                          className="h-4 w-4 text-gray-600 dark:text-foreground" 
+                          aria-hidden="true" 
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Button>
                 </div>
                 <Button 
                   size="default" 
@@ -399,18 +540,6 @@ export default function BookDetail() {
                 <span className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">
                   {book.reviews_count?.toLocaleString()} reviews
                 </span>
-              </div>
-
-              {/* Genres */}
-              <div className="flex flex-wrap gap-2">
-                {book.genre?.split(',').map((genre, i) => (
-                  <Badge 
-                    key={i} 
-                    className="bg-blue-100 text-blue-700 hover:bg-blue-200 dark:bg-blue-900/50 dark:text-blue-300 dark:hover:bg-blue-900/70 transition-colors cursor-default"
-                  >
-                    {genre.trim()}
-                  </Badge>
-                ))}
               </div>
             </div>
 
@@ -498,11 +627,52 @@ export default function BookDetail() {
                 </p>
               </div>
               <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm hover:shadow"
+                className={`transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${
+                  reviewSubmitState === 'success' 
+                    ? 'bg-green-600 hover:bg-green-700' 
+                    : reviewSubmitState === 'error'
+                    ? 'bg-red-600 hover:bg-red-700'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                } text-white`}
                 onClick={handleSubmitReview} 
-                disabled={submittingReview}
+                disabled={submittingReview || !userRating || userReview.length < 50}
+                {...getLoadingAriaAttributes(submittingReview, 'Submitting review')}
+                data-testid="submit-review-button"
               >
-                {submittingReview ? 'Submitting...' : 'Submit Review'}
+                <AnimatePresence mode="wait">
+                  {submittingReview ? (
+                    <motion.div
+                      key="submitting"
+                      className="flex items-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <div className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Submitting...
+                    </motion.div>
+                  ) : reviewSubmitState === 'success' ? (
+                    <motion.div
+                      key="success"
+                      className="flex items-center"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <CheckCircle2 className="h-4 w-4 mr-2" aria-hidden="true" />
+                      Submitted!
+                    </motion.div>
+                  ) : (
+                    <motion.span
+                      key="idle"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      Submit Review
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </Button>
             </div>
           </div>
@@ -575,3 +745,5 @@ export default function BookDetail() {
     </div>
   );
 }
+
+

@@ -24,6 +24,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { BookCardsLoadingSkeleton, BooksEmptyState, BooksErrorState } from '@/components/books'
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -42,7 +43,6 @@ interface Book {
   rating: number
   readCount: number
   description: string
-  genre: string
   year: number
   language: string
   ageGroup: string
@@ -67,7 +67,6 @@ const mockBooks: Book[] = [
     rating: 4.5,
     readCount: 12420,
     description: "Between life and death there is a library, and within that library, the shelves go on forever.",
-    genre: "Fiction",
     year: 2020,
     language: "English",
     ageGroup: "Adult",
@@ -88,7 +87,6 @@ const mockBooks: Book[] = [
     rating: 4.8,
     readCount: 18750,
     description: "A lone astronaut must save humanity from an extinction-level threat.",
-    genre: "Sci-Fi",
     year: 2021,
     language: "English",
     ageGroup: "Adult",
@@ -108,7 +106,6 @@ const mockBooks: Book[] = [
     rating: 4.2,
     readCount: 9800,
     description: "A thrilling coming-of-age story about an Artificial Friend.",
-    genre: "Literary Fiction",
     year: 2021,
     language: "English",
     ageGroup: "Young Adult",
@@ -129,7 +126,6 @@ const mockBooks: Book[] = [
     rating: 4.7,
     readCount: 25600,
     description: "Aging Hollywood icon finally tells her story of fame and fortune.",
-    genre: "Romance",
     year: 2017,
     language: "English",
     ageGroup: "Adult",
@@ -150,7 +146,6 @@ const mockBooks: Book[] = [
     rating: 4.6,
     readCount: 31200,
     description: "An easy & proven way to build good habits & break bad ones.",
-    genre: "Self-Help",
     year: 2018,
     language: "English",
     ageGroup: "Adult",
@@ -171,7 +166,6 @@ const mockBooks: Book[] = [
     rating: 4.3,
     readCount: 14500,
     description: "Four unlikely friends meet weekly to investigate cold cases.",
-    genre: "Mystery",
     year: 2020,
     language: "English",
     ageGroup: "Adult",
@@ -208,6 +202,31 @@ export default function ReadNEx() {
     statusFilter: "All",
     searchTerm: ""
   })
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // Simulate initial data loading
+  useState(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 1500)
+    return () => clearTimeout(timer)
+  })
+
+  const handleClearFilters = () => {
+    setFilters({
+      statusFilter: "All",
+      searchTerm: ""
+    })
+  }
+
+  const handleRetry = () => {
+    setError(null)
+    setIsLoading(true)
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 1500)
+  }
 
   // Filter books based on current filters
   const filteredBooks = useMemo(() => {
@@ -276,20 +295,20 @@ export default function ReadNEx() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative w-full min-h-screen bg-background py-8">
+      <div className="container mx-auto">
         
         {/* Header with Distinctive Design */}
-        <motion.div {...fadeInUp} className="mb-8 text-center">
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="h-px w-16 bg-primary" />
-            <h1 className="font-sans text-4xl md:text-6xl font-bold mb-6 tracking-tight">
+        <motion.div {...fadeInUp} className="mb-6 sm:mb-8 text-center">
+          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+            <div className="h-px w-8 sm:w-16 bg-primary" />
+            <h1 className="font-sans text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight">
               <span className="text-gray-900 dark:text-foreground">Read</span>
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">NEx</span>
             </h1>
-            <div className="h-px w-16 bg-primary" />
+            <div className="h-px w-8 sm:w-16 bg-primary" />
           </div>
-          <p className="text-xl text-gray-600 dark:text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-muted-foreground max-w-3xl mx-auto px-4">
             Your reading library with interactive learning and comprehension exercises
           </p>
         </motion.div>
@@ -299,45 +318,45 @@ export default function ReadNEx() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8"
         >
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <BookOpen className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold text-gray-900 dark:text-foreground">
+          <Card className="border shadow-md rounded-xl">
+            <CardContent className="p-3 sm:p-4 text-center">
+              <BookOpen className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-primary" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
                 {mockBooks.filter(b => b.readingProgress! > 0 && b.readingProgress! < 100).length}
               </div>
-              <div className="text-sm text-gray-600 dark:text-muted-foreground">Currently Reading</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Currently Reading</div>
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-600" />
-              <div className="text-2xl font-bold text-gray-900 dark:text-foreground">
+          <Card className="border shadow-md rounded-xl">
+            <CardContent className="p-3 sm:p-4 text-center">
+              <CheckCircle className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-green-600" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
                 {mockBooks.filter(b => b.readingProgress === 100).length}
               </div>
-              <div className="text-sm text-gray-600 dark:text-muted-foreground">Completed</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Completed</div>
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <Heart className="h-8 w-8 mx-auto mb-2 text-red-600" />
-              <div className="text-2xl font-bold text-gray-900 dark:text-foreground">
+          <Card className="border shadow-md rounded-xl">
+            <CardContent className="p-3 sm:p-4 text-center">
+              <Heart className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-red-600" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
                 {mockBooks.filter(b => b.isFavorite).length}
               </div>
-              <div className="text-sm text-gray-600 dark:text-muted-foreground">Favorites</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Favorites</div>
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <Target className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-              <div className="text-2xl font-bold text-gray-900 dark:text-foreground">
+          <Card className="border shadow-md rounded-xl">
+            <CardContent className="p-3 sm:p-4 text-center">
+              <Target className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-purple-600" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
                 {mockBooks.filter(b => b.quizCompleted).length}
               </div>
-              <div className="text-sm text-gray-600 dark:text-muted-foreground">Quizzes Completed</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Quizzes Completed</div>
             </CardContent>
           </Card>
         </motion.div>
@@ -347,41 +366,41 @@ export default function ReadNEx() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6">
+          <Card className="border bg-card backdrop-blur-sm rounded-xl shadow-md">
+            <CardContent className="p-3 sm:p-4">
               
-              {/* Search Bar - Full Width */}
-              <div className="mb-6">
+              {/* Search Bar - Compact */}
+              <div className="mb-4">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-muted-foreground" />
                   <input
                     type="text"
                     placeholder="Search books by title or author..."
                     value={filters.searchTerm}
                     onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 text-base border border-input rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background/50 text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50"
+                    className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-background text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground transition-all duration-200 shadow-sm"
                   />
                 </div>
               </div>
 
               {/* Filters Row */}
-              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+              <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-end">
                 
                 {/* Status Filter */}
-                <div className="flex-1 w-full space-y-2">
-                  <label className="text-sm font-semibold text-gray-900 dark:text-foreground flex items-center gap-2">
-                    <BookmarkCheck className="h-4 w-4 text-primary" />
+                <div className="flex-1 w-full space-y-1.5">
+                  <label className="text-xs font-semibold text-gray-900 dark:text-gray-200 flex items-center gap-1.5">
+                    <BookmarkCheck className="h-3.5 w-3.5 text-primary" />
                     Reading Status
                   </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button 
                         variant="outline" 
-                        className="w-full justify-between h-11 rounded-xl hover:bg-primary/5 hover:border-primary/50 transition-colors"
+                        className="w-full justify-between h-9 rounded-lg hover:bg-primary/5 hover:border-primary/50 transition-colors text-sm focus:ring-0 focus:ring-offset-0"
                       >
-                        <span className="font-medium">{filters.statusFilter}</span>
+                        <span className="font-medium text-gray-900 dark:text-foreground">{filters.statusFilter}</span>
                         <ChevronDown className="h-4 w-4 opacity-50" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -402,33 +421,33 @@ export default function ReadNEx() {
                 </div>
 
                 {/* View Mode */}
-                <div className="flex-1 w-full sm:w-auto space-y-2">
-                  <label className="text-sm font-semibold text-gray-900 dark:text-foreground flex items-center gap-2">
-                    <Grid3x3 className="h-4 w-4 text-primary" />
+                <div className="flex-1 w-full sm:w-auto space-y-1.5">
+                  <label className="text-xs font-semibold text-gray-900 dark:text-gray-200 flex items-center gap-1.5">
+                    <Grid3x3 className="h-3.5 w-3.5 text-primary" />
                     View Mode
                   </label>
-                  <div className="flex items-center gap-3">
-                    <div className="flex rounded-xl border border-input overflow-hidden shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="flex rounded-lg border border-input overflow-hidden">
                       <Button
                         variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                        size="default"
+                        size="sm"
                         onClick={() => setViewMode('grid')}
-                        className="rounded-none px-6 h-11"
+                        className="rounded-none px-4 h-9"
                       >
                         <Grid3x3 className="h-4 w-4" />
                       </Button>
                       <Button
                         variant={viewMode === 'list' ? 'default' : 'ghost'}
-                        size="default"
+                        size="sm"
                         onClick={() => setViewMode('list')}
-                        className="rounded-none px-6 h-11"
+                        className="rounded-none px-4 h-9"
                       >
                         <List className="h-4 w-4" />
                       </Button>
                     </div>
                     <Badge 
                       variant="secondary" 
-                      className="text-sm font-semibold px-3 py-1.5 bg-primary/10 text-primary border-0"
+                      className="text-xs font-semibold px-2.5 py-1 bg-primary/10 text-primary border-0"
                     >
                       {filteredBooks.length} books
                     </Badge>
@@ -446,18 +465,42 @@ export default function ReadNEx() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.6 }}
         >
-          {viewMode === 'grid' ? (
+          {/* Error State */}
+          {error ? (
+            <BooksErrorState error={error} onRetry={handleRetry} />
+          ) : /* Loading State */
+          isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredBooks.map((book) => (
+              <BookCardsLoadingSkeleton count={8} />
+            </div>
+          ) : /* Empty State */
+          filteredBooks.length === 0 ? (
+            <BooksEmptyState 
+              type="no-results"
+              searchTerm={filters.searchTerm}
+              onClearFilters={handleClearFilters}
+            />
+          ) : /* Books Grid/List */
+          viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+              {filteredBooks.map((book, index) => (
                 <motion.div
                   key={book.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ 
+                    duration: 0.4,
+                    delay: index * 0.05, // Stagger effect
+                    ease: [0.25, 0.1, 0.25, 1]
+                  }}
+                  whileHover={{ 
+                    y: -8,
+                    transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }
+                  }}
                   className="group"
                 >
-                  <Card className="h-full hover:shadow-2xl transition-all duration-300 overflow-hidden group-hover:scale-[1.02] border border-border/50 bg-card/50 backdrop-blur-sm rounded-2xl">
-                    <Link to={`/book/${book.id}`} className="relative aspect-[2/3] overflow-hidden block">
+                  <Card className="h-full border shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden rounded-xl">
+                    <Link to={`/book/${book.id}`} className="relative aspect-[3/4] overflow-hidden block">
                       <img
                         src={book.coverImage}
                         alt={book.title}
@@ -582,23 +625,6 @@ export default function ReadNEx() {
             </div>
           )}
         </motion.div>
-
-        {/* No Results */}
-        {filteredBooks.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-12"
-          >
-            <BookOpen className="h-16 w-16 mx-auto text-gray-400 dark:text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 dark:text-foreground mb-2">
-              No books found
-            </h3>
-            <p className="text-gray-600 dark:text-muted-foreground">
-              Try adjusting your search criteria or filters to find more books.
-            </p>
-          </motion.div>
-        )}
       </div>
     </div>
   )

@@ -1,14 +1,13 @@
 import { 
   BookOpen, 
-  Heart, 
+  Heart,
   History, 
   Users, 
   BookMarked, 
   SearchX, 
   StickyNote, 
   MessageCircle,
-  Filter,
-  Plus
+  Filter
 } from 'lucide-react';
 
 export const emptyStates = {
@@ -146,3 +145,6 @@ export const emptyStates = {
 
 // Helper type for empty state keys
 export type EmptyStateKey = keyof typeof emptyStates;
+
+
+

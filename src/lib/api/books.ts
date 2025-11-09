@@ -4,7 +4,6 @@ export interface Book {
   id: number;
   title: string;
   author: string;
-  genre: string;
   language?: string;
   subject?: string;
   description?: string;
@@ -38,7 +37,6 @@ export interface CreateReviewData {
 
 export interface CreateUserBookData {
   title: string;
-  genre: string;
   description: string;
   text: string;
 }

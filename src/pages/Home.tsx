@@ -29,8 +29,7 @@ export default function Home () {
       author: "Matt Haig",
       coverImage: "/api/placeholder/200/300",
       rating: 4.5,
-      description: "Between life and death there is a library, and within that library, the shelves go on forever.",
-      genre: "Fiction"
+      description: "Between life and death there is a library, and within that library, the shelves go on forever."
     },
     {
       id: "2",
@@ -38,8 +37,7 @@ export default function Home () {
       author: "Andy Weir",
       coverImage: "/api/placeholder/200/300",
       rating: 4.8,
-      description: "A lone astronaut must save humanity from an extinction-level threat.",
-      genre: "Sci-Fi"
+      description: "A lone astronaut must save humanity from an extinction-level threat."
     },
     {
       id: "3",
@@ -47,8 +45,7 @@ export default function Home () {
       author: "Kazuo Ishiguro",
       coverImage: "/api/placeholder/200/300",
       rating: 4.2,
-      description: "A thrilling coming-of-age story about an Artificial Friend and her quest to save the family she loves.",
-      genre: "Literary Fiction"
+      description: "A thrilling coming-of-age story about an Artificial Friend and her quest to save the family she loves."
     },
     {
       id: "4",
@@ -56,8 +53,7 @@ export default function Home () {
       author: "Taylor Jenkins Reid",
       coverImage: "/api/placeholder/200/300",
       rating: 4.7,
-      description: "Aging Hollywood icon finally tells her story of fame, fortune, and scandalous relationships.",
-      genre: "Romance"
+      description: "Aging Hollywood icon finally tells her story of fame, fortune, and scandalous relationships."
     }
   ]
 
@@ -86,16 +82,11 @@ export default function Home () {
   ]
 
   return (
-    <div className='relative min-h-screen overflow-hidden bg-background'>
+    <div className='relative min-h-screen bg-background'>
       {/* Hero Section */}
-      <section className='relative py-24 px-4 sm:px-6 lg:px-8'>
-        <div className='max-w-6xl mx-auto text-center relative'>
+      <section className='relative w-full py-20 sm:py-24 md:py-32 bg-background'>
+        <div className='container mx-auto text-center relative'>
           <motion.div {...fadeInUp}>
-            <Badge variant="secondary" className="mb-4 px-3 py-1 rounded-full">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Modern Learning Platform
-            </Badge>
-            
             <h1 className='font-sans text-4xl md:text-6xl font-bold text-gray-900 dark:text-foreground mb-6 tracking-tight'>
               Knowly - Knowledge Sharing Platform
               <span className='block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mt-3 leading-tight'>
@@ -107,19 +98,19 @@ export default function Home () {
               Join a vibrant community of learners and educators sharing knowledge through collaborative note-taking, an intelligent chatbot system, and interactive academic exercises.
             </p>
             
-            <div className='flex flex-col sm:flex-row gap-4 justify-center items-center mb-16'>
-              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 py-6 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 transition-transform duration-300">
-                <Link to='/readnex' className='flex items-center'>
+            <div className='flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center mb-16'>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 duration-300 w-full sm:w-auto">
+                <Link to='/readnex' className='flex items-center justify-center'>
                   <span>Read & Exercise</span>
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="px-8 py-6 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300">
-                <Link to='/create' className='flex items-center'>
+              <Button size="lg" variant="outline" className="px-8 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300 w-full sm:w-auto">
+                <Link to='/create' className='flex items-center justify-center'>
                   <span>Create your book</span>
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="px-8 py-6 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300">
-                <Link to='/noteshare' className='flex items-center'>
+              <Button size="lg" variant="outline" className="px-8 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300 w-full sm:w-auto">
+                <Link to='/noteshare' className='flex items-center justify-center'>
                   <span>NoteShare</span>
                 </Link>
               </Button>
@@ -138,7 +129,7 @@ export default function Home () {
                 { label: 'Study Notes', value: '5,200', icon: BookMarked },
                 { label: 'Since', value: '2025', icon: Scroll }
               ].map((stat, index) => (
-                <motion.div key={index} whileHover={{ y: -5 }} className="bg-card rounded-xl p-6 shadow-md border">
+                <motion.div key={index} whileHover={{ y: -5 }} className="bg-card rounded-xl p-6 border-0 shadow-lg hover:shadow-xl transition-shadow">
                   <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-primary/10 text-primary mx-auto mb-4">
                     <stat.icon className="h-6 w-6" />
                   </div>
@@ -156,8 +147,8 @@ export default function Home () {
       </section>
 
       {/* Featured Books Section */}
-      <section className="relative py-16 px-4 sm:px-6 lg:px-8 bg-muted/50">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative w-full py-16 sm:py-20 md:py-24 bg-muted/50">
+        <div className="container mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
             <Badge variant="outline" className="mb-4">
               <TrendingUp className="mr-2 h-4 w-4" />
@@ -171,10 +162,10 @@ export default function Home () {
             </p>
           </motion.div>
 
-          <motion.div {...stagger} className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <motion.div {...stagger} className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
             {featuredBooks.map((book) => (
               <motion.div key={book.id} {...fadeInUp}>
-                <Card className="h-full hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group border-0 shadow-lg rounded-xl">
+                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group rounded-xl">
                   <div className="relative aspect-[3/4] overflow-hidden rounded-t-xl">
                     <img
                       src={book.coverImage}
@@ -182,9 +173,6 @@ export default function Home () {
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       loading="lazy"
                     />
-                    <div className="absolute top-3 right-3">
-                      <Badge variant="secondary">{book.genre}</Badge>
-                    </div>
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
                       <div className="flex items-center gap-1 mb-2">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -219,8 +207,8 @@ export default function Home () {
       </section>
 
       {/* Services Section */}
-      <section className='py-16 px-4 sm:px-6 lg:px-8'>
-        <div className='max-w-7xl mx-auto'>
+      <section className='relative w-full py-16 sm:py-20 md:py-24 bg-background'>
+        <div className='container mx-auto'>
           <motion.div {...fadeInUp} className='text-center mb-16'>
             <h2 className='font-sans text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-4'>
               Our Services
@@ -253,7 +241,7 @@ export default function Home () {
             ].map((service, index) => (
               <motion.div key={index} {...fadeInUp}>
                 <Link to={service.link}>
-                  <Card className="h-full p-6 text-center hover:shadow-xl transition-all duration-300 hover:-translate-y-2 border-0 shadow-lg rounded-xl">
+                  <Card className="h-full p-6 text-center border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 rounded-xl">
                     <div className="mx-auto mb-6 p-4 bg-primary/10 rounded-full w-16 h-16 flex items-center justify-center">
                       <service.icon className="h-8 w-8 text-primary" />
                     </div>
@@ -274,8 +262,8 @@ export default function Home () {
       </section>
 
       {/* Testimonials Section */}
-      <section className='relative py-16 px-4 sm:px-6 lg:px-8 bg-muted/50'>
-        <div className='max-w-7xl mx-auto'>
+      <section className='relative w-full py-16 sm:py-20 md:py-24 bg-muted/50'>
+        <div className='container mx-auto'>
           <motion.div {...fadeInUp} className='text-center mb-16'>
             <h2 className='font-sans text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-4'>
               What Our Academic Community Says
@@ -321,8 +309,8 @@ export default function Home () {
       </section>
 
       {/* CTA Section */}
-      <section className='py-16 px-4 sm:px-6 lg:px-8'>
-        <div className='max-w-4xl mx-auto'>
+      <section className='relative w-full py-16 sm:py-20 md:py-24 bg-background'>
+        <div className='container mx-auto max-w-4xl'>
           <motion.div {...fadeInUp} className="text-center">
             <Card className="p-12 border-0 shadow-2xl rounded-2xl bg-gradient-to-br from-primary/5 to-secondary/5">
               <CardHeader className="p-0 mb-6">
@@ -335,7 +323,7 @@ export default function Home () {
               </CardHeader>
               <CardContent className="p-0">
                 <div className='flex flex-col gap-4 items-center'>
-                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105">
+                  <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 duration-300">
                     <Link to='/register' className="flex items-center">
                       Join Knowly
                       <ChevronRight className="ml-2 h-5 w-5" />

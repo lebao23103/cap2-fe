@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
@@ -24,6 +25,7 @@ interface Book {
 }
 
 export default function Favorites() {
+  const navigate = useNavigate()
   const [favorites, setFavorites] = useState<Book[]>([])
   const [filteredFavorites, setFilteredFavorites] = useState<Book[]>([])
   const [searchTerm, setSearchTerm] = useState('')
@@ -136,7 +138,7 @@ export default function Favorites() {
             variant="ghost"
             size="sm"
             onClick={() => handleRemoveFavorite(book.id)}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
+            className="md:opacity-0 group-hover:opacity-100 transition-opacity"
             aria-label={`Remove ${book.title} from favorites`}
           >
             <Trash2 className="h-4 w-4 text-red-600 dark:text-red-500" aria-hidden="true" />
@@ -150,10 +152,10 @@ export default function Favorites() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => window.history.back()}>
+              <Button variant="ghost" onClick={() => navigate(-1)}>
                 <ArrowLeft className="mr-2 h-4 w-4 text-gray-600 dark:text-foreground" />
                 Back to Dashboard
               </Button>
@@ -169,7 +171,7 @@ export default function Favorites() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto py-8">
         {/* Search and Filter */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -256,3 +258,4 @@ export default function Favorites() {
     </div>
   )
 }
+

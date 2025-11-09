@@ -5,7 +5,9 @@ import { BookCard, type BookData } from '../components/ui/book-card'
 import { 
   BookOpen, 
   Heart, 
-  MessageCircle
+  MessageCircle,
+  Target,
+  StickyNote
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
@@ -57,7 +59,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="container mx-auto py-6 sm:py-8">
         {/* Welcome Section */}
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-gray-900 dark:text-foreground">
@@ -66,6 +68,38 @@ export default function Dashboard() {
           <p className="text-sm sm:text-base text-gray-600 dark:text-muted-foreground">
             Discover your next favorite book with AI-powered recommendations
           </p>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6 sm:mb-8">
+          <Card>
+            <CardContent className="p-4 sm:p-6 text-center">
+              <BookOpen className="h-8 w-8 mx-auto mb-2 text-primary" />
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-foreground">12</div>
+              <p className="text-sm text-gray-600 dark:text-muted-foreground">Books Read</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 sm:p-6 text-center">
+              <Target className="h-8 w-8 mx-auto mb-2 text-green-600" />
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-foreground">7</div>
+              <p className="text-sm text-gray-600 dark:text-muted-foreground">Day Streak</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 sm:p-6 text-center">
+              <Heart className="h-8 w-8 mx-auto mb-2 text-red-600" />
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-foreground">24</div>
+              <p className="text-sm text-gray-600 dark:text-muted-foreground">Favorites</p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4 sm:p-6 text-center">
+              <StickyNote className="h-8 w-8 mx-auto mb-2 text-amber-600" />
+              <div className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-foreground">156</div>
+              <p className="text-sm text-gray-600 dark:text-muted-foreground">Notes Made</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Quick Actions */}

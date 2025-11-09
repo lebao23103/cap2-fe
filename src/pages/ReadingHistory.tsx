@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
@@ -28,6 +29,7 @@ interface ReadingSession {
 }
 
 export default function ReadingHistory() {
+  const navigate = useNavigate()
   const [readingHistory, setReadingHistory] = useState<ReadingSession[]>([])
   const [filter, setFilter] = useState<'all' | 'reading' | 'completed' | 'paused'>('all')
 
@@ -188,10 +190,10 @@ export default function ReadingHistory() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => window.history.back()}>
+              <Button variant="ghost" onClick={() => navigate(-1)}>
                 <ArrowLeft className="mr-2 h-4 w-4 text-gray-600 dark:text-foreground" />
                 Back to Dashboard
               </Button>
@@ -290,3 +292,4 @@ export default function ReadingHistory() {
     </div>
   )
 }
+

@@ -172,7 +172,7 @@ export default function Chatbot() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 py-6 min-h-[400px] max-h-[calc(100vh-200px)]">
+      <main className="container mx-auto py-6 min-h-[400px] max-h-[calc(100vh-200px)]">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full">
           {/* Chat Area */}
           <div className="lg:col-span-3 flex flex-col flex-grow">

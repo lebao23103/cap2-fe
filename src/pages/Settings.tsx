@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { 
   User, 
   Palette, 
@@ -9,8 +12,24 @@ import {
   Save,
   Loader2
 } from 'lucide-react';
+
+// Zod validation schema for Account tab
+const accountSchema = z.object({
+  name: z.string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(50, 'Name must be less than 50 characters'),
+  email: z.string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address')
+    .toLowerCase(),
+  bio: z.string()
+    .max(500, 'Bio must be less than 500 characters')
+    .optional(),
+})
+
+type AccountFormData = z.infer<typeof accountSchema>
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -53,6 +72,16 @@ export default function Settings() {
   const [showDiscardDialog, setShowDiscardDialog] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   
+  // React Hook Form for Account tab validation
+  const {
+    register,
+    formState: { errors: accountErrors },
+    trigger,
+  } = useForm<AccountFormData>({
+    resolver: zodResolver(accountSchema),
+    mode: 'onChange',
+  });
+  
   // Load settings from localStorage or use defaults
   const [settings, setSettings] = useState<Settings>(() => {
     const saved = localStorage.getItem('knowly-settings');
@@ -85,6 +114,17 @@ export default function Settings() {
   };
 
   const handleSave = async () => {
+    // Validate account fields before saving
+    const isValid = await trigger(['name', 'email', 'bio']);
+    if (!isValid) {
+      toast({
+        title: 'Validation error',
+        description: 'Please fix the errors in the form before saving.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
     setLoading(true);
     setStatusMessage('Saving settings...');
     
@@ -123,8 +163,8 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-5xl mx-auto">
+    <div className="min-h-screen pt-16 sm:pt-20 pb-8 sm:pb-12">
+      <div className="container mx-auto max-w-5xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -220,11 +260,22 @@ export default function Settings() {
                         <Label htmlFor="name">Display Name</Label>
                         <Input
                           id="name"
+                          {...register('name')}
                           value={tempSettings.name}
-                          onChange={(e) => handleChange('name', e.target.value)}
+                          onChange={(e) => {
+                            handleChange('name', e.target.value);
+                            trigger('name');
+                          }}
                           placeholder="Your name"
                           autoComplete="name"
+                          className={accountErrors.name ? 'border-destructive' : ''}
+                          aria-invalid={!!accountErrors.name}
                         />
+                        {accountErrors.name && (
+                          <p className="text-sm text-destructive" role="alert">
+                            {accountErrors.name.message}
+                          </p>
+                        )}
                       </div>
                       
                       <div className="space-y-2">
@@ -232,22 +283,44 @@ export default function Settings() {
                         <Input
                           id="email"
                           type="email"
+                          {...register('email')}
                           value={tempSettings.email}
-                          onChange={(e) => handleChange('email', e.target.value)}
+                          onChange={(e) => {
+                            handleChange('email', e.target.value);
+                            trigger('email');
+                          }}
                           placeholder="your.email@example.com"
                           autoComplete="email"
+                          className={accountErrors.email ? 'border-destructive' : ''}
+                          aria-invalid={!!accountErrors.email}
                         />
+                        {accountErrors.email && (
+                          <p className="text-sm text-destructive" role="alert">
+                            {accountErrors.email.message}
+                          </p>
+                        )}
                       </div>
                       
                       <div className="space-y-2">
                         <Label htmlFor="bio">Bio</Label>
                         <Textarea
                           id="bio"
+                          {...register('bio')}
                           value={tempSettings.bio}
-                          onChange={(e) => handleChange('bio', e.target.value)}
+                          onChange={(e) => {
+                            handleChange('bio', e.target.value);
+                            trigger('bio');
+                          }}
                           placeholder="Tell us about yourself"
                           rows={4}
+                          className={accountErrors.bio ? 'border-destructive' : ''}
+                          aria-invalid={!!accountErrors.bio}
                         />
+                        {accountErrors.bio && (
+                          <p className="text-sm text-destructive" role="alert">
+                            {accountErrors.bio.message}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -568,3 +641,4 @@ export default function Settings() {
     </div>
   );
 }
+

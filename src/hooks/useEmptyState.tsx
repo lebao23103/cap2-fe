@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { EmptyState } from '@/components/ui/empty-state';
-import { emptyStates, EmptyStateKey } from '@/config/empty-states';
+import type { EmptyStateKey } from '@/config/empty-states';
+import { emptyStates } from '@/config/empty-states';
 
 export function useEmptyState() {
   const navigate = useNavigate();
