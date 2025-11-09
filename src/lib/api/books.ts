@@ -44,7 +44,7 @@ export interface CreateUserBookData {
 class BooksService {
   // Get all approved books (public)
   async getApprovedBooks(): Promise<Book[]> {
-    const response = await apiClient.get('/api/list-approved-books');
+    const response = await apiClient.get('/api/list-approved-books/');
     return response.data;
   }
 
@@ -56,7 +56,7 @@ class BooksService {
 
   // Get reviews for a book
   async getBookReviews(bookId: number): Promise<Review[]> {
-    const response = await apiClient.get(`/api/books/${bookId}/reviews`);
+    const response = await apiClient.get(`/api/books/${bookId}/reviews/`);
     return response.data;
   }
 
@@ -74,28 +74,28 @@ class BooksService {
 
   // Admin: Approve user book
   async approveUserBook(bookId: number): Promise<void> {
-    await apiClient.put(`/api/approve-user-book/${bookId}`);
+    await apiClient.put(`/api/approve-user-book/${bookId}/`);
   }
 
   // Admin: Reject/Delete book
   async rejectUserBook(bookId: number): Promise<void> {
-    await apiClient.delete(`/api/reject-delete-book/${bookId}`);
+    await apiClient.delete(`/api/reject-delete-book/${bookId}/`);
   }
 
   // Admin: Edit book
   async editBook(bookId: number, bookData: Partial<Book>): Promise<Book> {
-    const response = await apiClient.put(`/api/books/${bookId}/edit`, bookData);
+    const response = await apiClient.put(`/api/books/${bookId}/edit/`, bookData);
     return response.data;
   }
 
   // Admin: Delete book
   async deleteBook(bookId: number): Promise<void> {
-    await apiClient.delete(`/api/books/${bookId}/delete`);
+    await apiClient.delete(`/api/books/${bookId}/delete/`);
   }
 
   // Admin: Get all books
   async getAllBooks(): Promise<Book[]> {
-    const response = await apiClient.get('/api/admin/books');
+    const response = await apiClient.get('/api/admin/books/');
     return response.data;
   }
 
@@ -106,6 +106,26 @@ class BooksService {
       size
     });
     return response.data;
+  }
+
+  // Search books
+  async searchBooks(query: string): Promise<Book[]> {
+    const response = await apiClient.get('/api/search-books/', {
+      params: { q: query }
+    });
+    return response.data;
+  }
+
+  // Get books by author
+  async getBooksByAuthor(authorName: string): Promise<Book[]> {
+    const response = await apiClient.get(`/api/books/author/${encodeURIComponent(authorName)}/`);
+    return response.data;
+  }
+
+  // Get book content
+  async getBookContent(bookId: number): Promise<string> {
+    const response = await apiClient.get(`/api/books/${bookId}/content/`);
+    return response.data.content || response.data;
   }
 }
 

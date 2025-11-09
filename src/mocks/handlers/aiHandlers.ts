@@ -235,8 +235,6 @@ const chatbotMultiTurn = http.post('/api/chatbot/multi-turn/', async ({ request 
     
     // Adjust response based on conversation history
     if (history.length > 0) {
-      const recentTopics = history.map(h => h.user.toLowerCase()).join(' ')
-      
       // Make response more contextual
       if (history.length === 1) {
         response = `Thanks for continuing our chat! ${response}`

@@ -210,6 +210,10 @@ export function Layout({ children }: LayoutProps) {
                             </div>
                           </DropdownMenuLabel>
                           <DropdownMenuSeparator />
+                          <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                            <span>Dashboard</span>
+                          </DropdownMenuItem>
                           <DropdownMenuItem onClick={() => navigate('/profile')}>
                             <User className="mr-2 h-4 w-4" />
                             <span>Profile</span>
@@ -337,6 +341,32 @@ export function Layout({ children }: LayoutProps) {
                         </Link>
                       );
                     })}
+                    <div className="h-px bg-border my-2" />
+                    {/* Profile and Settings Links */}
+                    <Link
+                      to="/profile"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
+                        isActivePath('/profile')
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
+                      }`}
+                    >
+                      <User className="h-5 w-5" />
+                      Profile
+                    </Link>
+                    <Link
+                      to="/settings"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
+                        isActivePath('/settings')
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
+                      }`}
+                    >
+                      <Settings className="h-5 w-5" />
+                      Settings
+                    </Link>
                     <div className="h-px bg-border my-2" />
                     <button
                       onClick={handleLogout}

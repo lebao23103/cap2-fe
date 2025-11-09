@@ -4,17 +4,20 @@ import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Input } from '../components/ui/input'
+import { useToast } from '../components/ui/use-toast'
 import { 
   ArrowLeft, 
   Search, 
   Star, 
   Heart, 
   Trash2,
-  Filter
+  Filter,
+  Loader2
 } from 'lucide-react'
+import userService, { type Favorite } from '../lib/api/user'
 
 interface Book {
-  id: string
+  id: number
   title: string
   author: string
   cover: string
@@ -26,59 +29,47 @@ interface Book {
 
 export default function Favorites() {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [favorites, setFavorites] = useState<Book[]>([])
   const [filteredFavorites, setFilteredFavorites] = useState<Book[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedGenre, setSelectedGenre] = useState<string>('all')
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // TODO: Fetch favorites from API
-    const mockFavorites: Book[] = [
-      {
-        id: '1',
-        title: 'The Great Gatsby',
-        author: 'F. Scott Fitzgerald',
-        cover: 'https://via.placeholder.com/150x200',
-        rating: 4.5,
-        genre: ['Classic', 'Fiction'],
-        dateAdded: '2024-01-15',
-        description: 'A classic American novel about the Jazz Age.'
-      },
-      {
-        id: '2',
-        title: 'Dune',
-        author: 'Frank Herbert',
-        cover: 'https://via.placeholder.com/150x200',
-        rating: 4.8,
-        genre: ['Sci-Fi', 'Adventure'],
-        dateAdded: '2024-01-10',
-        description: 'Epic science fiction masterpiece.'
-      },
-      {
-        id: '3',
-        title: '1984',
-        author: 'George Orwell',
-        cover: 'https://via.placeholder.com/150x200',
-        rating: 4.6,
-        genre: ['Dystopian', 'Classic'],
-        dateAdded: '2024-01-05',
-        description: 'A dystopian social science fiction novel.'
-      },
-      {
-        id: '4',
-        title: 'To Kill a Mockingbird',
-        author: 'Harper Lee',
-        cover: 'https://via.placeholder.com/150x200',
-        rating: 4.7,
-        genre: ['Classic', 'Drama'],
-        dateAdded: '2024-01-01',
-        description: 'A gripping tale of racial injustice.'
-      }
-    ]
-
-    setFavorites(mockFavorites)
-    setFilteredFavorites(mockFavorites)
+    loadFavorites()
   }, [])
+
+  const loadFavorites = async () => {
+    try {
+      setIsLoading(true)
+      const favoritesData = await userService.getFavorites()
+      
+      // Transform API data to match component interface
+      const transformedFavorites: Book[] = favoritesData.map((fav: Favorite) => ({
+        id: fav.book.id,
+        title: fav.book.title,
+        author: fav.book.author,
+        cover: fav.book.cover_image || 'https://via.placeholder.com/150x200',
+        rating: fav.book.rating,
+        genre: fav.book.subject ? [fav.book.subject] : ['General'],
+        dateAdded: fav.added_at,
+        description: fav.book.description || ''
+      }))
+
+      setFavorites(transformedFavorites)
+      setFilteredFavorites(transformedFavorites)
+    } catch (error) {
+      console.error('Error loading favorites:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to load your favorites',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
     let filtered = favorites
@@ -99,9 +90,22 @@ export default function Favorites() {
     setFilteredFavorites(filtered)
   }, [searchTerm, selectedGenre, favorites])
 
-  const handleRemoveFavorite = (bookId: string) => {
-    setFavorites(prev => prev.filter(book => book.id !== bookId))
-    // TODO: API call to remove from favorites
+  const handleRemoveFavorite = async (bookId: number) => {
+    try {
+      await userService.removeFromFavorites(bookId)
+      setFavorites(prev => prev.filter(book => book.id !== bookId))
+      toast({
+        title: 'Success',
+        description: 'Book removed from favorites'
+      })
+    } catch (error) {
+      console.error('Error removing favorite:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to remove book from favorites',
+        variant: 'destructive'
+      })
+    }
   }
 
   const allGenres = Array.from(new Set(favorites.flatMap(book => book.genre)))
@@ -172,6 +176,12 @@ export default function Favorites() {
       </header>
 
       <main className="container mx-auto py-8">
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <>
         {/* Search and Filter */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
@@ -253,6 +263,8 @@ export default function Favorites() {
               </CardContent>
             </Card>
           </div>
+        )}
+        </>
         )}
       </main>
     </div>

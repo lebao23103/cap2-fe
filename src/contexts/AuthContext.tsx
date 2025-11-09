@@ -93,14 +93,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     last_name: string;
   }) => {
     try {
-      await authService.register(data);
+      const response = await authService.register(data);
+      
+      // Auto-login: Set user state and navigate to dashboard
+      setUser(response.user);
       
       toast({
-        title: "Registration successful!",
-        description: "Please login with your new account.",
+        title: "Welcome to Knowly!",
+        description: `Account created for ${response.user.first_name} ${response.user.last_name}`,
       });
       
-      navigate('/login');
+      // Navigate based on user role
+      if (response.user.is_staff) {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (error: any) {
       const message = error.response?.data?.detail || 
                      error.response?.data?.message ||

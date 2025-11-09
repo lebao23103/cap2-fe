@@ -1,7 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { fadeInUp } from '@/lib/animations'
+import { useToast } from '@/components/ui/use-toast'
+import booksService from '@/lib/api/books'
+import userService from '@/lib/api/user'
 import { 
   BookOpen, 
   Heart, 
@@ -9,7 +12,6 @@ import {
   Search, 
   Grid3x3, 
   List,
-  Eye,
   ChevronDown,
   Play,
   Clock,
@@ -36,17 +38,17 @@ import {
 
 // Book interface with reading features
 interface Book {
-  id: string
+  id: number
   title: string
   author: string
   coverImage: string
   rating: number
-  readCount: number
+  readCount?: number
   description: string
-  year: number
-  language: string
-  ageGroup: string
-  pages: number
+  year?: number
+  language?: string
+  ageGroup?: string
+  pages?: number
   isUserCreated?: boolean
   readingProgress?: number
   isFavorite?: boolean
@@ -55,130 +57,8 @@ interface Book {
   hasQuiz?: boolean
   quizCompleted?: boolean
   readingTime?: string
+  subject?: string
 }
-
-// Enhanced mock book data with reading features
-const mockBooks: Book[] = [
-  {
-    id: "1",
-    title: "The Midnight Library",
-    author: "Matt Haig",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.5,
-    readCount: 12420,
-    description: "Between life and death there is a library, and within that library, the shelves go on forever.",
-    year: 2020,
-    language: "English",
-    ageGroup: "Adult",
-    pages: 288,
-    readingProgress: 75,
-    isFavorite: true,
-    lastReadDate: "2024-10-01",
-    notes: 5,
-    hasQuiz: true,
-    quizCompleted: false,
-    readingTime: "4h 30m"
-  },
-  {
-    id: "2",
-    title: "Project Hail Mary",
-    author: "Andy Weir",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.8,
-    readCount: 18750,
-    description: "A lone astronaut must save humanity from an extinction-level threat.",
-    year: 2021,
-    language: "English",
-    ageGroup: "Adult",
-    pages: 496,
-    readingProgress: 0,
-    isFavorite: false,
-    notes: 0,
-    hasQuiz: true,
-    quizCompleted: false,
-    readingTime: "7h 15m"
-  },
-  {
-    id: "3",
-    title: "Klara and the Sun",
-    author: "Kazuo Ishiguro",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.2,
-    readCount: 9800,
-    description: "A thrilling coming-of-age story about an Artificial Friend.",
-    year: 2021,
-    language: "English",
-    ageGroup: "Young Adult",
-    pages: 320,
-    readingProgress: 100,
-    isFavorite: true,
-    lastReadDate: "2024-09-28",
-    notes: 8,
-    hasQuiz: true,
-    quizCompleted: true,
-    readingTime: "5h 20m"
-  },
-  {
-    id: "4",
-    title: "The Seven Husbands of Evelyn Hugo",
-    author: "Taylor Jenkins Reid",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.7,
-    readCount: 25600,
-    description: "Aging Hollywood icon finally tells her story of fame and fortune.",
-    year: 2017,
-    language: "English",
-    ageGroup: "Adult",
-    pages: 400,
-    readingProgress: 45,
-    isFavorite: false,
-    lastReadDate: "2024-09-30",
-    notes: 3,
-    hasQuiz: true,
-    quizCompleted: false,
-    readingTime: "6h 10m"
-  },
-  {
-    id: "5",
-    title: "Atomic Habits",
-    author: "James Clear",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.6,
-    readCount: 31200,
-    description: "An easy & proven way to build good habits & break bad ones.",
-    year: 2018,
-    language: "English",
-    ageGroup: "Adult",
-    pages: 320,
-    readingProgress: 100,
-    isFavorite: true,
-    lastReadDate: "2024-09-25",
-    notes: 12,
-    hasQuiz: true,
-    quizCompleted: true,
-    readingTime: "5h 45m"
-  },
-  {
-    id: "6",
-    title: "The Thursday Murder Club",
-    author: "Richard Osman",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.3,
-    readCount: 14500,
-    description: "Four unlikely friends meet weekly to investigate cold cases.",
-    year: 2020,
-    language: "English",
-    ageGroup: "Adult",
-    pages: 368,
-    readingProgress: 20,
-    isFavorite: false,
-    lastReadDate: "2024-10-02",
-    notes: 1,
-    hasQuiz: true,
-    quizCompleted: false,
-    readingTime: "6h 30m"
-  }
-]
 
 // Filter options
 const statusFilters = [
@@ -197,21 +77,67 @@ interface FilterState {
 }
 
 export default function ReadNEx() {
+  const { toast } = useToast()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [filters, setFilters] = useState<FilterState>({
     statusFilter: "All",
     searchTerm: ""
   })
+  const [books, setBooks] = useState<Book[]>([])
+  const [favorites, setFavorites] = useState<Set<number>>(new Set())
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  // Simulate initial data loading
-  useState(() => {
-    const timer = setTimeout(() => {
+  useEffect(() => {
+    loadBooks()
+  }, [])
+
+  const loadBooks = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      
+      const [booksData, favoritesData] = await Promise.all([
+        booksService.getApprovedBooks(),
+        userService.getFavorites().catch(() => [])
+      ])
+
+      // Transform API books to component format
+      const transformedBooks: Book[] = booksData.map((book: any) => ({
+        id: book.id,
+        title: book.title,
+        author: book.author,
+        coverImage: book.cover_image || '/api/placeholder/300/400',
+        rating: book.rating || 0,
+        description: book.description || '',
+        language: book.language,
+        subject: book.subject,
+        readingProgress: 0, // Would need to be fetched from reading history
+        isFavorite: false, // Will be updated below
+        hasQuiz: true // Assume all books have quizzes for now
+      }))
+
+      const favoriteIds = new Set(favoritesData.map((fav: any) => fav.book.id))
+      
+      // Mark favorites
+      transformedBooks.forEach(book => {
+        book.isFavorite = favoriteIds.has(book.id)
+      })
+
+      setBooks(transformedBooks)
+      setFavorites(favoriteIds)
+    } catch (error) {
+      console.error('Error loading books:', error)
+      setError('Failed to load books')
+      toast({
+        title: 'Error',
+        description: 'Failed to load books',
+        variant: 'destructive'
+      })
+    } finally {
       setIsLoading(false)
-    }, 1500)
-    return () => clearTimeout(timer)
-  })
+    }
+  }
 
   const handleClearFilters = () => {
     setFilters({
@@ -221,16 +147,12 @@ export default function ReadNEx() {
   }
 
   const handleRetry = () => {
-    setError(null)
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 1500)
+    loadBooks()
   }
 
   // Filter books based on current filters
   const filteredBooks = useMemo(() => {
-    return mockBooks.filter(book => {
+    return books.filter(book => {
       let matchesStatus = true
       if (filters.statusFilter === "Currently Reading") {
         matchesStatus = book.readingProgress! > 0 && book.readingProgress! < 100
@@ -252,15 +174,45 @@ export default function ReadNEx() {
       
       return matchesStatus && matchesSearch
     })
-  }, [filters])
+  }, [filters, books])
 
   const handleFilterChange = (filterType: keyof FilterState, value: string) => {
     setFilters(prev => ({ ...prev, [filterType]: value }))
   }
 
-  const toggleFavorite = (bookId: string) => {
-    // In a real app, this would update the database
-    console.log(`Toggle favorite for book ${bookId}`)
+  const toggleFavorite = async (bookId: number) => {
+    try {
+      const isFavorite = favorites.has(bookId)
+      
+      if (isFavorite) {
+        await userService.removeFromFavorites(bookId)
+        setFavorites(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(bookId)
+          return newSet
+        })
+      } else {
+        await userService.addToFavorites(bookId)
+        setFavorites(prev => new Set(prev).add(bookId))
+      }
+
+      // Update books state
+      setBooks(prev => prev.map(book => 
+        book.id === bookId ? { ...book, isFavorite: !isFavorite } : book
+      ))
+
+      toast({
+        title: isFavorite ? 'Removed from favorites' : 'Added to favorites',
+        description: isFavorite ? 'Book removed from your favorites' : 'Book added to your favorites'
+      })
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to update favorites',
+        variant: 'destructive'
+      })
+    }
   }
 
   const renderStars = (rating: number) => {
@@ -324,7 +276,7 @@ export default function ReadNEx() {
             <CardContent className="p-3 sm:p-4 text-center">
               <BookOpen className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-primary" />
               <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
-                {mockBooks.filter(b => b.readingProgress! > 0 && b.readingProgress! < 100).length}
+                {books.filter(b => b.readingProgress! > 0 && b.readingProgress! < 100).length}
               </div>
               <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Currently Reading</div>
             </CardContent>
@@ -334,7 +286,7 @@ export default function ReadNEx() {
             <CardContent className="p-3 sm:p-4 text-center">
               <CheckCircle className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-green-600" />
               <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
-                {mockBooks.filter(b => b.readingProgress === 100).length}
+                {books.filter(b => b.readingProgress === 100).length}
               </div>
               <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Completed</div>
             </CardContent>
@@ -344,7 +296,7 @@ export default function ReadNEx() {
             <CardContent className="p-3 sm:p-4 text-center">
               <Heart className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-red-600" />
               <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
-                {mockBooks.filter(b => b.isFavorite).length}
+                {books.filter(b => b.isFavorite).length}
               </div>
               <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Favorites</div>
             </CardContent>
@@ -352,11 +304,11 @@ export default function ReadNEx() {
           
           <Card className="border shadow-md rounded-xl">
             <CardContent className="p-3 sm:p-4 text-center">
-              <Target className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-purple-600" />
+              <BookOpen className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-blue-600" />
               <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
-                {mockBooks.filter(b => b.quizCompleted).length}
+                {books.length}
               </div>
-              <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Quizzes Completed</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Total Books</div>
             </CardContent>
           </Card>
         </motion.div>
@@ -596,14 +548,17 @@ export default function ReadNEx() {
                           {renderStars(book.rating)}
                         </div>
                         <div className="flex items-center justify-between text-xs text-gray-600 dark:text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3.5 w-3.5" />
-                            <span className="font-medium">{book.readingTime}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Eye className="h-3.5 w-3.5" />
-                            <span className="font-medium">{book.readCount.toLocaleString()}</span>
-                          </div>
+                          {book.readingTime && (
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3.5 w-3.5" />
+                              <span className="font-medium">{book.readingTime}</span>
+                            </div>
+                          )}
+                          {book.subject && (
+                            <Badge variant="secondary" className="text-xs">
+                              {book.subject}
+                            </Badge>
+                          )}
                         </div>
                         {book.lastReadDate && (
                           <div className="text-xs text-gray-500 dark:text-muted-foreground/80 pt-1 border-t border-border/50">

@@ -19,7 +19,6 @@ import {
   deleteNote,
   isValidHexColor,
   getUserNotesStats,
-  type MockNote,
 } from '../data/mockNotes'
 import { findBookById } from '../data/mockBooks'
 import { findUserById } from '../data/mockUsers'
@@ -569,11 +568,93 @@ const getMyNotesStats = http.get('/api/my-notes/stats/', async ({ request }) => 
 })
 
 /**
+ * PATCH /api/books/:bookId/notes/:noteId/update/ - Update a note (PATCH alias)
+ * Authentication required
+ */
+const updateBookNotePatch = http.patch('/api/books/:bookId/notes/:noteId/update/', async ({ request, params }) => {
+  // Same logic as PUT - just handle PATCH verb
+  await delay(300)
+  
+  const noteId = parseInt(params.noteId as string)
+  if (isNaN(noteId)) {
+    return HttpResponse.json(
+      { error: 'Invalid note ID' },
+      { status: 400 }
+    )
+  }
+  
+  const userId = getAuthenticatedUserId(request)
+  if (!userId) {
+    return HttpResponse.json(
+      { detail: 'Authentication credentials were not provided.' },
+      { status: 401 }
+    )
+  }
+  
+  const note = findNoteById(noteId)
+  if (!note) {
+    return HttpResponse.json(
+      { detail: 'Not found.' },
+      { status: 404 }
+    )
+  }
+  
+  if (note.user_id !== userId) {
+    return HttpResponse.json(
+      { detail: 'Not found.' },
+      { status: 404 }
+    )
+  }
+  
+  try {
+    const body = await request.json() as {
+      note_content?: string
+      color?: string
+      is_public?: boolean
+    }
+    
+    if (body.color && !isValidHexColor(body.color)) {
+      return HttpResponse.json(
+        { color: ['Color must be in hex format (e.g., #FFEB3B, #4CAF50)'] },
+        { status: 400 }
+      )
+    }
+    
+    const updatedNote = updateNote(noteId, body)
+    
+    if (!updatedNote) {
+      return HttpResponse.json(
+        { error: 'Failed to update note' },
+        { status: 500 }
+      )
+    }
+    
+    return HttpResponse.json({
+      id: updatedNote.id,
+      user: updatedNote.user_name,
+      book: updatedNote.book_id,
+      book_title: updatedNote.book_title,
+      selected_text: updatedNote.selected_text,
+      note_content: updatedNote.note_content,
+      page_number: updatedNote.page_number,
+      position_start: updatedNote.position_start,
+      position_end: updatedNote.position_end,
+      color: updatedNote.color,
+      is_public: updatedNote.is_public,
+      created_at: updatedNote.created_at,
+      updated_at: updatedNote.updated_at,
+    })
+  } catch (error) {
+    return HttpResponse.json(
+      { error: 'Failed to update note' },
+      { status: 500 }
+    )
+  }
+})
+
+/**
  * Export all notes handlers
  */
-// PATCH alias for updateBookNote (backend supports both PUT and PATCH)
-const updateBookNotePatch = http.patch('/api/books/:bookId/notes/:noteId/update/', updateBookNotePut)
-
 export const notesHandlers = [
   getBookNotes,
   createBookNote,

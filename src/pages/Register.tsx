@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,6 +9,7 @@ import { motion } from 'framer-motion'
 import { FormInput, PasswordStrengthIndicator, usePasswordStrength } from '../components/auth'
 import { ModernButton } from '../components/ui/modern'
 import { useErrorAnnouncement, useSuccessAnnouncement } from '../hooks/useAnnounce'
+import { useAuth } from '../contexts/AuthContext'
 
 // Zod validation schema
 const registerSchema = z.object({
@@ -41,7 +42,7 @@ const registerSchema = z.object({
 type RegisterFormData = z.infer<typeof registerSchema>
 
 export default function Register() {
-  const navigate = useNavigate()
+  const { register: authRegister } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -73,22 +74,22 @@ export default function Register() {
     setGeneralError('')
     
     try {
-      // TODO: Implement registration API call
-      console.log('Registration attempt:', data)
+      // Call AuthContext register (handles tokens, state AND navigation)
+      await authRegister({
+        email: data.email,
+        password: data.password,
+        confirm_password: data.confirmPassword,
+        first_name: data.firstName,
+        last_name: data.lastName
+      })
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Simulate success
+      // Success! (AuthContext handles navigation to dashboard)
       setIsSuccess(true)
       
-      // Redirect after success animation
-      setTimeout(() => {
-        navigate('/dashboard')
-      }, 1500)
-      
-    } catch (error) {
-      setGeneralError('Registration failed. Please try again.')
+    } catch (error: any) {
+      console.error('Registration error:', error)
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Registration failed. Please try again.'
+      setGeneralError(errorMessage)
     } finally {
       setIsLoading(false)
     }

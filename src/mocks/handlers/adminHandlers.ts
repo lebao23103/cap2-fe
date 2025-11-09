@@ -29,7 +29,7 @@ function isAdmin(userId: number): boolean {
 /**
  * Admin check middleware
  */
-function checkAdminAuth(request: Request): HttpResponse | null {
+function checkAdminAuth(request: Request): HttpResponse<any> | null {
   const userId = getAuthenticatedUserId(request)
   
   if (!userId) {

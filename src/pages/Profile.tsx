@@ -29,7 +29,6 @@ import {
   TrendingUp,
   Edit,
   Camera,
-  Settings,
   Share2,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -302,9 +301,9 @@ export default function Profile() {
             <div className="h-24 sm:h-32 bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20 relative">
               {!isEditing && (
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   size="icon"
-                  className="absolute top-4 right-4 bg-background/50 backdrop-blur-sm hover:bg-background/80"
+                  className="absolute top-4 right-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
                   onClick={() => setIsEditing(true)}
                 >
                   <Edit className="h-4 w-4" />
@@ -435,10 +434,6 @@ export default function Profile() {
                       </div>
                       <p className="text-muted-foreground">{formData.bio}</p>
                       <div className="flex flex-wrap gap-3">
-                        <Button variant="outline" size="sm">
-                          <Settings className="mr-2 h-4 w-4" />
-                          Settings
-                        </Button>
                         <Button variant="outline" size="sm">
                           <Share2 className="mr-2 h-4 w-4" />
                           Share Profile

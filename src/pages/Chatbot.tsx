@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Input } from '../components/ui/input'
 import { Badge } from '../components/ui/badge'
 import { Avatar, AvatarFallback } from '../components/ui/avatar'
 import { ScrollArea } from '../components/ui/scroll-area'
+import { useToast } from '../components/ui/use-toast'
+import aiService from '../lib/api/ai'
 import { 
   Send, 
   User, 
@@ -13,7 +16,8 @@ import {
   Star,
   Sparkles,
   Menu,
-  X
+  X,
+  ArrowLeft
 } from 'lucide-react'
 import { 
   DropdownMenu, 
@@ -25,7 +29,7 @@ import {
 } from '../components/ui/dropdown-menu'
 
 interface Message {
-  id: string
+  id: number | string
   type: 'user' | 'bot'
   content: string
   timestamp: Date
@@ -42,9 +46,11 @@ interface Book {
 }
 
 export default function Chatbot() {
+  const navigate = useNavigate()
+  const { toast } = useToast()
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: '1',
+      id: 'welcome',
       type: 'bot',
       content: 'Hello! I\'m your Knowly AI assistant. I can help you discover amazing books, provide recommendations, and answer questions about literature. What would you like to know?',
       timestamp: new Date()
@@ -52,6 +58,7 @@ export default function Chatbot() {
   ])
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [conversationId, setConversationId] = useState<string | undefined>(undefined)
   const [selectedRole, setSelectedRole] = useState<'book advisor' | 'literary expert' | 'book enthusiast'>('book advisor')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -74,72 +81,53 @@ export default function Chatbot() {
       timestamp: new Date()
     }
 
+    const userInput = inputMessage
     setMessages(prev => [...prev, userMessage])
     setInputMessage('')
     setIsLoading(true)
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      // Call real AI API
+      const response = await aiService.sendMessage(userInput, conversationId)
+      
+      // Save conversation ID for future messages
+      if (!conversationId && response.conversation_id) {
+        setConversationId(response.conversation_id)
+      }
+
       const botResponse: Message = {
-        id: (Date.now() + 1).toString(),
+        id: response.message_id || Date.now(),
         type: 'bot',
-        content: generateBotResponse(inputMessage, selectedRole),
-        timestamp: new Date(),
-        bookRecommendations: generateBookRecommendations(inputMessage)
+        content: response.reply,
+        timestamp: new Date()
       }
 
       setMessages(prev => [...prev, botResponse])
+    } catch (error) {
+      console.error('Error sending message:', error)
+      
+      // Add error message
+      const errorMessage: Message = {
+        id: Date.now(),
+        type: 'bot',
+        content: 'Sorry, I encountered an error processing your request. Please try again.',
+        timestamp: new Date()
+      }
+      
+      setMessages(prev => [...prev, errorMessage])
+      
+      toast({
+        title: 'Error',
+        description: 'Failed to send message',
+        variant: 'destructive'
+      })
+    } finally {
       setIsLoading(false)
-    }, 1500)
-  }
-
-  const generateBotResponse = (_userInput: string, role: string): string => {
-    const responses = {
-      'book advisor': [
-        "Based on your interests, I'd recommend checking out some contemporary fiction. Have you read anything by Haruki Murakami?",
-        "That's a great question! For someone with your reading history, I'd suggest exploring the mystery genre. Agatha Christie is always a safe bet.",
-        "I can definitely help you find your next read! What genres are you in the mood for today?"
-      ],
-      'literary expert': [
-        "From a literary perspective, your question touches on some fascinating themes. Let me break this down for you...",
-        "That's an excellent observation! This reminds me of similar themes in classical literature. Would you like me to elaborate?",
-        "Your analysis shows real insight. In literary criticism, this is often discussed in the context of postmodernism."
-      ],
-      'book enthusiast': [
-        "Oh man, I LOVE talking about books! That reminds me so much of this one series I just finished...",
-        "You have to read this book I just discovered! It's absolutely amazing and I couldn't put it down.",
-        "That's such a cool take! I've been thinking about that book too. Let me share some of my thoughts!"
-      ]
     }
-
-    const roleResponses = responses[role as keyof typeof responses] || responses['book advisor']
-    return roleResponses[Math.floor(Math.random() * roleResponses.length)]
   }
 
-  const generateBookRecommendations = (userInput: string): Book[] | undefined => {
-    // Only generate recommendations for certain keywords
-    if (userInput.toLowerCase().includes('recommend') || userInput.toLowerCase().includes('suggest')) {
-      return [
-        {
-          id: '1',
-          title: 'The Seven Husbands of Evelyn Hugo',
-          author: 'Taylor Jenkins Reid',
-          cover: 'https://via.placeholder.com/120x180',
-          rating: 4.6,
-          genre: ['Historical Fiction', 'Romance']
-        },
-        {
-          id: '2',
-          title: 'Project Hail Mary',
-          author: 'Andy Weir',
-          cover: 'https://via.placeholder.com/120x180',
-          rating: 4.7,
-          genre: ['Sci-Fi', 'Adventure']
-        }
-      ]
-    }
-    return undefined
-  }
+  // Note: selectedRole is kept for UI display but not currently used in API calls
+  // Backend chatbot determines its own personality from the conversation context
 
   const BookRecommendation = ({ book }: { book: Book }) => (
     <Card className="mb-4 hover:shadow-md transition-shadow cursor-pointer">
@@ -179,15 +167,27 @@ export default function Chatbot() {
             <Card className="flex-1 flex flex-col">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <CardTitle className="text-lg text-gray-900 dark:text-foreground flex items-center gap-2">
-                      <Sparkles className="h-5 w-5 text-primary" />
-                      Chat with {selectedRole === 'book advisor' ? 'Book Advisor' : 
-                                selectedRole === 'literary expert' ? 'Literary Expert' : 'Book Enthusiast'}
-                    </CardTitle>
-                    <CardDescription className="mt-1 text-gray-600 dark:text-muted-foreground">
-                      Ask me anything about books, get recommendations, or discuss literature!
-                    </CardDescription>
+                  <div className="flex-1 flex items-center gap-3">
+                    {/* Back Button */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => navigate('/dashboard')}
+                      className="flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                      <span className="hidden sm:inline">Back</span>
+                    </Button>
+                    <div className="flex-1">
+                      <CardTitle className="text-lg text-gray-900 dark:text-foreground flex items-center gap-2">
+                        <Sparkles className="h-5 w-5 text-primary" />
+                        Chat with {selectedRole === 'book advisor' ? 'Book Advisor' : 
+                                  selectedRole === 'literary expert' ? 'Literary Expert' : 'Book Enthusiast'}
+                      </CardTitle>
+                      <CardDescription className="mt-1 text-gray-600 dark:text-muted-foreground">
+                        Ask me anything about books, get recommendations, or discuss literature!
+                      </CardDescription>
+                    </div>
                   </div>
                   <div className="flex items-center gap-2">
                     {/* Mode Selector Dropdown */}

@@ -1,14 +1,15 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
 import { BookOpen, KeyRound, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { FormInput } from '../components/auth'
 import { ModernButton } from '../components/ui/modern'
 import { useErrorAnnouncement, useSuccessAnnouncement } from '../hooks/useAnnounce'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Login() {
-  const navigate = useNavigate()
+  const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -73,34 +74,34 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('Login form submitted', { email, password: '***' })
     
     // Validate all fields
     const isEmailValid = validateEmail(email)
     const isPasswordValid = validatePassword(password)
     
+    console.log('Validation results:', { isEmailValid, isPasswordValid })
+    
     if (!isEmailValid || !isPasswordValid) {
+      console.log('Validation failed, stopping submission')
       return
     }
 
     setIsLoading(true)
     setGeneralError('')
+    console.log('Calling backend API...')
     
     try {
-      // TODO: Implement login API call
+      // Call AuthContext login (handles tokens AND state)
+      await login(email, password)
       
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // Simulate success
+      // Success! (AuthContext handles navigation)
       setIsSuccess(true)
       
-      // Redirect after success animation
-      setTimeout(() => {
-        navigate('/dashboard')
-      }, 1000)
-      
-    } catch (error) {
-      setGeneralError('Invalid email or password. Please try again.')
+    } catch (error: any) {
+      console.error('Login error:', error)
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Invalid email or password. Please try again.'
+      setGeneralError(errorMessage)
     } finally {
       setIsLoading(false)
     }

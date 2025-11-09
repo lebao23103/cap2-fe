@@ -43,7 +43,14 @@ export interface ChangePasswordData {
 
 class AuthService {
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await apiClient.post('/api/login/', credentials);
+    // Backend might expect username field
+    const loginData = {
+      email: credentials.email,
+      password: credentials.password,
+      username: credentials.email.split('@')[0] // Use email prefix as username fallback
+    };
+    
+    const response = await apiClient.post('/api/login/', loginData);
     const data = response.data;
     
     // Store tokens and user info
@@ -58,7 +65,16 @@ class AuthService {
 
   async register(userData: RegisterData): Promise<AuthResponse> {
     const response = await apiClient.post('/api/register/', userData);
-    return response.data;
+    const data = response.data;
+    
+    // Store tokens and user info (auto-login after registration)
+    if (data.access) {
+      localStorage.setItem('access_token', data.access);
+      localStorage.setItem('refresh_token', data.refresh);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
+    
+    return data;
   }
 
   async logout(): Promise<void> {
