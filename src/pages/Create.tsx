@@ -179,8 +179,8 @@ export default function Create() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative w-full min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-12">
+      <div className="container mx-auto max-w-6xl">
         
         {/* Header */}
         <motion.div {...fadeInUp} className="mb-12 text-center">

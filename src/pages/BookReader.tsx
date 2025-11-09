@@ -675,7 +675,7 @@ export default function BookReader() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+      <div className="container mx-auto max-w-7xl py-6 lg:py-8">
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 lg:gap-8">
           {/* Main Content - Reading Area */}
           <div className="xl:col-span-8">

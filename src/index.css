@@ -3,6 +3,8 @@
 /* Design Tokens - Import first for global availability */
 @import './styles/tokens/tokens.css';
 @import './styles/tokens/motion.css';
+@import './styles/tokens/design-tokens.css';
+@import './styles/tokens/motion-tokens.css';
 
 @tailwind base;
 @tailwind components;

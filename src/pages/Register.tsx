@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
 import { BookOpen, UserPlus, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -7,106 +10,71 @@ import { FormInput, PasswordStrengthIndicator, usePasswordStrength } from '../co
 import { ModernButton } from '../components/ui/modern'
 import { useErrorAnnouncement, useSuccessAnnouncement } from '../hooks/useAnnounce'
 
+// Zod validation schema
+const registerSchema = z.object({
+  firstName: z.string()
+    .min(2, 'First name must be at least 2 characters')
+    .max(50, 'First name must be less than 50 characters')
+    .regex(/^[a-zA-Z\s'-]+$/, 'First name can only contain letters, spaces, hyphens, and apostrophes'),
+  lastName: z.string()
+    .min(2, 'Last name must be at least 2 characters')
+    .max(50, 'Last name must be less than 50 characters')
+    .regex(/^[a-zA-Z\s'-]+$/, 'Last name can only contain letters, spaces, hyphens, and apostrophes'),
+  email: z.string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address')
+    .toLowerCase(),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(100, 'Password must be less than 100 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
+  confirmPassword: z.string()
+    .min(1, 'Please confirm your password')
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
+})
+
+type RegisterFormData = z.infer<typeof registerSchema>
+
 export default function Register() {
   const navigate = useNavigate()
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
-  const [touched, setTouched] = useState<Record<string, boolean>>({})
   const [generalError, setGeneralError] = useState('')
 
-  // Password strength check
-  const passwordStrength = usePasswordStrength(formData.password)
+  // React Hook Form with Zod validation
+  const {
+    register,
+    handleSubmit: hookFormSubmit,
+    watch,
+    formState: { errors, touchedFields },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    mode: 'onBlur',
+  })
+
+  // Watch password for strength indicator
+  const password = watch('password', '')
+  const passwordStrength = usePasswordStrength(password)
 
   // Accessibility: Announce errors and success
   useErrorAnnouncement(generalError)
   useSuccessAnnouncement(isSuccess, 'Registration successful! Redirecting...')
 
-  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setFormData(prev => ({ ...prev, [field]: value }))
-    setGeneralError('')
-    
-    // Real-time validation if field has been touched
-    if (touched[field]) {
-      validateField(field, value)
-    }
-  }
-
-  const handleBlur = (field: string) => () => {
-    setTouched(prev => ({ ...prev, [field]: true }))
-    validateField(field, formData[field as keyof typeof formData])
-  }
-
-  const validateField = (field: string, value: string) => {
-    let error = ''
-
-    switch (field) {
-      case 'firstName':
-        if (!value.trim()) error = 'First name is required'
-        break
-      case 'lastName':
-        if (!value.trim()) error = 'Last name is required'
-        break
-      case 'email':
-        if (!value) {
-          error = 'Email is required'
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-          error = 'Please enter a valid email address'
-        }
-        break
-      case 'password':
-        if (!value) {
-          error = 'Password is required'
-        } else if (value.length < 6) {
-          error = 'Password must be at least 6 characters'
-        } else if (passwordStrength.score < 2) {
-          error = 'Please choose a stronger password'
-        }
-        break
-      case 'confirmPassword':
-        if (!value) {
-          error = 'Please confirm your password'
-        } else if (value !== formData.password) {
-          error = 'Passwords do not match'
-        }
-        break
-    }
-
-    setErrors(prev => ({ ...prev, [field]: error }))
-    return !error
-  }
-
-  const validateForm = () => {
-    const fields = ['firstName', 'lastName', 'email', 'password', 'confirmPassword']
-    const results = fields.map(field => validateField(field, formData[field as keyof typeof formData]))
-    return results.every(Boolean)
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    // Mark all fields as touched
-    const allFields = ['firstName', 'lastName', 'email', 'password', 'confirmPassword']
-    setTouched(Object.fromEntries(allFields.map(f => [f, true])))
-    
-    if (!validateForm()) return
+  const onSubmit = async (data: RegisterFormData) => {
 
     setIsLoading(true)
     setGeneralError('')
     
     try {
       // TODO: Implement registration API call
-      console.log('Registration attempt:', formData)
+      console.log('Registration attempt:', data)
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
@@ -177,7 +145,7 @@ export default function Register() {
             </p>
           </CardHeader>
           <CardContent className="px-8 pb-8 pt-6">
-            <form onSubmit={handleSubmit} className="space-y-5" aria-label="Registration form" noValidate>
+            <form onSubmit={hookFormSubmit(onSubmit)} className="space-y-5" aria-label="Registration form" noValidate>
               {/* General error message */}
               {generalError && (
                 <motion.div
@@ -196,11 +164,9 @@ export default function Register() {
                   label="First Name"
                   type="text"
                   placeholder="John"
-                  value={formData.firstName}
-                  onChange={handleChange('firstName')}
-                  onBlur={handleBlur('firstName')}
-                  error={touched.firstName ? errors.firstName : ''}
-                  success={touched.firstName && !errors.firstName && formData.firstName.length > 0}
+                  {...register('firstName')}
+                  error={touchedFields.firstName ? errors.firstName?.message : ''}
+                  success={touchedFields.firstName && !errors.firstName}
                   disabled={isLoading || isSuccess}
                   required
                   autoComplete="given-name"
@@ -209,11 +175,9 @@ export default function Register() {
                   label="Last Name"
                   type="text"
                   placeholder="Doe"
-                  value={formData.lastName}
-                  onChange={handleChange('lastName')}
-                  onBlur={handleBlur('lastName')}
-                  error={touched.lastName ? errors.lastName : ''}
-                  success={touched.lastName && !errors.lastName && formData.lastName.length > 0}
+                  {...register('lastName')}
+                  error={touchedFields.lastName ? errors.lastName?.message : ''}
+                  success={touchedFields.lastName && !errors.lastName}
                   disabled={isLoading || isSuccess}
                   required
                   autoComplete="family-name"
@@ -225,11 +189,9 @@ export default function Register() {
                 label="Email Address"
                 type="email"
                 placeholder="john.doe@example.com"
-                value={formData.email}
-                onChange={handleChange('email')}
-                onBlur={handleBlur('email')}
-                error={touched.email ? errors.email : ''}
-                success={touched.email && !errors.email && formData.email.length > 0}
+                {...register('email')}
+                error={touchedFields.email ? errors.email?.message : ''}
+                success={touchedFields.email && !errors.email}
                 disabled={isLoading || isSuccess}
                 required
                 autoComplete="email"
@@ -241,11 +203,9 @@ export default function Register() {
                   label="Password"
                   type={showPassword ? 'text' : 'password'}
                   placeholder="Create your password"
-                  value={formData.password}
-                  onChange={handleChange('password')}
-                  onBlur={handleBlur('password')}
-                  error={touched.password ? errors.password : ''}
-                  success={touched.password && !errors.password && passwordStrength.score >= 2}
+                  {...register('password')}
+                  error={touchedFields.password ? errors.password?.message : ''}
+                  success={touchedFields.password && !errors.password && passwordStrength.score >= 2}
                   showPasswordToggle
                   showPassword={showPassword}
                   onPasswordToggle={() => setShowPassword(!showPassword)}
@@ -255,8 +215,8 @@ export default function Register() {
                 />
                 {/* Password strength indicator */}
                 <PasswordStrengthIndicator
-                  password={formData.password}
-                  show={formData.password.length > 0}
+                  password={password}
+                  show={password.length > 0}
                   className="mt-2"
                 />
               </div>
@@ -266,11 +226,9 @@ export default function Register() {
                 label="Confirm Password"
                 type={showConfirmPassword ? 'text' : 'password'}
                 placeholder="Repeat your password"
-                value={formData.confirmPassword}
-                onChange={handleChange('confirmPassword')}
-                onBlur={handleBlur('confirmPassword')}
-                error={touched.confirmPassword ? errors.confirmPassword : ''}
-                success={touched.confirmPassword && !errors.confirmPassword && formData.confirmPassword === formData.password}
+                {...register('confirmPassword')}
+                error={touchedFields.confirmPassword ? errors.confirmPassword?.message : ''}
+                success={touchedFields.confirmPassword && !errors.confirmPassword}
                 showPasswordToggle
                 showPassword={showConfirmPassword}
                 onPasswordToggle={() => setShowConfirmPassword(!showConfirmPassword)}

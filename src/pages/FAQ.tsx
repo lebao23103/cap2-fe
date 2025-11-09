@@ -6,7 +6,7 @@ import {
   BookOpen,
   HelpCircle,
   MessageSquare,
-  CreditCard,
+  TrendingUp,
   Shield,
   Users,
   Zap,
@@ -121,8 +121,8 @@ export default function FAQ() {
       <AnimatedBackground variant="mesh" />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative w-full pt-32 pb-20">
+        <div className="container mx-auto max-w-4xl text-center">
           <motion.div {...fadeInUp}>
             <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm">
               ❓ Frequently Asked Questions
@@ -142,8 +142,8 @@ export default function FAQ() {
       </section>
 
       {/* FAQ Categories */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto">
+      <section className="relative w-full py-20">
+        <div className="container mx-auto max-w-4xl">
           <motion.div {...stagger} className="space-y-12">
             {faqCategories.map((category, categoryIndex) => (
               <motion.div key={categoryIndex} {...fadeInUp}>
@@ -181,8 +181,8 @@ export default function FAQ() {
       </section>
 
       {/* Still Need Help Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800/50">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative w-full py-20 bg-gray-50 dark:bg-gray-800/50">
+        <div className="container mx-auto max-w-4xl text-center">
           <motion.div {...fadeInUp}>
             <div className="mx-auto mb-8 p-4 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-full w-20 h-20 flex items-center justify-center">
               <HelpCircle className="h-10 w-10 text-indigo-600" />
@@ -252,7 +252,7 @@ export default function FAQ() {
               {
                 title: "Monitor Your Progress",
                 description: "Review your learning analytics and adjust your study strategies for optimal results.",
-                icon: CreditCard
+                icon: TrendingUp
               }
             ].map((tip, index) => (
               <motion.div key={index} {...fadeInUp}>
@@ -302,3 +302,4 @@ export default function FAQ() {
     </div>
   )
 }
+

@@ -10,7 +10,7 @@ export function BookDetailSkeleton() {
       <div className="container mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8 max-w-5xl">
         {/* Back Button Skeleton */}
         <div className="flex justify-start mb-4 sm:mb-6">
-          <div className="h-10 w-32 bg-muted rounded-lg animate-pulse" />
+          <div className="h-10 w-32 skeleton" />
         </div>
 
         {/* Hero Section */}
@@ -18,14 +18,14 @@ export function BookDetailSkeleton() {
           {/* Book Cover Skeleton - Left Side */}
           <div className="lg:col-span-4">
             <div className="bg-white dark:bg-card rounded-lg shadow-sm border border-border/50 overflow-hidden">
-              <div className="w-full aspect-[2/3] bg-muted animate-pulse" />
+              <div className="w-full aspect-[2/3] skeleton" />
               <div className="p-3 sm:p-4 space-y-2">
-                <div className="h-12 bg-muted rounded-lg animate-pulse" />
+                <div className="h-12 skeleton" />
                 <div className="flex gap-2">
-                  <div className="flex-1 h-12 bg-muted rounded-lg animate-pulse" />
-                  <div className="flex-1 h-12 bg-muted rounded-lg animate-pulse" />
+                  <div className="flex-1 h-12 skeleton" />
+                  <div className="flex-1 h-12 skeleton" />
                 </div>
-                <div className="h-10 bg-muted rounded-lg animate-pulse" />
+                <div className="h-10 skeleton" />
               </div>
             </div>
           </div>
@@ -34,21 +34,21 @@ export function BookDetailSkeleton() {
           <div className="lg:col-span-8 space-y-3 sm:space-y-4">
             {/* Title and Author */}
             <div>
-              <div className="h-10 w-3/4 bg-muted rounded-lg animate-pulse mb-3" />
-              <div className="h-6 w-1/2 bg-muted rounded-lg animate-pulse mb-4" />
+              <div className="h-10 w-3/4 skeleton mb-3" />
+              <div className="h-6 w-1/2 skeleton mb-4" />
               
               {/* Rating */}
               <div className="flex items-center gap-3 mb-4">
-                <div className="h-6 w-32 bg-muted rounded-lg animate-pulse" />
-                <div className="h-6 w-12 bg-muted rounded-lg animate-pulse" />
-                <div className="h-5 w-24 bg-muted rounded-lg animate-pulse" />
+                <div className="h-6 w-32 skeleton" />
+                <div className="h-6 w-12 skeleton" />
+                <div className="h-5 w-24 skeleton" />
               </div>
             </div>
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2 mb-4">
-              <div className="h-6 w-20 bg-muted rounded-full animate-pulse" />
-              <div className="h-6 w-24 bg-muted rounded-full animate-pulse" />
+              <div className="h-6 w-20 rounded-full skeleton" />
+              <div className="h-6 w-24 rounded-full skeleton" />
             </div>
 
             {/* Description */}

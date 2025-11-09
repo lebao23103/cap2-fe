@@ -16,18 +16,49 @@ import {
   Globe,
   Twitter,
   Facebook,
-  Instagram
+  Instagram,
+  CheckCircle2
 } from "lucide-react"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { AnimatedBackground } from "@/components/AnimatedBackground"
 
+// Zod validation schema
+const contactSchema = z.object({
+  name: z.string()
+    .min(2, 'Name must be at least 2 characters')
+    .max(100, 'Name must be less than 100 characters'),
+  email: z.string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address')
+    .toLowerCase(),
+  subject: z.string()
+    .min(5, 'Subject must be at least 5 characters')
+    .max(200, 'Subject must be less than 200 characters'),
+  message: z.string()
+    .min(10, 'Message must be at least 10 characters')
+    .max(1000, 'Message must be less than 1000 characters')
+})
+
+type ContactFormData = z.infer<typeof contactSchema>
+
 export default function Contact() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [submitError, setSubmitError] = useState('')
+
+  // React Hook Form with Zod validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, touchedFields },
+    reset,
+  } = useForm<ContactFormData>({
+    resolver: zodResolver(contactSchema),
+    mode: 'onBlur',
   })
 
   const fadeInUp = {
@@ -44,19 +75,31 @@ export default function Contact() {
     }
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle form submission here
-    console.log('Form submitted:', formData)
-    // Reset form
-    setFormData({ name: '', email: '', subject: '', message: '' })
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
+  const onSubmit = async (data: ContactFormData) => {
+    setIsSubmitting(true)
+    setSubmitError('')
+    
+    try {
+      // TODO: Implement contact form API call
+      console.log('Form submitted:', data)
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      // Show success message
+      setIsSuccess(true)
+      
+      // Reset form after showing success
+      setTimeout(() => {
+        reset()
+        setIsSuccess(false)
+      }, 3000)
+      
+    } catch (error) {
+      setSubmitError('Failed to send message. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -64,8 +107,8 @@ export default function Contact() {
       <AnimatedBackground variant="particles" />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative w-full pt-32 pb-20">
+        <div className="container mx-auto max-w-4xl text-center">
           <motion.div {...fadeInUp}>
             <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm">
               💬 Get In Touch
@@ -85,8 +128,8 @@ export default function Contact() {
       </section>
 
       {/* Contact Form & Info Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative w-full py-20">
+        <div className="container mx-auto">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <motion.div {...fadeInUp} className="h-full">
@@ -101,64 +144,142 @@ export default function Contact() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
-                  <form onSubmit={handleSubmit} className="space-y-6 flex-1 flex flex-col" aria-label="Contact form">
+                  {/* Success Message */}
+                  <AnimatePresence>
+                    {isSuccess && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-3"
+                        role="alert"
+                      >
+                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
+                        <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                          Message sent successfully! We'll get back to you soon.
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  {/* Error Message */}
+                  {submitError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
+                      role="alert"
+                    >
+                      <p className="text-sm text-destructive font-medium">{submitError}</p>
+                    </motion.div>
+                  )}
+
+                  <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 flex-1 flex flex-col" aria-label="Contact form" noValidate>
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="name">Name <span className="text-destructive" aria-label="required">*</span></Label>
                         <Input
                           id="name"
-                          name="name"
-                          value={formData.name}
-                          onChange={handleChange}
+                          {...register('name')}
                           placeholder="Your full name"
-                          required
+                          disabled={isSubmitting || isSuccess}
                           aria-required="true"
+                          aria-invalid={!!errors.name}
+                          aria-describedby={errors.name ? 'name-error' : undefined}
                           autoComplete="name"
+                          className={errors.name && touchedFields.name ? 'border-destructive' : ''}
                         />
+                        {errors.name && touchedFields.name && (
+                          <p id="name-error" className="text-sm text-destructive" role="alert">
+                            {errors.name.message}
+                          </p>
+                        )}
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Email <span className="text-destructive" aria-label="required">*</span></Label>
                         <Input
                           id="email"
-                          name="email"
                           type="email"
-                          value={formData.email}
-                          onChange={handleChange}
+                          {...register('email')}
                           placeholder="your.email@example.com"
-                          required
+                          disabled={isSubmitting || isSuccess}
                           aria-required="true"
+                          aria-invalid={!!errors.email}
+                          aria-describedby={errors.email ? 'email-error' : undefined}
                           autoComplete="email"
+                          className={errors.email && touchedFields.email ? 'border-destructive' : ''}
                         />
+                        {errors.email && touchedFields.email && (
+                          <p id="email-error" className="text-sm text-destructive" role="alert">
+                            {errors.email.message}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="subject">Subject <span className="text-destructive" aria-label="required">*</span></Label>
                       <Input
                         id="subject"
-                        name="subject"
-                        value={formData.subject}
-                        onChange={handleChange}
+                        {...register('subject')}
                         placeholder="What's this about?"
-                        required
+                        disabled={isSubmitting || isSuccess}
                         aria-required="true"
+                        aria-invalid={!!errors.subject}
+                        aria-describedby={errors.subject ? 'subject-error' : undefined}
+                        className={errors.subject && touchedFields.subject ? 'border-destructive' : ''}
                       />
+                      {errors.subject && touchedFields.subject && (
+                        <p id="subject-error" className="text-sm text-destructive" role="alert">
+                          {errors.subject.message}
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-2 flex-1 flex flex-col">
                       <Label htmlFor="message">Message <span className="text-destructive" aria-label="required">*</span></Label>
                       <Textarea
                         id="message"
-                        name="message"
-                        value={formData.message}
-                        onChange={handleChange}
+                        {...register('message')}
                         placeholder="Tell us more about your question, feedback, or how we can help..."
-                        className="flex-1 min-h-[120px] resize-none"
-                        required
+                        className={`flex-1 min-h-[120px] resize-none ${errors.message && touchedFields.message ? 'border-destructive' : ''}`}
+                        disabled={isSubmitting || isSuccess}
                         aria-required="true"
+                        aria-invalid={!!errors.message}
+                        aria-describedby={errors.message ? 'message-error' : undefined}
                       />
+                      {errors.message && touchedFields.message && (
+                        <p id="message-error" className="text-sm text-destructive" role="alert">
+                          {errors.message.message}
+                        </p>
+                      )}
                     </div>
-                    <Button type="submit" className="w-full mt-auto" size="lg" aria-label="Send message">
-                      <Send className="h-4 w-4 mr-2" aria-hidden="true" />
-                      Send Message
+                    <Button 
+                      type="submit" 
+                      className="w-full mt-auto" 
+                      size="lg" 
+                      disabled={isSubmitting || isSuccess}
+                      aria-label={isSubmitting ? 'Sending message' : 'Send message'}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <motion.div
+                            className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full"
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            aria-hidden="true"
+                          />
+                          Sending...
+                        </>
+                      ) : isSuccess ? (
+                        <>
+                          <CheckCircle2 className="h-4 w-4 mr-2" aria-hidden="true" />
+                          Sent!
+                        </>
+                      ) : (
+                        <>
+                          <Send className="h-4 w-4 mr-2" aria-hidden="true" />
+                          Send Message
+                        </>
+                      )}
                     </Button>
                   </form>
                 </CardContent>

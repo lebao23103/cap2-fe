@@ -82,16 +82,11 @@ export default function Home () {
   ]
 
   return (
-    <div className='relative min-h-screen overflow-hidden bg-background'>
+    <div className='relative min-h-screen bg-background'>
       {/* Hero Section */}
-      <section className='relative py-24 px-4 sm:px-6 lg:px-8'>
-        <div className='max-w-6xl mx-auto text-center relative'>
+      <section className='relative w-full py-20 sm:py-24 md:py-32 bg-background'>
+        <div className='container mx-auto text-center relative'>
           <motion.div {...fadeInUp}>
-            <Badge variant="secondary" className="mb-4 px-3 py-1 rounded-full">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Modern Learning Platform
-            </Badge>
-            
             <h1 className='font-sans text-4xl md:text-6xl font-bold text-gray-900 dark:text-foreground mb-6 tracking-tight'>
               Knowly - Knowledge Sharing Platform
               <span className='block bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mt-3 leading-tight'>
@@ -103,19 +98,19 @@ export default function Home () {
               Join a vibrant community of learners and educators sharing knowledge through collaborative note-taking, an intelligent chatbot system, and interactive academic exercises.
             </p>
             
-            <div className='flex flex-col sm:flex-row gap-4 justify-center items-center mb-16'>
-              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 duration-300">
-                <Link to='/readnex' className='flex items-center'>
+            <div className='flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center mb-16'>
+              <Button size="lg" className="bg-gradient-to-r from-primary to-secondary text-primary-foreground px-8 text-lg font-medium rounded-lg shadow-lg hover:shadow-xl transition-all hover:scale-105 duration-300 w-full sm:w-auto">
+                <Link to='/readnex' className='flex items-center justify-center'>
                   <span>Read & Exercise</span>
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="px-8 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300">
-                <Link to='/create' className='flex items-center'>
+              <Button size="lg" variant="outline" className="px-8 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300 w-full sm:w-auto">
+                <Link to='/create' className='flex items-center justify-center'>
                   <span>Create your book</span>
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="px-8 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300">
-                <Link to='/noteshare' className='flex items-center'>
+              <Button size="lg" variant="outline" className="px-8 text-lg font-medium rounded-lg hover:scale-105 transition-transform duration-300 w-full sm:w-auto">
+                <Link to='/noteshare' className='flex items-center justify-center'>
                   <span>NoteShare</span>
                 </Link>
               </Button>
@@ -152,8 +147,8 @@ export default function Home () {
       </section>
 
       {/* Featured Books Section */}
-      <section className="relative py-16 px-4 sm:px-6 lg:px-8 bg-muted/50">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative w-full py-16 sm:py-20 md:py-24 bg-muted/50">
+        <div className="container mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
             <Badge variant="outline" className="mb-4">
               <TrendingUp className="mr-2 h-4 w-4" />
@@ -167,7 +162,7 @@ export default function Home () {
             </p>
           </motion.div>
 
-          <motion.div {...stagger} className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <motion.div {...stagger} className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
             {featuredBooks.map((book) => (
               <motion.div key={book.id} {...fadeInUp}>
                 <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 overflow-hidden group rounded-xl">
@@ -212,8 +207,8 @@ export default function Home () {
       </section>
 
       {/* Services Section */}
-      <section className='py-16 px-4 sm:px-6 lg:px-8'>
-        <div className='max-w-7xl mx-auto'>
+      <section className='relative w-full py-16 sm:py-20 md:py-24 bg-background'>
+        <div className='container mx-auto'>
           <motion.div {...fadeInUp} className='text-center mb-16'>
             <h2 className='font-sans text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-4'>
               Our Services
@@ -267,8 +262,8 @@ export default function Home () {
       </section>
 
       {/* Testimonials Section */}
-      <section className='relative py-16 px-4 sm:px-6 lg:px-8 bg-muted/50'>
-        <div className='max-w-7xl mx-auto'>
+      <section className='relative w-full py-16 sm:py-20 md:py-24 bg-muted/50'>
+        <div className='container mx-auto'>
           <motion.div {...fadeInUp} className='text-center mb-16'>
             <h2 className='font-sans text-3xl md:text-4xl font-bold text-gray-900 dark:text-foreground mb-4'>
               What Our Academic Community Says
@@ -314,8 +309,8 @@ export default function Home () {
       </section>
 
       {/* CTA Section */}
-      <section className='py-16 px-4 sm:px-6 lg:px-8'>
-        <div className='max-w-4xl mx-auto'>
+      <section className='relative w-full py-16 sm:py-20 md:py-24 bg-background'>
+        <div className='container mx-auto max-w-4xl'>
           <motion.div {...fadeInUp} className="text-center">
             <Card className="p-12 border-0 shadow-2xl rounded-2xl bg-gradient-to-br from-primary/5 to-secondary/5">
               <CardHeader className="p-0 mb-6">

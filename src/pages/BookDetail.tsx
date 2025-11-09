@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Star,
   Heart,
@@ -7,7 +8,8 @@ import {
   Share2,
   ThumbsUp,
   Flag,
-  ArrowLeft
+  ArrowLeft,
+  CheckCircle2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -16,11 +18,14 @@ import { Textarea } from '@/components/ui/textarea';
 import type { Book, Review } from '@/lib/api/books';
 import { useToast } from '@/components/ui/use-toast';
 import { BookDetailSkeleton, BooksErrorState } from '@/components/books';
+import { useAnnounce } from '@/hooks/useAnnounce';
+import { getLoadingAriaAttributes } from '@/utils/accessibility';
 
 export default function BookDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const announce = useAnnounce();
 
   const [book, setBook] = useState<Book | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -28,12 +33,15 @@ export default function BookDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [favoritingState, setFavoritingState] = useState<'idle' | 'loading' | 'success'>('idle');
+  const [sharingState, setSharingState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   
   // Review form state
   const [userRating, setUserRating] = useState(0);
   const [userReview, setUserReview] = useState('');
   const [hoveredRating, setHoveredRating] = useState(0);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [reviewSubmitState, setReviewSubmitState] = useState<'idle' | 'success' | 'error'>('idle');
 
   useEffect(() => {
     if (id) {
@@ -149,35 +157,74 @@ export default function BookDetail() {
     navigate(`/book/${id}/quiz`);
   };
 
-  const handleToggleFavorite = () => {
-    // TODO: Connect to favorites API
-    setIsFavorited(!isFavorited);
-    toast({
-      title: isFavorited ? 'Removed from favorites' : 'Added to favorites',
-      description: isFavorited
-        ? 'Book removed from your favorites'
-        : 'Book added to your favorites',
-    });
-  };
-
-  const handleShare = async () => {
+  const handleToggleFavorite = async () => {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      setFavoritingState('loading');
+      const newFavoritedState = !isFavorited;
+      
+      // TODO: Connect to favorites API
+      // await booksService.toggleFavorite(Number(id));
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      setIsFavorited(newFavoritedState);
+      setFavoritingState('success');
+      
+      const message = newFavoritedState ? 'Added to favorites' : 'Removed from favorites';
+      announce(message, 'polite');
+      
       toast({
-        title: 'Link copied!',
-        description: 'Book link copied to clipboard',
+        title: message,
+        description: newFavoritedState
+          ? 'Book added to your favorites'
+          : 'Book removed from your favorites',
       });
+      
+      // Reset state after animation
+      setTimeout(() => setFavoritingState('idle'), 2000);
     } catch (error) {
+      setFavoritingState('idle');
+      announce('Failed to update favorites', 'assertive');
       toast({
         title: 'Error',
-        description: 'Failed to copy link',
+        description: 'Failed to update favorites',
         variant: 'destructive',
       });
     }
   };
 
+  const handleShare = async () => {
+    try {
+      setSharingState('loading');
+      await navigator.clipboard.writeText(window.location.href);
+      
+      setSharingState('success');
+      announce('Link copied to clipboard', 'polite');
+      
+      toast({
+        title: 'Link copied!',
+        description: 'Book link copied to clipboard',
+      });
+      
+      setTimeout(() => setSharingState('idle'), 2000);
+    } catch (error) {
+      setSharingState('error');
+      announce('Failed to copy link', 'assertive');
+      
+      toast({
+        title: 'Error',
+        description: 'Failed to copy link',
+        variant: 'destructive',
+      });
+      
+      setTimeout(() => setSharingState('idle'), 2000);
+    }
+  };
+
   const handleSubmitReview = async () => {
     if (!userRating) {
+      announce('Please select a rating before submitting', 'assertive');
       toast({
         title: 'Rating required',
         description: 'Please select a rating before submitting',
@@ -187,6 +234,7 @@ export default function BookDetail() {
     }
 
     if (userReview.length < 50) {
+      announce('Review must be at least 50 characters', 'assertive');
       toast({
         title: 'Review too short',
         description: 'Please write at least 50 characters',
@@ -197,12 +245,21 @@ export default function BookDetail() {
 
     try {
       setSubmittingReview(true);
+      setReviewSubmitState('idle');
+      announce('Submitting review', 'polite');
+      
       // TODO: Connect to real API
       // await booksService.addReview(Number(id), {
       //   rating: userRating,
       //   comment: userReview,
       // });
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
+      setReviewSubmitState('success');
+      announce('Review submitted successfully', 'polite');
+      
       toast({
         title: 'Review submitted!',
         description: 'Thank you for your feedback',
@@ -210,13 +267,22 @@ export default function BookDetail() {
 
       setUserRating(0);
       setUserReview('');
+      
+      // Reset success state
+      setTimeout(() => setReviewSubmitState('idle'), 3000);
+      
       loadBookData(); // Reload to show new review
     } catch (error) {
+      setReviewSubmitState('error');
+      announce('Failed to submit review', 'assertive');
+      
       toast({
         title: 'Error',
         description: 'Failed to submit review',
         variant: 'destructive',
       });
+      
+      setTimeout(() => setReviewSubmitState('idle'), 3000);
     } finally {
       setSubmittingReview(false);
     }
@@ -282,7 +348,7 @@ export default function BookDetail() {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-background">
-        <div className="container mx-auto px-4 py-8 max-w-5xl">
+        <div className="container mx-auto py-8 max-w-5xl">
           <div className="mb-6">
             <Button
               variant="outline"
@@ -301,7 +367,7 @@ export default function BookDetail() {
   if (!book) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-background">
-        <div className="container mx-auto px-4 py-16 text-center">
+        <div className="container mx-auto py-16 text-center">
           <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-foreground">Book Not Found</h1>
           <p className="text-muted-foreground mb-8">
             The book you're looking for doesn't exist or has been removed.
@@ -314,7 +380,7 @@ export default function BookDetail() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-background">
-      <div className="container mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8 max-w-5xl">
+      <div className="container mx-auto py-4 sm:py-6 md:py-8 max-w-5xl">
         {/* Back Button */}
         <div className="flex justify-start mb-4 sm:mb-6">
           <Button
@@ -348,27 +414,97 @@ export default function BookDetail() {
                   Start Reading
                 </Button>
                 <div className="flex gap-2">
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="flex-1 hover:bg-muted/50 transition-colors"
-                    onClick={handleToggleFavorite}
-                    aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-                  >
-                    <Heart
-                      className={`h-4 w-4 transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-foreground'}`}
-                      aria-hidden="true"
-                    />
-                  </Button>
-                  <Button 
-                    size="lg" 
-                    variant="outline" 
-                    className="flex-1 hover:bg-muted/50 transition-colors"
-                    onClick={handleShare}
-                    aria-label="Share book"
-                  >
-                    <Share2 className="h-4 w-4 text-gray-600 dark:text-foreground" aria-hidden="true" />
-                  </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="flex-1 hover:bg-muted/50 transition-all duration-200 group relative"
+                  onClick={handleToggleFavorite}
+                  disabled={favoritingState === 'loading'}
+                  aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                  {...getLoadingAriaAttributes(favoritingState === 'loading', 'Updating favorites')}
+                  data-testid="favorite-button"
+                >
+                  <AnimatePresence mode="wait">
+                    {favoritingState === 'loading' ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1, rotate: 360 }}
+                        exit={{ scale: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+                      />
+                    ) : favoritingState === 'success' ? (
+                      <motion.div
+                        key="success"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0 }}
+                      >
+                        <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="heart"
+                        initial={false}
+                        animate={isFavorited ? { scale: [1, 1.2, 1] } : {}}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <Heart
+                          className={`h-4 w-4 transition-all duration-300 ${
+                            isFavorited 
+                              ? 'fill-red-500 text-red-500' 
+                              : 'text-gray-600 dark:text-foreground group-hover:scale-110'
+                          }`}
+                          aria-hidden="true"
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="flex-1 hover:bg-muted/50 transition-all duration-200 group relative"
+                  onClick={handleShare}
+                  disabled={sharingState === 'loading'}
+                  aria-label="Share book"
+                  {...getLoadingAriaAttributes(sharingState === 'loading', 'Copying link')}
+                  data-testid="share-button"
+                >
+                  <AnimatePresence mode="wait">
+                    {sharingState === 'loading' ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1, rotate: 360 }}
+                        exit={{ scale: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+                      />
+                    ) : sharingState === 'success' ? (
+                      <motion.div
+                        key="success"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0 }}
+                      >
+                        <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="share"
+                        whileHover={{ scale: 1.1, rotate: 5 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Share2 
+                          className="h-4 w-4 text-gray-600 dark:text-foreground" 
+                          aria-hidden="true" 
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Button>
                 </div>
                 <Button 
                   size="default" 
@@ -491,11 +627,52 @@ export default function BookDetail() {
                 </p>
               </div>
               <Button 
-                className="bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm hover:shadow"
+                className={`transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${
+                  reviewSubmitState === 'success' 
+                    ? 'bg-green-600 hover:bg-green-700' 
+                    : reviewSubmitState === 'error'
+                    ? 'bg-red-600 hover:bg-red-700'
+                    : 'bg-blue-600 hover:bg-blue-700'
+                } text-white`}
                 onClick={handleSubmitReview} 
-                disabled={submittingReview}
+                disabled={submittingReview || !userRating || userReview.length < 50}
+                {...getLoadingAriaAttributes(submittingReview, 'Submitting review')}
+                data-testid="submit-review-button"
               >
-                {submittingReview ? 'Submitting...' : 'Submit Review'}
+                <AnimatePresence mode="wait">
+                  {submittingReview ? (
+                    <motion.div
+                      key="submitting"
+                      className="flex items-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <div className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Submitting...
+                    </motion.div>
+                  ) : reviewSubmitState === 'success' ? (
+                    <motion.div
+                      key="success"
+                      className="flex items-center"
+                      initial={{ scale: 0.8, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      <CheckCircle2 className="h-4 w-4 mr-2" aria-hidden="true" />
+                      Submitted!
+                    </motion.div>
+                  ) : (
+                    <motion.span
+                      key="idle"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
+                      Submit Review
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </Button>
             </div>
           </div>

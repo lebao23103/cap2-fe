@@ -8,9 +8,20 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: {
+        DEFAULT: '1rem',    // 16px mobile
+        sm: '1.5rem',       // 24px @ 640px+
+        md: '1.5rem',       // 24px @ 768px+
+        lg: '2rem',         // 32px @ 1024px+
+        xl: '2.5rem',       // 40px @ 1280px+
+        '2xl': '3rem',      // 48px @ 1536px+
+      },
       screens: {
-        "2xl": "1400px",
+        sm: '640px',
+        md: '768px',
+        lg: '1024px',
+        xl: '1280px',
+        '2xl': '1400px',    // Max content width
       },
     },
     extend: {

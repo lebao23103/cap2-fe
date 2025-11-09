@@ -1,5 +1,23 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+// Zod validation schema
+const profileSchema = z.object({
+  firstName: z.string()
+    .min(2, 'First name must be at least 2 characters')
+    .max(50, 'First name must be less than 50 characters'),
+  lastName: z.string()
+    .min(2, 'Last name must be at least 2 characters')
+    .max(50, 'Last name must be less than 50 characters'),
+  bio: z.string()
+    .max(200, 'Bio must be less than 200 characters')
+    .optional(),
+})
+
+type ProfileFormData = z.infer<typeof profileSchema>
 import {
   // User,
   Mail,
@@ -58,6 +76,18 @@ export default function Profile() {
     lastName: '',
     bio: '',
     email: '',
+  });
+
+  // React Hook Form with Zod validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    trigger,
+  } = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    mode: 'onChange',
   });
 
   // Mock data - replace with API calls
@@ -186,14 +216,17 @@ export default function Profile() {
     }
   };
 
-  const handleSave = async () => {
+  const onSubmit = async (data: ProfileFormData) => {
     try {
       setIsSaving(true);
       // TODO: Connect to API
-      // await userService.updateProfile(formData);
+      // await userService.updateProfile(data);
 
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Update local state
+      setFormData({ ...formData, ...data });
 
       toast({
         title: 'Profile Updated',
@@ -243,7 +276,7 @@ export default function Profile() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background py-8">
-        <div className="container mx-auto px-4 max-w-7xl">
+        <div className="container mx-auto max-w-7xl">
           <ProfileHeaderSkeleton className="mb-8" />
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
             {[1, 2, 3, 4].map((i) => (
@@ -257,7 +290,7 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-background py-4 sm:py-6 md:py-8">
-      <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
+      <div className="container mx-auto max-w-7xl">
         {/* Profile Header Card */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -304,50 +337,90 @@ export default function Profile() {
                 <div className="flex-1 space-y-4 w-full">
                   {isEditing ? (
                     // Edit Mode
-                    <div className="space-y-4">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                           <Label htmlFor="firstName">First Name</Label>
                           <Input
                             id="firstName"
+                            {...register('firstName')}
                             value={formData.firstName}
-                            onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                            onChange={(e) => {
+                              setFormData({ ...formData, firstName: e.target.value });
+                              setValue('firstName', e.target.value);
+                              trigger('firstName');
+                            }}
                             autoComplete="given-name"
+                            disabled={isSaving}
+                            className={errors.firstName ? 'border-destructive' : ''}
+                            aria-invalid={!!errors.firstName}
                           />
+                          {errors.firstName && (
+                            <p className="text-sm text-destructive" role="alert">
+                              {errors.firstName.message}
+                            </p>
+                          )}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="lastName">Last Name</Label>
                           <Input
                             id="lastName"
+                            {...register('lastName')}
                             value={formData.lastName}
-                            onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                            onChange={(e) => {
+                              setFormData({ ...formData, lastName: e.target.value });
+                              setValue('lastName', e.target.value);
+                              trigger('lastName');
+                            }}
                             autoComplete="family-name"
+                            disabled={isSaving}
+                            className={errors.lastName ? 'border-destructive' : ''}
+                            aria-invalid={!!errors.lastName}
                           />
+                          {errors.lastName && (
+                            <p className="text-sm text-destructive" role="alert">
+                              {errors.lastName.message}
+                            </p>
+                          )}
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="bio">Bio</Label>
                         <Textarea
                           id="bio"
+                          {...register('bio')}
                           value={formData.bio}
-                          onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                          onChange={(e) => {
+                            setFormData({ ...formData, bio: e.target.value });
+                            setValue('bio', e.target.value);
+                            trigger('bio');
+                          }}
                           rows={3}
                           maxLength={200}
-                          aria-describedby="bio-hint"
+                          disabled={isSaving}
+                          className={errors.bio ? 'border-destructive' : ''}
+                          aria-invalid={!!errors.bio}
+                          aria-describedby={errors.bio ? 'bio-error' : 'bio-hint'}
                         />
-                        <p id="bio-hint" className="text-xs text-muted-foreground">
-                          {formData.bio.length}/200 characters
-                        </p>
+                        {errors.bio ? (
+                          <p id="bio-error" className="text-sm text-destructive" role="alert">
+                            {errors.bio.message}
+                          </p>
+                        ) : (
+                          <p id="bio-hint" className="text-xs text-muted-foreground">
+                            {formData.bio.length}/200 characters
+                          </p>
+                        )}
                       </div>
                       <div className="flex gap-3 pt-2">
-                        <Button onClick={handleSave} disabled={isSaving} aria-label={isSaving ? 'Saving profile changes' : 'Save profile changes'}>
+                        <Button type="submit" disabled={isSaving} aria-label={isSaving ? 'Saving profile changes' : 'Save profile changes'}>
                           {isSaving ? 'Saving...' : 'Save Changes'}
                         </Button>
-                        <Button variant="outline" onClick={handleCancel} disabled={isSaving} aria-label="Cancel editing">
+                        <Button type="button" variant="outline" onClick={handleCancel} disabled={isSaving} aria-label="Cancel editing">
                           Cancel
                         </Button>
                       </div>
-                    </div>
+                    </form>
                   ) : (
                     // View Mode
                     <>

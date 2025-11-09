@@ -178,7 +178,7 @@ export default function Search() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <div className="container mx-auto py-6 sm:py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2 text-gray-900 dark:text-foreground">

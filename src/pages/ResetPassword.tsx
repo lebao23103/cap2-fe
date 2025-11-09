@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
@@ -7,28 +10,56 @@ import { Mail, ArrowLeft, Quote, KeyRound, CheckCircle, Sparkles } from 'lucide-
 import { motion } from 'framer-motion'
 import { ModernButton } from '../components/ui/modern'
 
+// Zod validation schema
+const resetPasswordSchema = z.object({
+  email: z.string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address')
+    .toLowerCase(),
+})
+
+type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>
+
 export default function ResetPassword() {
-  const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isEmailSent, setIsEmailSent] = useState(false)
+  const [submittedEmail, setSubmittedEmail] = useState('')
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  // React Hook Form with Zod validation
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, touchedFields },
+    getValues,
+  } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
+    mode: 'onBlur',
+  })
+
+  const onSubmit = async (data: ResetPasswordFormData) => {
     setIsLoading(true)
     
-    // TODO: Implement reset password API call
-    console.log('Reset password request for:', email)
-    
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false)
+    try {
+      // TODO: Implement reset password API call
+      console.log('Reset password request for:', data.email)
+      
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      setSubmittedEmail(data.email)
       setIsEmailSent(true)
-    }, 2000)
+    } catch (error) {
+      console.error('Reset password failed:', error)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const handleResendEmail = () => {
-    setIsEmailSent(false)
-    handleSubmit(new Event('submit') as any)
+    const email = getValues('email')
+    if (email) {
+      onSubmit({ email })
+    }
   }
 
   return (
@@ -107,7 +138,7 @@ export default function ResetPassword() {
                       Password reset instructions have been sent to:
                     </p>
                     <p className="text-lg font-bold text-foreground">
-                      {email}
+                      {submittedEmail}
                     </p>
                   </div>
                   <div className="bg-gradient-to-br from-muted/50 to-muted/30 p-5 rounded-xl border border-border/50 shadow-sm">
@@ -140,7 +171,7 @@ export default function ResetPassword() {
                 </div>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
                 <div className="space-y-2">
                   <Label htmlFor="email" className="text-sm font-semibold text-foreground">
                     Email Address
@@ -149,14 +180,24 @@ export default function ResetPassword() {
                     id="email"
                     type="email"
                     placeholder="your.name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-12 rounded-xl transition-all"
-                    required
+                    {...register('email')}
+                    className={`bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-12 rounded-xl transition-all ${
+                      errors.email && touchedFields.email ? 'border-destructive' : ''
+                    }`}
+                    disabled={isLoading}
+                    aria-required="true"
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? 'email-error' : 'email-hint'}
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Enter the email address associated with your account
-                  </p>
+                  {errors.email && touchedFields.email ? (
+                    <p id="email-error" className="text-xs text-destructive" role="alert">
+                      {errors.email.message}
+                    </p>
+                  ) : (
+                    <p id="email-hint" className="text-xs text-muted-foreground">
+                      Enter the email address associated with your account
+                    </p>
+                  )}
                 </div>
                 
                 <div className="pt-2">

@@ -65,31 +65,27 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Theme Toggle - Fixed Position Top Right */}
-      <div className="fixed top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
-
       {/* Header/Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-sm" role="banner">
-        {/* Subtle gradient overlay */}
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background backdrop-blur-xl shadow-md" role="banner">
+        {/* Subtle gradient overlay - spans full width */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" aria-hidden="true" />
         
-        <nav className="container mx-auto px-6 relative" role="navigation" aria-label="Main navigation">
-          <div className="flex h-16 items-center justify-between">
+        {/* Content container - max-width constrained */}
+        <div className="container mx-auto relative">
+          <nav className="flex h-16 items-center justify-between gap-2" role="navigation" aria-label="Main navigation">
             {/* Left Side - Logo */}
             <div className="flex items-center flex-1">
-              <Link to="/" className="group flex items-center space-x-3 transition-all duration-300 hover:scale-[1.02]" aria-label="Knowly home">
+              <Link to="/" className="group flex items-center space-x-2 sm:space-x-3 transition-all duration-300 hover:scale-[1.02]" aria-label="Knowly home">
                 {/* Modern Logo with enhanced effects */}
                 <div className="relative">
                   {/* Glow effect */}
                   <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-indigo-500/20 to-cyan-400/20 blur-lg group-hover:blur-xl transition-all duration-300" />
-                  <div className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-400 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:rotate-3">
-                    <BookOpen className="h-6 w-6 text-white" strokeWidth={2.5} />
+                  <div className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-lg bg-gradient-to-br from-indigo-500 via-purple-500 to-cyan-400 flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:rotate-3">
+                    <BookOpen className="h-5 w-5 sm:h-6 sm:w-6 text-white" strokeWidth={2.5} />
                   </div>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-sans text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-foreground dark:to-foreground/80 bg-clip-text text-transparent tracking-tight group-hover:from-primary group-hover:to-primary/70 transition-all duration-300">
+                  <span className="font-sans text-xl sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-foreground dark:to-foreground/80 bg-clip-text text-transparent tracking-tight group-hover:from-primary group-hover:to-primary/70 transition-all duration-300">
                     Knowly
                   </span>
                 </div>
@@ -98,10 +94,10 @@ export function Layout({ children }: LayoutProps) {
 
             {/* Center - Navigation Menu */}
             <div className="hidden md:flex items-center flex-1 justify-center">
-              <div className="flex items-center space-x-2 bg-muted/30 backdrop-blur-sm rounded-2xl p-1.5 border border-border/50 shadow-sm">
+              <div className="flex items-center space-x-2 bg-muted/30 backdrop-blur-sm rounded-xl p-1.5 border border-border/50 shadow-sm">
                 <Link
                   to="/"
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
                     isActivePath('/')
                       ? 'bg-background text-primary shadow-sm border border-border/50'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
@@ -113,7 +109,7 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
                 <Link
                   to="/readnex"
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
                     isActivePath('/readnex')
                       ? 'bg-background text-primary shadow-sm border border-border/50'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
@@ -125,7 +121,7 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
                 <Link
                   to="/create"
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
                     isActivePath('/create')
                       ? 'bg-background text-primary shadow-sm border border-border/50'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
@@ -137,7 +133,7 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
                 <Link
                   to="/noteshare"
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
                     isActivePath('/noteshare')
                       ? 'bg-background text-primary shadow-sm border border-border/50'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
@@ -149,7 +145,7 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
                 <Link
                   to="/about"
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
                     isActivePath('/about')
                       ? 'bg-background text-primary shadow-sm border border-border/50'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
@@ -163,23 +159,25 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Right Side - Auth Actions */}
-            <div className="flex items-center justify-end flex-1">
-              <div className="flex items-center gap-4">
-                {/* Mobile Menu Button - Always visible */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="md:hidden min-h-[44px] min-w-[44px]"
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-                >
-                  {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                </Button>
+            <div className="flex items-center justify-end gap-2 flex-1">
+              {/* Theme Toggle - Mobile & Desktop */}
+              <ThemeToggle />
+              
+              {/* Mobile Menu Button - Mobile Only */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden min-h-[44px] min-w-[44px]"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              >
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </Button>
 
-                {isAuthenticated ? (
-                  <>
-                    {/* User Menu - Desktop */}
-                    <div className="hidden md:block">
+              {isAuthenticated ? (
+                <>
+                  {/* User Menu - Desktop */}
+                  <div className="hidden md:block">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="flex items-center gap-2" aria-label="User menu">
@@ -225,12 +223,12 @@ export function Layout({ children }: LayoutProps) {
                             <LogOut className="mr-2 h-4 w-4" />
                             <span>Log out</span>
                           </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-                  </>
-                ) : (
-                  <div className="hidden md:flex items-center gap-3">
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </>
+              ) : (
+                <div className="hidden md:flex items-center gap-3">
                     <ModernButton
                       variant="ghost"
                       size="md"
@@ -245,16 +243,15 @@ export function Layout({ children }: LayoutProps) {
                       onClick={() => navigate('/register')}
                     >
                       Get Started
-                    </Button>
-                  </div>
-                )}
-              </div>
+                  </Button>
+                </div>
+              )}
             </div>
-          </div>
-
-          {/* Mobile Navigation Menu */}
+          </nav>
+          
+          {/* Mobile Navigation Menu - Outside nav to prevent flex issues */}
           {isMobileMenuOpen && (
-            <div className="md:hidden pb-4 pt-2 border-t border-border/40">
+            <div className="md:hidden pb-4 pt-4 border-t border-border/40 bg-background">
               <div className="flex flex-col space-y-2">
                 {/* Public Navigation Links */}
                 <Link
@@ -380,7 +377,7 @@ export function Layout({ children }: LayoutProps) {
               </div>
             </div>
           )}
-        </nav>
+        </div>
       </header>
 
       {/* Main Content */}
@@ -390,11 +387,11 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Footer - Contact Information */}
       {!isAuthenticated && (
-        <footer className="relative border-t border-border/40 bg-muted/30 backdrop-blur-sm py-12 mt-20" role="contentinfo">
+        <footer className="relative border-t border-border/40 bg-muted/30 backdrop-blur-sm py-12 md:py-16 mt-20" role="contentinfo">
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-transparent pointer-events-none" />
           
-          <div className="container mx-auto px-6 relative">
+          <div className="container mx-auto relative">
             <div className="grid md:grid-cols-3 gap-12">
               {/* Company Info */}
               <div className="space-y-4">
