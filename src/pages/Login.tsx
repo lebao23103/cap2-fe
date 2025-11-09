@@ -50,10 +50,10 @@ export default function Login() {
               <BookOpen className="h-10 w-10 text-primary" />
             </div>
           </div>
-          <p className="text-xl font-semibold text-gray-900 dark:text-foreground mb-2">
+          <p className="text-xl font-semibold text-foreground mb-2">
             "Books are a uniquely portable magic."
           </p>
-          <p className="text-sm text-gray-600 dark:text-muted-foreground">— Stephen King</p>
+          <p className="text-sm text-muted-foreground">— Stephen King</p>
         </motion.div>
 
         <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm">
@@ -66,18 +66,18 @@ export default function Login() {
             >
               <KeyRound className="h-8 w-8 text-primary" />
             </motion.div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-foreground mb-2">
+            <h2 className="text-2xl font-bold text-foreground mb-2">
               Welcome Back
             </h2>
-            <p className="text-sm text-gray-600 dark:text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Sign in to continue your literary journey
             </p>
           </CardHeader>
           <CardContent className="px-8 pb-8 pt-6">
-            <form onSubmit={handleSubmit} className="space-y-4" aria-label="Sign in form">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Email Address <span className="text-destructive" aria-label="required">*</span>
+                <Label htmlFor="email" className="text-sm font-semibold text-foreground">
+                  Email Address
                 </Label>
                 <Input
                   id="email"
@@ -87,15 +87,13 @@ export default function Login() {
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
                   required
-                  aria-required="true"
-                  autoComplete="email"
                 />
               </div>
               
               <div className="space-y-2">
                 <div className="flex justify-between items-center">
-                  <Label htmlFor="password" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                    Password <span className="text-destructive" aria-label="required">*</span>
+                  <Label htmlFor="password" className="text-sm font-semibold text-foreground">
+                    Password
                   </Label>
                   <Link 
                     to="/forgot-password" 
@@ -113,12 +111,10 @@ export default function Login() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
                     required
-                    aria-required="true"
-                    autoComplete="current-password"
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
@@ -146,7 +142,7 @@ export default function Login() {
             </form>
             
             <div className="mt-6 pt-6 border-t border-border/30">
-              <p className="text-center text-sm text-gray-600 dark:text-muted-foreground">
+              <p className="text-center text-sm text-muted-foreground">
                 New to our platform?{' '}
                 <Link 
                   to="/register" 

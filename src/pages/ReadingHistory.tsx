@@ -192,7 +192,7 @@ export default function ReadingHistory() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" onClick={() => window.history.back()}>
-                <ArrowLeft className="mr-2 h-4 w-4 text-gray-600 dark:text-foreground" />
+                <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Dashboard
               </Button>
               <div className="flex items-center gap-2">

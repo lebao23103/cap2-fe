@@ -19,7 +19,6 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
-  const [formSubmitted, setFormSubmitted] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -48,7 +47,6 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setFormSubmitted(true)
     
     if (!validateForm()) return
 
@@ -87,10 +85,10 @@ export default function Register() {
               <BookOpen className="h-10 w-10 text-primary" />
             </div>
           </div>
-          <p className="text-xl font-semibold text-gray-900 dark:text-foreground mb-2">
+          <p className="text-xl font-semibold text-foreground mb-2">
             "A reader lives a thousand lives before he dies."
           </p>
-          <p className="text-sm text-gray-600 dark:text-muted-foreground">— George R.R. Martin</p>
+          <p className="text-sm text-muted-foreground">— George R.R. Martin</p>
         </motion.div>
 
         <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm">
@@ -103,19 +101,19 @@ export default function Register() {
             >
               <UserPlus className="h-8 w-8 text-primary" />
             </motion.div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-foreground mb-2">
+            <h2 className="text-2xl font-bold text-foreground mb-2">
               Create Your Account
             </h2>
-            <p className="text-sm text-gray-600 dark:text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               Join our community of readers and start your journey
             </p>
           </CardHeader>
           <CardContent className="px-8 pb-8 pt-6">
-            <form onSubmit={handleSubmit} className="space-y-4" aria-label="Registration form" noValidate>
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                    First Name <span className="text-destructive" aria-label="required">*</span>
+                  <Label htmlFor="firstName" className="text-sm font-semibold text-foreground">
+                    First Name
                   </Label>
                   <Input
                     id="firstName"
@@ -126,20 +124,12 @@ export default function Register() {
                     onChange={handleChange}
                     className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
                     required
-                    aria-required="true"
-                    aria-invalid={errors.firstName ? 'true' : 'false'}
-                    aria-describedby={errors.firstName ? 'firstName-error' : undefined}
-                    autoComplete="given-name"
                   />
-                  {errors.firstName && (
-                    <p id="firstName-error" role="alert" className="text-xs text-destructive font-medium">
-                      {errors.firstName}
-                    </p>
-                  )}
+                  {errors.firstName && <p className="text-xs text-destructive font-medium">{errors.firstName}</p>}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                    Last Name <span className="text-destructive" aria-label="required">*</span>
+                  <Label htmlFor="lastName" className="text-sm font-semibold text-foreground">
+                    Last Name
                   </Label>
                   <Input
                     id="lastName"
@@ -150,22 +140,14 @@ export default function Register() {
                     onChange={handleChange}
                     className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
                     required
-                    aria-required="true"
-                    aria-invalid={errors.lastName ? 'true' : 'false'}
-                    aria-describedby={errors.lastName ? 'lastName-error' : undefined}
-                    autoComplete="family-name"
                   />
-                  {errors.lastName && (
-                    <p id="lastName-error" role="alert" className="text-xs text-destructive font-medium">
-                      {errors.lastName}
-                    </p>
-                  )}
+                  {errors.lastName && <p className="text-xs text-destructive font-medium">{errors.lastName}</p>}
                 </div>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Email Address <span className="text-destructive" aria-label="required">*</span>
+                <Label htmlFor="email" className="text-sm font-semibold text-foreground">
+                  Email Address
                 </Label>
                 <Input
                   id="email"
@@ -176,21 +158,13 @@ export default function Register() {
                   onChange={handleChange}
                   className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
                   required
-                  aria-required="true"
-                  aria-invalid={errors.email ? 'true' : 'false'}
-                  aria-describedby={errors.email ? 'email-error' : undefined}
-                  autoComplete="email"
                 />
-                {errors.email && (
-                  <p id="email-error" role="alert" className="text-xs text-destructive font-medium">
-                    {errors.email}
-                  </p>
-                )}
+                {errors.email && <p className="text-xs text-destructive font-medium">{errors.email}</p>}
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Password <span className="text-destructive" aria-label="required">*</span>
+                <Label htmlFor="password" className="text-sm font-semibold text-foreground">
+                  Password
                 </Label>
                 <div className="relative">
                   <Input
@@ -202,33 +176,22 @@ export default function Register() {
                     onChange={handleChange}
                     className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
                     required
-                    aria-required="true"
-                    aria-invalid={errors.password ? 'true' : 'false'}
-                    aria-describedby={errors.password ? 'password-error password-hint' : 'password-hint'}
-                    autoComplete="new-password"
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
                     onClick={() => setShowPassword(!showPassword)}
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                   </button>
                 </div>
-                <p id="password-hint" className="text-xs text-muted-foreground">
-                  Must be at least 6 characters
-                </p>
-                {errors.password && (
-                  <p id="password-error" role="alert" className="text-xs text-destructive font-medium">
-                    {errors.password}
-                  </p>
-                )}
+                {errors.password && <p className="text-xs text-destructive font-medium">{errors.password}</p>}
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  Confirm Password <span className="text-destructive" aria-label="required">*</span>
+                <Label htmlFor="confirmPassword" className="text-sm font-semibold text-foreground">
+                  Confirm Password
                 </Label>
                 <div className="relative">
                   <Input
@@ -240,25 +203,17 @@ export default function Register() {
                     onChange={handleChange}
                     className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
                     required
-                    aria-required="true"
-                    aria-invalid={errors.confirmPassword ? 'true' : 'false'}
-                    aria-describedby={errors.confirmPassword ? 'confirmPassword-error' : undefined}
-                    autoComplete="new-password"
                   />
                   <button
                     type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
                   >
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
                   </button>
                 </div>
-                {errors.confirmPassword && (
-                  <p id="confirmPassword-error" role="alert" className="text-xs text-destructive font-medium">
-                    {errors.confirmPassword}
-                  </p>
-                )}
+                {errors.confirmPassword && <p className="text-xs text-destructive font-medium">{errors.confirmPassword}</p>}
               </div>
               
               <div className="pt-2">
@@ -276,7 +231,7 @@ export default function Register() {
             </form>
             
             <div className="mt-6 pt-6 border-t border-border/30">
-              <p className="text-center text-sm text-gray-600 dark:text-muted-foreground">
+              <p className="text-center text-sm text-muted-foreground">
                 Already have an account?{' '}
                 <Link 
                   to="/login" 

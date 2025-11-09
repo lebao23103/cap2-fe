@@ -18,7 +18,8 @@ import {
   Sparkles,
   ChevronRight
 } from 'lucide-react'
-
+import API from '@/config/api'
+import PdfThumbnail from '@/tan.tsx/PdfThumbnail'
 import { useEffect, useState } from 'react'
 import axios from 'axios'
 
@@ -166,14 +167,14 @@ export default function Home() {
                   <div className="relative aspect-[3/4] overflow-hidden rounded-t-xl">
                     <div className="w-full h-full group-hover:scale-105 transition-transform duration-300">
                          <img
-                      src={"book.cover_image"}
+                      src={book.cover_image ?? "/default_cover.jpg"}
                       alt={book.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     </div>
 
                     <div className="absolute top-3 right-3">
-                      <Badge variant="secondary">concac</Badge>
+                      {/* <Badge variant="secondary">concac</Badge> */}
                     </div>
                     <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
                       <div className="flex items-center gap-1 mb-2">
@@ -187,9 +188,9 @@ export default function Home() {
                     <p className="text-sm text-muted-foreground">{book.author}</p>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="line-clamp-2 mb-4 text-sm">
+                    {/* <CardDescription className="line-clamp-2 mb-4 text-sm">
                       sách như loz
-                    </CardDescription>
+                    </CardDescription> */}
                     <Button size="sm" className="w-full" asChild>
                       <Link to={`/book/${book.id}`} className="flex items-center justify-center">
                         <BookOpen className="h-4 w-4 mr-2" />

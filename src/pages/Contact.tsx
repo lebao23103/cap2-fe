@@ -101,10 +101,10 @@ export default function Contact() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
-                  <form onSubmit={handleSubmit} className="space-y-6 flex-1 flex flex-col" aria-label="Contact form">
+                  <form onSubmit={handleSubmit} className="space-y-6 flex-1 flex flex-col">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="name">Name <span className="text-destructive" aria-label="required">*</span></Label>
+                        <Label htmlFor="name">Name *</Label>
                         <Input
                           id="name"
                           name="name"
@@ -112,12 +112,10 @@ export default function Contact() {
                           onChange={handleChange}
                           placeholder="Your full name"
                           required
-                          aria-required="true"
-                          autoComplete="name"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email <span className="text-destructive" aria-label="required">*</span></Label>
+                        <Label htmlFor="email">Email *</Label>
                         <Input
                           id="email"
                           name="email"
@@ -126,13 +124,11 @@ export default function Contact() {
                           onChange={handleChange}
                           placeholder="your.email@example.com"
                           required
-                          aria-required="true"
-                          autoComplete="email"
                         />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="subject">Subject <span className="text-destructive" aria-label="required">*</span></Label>
+                      <Label htmlFor="subject">Subject *</Label>
                       <Input
                         id="subject"
                         name="subject"
@@ -140,11 +136,10 @@ export default function Contact() {
                         onChange={handleChange}
                         placeholder="What's this about?"
                         required
-                        aria-required="true"
                       />
                     </div>
                     <div className="space-y-2 flex-1 flex flex-col">
-                      <Label htmlFor="message">Message <span className="text-destructive" aria-label="required">*</span></Label>
+                      <Label htmlFor="message">Message *</Label>
                       <Textarea
                         id="message"
                         name="message"
@@ -153,11 +148,10 @@ export default function Contact() {
                         placeholder="Tell us more about your question, feedback, or how we can help..."
                         className="flex-1 min-h-[120px] resize-none"
                         required
-                        aria-required="true"
                       />
                     </div>
-                    <Button type="submit" className="w-full mt-auto" size="lg" aria-label="Send message">
-                      <Send className="h-4 w-4 mr-2" aria-hidden="true" />
+                    <Button type="submit" className="w-full mt-auto" size="lg">
+                      <Send className="h-4 w-4 mr-2" />
                       Send Message
                     </Button>
                   </form>
@@ -236,14 +230,9 @@ export default function Contact() {
                       { icon: Facebook, label: "Facebook", color: "hover:text-blue-600", link: "https://facebook.com/knowly" },
                       { icon: Twitter, label: "Twitter", color: "hover:text-blue-500", link: "https://twitter.com/knowly" }
                     ].map((social, index) => (
-              <Button key={index} variant="outline" size="lg" className={`flex-1 ${social.color}`} asChild>
-                        <a 
-                          href={social.link} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          aria-label={`Follow us on ${social.label} (opens in new tab)`}
-                        >
-                          <social.icon className="h-5 w-5 mr-2" aria-hidden="true" />
+                      <Button key={index} variant="outline" size="lg" className={`flex-1 ${social.color}`} asChild>
+                        <a href={social.link} target="_blank" rel="noopener noreferrer">
+                          <social.icon className="h-5 w-5 mr-2" />
                           {social.label}
                         </a>
                       </Button>

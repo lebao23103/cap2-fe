@@ -221,7 +221,7 @@ export default function About() {
                 <Card className="h-full text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
                   <CardHeader>
                     <Avatar className="h-24 w-24 mx-auto mb-4">
-                      <AvatarImage src={member.avatar} alt={`${member.name} profile picture`} />
+                      <AvatarImage src={member.avatar} alt={member.name} />
                       <AvatarFallback className="text-lg">
                         {member.name.split(' ').map(n => n[0]).join('')}
                       </AvatarFallback>

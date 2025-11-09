@@ -19,6 +19,7 @@ import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import booksService, { type Book, type Review } from '@/lib/api/books';
 import { useToast } from '@/components/ui/use-toast';
+import { Link } from "react-router-dom";
 
 export default function BookDetail() {
   const { id } = useParams<{ id: string }>();
@@ -36,6 +37,7 @@ export default function BookDetail() {
   const [userReview, setUserReview] = useState('');
   const [hoveredRating, setHoveredRating] = useState(0);
   const [submittingReview, setSubmittingReview] = useState(false);
+  const params = useParams();
 
   useEffect(() => {
     if (id) {
@@ -334,6 +336,7 @@ export default function BookDetail() {
                 loading="lazy"
               />
               <div className="p-3 sm:p-4 space-y-2">
+                <Link to={`/book/${params.id}/read`}>
                 <Button 
                   size="lg" 
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm hover:shadow"
@@ -341,7 +344,7 @@ export default function BookDetail() {
                 >
                   <BookOpen className="h-4 w-4 mr-2" />
                   Start Reading
-                </Button>
+                </Button></Link>
                 <div className="flex gap-2">
                   <Button 
                     size="lg" 

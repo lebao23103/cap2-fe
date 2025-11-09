@@ -10,4 +10,9 @@ export default defineConfig({
       "@": path.resolve(process.cwd(), "./src"),
     },
   },
+   server: {
+    proxy: {
+      '/media': 'http://127.0.0.1:8000'
+    }
+  }
 })

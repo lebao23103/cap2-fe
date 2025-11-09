@@ -3,7 +3,7 @@ import { ThemeProvider } from './components/theme-provider'
 import { Toaster } from './components/ui/toaster'
 import { AuthProvider, ProtectedRoute } from './contexts/AuthContext'
 import { Layout } from './components/Layout'
-import ErrorBoundary from './components/ErrorBoundary'
+// import ErrorBoundary from './components/ErrorBoundary'
 import Home from './pages/Home'
 import About from './pages/About'
 import Contact from './pages/Contact'
@@ -22,11 +22,11 @@ import Favorites from './pages/Favorites'
 import ReadingHistory from './pages/ReadingHistory'
 import AdminDashboard from './pages/AdminDashboard'
 import BookDetail from './pages/BookDetail'
-import Profile from './pages/Profile'
-import Settings from './pages/Settings'
-import Privacy from './pages/Privacy'
-import Terms from './pages/Terms'
-import NotFound from './pages/NotFound'
+// import Profile from './pages/Profile'
+// import Settings from './pages/Settings'
+// import Privacy from './pages/Privacy'
+// import Terms from './pages/Terms'
+// import NotFound from './pages/NotFound'
 import './App.css'
 
 function App() {
@@ -38,15 +38,15 @@ function App() {
             <div className="min-h-screen font-sans antialiased">
               <a href="#main-content" className="sr-only focus:not-sr-only fixed top-2 left-2 bg-primary text-primary-foreground px-3 py-2 rounded-lg z-50">Skip to content</a>
               <main id="main-content">
-              <ErrorBoundary>
+              {/* <ErrorBoundary> */}
                 <Routes>
                   {/* Public Marketing Pages */}
                   <Route path="/" element={<Home />} />
                   <Route path="/about" element={<About />} />
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/faq" element={<FAQ />} />
-                  <Route path="/privacy" element={<Privacy />} />
-                  <Route path="/terms" element={<Terms />} />
+                  {/* <Route path="/privacy" element={<Privacy />} />
+                  <Route path="/terms" element={<Terms />} /> */}
                   <Route path="/readnex" element={<ReadNEx />} />
                   <Route path="/noteshare" element={<NoteShare />} />
                   <Route path="/book/:id" element={<BookDetail />} />
@@ -81,7 +81,7 @@ function App() {
                       <ReadingHistory />
                     </ProtectedRoute>
                   } />
-                  <Route path="/profile" element={
+                  {/* <Route path="/profile" element={
                     <ProtectedRoute>
                       <Profile />
                     </ProtectedRoute>
@@ -90,7 +90,7 @@ function App() {
                     <ProtectedRoute>
                       <Settings />
                     </ProtectedRoute>
-                  } />
+                  } /> */}
                   
                   {/* Protected Admin Pages */}
                   <Route path="/admin" element={
@@ -100,9 +100,9 @@ function App() {
                   } />
                   
                   {/* 404 Catch-all Route */}
-                  <Route path="*" element={<NotFound />} />
+                  {/* <Route path="*" element={<NotFound />} /> */}
                 </Routes>
-              </ErrorBoundary>
+              {/* </ErrorBoundary> */}
               </main>
             </div>
           </Layout>

@@ -71,15 +71,15 @@ export function Layout({ children }: LayoutProps) {
       </div>
 
       {/* Header/Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-sm" role="banner">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-sm">
         {/* Subtle gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" />
         
-        <nav className="container mx-auto px-6 relative" role="navigation" aria-label="Main navigation">
+        <nav className="container mx-auto px-6 relative">
           <div className="flex h-16 items-center justify-between">
             {/* Left Side - Logo */}
             <div className="flex items-center flex-1">
-              <Link to="/" className="group flex items-center space-x-3 transition-all duration-300 hover:scale-[1.02]" aria-label="Knowly home">
+              <Link to="/" className="group flex items-center space-x-3 transition-all duration-300 hover:scale-[1.02]">
                 {/* Modern Logo with enhanced effects */}
                 <div className="relative">
                   {/* Glow effect */}
@@ -89,7 +89,7 @@ export function Layout({ children }: LayoutProps) {
                   </div>
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-sans text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-foreground dark:to-foreground/80 bg-clip-text text-transparent tracking-tight group-hover:from-primary group-hover:to-primary/70 transition-all duration-300">
+                  <span className="font-sans text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent tracking-tight group-hover:from-primary group-hover:to-primary/70 transition-all duration-300">
                     Knowly
                   </span>
                 </div>
@@ -104,11 +104,10 @@ export function Layout({ children }: LayoutProps) {
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     isActivePath('/')
                       ? 'bg-background text-primary shadow-sm border border-border/50'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                   }`}
-                  aria-current={isActivePath('/') ? 'page' : undefined}
                 >
-                  <Home className="h-4 w-4" aria-hidden="true" />
+                  <Home className="h-4 w-4" />
                   <span>Home</span>
                 </Link>
                 <Link
@@ -116,11 +115,10 @@ export function Layout({ children }: LayoutProps) {
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     isActivePath('/readnex')
                       ? 'bg-background text-primary shadow-sm border border-border/50'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                   }`}
-                  aria-current={isActivePath('/readnex') ? 'page' : undefined}
                 >
-                  <Library className="h-4 w-4" aria-hidden="true" />
+                  <Library className="h-4 w-4" />
                   <span>ReadNEx</span>
                 </Link>
                 <Link
@@ -128,11 +126,10 @@ export function Layout({ children }: LayoutProps) {
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     isActivePath('/create')
                       ? 'bg-background text-primary shadow-sm border border-border/50'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                   }`}
-                  aria-current={isActivePath('/create') ? 'page' : undefined}
                 >
-                  <Plus className="h-4 w-4" aria-hidden="true" />
+                  <Plus className="h-4 w-4" />
                   <span>Create</span>
                 </Link>
                 <Link
@@ -140,11 +137,10 @@ export function Layout({ children }: LayoutProps) {
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     isActivePath('/noteshare')
                       ? 'bg-background text-primary shadow-sm border border-border/50'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                   }`}
-                  aria-current={isActivePath('/noteshare') ? 'page' : undefined}
                 >
-                  <Sparkles className="h-4 w-4" aria-hidden="true" />
+                  <Sparkles className="h-4 w-4" />
                   <span>NoteShare</span>
                 </Link>
                 <Link
@@ -152,11 +148,10 @@ export function Layout({ children }: LayoutProps) {
                   className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-300 ${
                     isActivePath('/about')
                       ? 'bg-background text-primary shadow-sm border border-border/50'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-background/50'
                   }`}
-                  aria-current={isActivePath('/about') ? 'page' : undefined}
                 >
-                  <Info className="h-4 w-4" aria-hidden="true" />
+                  <Info className="h-4 w-4" />
                   <span>About</span>
                 </Link>
               </div>
@@ -169,9 +164,8 @@ export function Layout({ children }: LayoutProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="md:hidden min-h-[44px] min-w-[44px]"
+                  className="md:hidden"
                   onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
                 >
                   {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                 </Button>
@@ -182,7 +176,7 @@ export function Layout({ children }: LayoutProps) {
                     <div className="hidden md:block">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="flex items-center gap-2" aria-label="User menu">
+                          <Button variant="ghost" className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
                               <AvatarImage src={user?.email ? `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}` : undefined} />
                               <AvatarFallback>
@@ -234,18 +228,19 @@ export function Layout({ children }: LayoutProps) {
                     <ModernButton
                       variant="ghost"
                       size="md"
-                      className="!text-gray-900 dark:!text-foreground hover:text-primary font-semibold"
+                      className="text-foreground hover:text-primary font-semibold"
                       onClick={() => navigate('/login')}
                     >
                       Sign In
                     </ModernButton>
-                    <Button
-                      size="lg"
-                      className="bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 text-white hover:opacity-90 border-0 shadow-md hover:shadow-lg font-semibold transition-all"
+                    <ModernButton
+                      variant="primary"
+                      size="md"
+                      className="bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-400 text-white border-0 shadow-md hover:shadow-lg font-semibold"
                       onClick={() => navigate('/register')}
                     >
                       Get Started
-                    </Button>
+                    </ModernButton>
                   </div>
                 )}
               </div>
@@ -254,67 +249,67 @@ export function Layout({ children }: LayoutProps) {
 
           {/* Mobile Navigation Menu */}
           {isMobileMenuOpen && (
-            <div className="md:hidden pb-4 pt-2 border-t border-border/40">
-              <div className="flex flex-col space-y-2">
+            <div className="md:hidden pb-4 pt-2">
+              <div className="flex flex-col space-y-3">
                 {/* Public Navigation Links */}
                 <Link
                   to="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
+                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                     isActivePath('/')
                       ? 'bg-primary/10 text-primary'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                   }`}
                 >
-                  <Home className="h-5 w-5" />
+                  <Home className="h-4 w-4" />
                   Home
                 </Link>
                 <Link
                   to="/readnex"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
+                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                     isActivePath('/readnex')
                       ? 'bg-primary/10 text-primary'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                   }`}
                 >
-                  <Library className="h-5 w-5" />
+                  <Library className="h-4 w-4" />
                   ReadNEx
                 </Link>
                 <Link
                   to="/create"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
+                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                     isActivePath('/create')
                       ? 'bg-primary/10 text-primary'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                   }`}
                 >
-                  <Plus className="h-5 w-5" />
+                  <Plus className="h-4 w-4" />
                   Create
                 </Link>
                 <Link
                   to="/noteshare"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
+                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                     isActivePath('/noteshare')
                       ? 'bg-primary/10 text-primary'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                   }`}
                 >
-                  <Sparkles className="h-5 w-5" />
+                  <Sparkles className="h-4 w-4" />
                   NoteShare
                 </Link>
                 <Link
                   to="/about"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
+                  className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                     isActivePath('/about')
                       ? 'bg-primary/10 text-primary'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                   }`}
                 >
-                  <Info className="h-5 w-5" />
+                  <Info className="h-4 w-4" />
                   About
                 </Link>
 
@@ -329,13 +324,13 @@ export function Layout({ children }: LayoutProps) {
                           key={item.path}
                           to={item.path}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
+                          className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                             isActivePath(item.path)
                               ? 'bg-primary/10 text-primary'
-                              : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
+                              : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                           }`}
                         >
-                          <Icon className="h-5 w-5" />
+                          <Icon className="h-4 w-4" />
                           {item.label}
                         </Link>
                       );
@@ -343,9 +338,9 @@ export function Layout({ children }: LayoutProps) {
                     <div className="h-px bg-border my-2" />
                     <button
                       onClick={handleLogout}
-                      className="flex items-center gap-3 px-4 py-3 text-base font-medium text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent rounded-lg transition-all min-h-[44px] w-full text-left"
+                      className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-accent rounded-lg transition-all"
                     >
-                      <LogOut className="h-5 w-5" />
+                      <LogOut className="h-4 w-4" />
                       Log out
                     </button>
                   </>
@@ -354,11 +349,10 @@ export function Layout({ children }: LayoutProps) {
                 {!isAuthenticated && (
                   <>
                     <div className="h-px bg-border my-2" />
-                    <div className="flex flex-col space-y-2 px-3">
+                    <div className="flex flex-col space-y-3 px-3">
                       <Button 
                         variant="outline" 
-                        size="lg"
-                        className="w-full justify-center min-h-[44px]"
+                        className="w-full justify-center"
                         asChild
                       >
                         <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
@@ -366,8 +360,7 @@ export function Layout({ children }: LayoutProps) {
                         </Link>
                       </Button>
                       <Button 
-                        size="lg"
-                        className="bg-gradient-to-r from-primary to-secondary text-primary-foreground w-full justify-center min-h-[44px]"
+                        className="bg-gradient-to-r from-primary to-secondary text-primary-foreground w-full justify-center"
                         asChild
                       >
                         <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
@@ -390,7 +383,7 @@ export function Layout({ children }: LayoutProps) {
 
       {/* Footer - Contact Information */}
       {!isAuthenticated && (
-        <footer className="relative border-t border-border/40 bg-muted/30 backdrop-blur-sm py-12 mt-20" role="contentinfo">
+        <footer className="relative border-t border-border/40 bg-muted/30 backdrop-blur-sm py-12 mt-20">
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-transparent pointer-events-none" />
           
@@ -405,14 +398,14 @@ export function Layout({ children }: LayoutProps) {
                       <BookOpen className="h-5 w-5 text-white" strokeWidth={2.5} />
                     </div>
                   </div>
-                  <h3 className="font-sans text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-foreground dark:to-foreground/70 bg-clip-text text-transparent">
+                  <h3 className="font-sans text-xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
                     Knowly
                   </h3>
                 </div>
-                <p className="text-sm text-gray-600 dark:text-muted-foreground leading-relaxed">
+                <p className="text-sm text-muted-foreground leading-relaxed">
                   Knowledge Sharing Platform for Academic Reading and Exercises
                 </p>
-                <div className="pt-2 flex items-center gap-2 text-sm text-gray-600 dark:text-muted-foreground">
+                <div className="pt-2 flex items-center gap-2 text-sm text-muted-foreground">
                   <span>© 2025 Knowly.</span>
                   <span className="text-red-500">❤️</span>
                   <span>Built for learners.</span>
@@ -421,33 +414,33 @@ export function Layout({ children }: LayoutProps) {
               
               {/* Contact Information */}
               <div className="space-y-4">
-                <h4 className="font-semibold text-gray-900 dark:text-foreground text-base mb-5 tracking-tight">Contact Us</h4>
-                <div className="space-y-3 text-sm text-gray-600 dark:text-muted-foreground">
-                  <div className="flex items-start gap-3 group hover:text-gray-900 dark:hover:text-foreground transition-colors">
+                <h4 className="font-semibold text-foreground text-base mb-5 tracking-tight">Contact Us</h4>
+                <div className="space-y-3 text-sm text-muted-foreground">
+                  <div className="flex items-start gap-3 group hover:text-foreground transition-colors">
                     <span className="text-base">📧</span>
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-foreground">Email</p>
+                      <p className="font-medium">Email</p>
                       <p className="text-xs">support@knowly.com</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 group hover:text-gray-900 dark:hover:text-foreground transition-colors">
+                  <div className="flex items-start gap-3 group hover:text-foreground transition-colors">
                     <span className="text-base">📞</span>
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-foreground">Phone</p>
+                      <p className="font-medium">Phone</p>
                       <p className="text-xs">+84 (028) 1234-5678</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 group hover:text-gray-900 dark:hover:text-foreground transition-colors">
+                  <div className="flex items-start gap-3 group hover:text-foreground transition-colors">
                     <span className="text-base">📍</span>
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-foreground">Address</p>
+                      <p className="font-medium">Address</p>
                       <p className="text-xs">123 Knowledge Street, Learning City</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3 group hover:text-gray-900 dark:hover:text-foreground transition-colors">
+                  <div className="flex items-start gap-3 group hover:text-foreground transition-colors">
                     <span className="text-base">🕒</span>
                     <div>
-                      <p className="font-medium text-gray-900 dark:text-foreground">Hours</p>
+                      <p className="font-medium">Hours</p>
                       <p className="text-xs">Mon-Fri 9AM-6PM (GMT+7)</p>
                     </div>
                   </div>
@@ -456,25 +449,25 @@ export function Layout({ children }: LayoutProps) {
               
               {/* Quick Links */}
               <div className="space-y-4">
-                <h4 className="font-semibold text-gray-900 dark:text-foreground text-base mb-5 tracking-tight">Quick Links</h4>
+                <h4 className="font-semibold text-foreground text-base mb-5 tracking-tight">Quick Links</h4>
                 <div className="space-y-3 text-sm">
                   <Link 
                     to="/about" 
-                    className="group flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-primary transition-all duration-300"
+                    className="group flex items-center gap-2 text-muted-foreground hover:text-primary transition-all duration-300"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-primary/50 group-hover:bg-primary group-hover:scale-125 transition-all" />
                     <span className="group-hover:translate-x-0.5 transition-transform">About Us</span>
                   </Link>
                   <Link 
                     to="/faq" 
-                    className="group flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-primary transition-all duration-300"
+                    className="group flex items-center gap-2 text-muted-foreground hover:text-primary transition-all duration-300"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-primary/50 group-hover:bg-primary group-hover:scale-125 transition-all" />
                     <span className="group-hover:translate-x-0.5 transition-transform">FAQ</span>
                   </Link>
                   <Link 
                     to="/contact" 
-                    className="group flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-primary transition-all duration-300"
+                    className="group flex items-center gap-2 text-muted-foreground hover:text-primary transition-all duration-300"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-primary/50 group-hover:bg-primary group-hover:scale-125 transition-all" />
                     <span className="group-hover:translate-x-0.5 transition-transform">Contact Form</span>
@@ -485,12 +478,12 @@ export function Layout({ children }: LayoutProps) {
             
             {/* Bottom Divider */}
             <div className="mt-12 pt-8 border-t border-border/40">
-              <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 dark:text-muted-foreground">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-muted-foreground">
                 <p>All rights reserved. Empowering learners worldwide.</p>
                 <div className="flex items-center gap-4">
-                  <Link to="/privacy" className="hover:text-gray-900 dark:hover:text-foreground transition-colors">Privacy Policy</Link>
+                  <Link to="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link>
                   <span className="text-border">•</span>
-                  <Link to="/terms" className="hover:text-gray-900 dark:hover:text-foreground transition-colors">Terms of Service</Link>
+                  <Link to="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link>
                 </div>
               </div>
             </div>
