@@ -38,13 +38,13 @@ export default function About() {
       <AnimatedBackground variant="mesh" />
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
+      <section className="relative w-full pt-32 pb-20">
+        <div className="container mx-auto max-w-4xl text-center">
           <motion.div {...fadeInUp}>
             <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm">
               📖 Our Story
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
               Revolutionizing the
               <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent block">
                 Reading Experience
@@ -59,10 +59,10 @@ export default function About() {
       </section>
 
       {/* Mission Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative w-full py-20">
+        <div className="container mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               Our Mission
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
@@ -93,7 +93,7 @@ export default function About() {
               }
             ].map((item, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <Card className="h-full text-center border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-xl">
                   <CardHeader>
                     <div className={`mx-auto mb-4 p-4 bg-gradient-to-r ${item.color} rounded-full w-20 h-20 flex items-center justify-center`}>
                       <item.icon className="h-10 w-10 text-white" />
@@ -113,10 +113,10 @@ export default function About() {
       </section>
 
       {/* Timeline Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800/50">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative w-full py-20 bg-gray-50 dark:bg-gray-800/50">
+        <div className="container mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               Our Journey
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">
@@ -157,7 +157,7 @@ export default function About() {
             ].map((item, index) => (
               <motion.div key={index} {...fadeInUp} className={`flex items-center ${item.side === 'left' ? 'justify-start' : 'justify-end'}`}>
                 <div className={`w-full md:w-1/2 ${item.side === 'left' ? 'pr-8' : 'pl-8'}`}>
-                  <Card className="hover:shadow-lg transition-all duration-300">
+                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
                     <CardHeader>
                       <div className="flex items-center mb-2">
                         <Badge variant="outline" className="mr-3">{item.year}</Badge>
@@ -179,10 +179,10 @@ export default function About() {
       </section>
 
       {/* Team Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
+      <section className="relative w-full py-20">
+        <div className="container mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               Meet the Team
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">
@@ -218,10 +218,10 @@ export default function About() {
               }
             ].map((member, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <Card className="h-full text-center border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-xl">
                   <CardHeader>
                     <Avatar className="h-24 w-24 mx-auto mb-4">
-                      <AvatarImage src={member.avatar} alt={member.name} />
+                      <AvatarImage src={member.avatar} alt={`${member.name} profile picture`} />
                       <AvatarFallback className="text-lg">
                         {member.name.split(' ').map(n => n[0]).join('')}
                       </AvatarFallback>
@@ -243,9 +243,9 @@ export default function About() {
 
       {/* Values Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800/50">
-        <div className="max-w-7xl mx-auto">
+        <div className="container mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
               Our Values
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-300">
@@ -287,7 +287,7 @@ export default function About() {
               }
             ].map((value, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-xl">
                   <CardHeader className="text-center">
                     <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-full w-16 h-16 flex items-center justify-center">
                       <value.icon className="h-8 w-8 text-indigo-600" />
@@ -309,8 +309,8 @@ export default function About() {
       {/* CTA Section */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div {...fadeInUp} className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-3xl p-12 text-white">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">
+          <motion.div {...fadeInUp} className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-12 text-white shadow-xl">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">
               Join Our Mission
             </h2>
             <p className="text-xl mb-8 opacity-90">
@@ -331,3 +331,4 @@ export default function About() {
     </div>
   )
 }
+

@@ -42,7 +42,7 @@ export interface ReadingHistoryItem {
 class UserService {
   // Get user profile
   async getProfile(userId: number): Promise<UserProfile> {
-    const response = await apiClient.get(`/user/profile/${userId}`);
+    const response = await apiClient.get(`/user/profile/${userId}/`);
     return response.data;
   }
 

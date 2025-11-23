@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { 
@@ -11,7 +11,7 @@ import {
   RotateCcw,
   BookOpen,
   ChevronRight,
-  Star,
+  // Star,
   Play
 } from 'lucide-react'
 
@@ -271,7 +271,7 @@ export default function BookQuiz() {
   if (!quizStarted) {
     return (
       <div className="min-h-screen bg-parchment-50 dark:bg-ink-950 py-8">
-        <div className="max-w-4xl mx-auto px-4">
+        <div className="container mx-auto max-w-4xl">
           <div className="mb-6">
             <Button variant="ghost" onClick={() => navigate('/readnex')}>
               <ArrowLeft className="h-4 w-4 mr-2" />
@@ -365,7 +365,7 @@ export default function BookQuiz() {
     
     return (
       <div className="min-h-screen bg-parchment-50 dark:bg-ink-950 py-8">
-        <div className="max-w-4xl mx-auto px-4">
+        <div className="container mx-auto max-w-4xl">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -518,7 +518,7 @@ export default function BookQuiz() {
                               ? "secondary"
                               : "outline"
                         }
-                        className="w-full text-left justify-start h-auto p-4"
+                        className="w-full text-left justify-start h-auto p-4 hover:bg-primary/10"
                         onClick={() => handleAnswerSelect(index)}
                         disabled={selectedAnswers[currentQuestion] !== null}
                       >
@@ -637,3 +637,6 @@ export default function BookQuiz() {
     </div>
   )
 }
+
+
+

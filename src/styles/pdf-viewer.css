@@ -1,0 +1,235 @@
+/* React-PDF custom styles */
+.react-pdf__Document {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.react-pdf__Page {
+  max-width: 100%;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  margin: 1em;
+  position: relative;
+}
+
+.react-pdf__Page canvas {
+  max-width: 100%;
+  height: auto !important;
+  display: block;
+}
+
+/* Text layer for selection */
+.react-pdf__Page__textContent,
+.textLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  opacity: 0.2;
+  line-height: 1;
+}
+
+.react-pdf__Page__textContent span,
+.textLayer span {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+}
+
+/* Selection styling */
+.react-pdf__Page__textContent ::selection,
+.textLayer ::selection {
+  background: rgba(59, 130, 246, 0.3);
+}
+
+/* Annotation layer */
+.react-pdf__Page__annotations,
+.annotationLayer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.react-pdf__Page__annotations .annotationLayer section,
+.react-pdf__Page__annotations .annotationLayer .linkAnnotation > a,
+.annotationLayer section,
+.annotationLayer .linkAnnotation > a {
+  position: absolute;
+}
+
+.react-pdf__Page__annotations .annotationLayer .linkAnnotation > a:hover,
+.annotationLayer .linkAnnotation > a:hover {
+  opacity: 0.2;
+  background: rgba(255, 255, 0, 1);
+  box-shadow: 0px 2px 10px rgba(255, 255, 0, 1);
+}
+
+.react-pdf__Page__annotations .annotationLayer .textAnnotation img {
+  position: absolute;
+  cursor: pointer;
+}
+
+.react-pdf__Page__annotations .annotationLayer .textWidgetAnnotation input,
+.react-pdf__Page__annotations .annotationLayer .textWidgetAnnotation textarea,
+.react-pdf__Page__annotations .annotationLayer .choiceWidgetAnnotation select,
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.checkBox input,
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.radioButton input {
+  background-color: rgba(0, 54, 255, 0.13);
+  border: 1px solid transparent;
+  box-sizing: border-box;
+  font-size: 9px;
+  height: 100%;
+  margin: 0;
+  padding: 0 3px;
+  vertical-align: top;
+  width: 100%;
+}
+
+.react-pdf__Page__annotations .annotationLayer .choiceWidgetAnnotation select option {
+  padding: 0;
+}
+
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.radioButton input {
+  border-radius: 50%;
+}
+
+.react-pdf__Page__annotations .annotationLayer .textWidgetAnnotation textarea {
+  font: message-box;
+  font-size: 9px;
+  resize: none;
+}
+
+.react-pdf__Page__annotations .annotationLayer .textWidgetAnnotation input[disabled],
+.react-pdf__Page__annotations .annotationLayer .textWidgetAnnotation textarea[disabled],
+.react-pdf__Page__annotations .annotationLayer .choiceWidgetAnnotation select[disabled],
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.checkBox input[disabled],
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.radioButton input[disabled] {
+  background: none;
+  border: 1px solid transparent;
+  cursor: not-allowed;
+}
+
+.react-pdf__Page__annotations .annotationLayer .textWidgetAnnotation input:hover,
+.react-pdf__Page__annotations .annotationLayer .textWidgetAnnotation textarea:hover,
+.react-pdf__Page__annotations .annotationLayer .choiceWidgetAnnotation select:hover,
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.checkBox input:hover,
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.radioButton input:hover {
+  border: 1px solid rgba(0, 0, 0, 1);
+}
+
+.react-pdf__Page__annotations .annotationLayer .textWidgetAnnotation input:focus,
+.react-pdf__Page__annotations .annotationLayer .textWidgetAnnotation textarea:focus,
+.react-pdf__Page__annotations .annotationLayer .choiceWidgetAnnotation select:focus {
+  background: none;
+  border: 1px solid transparent;
+}
+
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.checkBox input:checked:before,
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.checkBox input:checked:after,
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.radioButton input:checked:before {
+  background-color: rgba(0, 0, 0, 1);
+  content: '';
+  display: block;
+  position: absolute;
+}
+
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.checkBox input:checked:before,
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.checkBox input:checked:after {
+  height: 80%;
+  left: 45%;
+  width: 1px;
+}
+
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.checkBox input:checked:before {
+  transform: rotate(45deg);
+}
+
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.checkBox input:checked:after {
+  transform: rotate(-45deg);
+}
+
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.radioButton input:checked:before {
+  border-radius: 50%;
+  height: 50%;
+  left: 30%;
+  top: 20%;
+  width: 50%;
+}
+
+.react-pdf__Page__annotations .annotationLayer .textWidgetAnnotation input.comb {
+  font-family: monospace;
+  padding-left: 2px;
+  padding-right: 0;
+}
+
+.react-pdf__Page__annotations .annotationLayer .textWidgetAnnotation input.comb:focus {
+  width: 115%;
+}
+
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.checkBox input,
+.react-pdf__Page__annotations .annotationLayer .buttonWidgetAnnotation.radioButton input {
+  appearance: none;
+}
+
+.react-pdf__Page__annotations .annotationLayer .popupWrapper {
+  position: absolute;
+  width: 20em;
+}
+
+.react-pdf__Page__annotations .annotationLayer .popup {
+  position: absolute;
+  z-index: 200;
+  max-width: 20em;
+  background-color: rgba(255, 255, 153, 1);
+  box-shadow: 0px 2px 5px rgba(136, 136, 136, 1);
+  border-radius: 2px;
+  padding: 6px;
+  margin-left: 5px;
+  cursor: pointer;
+  font: message-box;
+  font-size: 9px;
+  white-space: normal;
+  word-wrap: break-word;
+}
+
+.react-pdf__Page__annotations .annotationLayer .popup > * {
+  font-size: 9px;
+}
+
+.react-pdf__Page__annotations .annotationLayer .popup h1 {
+  display: inline-block;
+}
+
+.react-pdf__Page__annotations .annotationLayer .popup span {
+  display: inline-block;
+  margin-left: 5px;
+}
+
+.react-pdf__Page__annotations .annotationLayer .popup p {
+  border-top: 1px solid rgba(51, 51, 51, 1);
+  margin-top: 2px;
+  padding-top: 2px;
+}
+
+.react-pdf__Page__annotations .annotationLayer .highlightAnnotation,
+.react-pdf__Page__annotations .annotationLayer .underlineAnnotation,
+.react-pdf__Page__annotations .annotationLayer .squigglyAnnotation,
+.react-pdf__Page__annotations .annotationLayer .strikeoutAnnotation,
+.react-pdf__Page__annotations .annotationLayer .freeTextAnnotation,
+.react-pdf__Page__annotations .annotationLayer .lineAnnotation svg line,
+.react-pdf__Page__annotations .annotationLayer .squareAnnotation svg rect,
+.react-pdf__Page__annotations .annotationLayer .circleAnnotation svg ellipse,
+.react-pdf__Page__annotations .annotationLayer .polylineAnnotation svg polyline,
+.react-pdf__Page__annotations .annotationLayer .polygonAnnotation svg polygon,
+.react-pdf__Page__annotations .annotationLayer .caretAnnotation,
+.react-pdf__Page__annotations .annotationLayer .inkAnnotation svg polyline,
+.react-pdf__Page__annotations .annotationLayer .stampAnnotation,
+.react-pdf__Page__annotations .annotationLayer .fileAttachmentAnnotation {
+  cursor: pointer;
+}

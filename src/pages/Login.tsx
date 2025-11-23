@@ -1,26 +1,110 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
-import { Eye, EyeOff, BookOpen, KeyRound, Sparkles } from 'lucide-react'
+import { BookOpen, KeyRound, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { FormInput } from '../components/auth'
 import { ModernButton } from '../components/ui/modern'
+import { useErrorAnnouncement, useSuccessAnnouncement } from '../hooks/useAnnounce'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function Login() {
+  const { login } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [generalError, setGeneralError] = useState('')
+
+  // Accessibility: Announce errors and success
+  useErrorAnnouncement(generalError)
+  useSuccessAnnouncement(isSuccess, 'Login successful! Redirecting...')
+
+  // Real-time email validation
+  const validateEmail = (value: string) => {
+    if (!value) {
+      setEmailError('Email is required')
+      return false
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(value)) {
+      setEmailError('Please enter a valid email address')
+      return false
+    }
+    setEmailError('')
+    return true
+  }
+
+  // Real-time password validation
+  const validatePassword = (value: string) => {
+    if (!value) {
+      setPasswordError('Password is required')
+      return false
+    }
+    if (value.length < 6) {
+      setPasswordError('Password must be at least 6 characters')
+      return false
+    }
+    setPasswordError('')
+    return true
+  }
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setEmail(value)
+    setGeneralError('') // Clear general error on input
+    // Only validate if user has already interacted with the field
+    if (email || value) {
+      validateEmail(value)
+    }
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setPassword(value)
+    setGeneralError('') // Clear general error on input
+    // Only validate if user has already interacted with the field
+    if (password || value) {
+      validatePassword(value)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    console.log('Login form submitted', { email, password: '***' })
+    
+    // Validate all fields
+    const isEmailValid = validateEmail(email)
+    const isPasswordValid = validatePassword(password)
+    
+    console.log('Validation results:', { isEmailValid, isPasswordValid })
+    
+    if (!isEmailValid || !isPasswordValid) {
+      console.log('Validation failed, stopping submission')
+      return
+    }
+
     setIsLoading(true)
+    setGeneralError('')
+    console.log('Calling backend API...')
     
-    // TODO: Implement login API call
-    console.log('Login attempt:', { email, password })
-    
-    setIsLoading(false)
+    try {
+      // Call AuthContext login (handles tokens AND state)
+      await login(email, password)
+      
+      // Success! (AuthContext handles navigation)
+      setIsSuccess(true)
+      
+    } catch (error: any) {
+      console.error('Login error:', error)
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Invalid email or password. Please try again.'
+      setGeneralError(errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -50,10 +134,10 @@ export default function Login() {
               <BookOpen className="h-10 w-10 text-primary" />
             </div>
           </div>
-          <p className="text-xl font-semibold text-foreground mb-2">
+          <p className="text-xl font-semibold text-gray-900 dark:text-foreground mb-2">
             "Books are a uniquely portable magic."
           </p>
-          <p className="text-sm text-muted-foreground">— Stephen King</p>
+          <p className="text-sm text-gray-600 dark:text-muted-foreground">— Stephen King</p>
         </motion.div>
 
         <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm">
@@ -66,67 +150,72 @@ export default function Login() {
             >
               <KeyRound className="h-8 w-8 text-primary" />
             </motion.div>
-            <h2 className="text-2xl font-bold text-foreground mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-foreground mb-2">
               Welcome Back
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-600 dark:text-muted-foreground">
               Sign in to continue your literary journey
             </p>
           </CardHeader>
           <CardContent className="px-8 pb-8 pt-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-foreground">
-                  Email Address
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="your.name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
-                  required
-                />
-              </div>
+            <form onSubmit={handleSubmit} className="space-y-5" aria-label="Sign in form">
+              {/* General error message */}
+              {generalError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
+                  role="alert"
+                >
+                  <p className="text-sm text-destructive font-medium">{generalError}</p>
+                </motion.div>
+              )}
+
+              {/* Email field with validation */}
+              <FormInput
+                label="Email Address"
+                type="email"
+                placeholder="your.name@example.com"
+                value={email}
+                onChange={handleEmailChange}
+                onBlur={() => validateEmail(email)}
+                error={emailError}
+                success={!emailError && email.length > 0}
+                disabled={isLoading || isSuccess}
+                required
+                autoComplete="email"
+              />
               
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Label htmlFor="password" className="text-sm font-semibold text-foreground">
-                    Password
-                  </Label>
+              {/* Password field with toggle */}
+              <div>
+                <div className="flex justify-between items-center mb-2">
                   <Link 
                     to="/forgot-password" 
-                    className="text-xs text-primary hover:text-primary/80 font-medium transition-colors"
+                    className="text-xs text-primary hover:text-primary/80 font-medium transition-colors ml-auto"
+                    tabIndex={isLoading || isSuccess ? -1 : 0}
                   >
                     Forgot password?
                   </Link>
                 </div>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" aria-hidden="true" />
-                    ) : (
-                      <Eye className="h-4 w-4" aria-hidden="true" />
-                    )}
-                  </button>
-                </div>
+                <FormInput
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={handlePasswordChange}
+                  onBlur={() => validatePassword(password)}
+                  error={passwordError}
+                  success={!passwordError && password.length >= 6}
+                  showPasswordToggle
+                  showPassword={showPassword}
+                  onPasswordToggle={() => setShowPassword(!showPassword)}
+                  disabled={isLoading || isSuccess}
+                  required
+                  autoComplete="current-password"
+                />
               </div>
               
+              {/* Submit button with loading and success states */}
               <div className="pt-2">
                 <ModernButton
                   type="submit"
@@ -134,15 +223,18 @@ export default function Login() {
                   size="lg"
                   icon={Sparkles}
                   isLoading={isLoading}
+                  isSuccess={isSuccess}
+                  loadingText="Signing you in..."
+                  successText="Success! Redirecting..."
                   className="w-full h-12 text-base shadow-lg hover:shadow-xl"
                 >
-                  {isLoading ? 'Signing you in...' : 'Sign In'}
+                  Sign In
                 </ModernButton>
               </div>
             </form>
             
             <div className="mt-6 pt-6 border-t border-border/30">
-              <p className="text-center text-sm text-muted-foreground">
+              <p className="text-center text-sm text-gray-600 dark:text-muted-foreground">
                 New to our platform?{' '}
                 <Link 
                   to="/register" 

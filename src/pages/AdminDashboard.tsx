@@ -162,7 +162,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto py-8">
         {/* Page Title */}
         <div className="mb-8">
           <div className="flex items-center gap-3">

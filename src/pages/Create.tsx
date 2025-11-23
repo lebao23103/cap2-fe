@@ -7,10 +7,6 @@ import {
   Image, 
   Save, 
   Eye, 
-  User, 
-  Tag,
-  Globe,
-  Users,
   Check,
   AlertCircle,
   ChevronRight,
@@ -18,18 +14,9 @@ import {
 } from 'lucide-react'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ModernButton } from '@/components/ui/modern'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from '@/components/ui/dropdown-menu'
 import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
@@ -42,34 +29,18 @@ interface BookData {
   title: string
   description: string
   author: string
-  year: string
-  genre: string
-  language: string
-  ageGroup: string
   content: string
   coverImage: File | null
   bookFile: File | null
   tags: string[]
 }
 
-const genres = [
-  "Fiction", "Sci-Fi", "Romance", "Mystery", "Fantasy", "Thriller", 
-  "Biography", "Self-Help", "Literary Fiction", "Tech Fiction", 
-  "Culinary Memoir", "Member Create"
-]
-
-const languages = ["English", "Vietnamese", "Spanish", "French", "German", "Chinese", "Japanese"]
-const ageGroups = ["Children", "Young Adult", "Adult", "All Ages"]
 
 export default function Create() {
   const [bookData, setBookData] = useState<BookData>({
     title: '',
     description: '',
     author: '',
-    year: new Date().getFullYear().toString(),
-    genre: 'Fiction',
-    language: 'English',
-    ageGroup: 'Adult',
     content: '',
     coverImage: null,
     bookFile: null,
@@ -128,9 +99,6 @@ export default function Create() {
     } else if (bookData.description.length < 50) {
       errors.description = 'Description must be at least 50 characters'
     }
-    if (!bookData.year || parseInt(bookData.year) < 1000 || parseInt(bookData.year) > new Date().getFullYear() + 1) {
-      errors.year = 'Please enter a valid year'
-    }
     
     setValidationErrors(errors)
     return Object.keys(errors).length === 0
@@ -179,8 +147,8 @@ export default function Create() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative w-full min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-12">
+      <div className="container mx-auto max-w-6xl">
         
         {/* Header */}
         <motion.div {...fadeInUp} className="mb-12 text-center">
@@ -291,112 +259,6 @@ export default function Create() {
                       </div>
                     </div>
 
-                    {/* Genre */}
-                    <div className="space-y-2">
-                      <Label htmlFor="genre" className="text-sm font-semibold text-foreground flex items-center gap-2">
-                        Genre <span className="text-red-500">*</span>
-                      </Label>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="w-full justify-between h-11 rounded-xl">
-                            {bookData.genre}
-                            <Tag className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-full">
-                          <DropdownMenuLabel>Select Genre</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          {genres.map((genre) => (
-                            <DropdownMenuItem
-                              key={genre}
-                              onClick={() => handleInputChange('genre', genre)}
-                            >
-                              {genre}
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-
-                    {/* Year */}
-                    <div className="space-y-2">
-                      <Label htmlFor="year" className="text-sm font-semibold text-foreground flex items-center gap-2">
-                        Publication Year <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="year"
-                        type="number"
-                        placeholder="2025"
-                        value={bookData.year}
-                        onChange={(e) => {
-                          handleInputChange('year', e.target.value)
-                          setValidationErrors(prev => ({ ...prev, year: '' }))
-                        }}
-                        className={`h-11 rounded-xl ${validationErrors.year ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
-                      />
-                      <div className="min-h-[20px]">
-                        {validationErrors.year && (
-                          <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
-                            <AlertCircle className="h-3 w-3" />
-                            {validationErrors.year}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Language */}
-                    <div className="space-y-2">
-                      <Label htmlFor="language" className="text-sm font-semibold text-foreground flex items-center gap-2">
-                        Language <span className="text-red-500">*</span>
-                      </Label>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="w-full justify-between h-11 rounded-xl">
-                            {bookData.language}
-                            <Globe className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-full">
-                          <DropdownMenuLabel>Select Language</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          {languages.map((language) => (
-                            <DropdownMenuItem
-                              key={language}
-                              onClick={() => handleInputChange('language', language)}
-                            >
-                              {language}
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-
-                    {/* Age Group */}
-                    <div className="space-y-2">
-                      <Label htmlFor="ageGroup" className="text-sm font-semibold text-foreground flex items-center gap-2">
-                        Target Age Group <span className="text-red-500">*</span>
-                      </Label>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="outline" className="w-full justify-between h-11 rounded-xl">
-                            {bookData.ageGroup}
-                            <Users className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-full">
-                          <DropdownMenuLabel>Select Age Group</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          {ageGroups.map((ageGroup) => (
-                            <DropdownMenuItem
-                              key={ageGroup}
-                              onClick={() => handleInputChange('ageGroup', ageGroup)}
-                            >
-                              {ageGroup}
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
                   </div>
 
                   {/* Description */}
@@ -481,7 +343,7 @@ export default function Create() {
                               variant="ghost"
                               size="sm" 
                               onClick={() => handleFileUpload('coverImage', null)}
-                              className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400 border border-red-200 dark:border-red-900"
+                              className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400"
                             >
                               Remove Image
                             </ModernButton>
@@ -509,7 +371,7 @@ export default function Create() {
                             />
                             <ModernButton
                               icon={Upload}
-                              variant="outline"
+                              variant="secondary"
                               className="border-primary/30 hover:bg-primary/10 hover:border-primary/50"
                               onClick={() => document.getElementById('cover-upload')?.click()}
                             >
@@ -547,7 +409,7 @@ export default function Create() {
                               variant="ghost"
                               size="sm" 
                               onClick={() => handleFileUpload('bookFile', null)}
-                              className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400 border border-red-200 dark:border-red-900"
+                              className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400"
                             >
                               Remove File
                             </ModernButton>
@@ -575,7 +437,7 @@ export default function Create() {
                             />
                             <ModernButton
                               icon={Upload}
-                              variant="outline"
+                              variant="secondary"
                               className="border-purple-500/30 hover:bg-purple-500/10 hover:border-purple-500/50"
                               onClick={() => document.getElementById('book-upload')?.click()}
                             >
@@ -630,7 +492,6 @@ export default function Create() {
                             by {bookData.author || 'Author Name'}
                           </p>
                           <div className="flex gap-2 mb-3">
-                            <Badge variant="outline">{bookData.genre}</Badge>
                             <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
                               ✍️ User Created
                             </Badge>
@@ -638,9 +499,6 @@ export default function Create() {
                           <p className="text-muted-foreground text-sm mb-3">
                             {bookData.description || 'Book description will appear here...'}
                           </p>
-                          <div className="text-xs text-muted-foreground">
-                            {bookData.language} • {bookData.year} • {bookData.ageGroup}
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -716,7 +574,7 @@ export default function Create() {
                   </div>
                 )}
                 <ModernButton 
-                  variant="outline" 
+                  variant="secondary" 
                   size="lg" 
                   icon={Save}
                   disabled={isUploading}
@@ -741,3 +599,4 @@ export default function Create() {
     </div>
   )
 }
+

@@ -1,7 +1,10 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { fadeInUp } from '@/lib/animations'
+import { useToast } from '@/components/ui/use-toast'
+import booksService from '@/lib/api/books'
+import userService from '@/lib/api/user'
 import { 
   BookOpen, 
   Heart, 
@@ -9,7 +12,6 @@ import {
   Search, 
   Grid3x3, 
   List,
-  Eye,
   ChevronDown,
   Play,
   Clock,
@@ -24,6 +26,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { BookCardsLoadingSkeleton, BooksEmptyState, BooksErrorState } from '@/components/books'
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -35,18 +38,17 @@ import {
 
 // Book interface with reading features
 interface Book {
-  id: string
+  id: number
   title: string
   author: string
   coverImage: string
   rating: number
-  readCount: number
+  readCount?: number
   description: string
-  genre: string
-  year: number
-  language: string
-  ageGroup: string
-  pages: number
+  year?: number
+  language?: string
+  ageGroup?: string
+  pages?: number
   isUserCreated?: boolean
   readingProgress?: number
   isFavorite?: boolean
@@ -55,136 +57,8 @@ interface Book {
   hasQuiz?: boolean
   quizCompleted?: boolean
   readingTime?: string
+  subject?: string
 }
-
-// Enhanced mock book data with reading features
-const mockBooks: Book[] = [
-  {
-    id: "1",
-    title: "The Midnight Library",
-    author: "Matt Haig",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.5,
-    readCount: 12420,
-    description: "Between life and death there is a library, and within that library, the shelves go on forever.",
-    genre: "Fiction",
-    year: 2020,
-    language: "English",
-    ageGroup: "Adult",
-    pages: 288,
-    readingProgress: 75,
-    isFavorite: true,
-    lastReadDate: "2024-10-01",
-    notes: 5,
-    hasQuiz: true,
-    quizCompleted: false,
-    readingTime: "4h 30m"
-  },
-  {
-    id: "2",
-    title: "Project Hail Mary",
-    author: "Andy Weir",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.8,
-    readCount: 18750,
-    description: "A lone astronaut must save humanity from an extinction-level threat.",
-    genre: "Sci-Fi",
-    year: 2021,
-    language: "English",
-    ageGroup: "Adult",
-    pages: 496,
-    readingProgress: 0,
-    isFavorite: false,
-    notes: 0,
-    hasQuiz: true,
-    quizCompleted: false,
-    readingTime: "7h 15m"
-  },
-  {
-    id: "3",
-    title: "Klara and the Sun",
-    author: "Kazuo Ishiguro",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.2,
-    readCount: 9800,
-    description: "A thrilling coming-of-age story about an Artificial Friend.",
-    genre: "Literary Fiction",
-    year: 2021,
-    language: "English",
-    ageGroup: "Young Adult",
-    pages: 320,
-    readingProgress: 100,
-    isFavorite: true,
-    lastReadDate: "2024-09-28",
-    notes: 8,
-    hasQuiz: true,
-    quizCompleted: true,
-    readingTime: "5h 20m"
-  },
-  {
-    id: "4",
-    title: "The Seven Husbands of Evelyn Hugo",
-    author: "Taylor Jenkins Reid",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.7,
-    readCount: 25600,
-    description: "Aging Hollywood icon finally tells her story of fame and fortune.",
-    genre: "Romance",
-    year: 2017,
-    language: "English",
-    ageGroup: "Adult",
-    pages: 400,
-    readingProgress: 45,
-    isFavorite: false,
-    lastReadDate: "2024-09-30",
-    notes: 3,
-    hasQuiz: true,
-    quizCompleted: false,
-    readingTime: "6h 10m"
-  },
-  {
-    id: "5",
-    title: "Atomic Habits",
-    author: "James Clear",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.6,
-    readCount: 31200,
-    description: "An easy & proven way to build good habits & break bad ones.",
-    genre: "Self-Help",
-    year: 2018,
-    language: "English",
-    ageGroup: "Adult",
-    pages: 320,
-    readingProgress: 100,
-    isFavorite: true,
-    lastReadDate: "2024-09-25",
-    notes: 12,
-    hasQuiz: true,
-    quizCompleted: true,
-    readingTime: "5h 45m"
-  },
-  {
-    id: "6",
-    title: "The Thursday Murder Club",
-    author: "Richard Osman",
-    coverImage: "/api/placeholder/300/400",
-    rating: 4.3,
-    readCount: 14500,
-    description: "Four unlikely friends meet weekly to investigate cold cases.",
-    genre: "Mystery",
-    year: 2020,
-    language: "English",
-    ageGroup: "Adult",
-    pages: 368,
-    readingProgress: 20,
-    isFavorite: false,
-    lastReadDate: "2024-10-02",
-    notes: 1,
-    hasQuiz: true,
-    quizCompleted: false,
-    readingTime: "6h 30m"
-  }
-]
 
 // Filter options
 const statusFilters = [
@@ -203,15 +77,83 @@ interface FilterState {
 }
 
 export default function ReadNEx() {
+  const { toast } = useToast()
+  const navigate = useNavigate()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [filters, setFilters] = useState<FilterState>({
     statusFilter: "All",
     searchTerm: ""
   })
+  const [books, setBooks] = useState<Book[]>([])
+  const [favorites, setFavorites] = useState<Set<number>>(new Set())
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    loadBooks()
+  }, [])
+
+  const loadBooks = async () => {
+    try {
+      setIsLoading(true)
+      setError(null)
+      
+      const [booksData, favoritesData] = await Promise.all([
+        booksService.getApprovedBooks(),
+        userService.getFavorites().catch(() => [])
+      ])
+
+      // Transform API books to component format
+      const transformedBooks: Book[] = booksData.map((book: any) => ({
+        id: book.id,
+        title: book.title,
+        author: book.author,
+        coverImage: book.cover_image || '/api/placeholder/300/400',
+        rating: book.rating || 0,
+        description: book.description || '',
+        language: book.language,
+        subject: book.subject,
+        readingProgress: 0, // Would need to be fetched from reading history
+        isFavorite: false, // Will be updated below
+        hasQuiz: true // Assume all books have quizzes for now
+      }))
+
+      const favoriteIds = new Set(favoritesData.map((fav: any) => fav.book.id))
+      
+      // Mark favorites
+      transformedBooks.forEach(book => {
+        book.isFavorite = favoriteIds.has(book.id)
+      })
+
+      setBooks(transformedBooks)
+      setFavorites(favoriteIds)
+    } catch (error) {
+      console.error('Error loading books:', error)
+      setError('Failed to load books')
+      toast({
+        title: 'Error',
+        description: 'Failed to load books',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleClearFilters = () => {
+    setFilters({
+      statusFilter: "All",
+      searchTerm: ""
+    })
+  }
+
+  const handleRetry = () => {
+    loadBooks()
+  }
 
   // Filter books based on current filters
   const filteredBooks = useMemo(() => {
-    return mockBooks.filter(book => {
+    return books.filter(book => {
       let matchesStatus = true
       if (filters.statusFilter === "Currently Reading") {
         matchesStatus = book.readingProgress! > 0 && book.readingProgress! < 100
@@ -233,15 +175,45 @@ export default function ReadNEx() {
       
       return matchesStatus && matchesSearch
     })
-  }, [filters])
+  }, [filters, books])
 
   const handleFilterChange = (filterType: keyof FilterState, value: string) => {
     setFilters(prev => ({ ...prev, [filterType]: value }))
   }
 
-  const toggleFavorite = (bookId: string) => {
-    // In a real app, this would update the database
-    console.log(`Toggle favorite for book ${bookId}`)
+  const toggleFavorite = async (bookId: number) => {
+    try {
+      const isFavorite = favorites.has(bookId)
+      
+      if (isFavorite) {
+        await userService.removeFromFavorites(bookId)
+        setFavorites(prev => {
+          const newSet = new Set(prev)
+          newSet.delete(bookId)
+          return newSet
+        })
+      } else {
+        await userService.addToFavorites(bookId)
+        setFavorites(prev => new Set(prev).add(bookId))
+      }
+
+      // Update books state
+      setBooks(prev => prev.map(book => 
+        book.id === bookId ? { ...book, isFavorite: !isFavorite } : book
+      ))
+
+      toast({
+        title: isFavorite ? 'Removed from favorites' : 'Added to favorites',
+        description: isFavorite ? 'Book removed from your favorites' : 'Book added to your favorites'
+      })
+    } catch (error) {
+      console.error('Error toggling favorite:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to update favorites',
+        variant: 'destructive'
+      })
+    }
   }
 
   const renderStars = (rating: number) => {
@@ -276,20 +248,20 @@ export default function ReadNEx() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="relative w-full min-h-screen bg-background py-8">
+      <div className="container mx-auto">
         
         {/* Header with Distinctive Design */}
-        <motion.div {...fadeInUp} className="mb-8 text-center">
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="h-px w-16 bg-primary" />
-            <h1 className="font-sans text-4xl md:text-6xl font-bold mb-6 tracking-tight">
-              <span className="text-foreground">Read</span>
+        <motion.div {...fadeInUp} className="mb-6 sm:mb-8 text-center">
+          <div className="flex items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-6">
+            <div className="h-px w-8 sm:w-16 bg-primary" />
+            <h1 className="font-sans text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight">
+              <span className="text-gray-900 dark:text-foreground">Read</span>
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">NEx</span>
             </h1>
-            <div className="h-px w-16 bg-primary" />
+            <div className="h-px w-8 sm:w-16 bg-primary" />
           </div>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-sm sm:text-base md:text-lg text-gray-600 dark:text-muted-foreground max-w-3xl mx-auto px-4">
             Your reading library with interactive learning and comprehension exercises
           </p>
         </motion.div>
@@ -299,45 +271,45 @@ export default function ReadNEx() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+          className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8"
         >
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <BookOpen className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold text-foreground">
-                {mockBooks.filter(b => b.readingProgress! > 0 && b.readingProgress! < 100).length}
+          <Card className="border shadow-md rounded-xl">
+            <CardContent className="p-3 sm:p-4 text-center">
+              <BookOpen className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-primary" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
+                {books.filter(b => b.readingProgress! > 0 && b.readingProgress! < 100).length}
               </div>
-              <div className="text-sm text-muted-foreground">Currently Reading</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Currently Reading</div>
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <CheckCircle className="h-8 w-8 mx-auto mb-2 text-green-600" />
-              <div className="text-2xl font-bold text-foreground">
-                {mockBooks.filter(b => b.readingProgress === 100).length}
+          <Card className="border shadow-md rounded-xl">
+            <CardContent className="p-3 sm:p-4 text-center">
+              <CheckCircle className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-green-600" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
+                {books.filter(b => b.readingProgress === 100).length}
               </div>
-              <div className="text-sm text-muted-foreground">Completed</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Completed</div>
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <Heart className="h-8 w-8 mx-auto mb-2 text-red-600" />
-              <div className="text-2xl font-bold text-foreground">
-                {mockBooks.filter(b => b.isFavorite).length}
+          <Card className="border shadow-md rounded-xl">
+            <CardContent className="p-3 sm:p-4 text-center">
+              <Heart className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-red-600" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
+                {books.filter(b => b.isFavorite).length}
               </div>
-              <div className="text-sm text-muted-foreground">Favorites</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Favorites</div>
             </CardContent>
           </Card>
           
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-4 text-center">
-              <Target className="h-8 w-8 mx-auto mb-2 text-purple-600" />
-              <div className="text-2xl font-bold text-foreground">
-                {mockBooks.filter(b => b.quizCompleted).length}
+          <Card className="border shadow-md rounded-xl">
+            <CardContent className="p-3 sm:p-4 text-center">
+              <BookOpen className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-blue-600" />
+              <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-foreground">
+                {books.length}
               </div>
-              <div className="text-sm text-muted-foreground">Quizzes Completed</div>
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Total Books</div>
             </CardContent>
           </Card>
         </motion.div>
@@ -347,41 +319,41 @@ export default function ReadNEx() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm">
-            <CardContent className="p-6">
+          <Card className="border bg-card backdrop-blur-sm rounded-xl shadow-md">
+            <CardContent className="p-3 sm:p-4">
               
-              {/* Search Bar - Full Width */}
-              <div className="mb-6">
+              {/* Search Bar - Compact */}
+              <div className="mb-4">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-muted-foreground" />
                   <input
                     type="text"
                     placeholder="Search books by title or author..."
                     value={filters.searchTerm}
                     onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-                    className="w-full pl-12 pr-4 py-3 text-base border border-input rounded-xl focus:ring-2 focus:ring-primary focus:border-primary bg-background/50 text-foreground placeholder:text-muted-foreground transition-all duration-200 hover:border-primary/50"
+                    className="w-full pl-10 pr-4 py-2.5 sm:py-3 text-sm border border-input rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-background text-gray-900 dark:text-foreground placeholder:text-gray-400 dark:placeholder:text-muted-foreground transition-all duration-200 shadow-sm"
                   />
                 </div>
               </div>
 
               {/* Filters Row */}
-              <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+              <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-end">
                 
                 {/* Status Filter */}
-                <div className="flex-1 w-full space-y-2">
-                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    <BookmarkCheck className="h-4 w-4 text-primary" />
+                <div className="flex-1 w-full space-y-1.5">
+                  <label className="text-xs font-semibold text-gray-900 dark:text-gray-200 flex items-center gap-1.5">
+                    <BookmarkCheck className="h-3.5 w-3.5 text-primary" />
                     Reading Status
                   </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button 
                         variant="outline" 
-                        className="w-full justify-between h-11 rounded-xl hover:bg-primary/5 hover:border-primary/50 transition-colors"
+                        className="w-full justify-between h-9 rounded-lg hover:bg-primary/5 hover:border-primary/50 transition-colors text-sm focus:ring-0 focus:ring-offset-0"
                       >
-                        <span className="font-medium">{filters.statusFilter}</span>
+                        <span className="font-medium text-gray-900 dark:text-foreground">{filters.statusFilter}</span>
                         <ChevronDown className="h-4 w-4 opacity-50" />
                       </Button>
                     </DropdownMenuTrigger>
@@ -402,33 +374,33 @@ export default function ReadNEx() {
                 </div>
 
                 {/* View Mode */}
-                <div className="flex-1 w-full sm:w-auto space-y-2">
-                  <label className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    <Grid3x3 className="h-4 w-4 text-primary" />
+                <div className="flex-1 w-full sm:w-auto space-y-1.5">
+                  <label className="text-xs font-semibold text-gray-900 dark:text-gray-200 flex items-center gap-1.5">
+                    <Grid3x3 className="h-3.5 w-3.5 text-primary" />
                     View Mode
                   </label>
-                  <div className="flex items-center gap-3">
-                    <div className="flex rounded-xl border border-input overflow-hidden shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="flex rounded-lg border border-input overflow-hidden">
                       <Button
                         variant={viewMode === 'grid' ? 'default' : 'ghost'}
-                        size="default"
+                        size="sm"
                         onClick={() => setViewMode('grid')}
-                        className="rounded-none px-6 h-11"
+                        className="rounded-none px-4 h-9"
                       >
                         <Grid3x3 className="h-4 w-4" />
                       </Button>
                       <Button
                         variant={viewMode === 'list' ? 'default' : 'ghost'}
-                        size="default"
+                        size="sm"
                         onClick={() => setViewMode('list')}
-                        className="rounded-none px-6 h-11"
+                        className="rounded-none px-4 h-9"
                       >
                         <List className="h-4 w-4" />
                       </Button>
                     </div>
                     <Badge 
                       variant="secondary" 
-                      className="text-sm font-semibold px-3 py-1.5 bg-primary/10 text-primary border-0"
+                      className="text-xs font-semibold px-2.5 py-1 bg-primary/10 text-primary border-0"
                     >
                       {filteredBooks.length} books
                     </Badge>
@@ -446,18 +418,42 @@ export default function ReadNEx() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.4, duration: 0.6 }}
         >
-          {viewMode === 'grid' ? (
+          {/* Error State */}
+          {error ? (
+            <BooksErrorState error={error} onRetry={handleRetry} />
+          ) : /* Loading State */
+          isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredBooks.map((book) => (
+              <BookCardsLoadingSkeleton count={8} />
+            </div>
+          ) : /* Empty State */
+          filteredBooks.length === 0 ? (
+            <BooksEmptyState 
+              type="no-results"
+              searchTerm={filters.searchTerm}
+              onClearFilters={handleClearFilters}
+            />
+          ) : /* Books Grid/List */
+          viewMode === 'grid' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+              {filteredBooks.map((book, index) => (
                 <motion.div
                   key={book.id}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
+                  transition={{ 
+                    duration: 0.4,
+                    delay: index * 0.05, // Stagger effect
+                    ease: [0.25, 0.1, 0.25, 1]
+                  }}
+                  whileHover={{ 
+                    y: -8,
+                    transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }
+                  }}
                   className="group"
                 >
-                  <Card className="h-full hover:shadow-2xl transition-all duration-300 overflow-hidden group-hover:scale-[1.02] border border-border/50 bg-card/50 backdrop-blur-sm rounded-2xl">
-                    <div className="relative aspect-[2/3] overflow-hidden">
+                  <Card className="h-full border shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden rounded-xl">
+                    <Link to={`/book/${book.id}`} className="relative aspect-[3/4] overflow-hidden block">
                       <img
                         src={book.coverImage}
                         alt={book.title}
@@ -477,11 +473,17 @@ export default function ReadNEx() {
                       
                       {/* Hover Overlay - Elegant with backdrop blur */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4">
-                        <Button size="lg" asChild className="bg-white text-gray-900 hover:bg-white/90 shadow-xl font-semibold w-full max-w-[200px]">
-                          <Link to={`/book/${book.id}/read`}>
-                            <Play className="h-4 w-4 mr-2" />
-                            {book.readingProgress! > 0 ? 'Continue' : 'Start Reading'}
-                          </Link>
+                        <Button 
+                          size="lg" 
+                          className="bg-white text-gray-900 hover:bg-white/90 shadow-xl font-semibold w-full max-w-[200px]"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            navigate(`/book/${book.id}/read`)
+                          }}
+                        >
+                          <Play className="h-4 w-4 mr-2" />
+                          {book.readingProgress! > 0 ? 'Continue' : 'Start Reading'}
                         </Button>
                         
                         {/* Secondary Actions Dropdown */}
@@ -496,11 +498,15 @@ export default function ReadNEx() {
                             <DropdownMenuLabel>Quick Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             {book.hasQuiz && (
-                              <DropdownMenuItem asChild>
-                                <Link to={`/book/${book.id}/quiz`} className="flex items-center">
-                                  <Target className="h-4 w-4 mr-2" />
-                                  {book.quizCompleted ? 'Retake Quiz' : 'Take Quiz'}
-                                </Link>
+                              <DropdownMenuItem 
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  navigate(`/book/${book.id}/quiz`)
+                                }}
+                                className="flex items-center cursor-pointer"
+                              >
+                                <Target className="h-4 w-4 mr-2" />
+                                {book.quizCompleted ? 'Retake Quiz' : 'Take Quiz'}
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem onClick={() => toggleFavorite(book.id)}>
@@ -534,34 +540,39 @@ export default function ReadNEx() {
                           </Badge>
                         ) : null}
                       </div>
-                    </div>
+                    </Link>
                     
-                    <CardHeader className="pb-3 pt-4">
-                      <CardTitle className="text-base font-semibold line-clamp-2 group-hover:text-primary transition-colors leading-tight mb-1">
-                        {book.title}
-                      </CardTitle>
-                      <CardDescription className="text-sm font-medium text-muted-foreground">
-                        {book.author}
-                      </CardDescription>
-                    </CardHeader>
+                    <Link to={`/book/${book.id}`}>
+                      <CardHeader className="pb-3 pt-4 cursor-pointer">
+                        <CardTitle className="text-base font-semibold text-gray-900 dark:text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-tight mb-1">
+                          {book.title}
+                        </CardTitle>
+                        <CardDescription className="text-sm font-medium text-gray-600 dark:text-muted-foreground">
+                          {book.author}
+                        </CardDescription>
+                      </CardHeader>
+                    </Link>
                     
                     <CardContent className="pt-0 pb-4">
                       <div className="space-y-3">
                         <div className="flex items-center">
                           {renderStars(book.rating)}
                         </div>
-                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Clock className="h-3.5 w-3.5" />
-                            <span className="font-medium">{book.readingTime}</span>
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Eye className="h-3.5 w-3.5" />
-                            <span className="font-medium">{book.readCount.toLocaleString()}</span>
-                          </div>
+                        <div className="flex items-center justify-between text-xs text-gray-600 dark:text-muted-foreground">
+                          {book.readingTime && (
+                            <div className="flex items-center gap-1">
+                              <Clock className="h-3.5 w-3.5" />
+                              <span className="font-medium">{book.readingTime}</span>
+                            </div>
+                          )}
+                          {book.subject && (
+                            <Badge variant="secondary" className="text-xs">
+                              {book.subject}
+                            </Badge>
+                          )}
                         </div>
                         {book.lastReadDate && (
-                          <div className="text-xs text-muted-foreground/80 pt-1 border-t border-border/50">
+                          <div className="text-xs text-gray-500 dark:text-muted-foreground/80 pt-1 border-t border-border/50">
                             <span className="font-medium">Last read:</span> {new Date(book.lastReadDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </div>
                         )}
@@ -574,29 +585,12 @@ export default function ReadNEx() {
           ) : (
             // List view implementation would go here...
             <div className="space-y-4">
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="text-center py-8 text-gray-600 dark:text-muted-foreground">
                 List view implementation - Coming soon!
               </div>
             </div>
           )}
         </motion.div>
-
-        {/* No Results */}
-        {filteredBooks.length === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center py-12"
-          >
-            <BookOpen className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">
-              No books found
-            </h3>
-            <p className="text-muted-foreground">
-              Try adjusting your search criteria or filters to find more books.
-            </p>
-          </motion.div>
-        )}
       </div>
     </div>
   )

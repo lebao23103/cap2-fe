@@ -128,18 +128,17 @@ export function BookCard({
             <p className="text-sm text-muted-foreground mt-1">{book.author}</p>
           </div>
 
-          {/* Genres */}
-          <div className="flex flex-wrap gap-1">
-            {book.genre?.split(',').slice(0, 2).map((genre, i) => (
+          {/* Language Badge */}
+          {book.language && (
+            <div className="flex flex-wrap gap-1">
               <Badge 
-                key={i} 
                 variant="secondary" 
                 className="text-xs bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-indigo-500/20"
               >
-                {genre.trim()}
+                {book.language}
               </Badge>
-            ))}
-          </div>
+            </div>
+          )}
 
           {/* Description */}
           {book.description && (

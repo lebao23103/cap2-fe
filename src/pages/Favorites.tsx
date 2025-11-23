@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
 import { Card, CardContent } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Input } from '../components/ui/input'
+import { useToast } from '../components/ui/use-toast'
 import { 
   ArrowLeft, 
   Search, 
   Star, 
   Heart, 
   Trash2,
-  Filter
+  Filter,
+  Loader2
 } from 'lucide-react'
+import userService, { type Favorite } from '../lib/api/user'
 
 interface Book {
-  id: string
+  id: number
   title: string
   author: string
   cover: string
@@ -24,59 +28,48 @@ interface Book {
 }
 
 export default function Favorites() {
+  const navigate = useNavigate()
+  const { toast } = useToast()
   const [favorites, setFavorites] = useState<Book[]>([])
   const [filteredFavorites, setFilteredFavorites] = useState<Book[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedGenre, setSelectedGenre] = useState<string>('all')
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // TODO: Fetch favorites from API
-    const mockFavorites: Book[] = [
-      {
-        id: '1',
-        title: 'The Great Gatsby',
-        author: 'F. Scott Fitzgerald',
-        cover: 'https://via.placeholder.com/150x200',
-        rating: 4.5,
-        genre: ['Classic', 'Fiction'],
-        dateAdded: '2024-01-15',
-        description: 'A classic American novel about the Jazz Age.'
-      },
-      {
-        id: '2',
-        title: 'Dune',
-        author: 'Frank Herbert',
-        cover: 'https://via.placeholder.com/150x200',
-        rating: 4.8,
-        genre: ['Sci-Fi', 'Adventure'],
-        dateAdded: '2024-01-10',
-        description: 'Epic science fiction masterpiece.'
-      },
-      {
-        id: '3',
-        title: '1984',
-        author: 'George Orwell',
-        cover: 'https://via.placeholder.com/150x200',
-        rating: 4.6,
-        genre: ['Dystopian', 'Classic'],
-        dateAdded: '2024-01-05',
-        description: 'A dystopian social science fiction novel.'
-      },
-      {
-        id: '4',
-        title: 'To Kill a Mockingbird',
-        author: 'Harper Lee',
-        cover: 'https://via.placeholder.com/150x200',
-        rating: 4.7,
-        genre: ['Classic', 'Drama'],
-        dateAdded: '2024-01-01',
-        description: 'A gripping tale of racial injustice.'
-      }
-    ]
-
-    setFavorites(mockFavorites)
-    setFilteredFavorites(mockFavorites)
+    loadFavorites()
   }, [])
+
+  const loadFavorites = async () => {
+    try {
+      setIsLoading(true)
+      const favoritesData = await userService.getFavorites()
+      
+      // Transform API data to match component interface
+      const transformedFavorites: Book[] = favoritesData.map((fav: Favorite) => ({
+        id: fav.book.id,
+        title: fav.book.title,
+        author: fav.book.author,
+        cover: fav.book.cover_image || 'https://via.placeholder.com/150x200',
+        rating: fav.book.rating,
+        genre: fav.book.subject ? [fav.book.subject] : ['General'],
+        dateAdded: fav.added_at,
+        description: fav.book.description || ''
+      }))
+
+      setFavorites(transformedFavorites)
+      setFilteredFavorites(transformedFavorites)
+    } catch (error) {
+      console.error('Error loading favorites:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to load your favorites',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
     let filtered = favorites
@@ -97,9 +90,22 @@ export default function Favorites() {
     setFilteredFavorites(filtered)
   }, [searchTerm, selectedGenre, favorites])
 
-  const handleRemoveFavorite = (bookId: string) => {
-    setFavorites(prev => prev.filter(book => book.id !== bookId))
-    // TODO: API call to remove from favorites
+  const handleRemoveFavorite = async (bookId: number) => {
+    try {
+      await userService.removeFromFavorites(bookId)
+      setFavorites(prev => prev.filter(book => book.id !== bookId))
+      toast({
+        title: 'Success',
+        description: 'Book removed from favorites'
+      })
+    } catch (error) {
+      console.error('Error removing favorite:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to remove book from favorites',
+        variant: 'destructive'
+      })
+    }
   }
 
   const allGenres = Array.from(new Set(favorites.flatMap(book => book.genre)))
@@ -110,15 +116,16 @@ export default function Favorites() {
         <div className="flex gap-4">
           <img
             src={book.cover}
-            alt={book.title}
+            alt={`${book.title} by ${book.author} - Book cover`}
             className="w-16 h-20 object-cover rounded-md"
+            loading="lazy"
           />
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm line-clamp-2">{book.title}</h3>
-            <p className="text-sm text-muted-foreground">{book.author}</p>
+            <h3 className="font-semibold text-sm text-gray-900 dark:text-foreground line-clamp-2">{book.title}</h3>
+            <p className="text-sm text-gray-600 dark:text-muted-foreground">{book.author}</p>
             <div className="flex items-center gap-1 mt-1">
               <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-              <span className="text-xs text-muted-foreground">{book.rating}</span>
+              <span className="text-xs text-gray-600 dark:text-muted-foreground">{book.rating}</span>
             </div>
             <div className="flex gap-1 mt-2">
               {book.genre.slice(0, 2).map((g) => (
@@ -127,7 +134,7 @@ export default function Favorites() {
                 </Badge>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
+            <p className="text-xs text-gray-500 dark:text-muted-foreground mt-2">
               Added: {new Date(book.dateAdded).toLocaleDateString()}
             </p>
           </div>
@@ -135,9 +142,10 @@ export default function Favorites() {
             variant="ghost"
             size="sm"
             onClick={() => handleRemoveFavorite(book.id)}
-            className="opacity-0 group-hover:opacity-100 transition-opacity"
+            className="md:opacity-0 group-hover:opacity-100 transition-opacity"
+            aria-label={`Remove ${book.title} from favorites`}
           >
-            <Trash2 className="h-4 w-4 text-red-500" />
+            <Trash2 className="h-4 w-4 text-red-600 dark:text-red-500" aria-hidden="true" />
           </Button>
         </div>
       </CardContent>
@@ -148,31 +156,37 @@ export default function Favorites() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" onClick={() => window.history.back()}>
-                <ArrowLeft className="mr-2 h-4 w-4" />
+              <Button variant="ghost" onClick={() => navigate(-1)}>
+                <ArrowLeft className="mr-2 h-4 w-4 text-gray-600 dark:text-foreground" />
                 Back to Dashboard
               </Button>
               <div className="flex items-center gap-2">
                 <Heart className="h-5 w-5 text-red-500" />
-                <span className="font-semibold">My Favorites</span>
+                <span className="font-semibold text-gray-900 dark:text-foreground">My Favorites</span>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-gray-600 dark:text-muted-foreground">
               {filteredFavorites.length} of {favorites.length} books
             </div>
           </div>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto py-8">
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <>
         {/* Search and Filter */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-muted-foreground h-4 w-4" />
               <Input
                 placeholder="Search your favorites..."
                 value={searchTerm}
@@ -181,7 +195,7 @@ export default function Favorites() {
               />
             </div>
             <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4 text-muted-foreground" />
+              <Filter className="h-4 w-4 text-gray-400 dark:text-muted-foreground" />
               <select
                 value={selectedGenre}
                 onChange={(e) => setSelectedGenre(e.target.value)}
@@ -199,11 +213,11 @@ export default function Favorites() {
         {/* Favorites Grid */}
         {filteredFavorites.length === 0 ? (
           <div className="text-center py-12">
-            <Heart className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">
+            <Heart className="h-12 w-12 text-gray-400 dark:text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-foreground">
               {searchTerm || selectedGenre !== 'all' ? 'No matching favorites' : 'No favorites yet'}
             </h3>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-gray-600 dark:text-muted-foreground mb-4">
               {searchTerm || selectedGenre !== 'all'
                 ? 'Try adjusting your search or filter criteria.'
                 : 'Start adding books to your favorites from the dashboard or book details page.'
@@ -229,7 +243,7 @@ export default function Favorites() {
             <Card>
               <CardContent className="p-6 text-center">
                 <div className="text-2xl font-bold text-primary">{favorites.length}</div>
-                <div className="text-sm text-muted-foreground">Total Favorites</div>
+                <div className="text-sm text-gray-600 dark:text-muted-foreground">Total Favorites</div>
               </CardContent>
             </Card>
             <Card>
@@ -237,7 +251,7 @@ export default function Favorites() {
                 <div className="text-2xl font-bold text-primary">
                   {allGenres.length}
                 </div>
-                <div className="text-sm text-muted-foreground">Different Genres</div>
+                <div className="text-sm text-gray-600 dark:text-muted-foreground">Different Genres</div>
               </CardContent>
             </Card>
             <Card>
@@ -245,12 +259,15 @@ export default function Favorites() {
                 <div className="text-2xl font-bold text-primary">
                   {(favorites.reduce((sum, book) => sum + book.rating, 0) / favorites.length).toFixed(1)}
                 </div>
-                <div className="text-sm text-muted-foreground">Average Rating</div>
+                <div className="text-sm text-gray-600 dark:text-muted-foreground">Average Rating</div>
               </CardContent>
             </Card>
           </div>
+        )}
+        </>
         )}
       </main>
     </div>
   )
 }
+

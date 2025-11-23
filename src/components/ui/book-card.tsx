@@ -52,8 +52,9 @@ export function BookCard({ book, size = 'md', className, onClick }: BookCardProp
   return (
     <Card 
       className={cn(
-        "group hover:shadow-lg transition-all duration-200 cursor-pointer",
-        onClick && "hover:scale-[1.02]",
+        "group hover:shadow-xl transition-all duration-300 cursor-pointer",
+        "hover:-translate-y-1 hover:border-primary/20",
+        "active:scale-[0.98]",
         className
       )}
       onClick={onClick}

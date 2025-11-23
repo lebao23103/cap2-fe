@@ -1,5 +1,4 @@
 import apiClient from './config';
-import type { Book } from './books';
 
 export type ChatRole = 'book advisor' | 'literary expert' | 'book enthusiast';
 
@@ -8,109 +7,57 @@ export interface RecommendBooksRequest {
 }
 
 export interface ChatMessage {
-  role: 'user' | 'assistant';
+  id: number;
+  conversation: string;
   content: string;
-  timestamp?: Date;
-  bookRecommendations?: Book[];
+  is_user: boolean;
+  created_at: string;
 }
 
-export interface ChatbotRequest {
+export interface Conversation {
+  id: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+  is_active: boolean;
+}
+
+export interface ChatSendRequest {
   message: string;
-  role: ChatRole;
-}
-
-export interface ChatbotConversationRequest {
-  message: string;
-  role: ChatRole;
-  context: Array<{
-    role: 'user' | 'assistant';
-    content: string;
-  }>;
-}
-
-export interface MultiTurnChatRequest {
-  message: string;
-  conversation_id: string;
-  role: ChatRole;
-  history: Array<{
-    user: string;
-    ai: string;
-  }>;
-}
-
-export interface ChatbotResponse {
-  response: string;
-  recommendations?: Book[];
   conversation_id?: string;
 }
 
+export interface ChatSendResponse {
+  reply: string;
+  conversation_id: string;
+  message_id: number;
+}
+
 class AIService {
-  // Get book recommendations based on query
-  async getRecommendations(query: string): Promise<Book[]> {
-    const response = await apiClient.post('/api/recommend_books/', {
-      query
-    });
-    return response.data.recommendations || response.data;
-  }
-
-  // Simple chatbot interaction
-  async sendChatMessage(message: string, role: ChatRole = 'book advisor'): Promise<ChatbotResponse> {
-    const response = await apiClient.post('/api/chatbot/', {
+  // Send a chat message (creates new conversation or continues existing one)
+  async sendMessage(message: string, conversationId?: string): Promise<ChatSendResponse> {
+    const response = await apiClient.post('/chat/send', {
       message,
-      role
+      conversation_id: conversationId
     });
     return response.data;
   }
 
-  // Chatbot with conversation context
-  async sendChatWithContext(
-    message: string,
-    role: ChatRole,
-    context: Array<{ role: 'user' | 'assistant'; content: string }>
-  ): Promise<ChatbotResponse> {
-    const response = await apiClient.post('/api/chatbot/conversation/', {
-      message,
-      role,
-      context
-    });
+  // Get all user's conversations
+  async getConversations(): Promise<Conversation[]> {
+    const response = await apiClient.get('/chat/conversations');
     return response.data;
   }
 
-  // Multi-turn chat conversation
-  async sendMultiTurnChat(
-    message: string,
-    conversationId: string,
-    role: ChatRole,
-    history: Array<{ user: string; ai: string }>
-  ): Promise<ChatbotResponse> {
-    const response = await apiClient.post('/api/chatbot/multi-turn/', {
-      message,
-      conversation_id: conversationId,
-      role,
-      history
-    });
+  // Get messages for a specific conversation
+  async getConversationMessages(conversationId: string): Promise<ChatMessage[]> {
+    const response = await apiClient.get(`/chat/conversations/${conversationId}/messages`);
     return response.data;
   }
 
-  // Helper to format chat history for display
-  formatChatHistory(history: ChatMessage[]): Array<{ user: string; ai: string }> {
-    const formatted: Array<{ user: string; ai: string }> = [];
-    
-    for (let i = 0; i < history.length; i += 2) {
-      if (history[i]?.role === 'user' && history[i + 1]?.role === 'assistant') {
-        formatted.push({
-          user: history[i].content,
-          ai: history[i + 1].content
-        });
-      }
-    }
-    
-    return formatted;
-  }
-
-  // Generate conversation ID
-  generateConversationId(): string {
-    return `conv_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  // End/archive a conversation
+  async endConversation(conversationId: string): Promise<void> {
+    await apiClient.post(`/chat/conversations/${conversationId}/end`);
   }
 }
 

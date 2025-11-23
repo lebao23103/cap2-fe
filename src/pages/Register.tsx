@@ -1,61 +1,98 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Input } from '../components/ui/input'
-import { Label } from '../components/ui/label'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
-import { Eye, EyeOff, BookOpen, Sparkles, UserPlus } from 'lucide-react'
+import { BookOpen, UserPlus, Sparkles } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { FormInput, PasswordStrengthIndicator, usePasswordStrength } from '../components/auth'
 import { ModernButton } from '../components/ui/modern'
+import { useErrorAnnouncement, useSuccessAnnouncement } from '../hooks/useAnnounce'
+import { useAuth } from '../contexts/AuthContext'
+
+// Zod validation schema
+const registerSchema = z.object({
+  firstName: z.string()
+    .min(2, 'First name must be at least 2 characters')
+    .max(50, 'First name must be less than 50 characters')
+    .regex(/^[a-zA-Z\s'-]+$/, 'First name can only contain letters, spaces, hyphens, and apostrophes'),
+  lastName: z.string()
+    .min(2, 'Last name must be at least 2 characters')
+    .max(50, 'Last name must be less than 50 characters')
+    .regex(/^[a-zA-Z\s'-]+$/, 'Last name can only contain letters, spaces, hyphens, and apostrophes'),
+  email: z.string()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address')
+    .toLowerCase(),
+  password: z.string()
+    .min(8, 'Password must be at least 8 characters')
+    .max(100, 'Password must be less than 100 characters')
+    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+    .regex(/[0-9]/, 'Password must contain at least one number')
+    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
+  confirmPassword: z.string()
+    .min(1, 'Please confirm your password')
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ['confirmPassword'],
+})
+
+type RegisterFormData = z.infer<typeof registerSchema>
 
 export default function Register() {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  })
+  const { register: authRegister } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [isSuccess, setIsSuccess] = useState(false)
+  const [generalError, setGeneralError] = useState('')
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }))
-    }
-  }
+  // React Hook Form with Zod validation
+  const {
+    register,
+    handleSubmit: hookFormSubmit,
+    watch,
+    formState: { errors, touchedFields },
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    mode: 'onBlur',
+  })
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {}
+  // Watch password for strength indicator
+  const password = watch('password', '')
+  const passwordStrength = usePasswordStrength(password)
 
-    if (!formData.firstName) newErrors.firstName = 'First name is required'
-    if (!formData.lastName) newErrors.lastName = 'Last name is required'
-    if (!formData.email) newErrors.email = 'Email is required'
-    if (!formData.password) newErrors.password = 'Password is required'
-    if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters'
-    if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match'
-    }
+  // Accessibility: Announce errors and success
+  useErrorAnnouncement(generalError)
+  useSuccessAnnouncement(isSuccess, 'Registration successful! Redirecting...')
 
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    if (!validateForm()) return
+  const onSubmit = async (data: RegisterFormData) => {
 
     setIsLoading(true)
+    setGeneralError('')
     
-    // TODO: Implement registration API call
-    console.log('Registration attempt:', formData)
-    
-    setIsLoading(false)
+    try {
+      // Call AuthContext register (handles navigation)
+      await authRegister({
+        email: data.email,
+        password: data.password,
+        confirm_password: data.confirmPassword,
+        first_name: data.firstName,
+        last_name: data.lastName
+      })
+      
+      // Success! AuthContext will redirect to dashboard or login page
+      setIsSuccess(true)
+      
+    } catch (error: any) {
+      console.error('Registration error:', error)
+      const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Registration failed. Please try again.'
+      setGeneralError(errorMessage)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -85,10 +122,10 @@ export default function Register() {
               <BookOpen className="h-10 w-10 text-primary" />
             </div>
           </div>
-          <p className="text-xl font-semibold text-foreground mb-2">
+          <p className="text-xl font-semibold text-gray-900 dark:text-foreground mb-2">
             "A reader lives a thousand lives before he dies."
           </p>
-          <p className="text-sm text-muted-foreground">— George R.R. Martin</p>
+          <p className="text-sm text-gray-600 dark:text-muted-foreground">— George R.R. Martin</p>
         </motion.div>
 
         <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm">
@@ -101,121 +138,107 @@ export default function Register() {
             >
               <UserPlus className="h-8 w-8 text-primary" />
             </motion.div>
-            <h2 className="text-2xl font-bold text-foreground mb-2">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-foreground mb-2">
               Create Your Account
             </h2>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-600 dark:text-muted-foreground">
               Join our community of readers and start your journey
             </p>
           </CardHeader>
           <CardContent className="px-8 pb-8 pt-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={hookFormSubmit(onSubmit)} className="space-y-5" aria-label="Registration form" noValidate>
+              {/* General error message */}
+              {generalError && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
+                  role="alert"
+                >
+                  <p className="text-sm text-destructive font-medium">{generalError}</p>
+                </motion.div>
+              )}
+
+              {/* Name fields in grid */}
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="firstName" className="text-sm font-semibold text-foreground">
-                    First Name
-                  </Label>
-                  <Input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    placeholder="John"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
-                    required
-                  />
-                  {errors.firstName && <p className="text-xs text-destructive font-medium">{errors.firstName}</p>}
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lastName" className="text-sm font-semibold text-foreground">
-                    Last Name
-                  </Label>
-                  <Input
-                    id="lastName"
-                    name="lastName"
-                    type="text"
-                    placeholder="Doe"
-                    value={formData.lastName}
-                    onChange={handleChange}
-                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
-                    required
-                  />
-                  {errors.lastName && <p className="text-xs text-destructive font-medium">{errors.lastName}</p>}
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-sm font-semibold text-foreground">
-                  Email Address
-                </Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="john.doe@example.com"
-                  value={formData.email}
-                  onChange={handleChange}
-                  className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-11 rounded-xl transition-all"
+                <FormInput
+                  label="First Name"
+                  type="text"
+                  placeholder="John"
+                  {...register('firstName')}
+                  error={touchedFields.firstName ? errors.firstName?.message : ''}
+                  success={touchedFields.firstName && !errors.firstName}
+                  disabled={isLoading || isSuccess}
                   required
+                  autoComplete="given-name"
                 />
-                {errors.email && <p className="text-xs text-destructive font-medium">{errors.email}</p>}
+                <FormInput
+                  label="Last Name"
+                  type="text"
+                  placeholder="Doe"
+                  {...register('lastName')}
+                  error={touchedFields.lastName ? errors.lastName?.message : ''}
+                  success={touchedFields.lastName && !errors.lastName}
+                  disabled={isLoading || isSuccess}
+                  required
+                  autoComplete="family-name"
+                />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-sm font-semibold text-foreground">
-                  Password
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder="Create your password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={showPassword ? 'Hide password' : 'Show password'}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
-                  </button>
-                </div>
-                {errors.password && <p className="text-xs text-destructive font-medium">{errors.password}</p>}
+              {/* Email field */}
+              <FormInput
+                label="Email Address"
+                type="email"
+                placeholder="john.doe@example.com"
+                {...register('email')}
+                error={touchedFields.email ? errors.email?.message : ''}
+                success={touchedFields.email && !errors.email}
+                disabled={isLoading || isSuccess}
+                required
+                autoComplete="email"
+              />
+              
+              {/* Password field with strength indicator */}
+              <div>
+                <FormInput
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Create your password"
+                  {...register('password')}
+                  error={touchedFields.password ? errors.password?.message : ''}
+                  success={touchedFields.password && !errors.password && passwordStrength.score >= 2}
+                  showPasswordToggle
+                  showPassword={showPassword}
+                  onPasswordToggle={() => setShowPassword(!showPassword)}
+                  disabled={isLoading || isSuccess}
+                  required
+                  autoComplete="new-password"
+                />
+                {/* Password strength indicator */}
+                <PasswordStrengthIndicator
+                  password={password}
+                  show={password.length > 0}
+                  className="mt-2"
+                />
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-sm font-semibold text-foreground">
-                  Confirm Password
-                </Label>
-                <div className="relative">
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    placeholder="Repeat your password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 pr-12 h-11 rounded-xl transition-all"
-                    required
-                  />
-                  <button
-                    type="button"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors p-1 rounded-lg hover:bg-muted/50"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
-                  </button>
-                </div>
-                {errors.confirmPassword && <p className="text-xs text-destructive font-medium">{errors.confirmPassword}</p>}
-              </div>
+              {/* Confirm password field */}
+              <FormInput
+                label="Confirm Password"
+                type={showConfirmPassword ? 'text' : 'password'}
+                placeholder="Repeat your password"
+                {...register('confirmPassword')}
+                error={touchedFields.confirmPassword ? errors.confirmPassword?.message : ''}
+                success={touchedFields.confirmPassword && !errors.confirmPassword}
+                showPasswordToggle
+                showPassword={showConfirmPassword}
+                onPasswordToggle={() => setShowConfirmPassword(!showConfirmPassword)}
+                disabled={isLoading || isSuccess}
+                required
+                autoComplete="new-password"
+              />
               
+              {/* Submit button with loading and success states */}
               <div className="pt-2">
                 <ModernButton
                   type="submit"
@@ -223,15 +246,18 @@ export default function Register() {
                   size="lg"
                   icon={Sparkles}
                   isLoading={isLoading}
+                  isSuccess={isSuccess}
+                  loadingText="Creating your account..."
+                  successText="Account created!"
                   className="w-full h-12 text-base shadow-lg hover:shadow-xl"
                 >
-                  {isLoading ? 'Creating your account...' : 'Create Account'}
+                  Create Account
                 </ModernButton>
               </div>
             </form>
             
             <div className="mt-6 pt-6 border-t border-border/30">
-              <p className="text-center text-sm text-muted-foreground">
+              <p className="text-center text-sm text-gray-600 dark:text-muted-foreground">
                 Already have an account?{' '}
                 <Link 
                   to="/login" 
