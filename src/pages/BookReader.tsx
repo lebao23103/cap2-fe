@@ -1037,7 +1037,7 @@ export default function BookReader() {
                           <ModernButton
                             icon={ArrowLeft}
                             onClick={() => navigate('/readnex')}
-                            variant="outline"
+                            variant="ghost"
                           >
                             Back to Library
                           </ModernButton>
