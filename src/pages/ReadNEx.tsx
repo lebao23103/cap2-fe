@@ -5,12 +5,13 @@ import { fadeInUp } from '@/lib/animations'
 import { useToast } from '@/components/ui/use-toast'
 import booksService from '@/lib/api/books'
 import userService from '@/lib/api/user'
-import { 
-  BookOpen, 
-  Heart, 
-  Star, 
-  Search, 
-  Grid3x3, 
+import { getCoverImageUrl } from '@/lib/utils/mediaUtils'
+import {
+  BookOpen,
+  Heart,
+  Star,
+  Search,
+  Grid3x3,
   List,
   ChevronDown,
   Play,
@@ -27,13 +28,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { BookCardsLoadingSkeleton, BooksEmptyState, BooksErrorState } from '@/components/books'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 
 // Book interface with reading features
@@ -62,10 +63,10 @@ interface Book {
 
 // Filter options
 const statusFilters = [
-  "All", 
-  "Currently Reading", 
-  "Completed", 
-  "Not Started", 
+  "All",
+  "Currently Reading",
+  "Completed",
+  "Not Started",
   "Favorites",
   "Has Quiz Available",
   "Quiz Completed"
@@ -97,7 +98,7 @@ export default function ReadNEx() {
     try {
       setIsLoading(true)
       setError(null)
-      
+
       const [booksData, favoritesData] = await Promise.all([
         booksService.getApprovedBooks(),
         userService.getFavorites().catch(() => [])
@@ -119,7 +120,7 @@ export default function ReadNEx() {
       }))
 
       const favoriteIds = new Set(favoritesData.map((fav: any) => fav.book.id))
-      
+
       // Mark favorites
       transformedBooks.forEach(book => {
         book.isFavorite = favoriteIds.has(book.id)
@@ -168,11 +169,11 @@ export default function ReadNEx() {
       } else if (filters.statusFilter === "Quiz Completed") {
         matchesStatus = book.quizCompleted === true
       }
-      
-      const matchesSearch = filters.searchTerm === "" || 
+
+      const matchesSearch = filters.searchTerm === "" ||
         book.title.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
         book.author.toLowerCase().includes(filters.searchTerm.toLowerCase())
-      
+
       return matchesStatus && matchesSearch
     })
   }, [filters, books])
@@ -184,7 +185,7 @@ export default function ReadNEx() {
   const toggleFavorite = async (bookId: number) => {
     try {
       const isFavorite = favorites.has(bookId)
-      
+
       if (isFavorite) {
         await userService.removeFromFavorites(bookId)
         setFavorites(prev => {
@@ -198,7 +199,7 @@ export default function ReadNEx() {
       }
 
       // Update books state
-      setBooks(prev => prev.map(book => 
+      setBooks(prev => prev.map(book =>
         book.id === bookId ? { ...book, isFavorite: !isFavorite } : book
       ))
 
@@ -222,11 +223,10 @@ export default function ReadNEx() {
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`h-4 w-4 ${
-              star <= rating 
-                ? 'fill-yellow-400 text-yellow-400' 
-                : 'text-gray-300'
-            }`}
+            className={`h-4 w-4 ${star <= rating
+              ? 'fill-yellow-400 text-yellow-400'
+              : 'text-gray-300'
+              }`}
           />
         ))}
         <span className="ml-1 text-sm text-gray-600 dark:text-gray-400">
@@ -239,7 +239,7 @@ export default function ReadNEx() {
   const renderProgressBar = (progress: number) => {
     return (
       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-        <div 
+        <div
           className="bg-gradient-to-r from-amber-400 to-amber-600 h-2 rounded-full transition-all duration-300"
           style={{ width: `${progress}%` }}
         />
@@ -250,7 +250,7 @@ export default function ReadNEx() {
   return (
     <div className="relative w-full min-h-screen bg-background py-8">
       <div className="container mx-auto">
-        
+
         {/* Header with Distinctive Design */}
         <motion.div {...fadeInUp} className="mb-6 sm:mb-8 text-center">
           <div className="flex items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-6">
@@ -267,7 +267,7 @@ export default function ReadNEx() {
         </motion.div>
 
         {/* Reading Stats */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6 }}
@@ -282,7 +282,7 @@ export default function ReadNEx() {
               <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Currently Reading</div>
             </CardContent>
           </Card>
-          
+
           <Card className="border shadow-md rounded-xl">
             <CardContent className="p-3 sm:p-4 text-center">
               <CheckCircle className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-green-600" />
@@ -292,7 +292,7 @@ export default function ReadNEx() {
               <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Completed</div>
             </CardContent>
           </Card>
-          
+
           <Card className="border shadow-md rounded-xl">
             <CardContent className="p-3 sm:p-4 text-center">
               <Heart className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-red-600" />
@@ -302,7 +302,7 @@ export default function ReadNEx() {
               <div className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">Favorites</div>
             </CardContent>
           </Card>
-          
+
           <Card className="border shadow-md rounded-xl">
             <CardContent className="p-3 sm:p-4 text-center">
               <BookOpen className="h-5 w-5 sm:h-7 sm:w-7 mx-auto mb-1.5 sm:mb-2 text-blue-600" />
@@ -315,7 +315,7 @@ export default function ReadNEx() {
         </motion.div>
 
         {/* Search and Filters */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
@@ -323,7 +323,7 @@ export default function ReadNEx() {
         >
           <Card className="border bg-card backdrop-blur-sm rounded-xl shadow-md">
             <CardContent className="p-3 sm:p-4">
-              
+
               {/* Search Bar - Compact */}
               <div className="mb-4">
                 <div className="relative">
@@ -340,7 +340,7 @@ export default function ReadNEx() {
 
               {/* Filters Row */}
               <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-end">
-                
+
                 {/* Status Filter */}
                 <div className="flex-1 w-full space-y-1.5">
                   <label className="text-xs font-semibold text-gray-900 dark:text-gray-200 flex items-center gap-1.5">
@@ -349,8 +349,8 @@ export default function ReadNEx() {
                   </label>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         className="w-full justify-between h-9 rounded-lg hover:bg-primary/5 hover:border-primary/50 transition-colors text-sm focus:ring-0 focus:ring-offset-0"
                       >
                         <span className="font-medium text-gray-900 dark:text-foreground">{filters.statusFilter}</span>
@@ -398,8 +398,8 @@ export default function ReadNEx() {
                         <List className="h-4 w-4" />
                       </Button>
                     </div>
-                    <Badge 
-                      variant="secondary" 
+                    <Badge
+                      variant="secondary"
                       className="text-xs font-semibold px-2.5 py-1 bg-primary/10 text-primary border-0"
                     >
                       {filteredBooks.length} books
@@ -422,174 +422,174 @@ export default function ReadNEx() {
           {error ? (
             <BooksErrorState error={error} onRetry={handleRetry} />
           ) : /* Loading State */
-          isLoading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              <BookCardsLoadingSkeleton count={8} />
-            </div>
-          ) : /* Empty State */
-          filteredBooks.length === 0 ? (
-            <BooksEmptyState 
-              type="no-results"
-              searchTerm={filters.searchTerm}
-              onClearFilters={handleClearFilters}
-            />
-          ) : /* Books Grid/List */
-          viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
-              {filteredBooks.map((book, index) => (
-                <motion.div
-                  key={book.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ 
-                    duration: 0.4,
-                    delay: index * 0.05, // Stagger effect
-                    ease: [0.25, 0.1, 0.25, 1]
-                  }}
-                  whileHover={{ 
-                    y: -8,
-                    transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }
-                  }}
-                  className="group"
-                >
-                  <Card className="h-full border shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden rounded-xl">
-                    <Link to={`/book/${book.id}`} className="relative aspect-[3/4] overflow-hidden block">
-                      <img
-                        src={book.coverImage}
-                        alt={book.title}
-                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      />
-                      
-                      {/* Reading Progress Overlay with Gradient */}
-                      {book.readingProgress! > 0 && (
-                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent text-white p-3">
-                          <div className="text-xs font-medium mb-1.5 flex items-center justify-between">
-                            <span>{book.readingProgress}% Complete</span>
-                            <span className="text-white/80">{book.readingProgress === 100 ? '✓' : '→'}</span>
-                          </div>
-                          {renderProgressBar(book.readingProgress!)}
-                        </div>
-                      )}
-                      
-                      {/* Hover Overlay - Elegant with backdrop blur */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4">
-                        <Button 
-                          size="lg" 
-                          className="bg-white text-gray-900 hover:bg-white/90 shadow-xl font-semibold w-full max-w-[200px]"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            e.stopPropagation()
-                            navigate(`/book/${book.id}/read`)
-                          }}
-                        >
-                          <Play className="h-4 w-4 mr-2" />
-                          {book.readingProgress! > 0 ? 'Continue' : 'Start Reading'}
-                        </Button>
-                        
-                        {/* Secondary Actions Dropdown */}
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button size="sm" variant="ghost" className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-md">
-                              <MoreVertical className="h-4 w-4 mr-1" />
-                              More
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="center" className="w-48">
-                            <DropdownMenuLabel>Quick Actions</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            {book.hasQuiz && (
-                              <DropdownMenuItem 
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  navigate(`/book/${book.id}/quiz`)
-                                }}
-                                className="flex items-center cursor-pointer"
-                              >
-                                <Target className="h-4 w-4 mr-2" />
-                                {book.quizCompleted ? 'Retake Quiz' : 'Take Quiz'}
-                              </DropdownMenuItem>
-                            )}
-                            <DropdownMenuItem onClick={() => toggleFavorite(book.id)}>
-                              <Heart className={`h-4 w-4 mr-2 ${book.isFavorite ? 'fill-current text-red-600' : ''}`} />
-                              {book.isFavorite ? 'Unfavorite' : 'Add to Favorites'}
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-
-                      {/* Top Right Badge - Consolidated Status/Progress */}
-                      <div className="absolute top-3 right-3">
-                        {book.quizCompleted ? (
-                          <Badge className="bg-emerald-500/90 backdrop-blur-md text-white text-xs font-medium flex items-center gap-1 px-2.5 py-1 shadow-lg border border-white/20">
-                            <Award className="h-3 w-3" />
-                            Complete
-                          </Badge>
-                        ) : book.hasQuiz && book.readingProgress! >= 80 ? (
-                          <Badge className="bg-purple-500/90 backdrop-blur-md text-white text-xs font-medium flex items-center gap-1 px-2.5 py-1 shadow-lg border border-white/20">
-                            <Target className="h-3 w-3" />
-                            Quiz
-                          </Badge>
-                        ) : book.notes! > 0 ? (
-                          <Badge className="bg-blue-500/90 backdrop-blur-md text-white text-xs font-medium flex items-center gap-1 px-2.5 py-1 shadow-lg border border-white/20">
-                            <StickyNote className="h-3 w-3" />
-                            {book.notes}
-                          </Badge>
-                        ) : book.isFavorite ? (
-                          <Badge className="bg-rose-500/90 backdrop-blur-md text-white text-xs font-medium flex items-center gap-1 px-2.5 py-1 shadow-lg border border-white/20">
-                            <Heart className="h-3 w-3 fill-current" />
-                          </Badge>
-                        ) : null}
-                      </div>
-                    </Link>
-                    
-                    <Link to={`/book/${book.id}`}>
-                      <CardHeader className="pb-3 pt-4 cursor-pointer">
-                        <CardTitle className="text-base font-semibold text-gray-900 dark:text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-tight mb-1">
-                          {book.title}
-                        </CardTitle>
-                        <CardDescription className="text-sm font-medium text-gray-600 dark:text-muted-foreground">
-                          {book.author}
-                        </CardDescription>
-                      </CardHeader>
-                    </Link>
-                    
-                    <CardContent className="pt-0 pb-4">
-                      <div className="space-y-3">
-                        <div className="flex items-center">
-                          {renderStars(book.rating)}
-                        </div>
-                        <div className="flex items-center justify-between text-xs text-gray-600 dark:text-muted-foreground">
-                          {book.readingTime && (
-                            <div className="flex items-center gap-1">
-                              <Clock className="h-3.5 w-3.5" />
-                              <span className="font-medium">{book.readingTime}</span>
-                            </div>
-                          )}
-                          {book.subject && (
-                            <Badge variant="secondary" className="text-xs">
-                              {book.subject}
-                            </Badge>
-                          )}
-                        </div>
-                        {book.lastReadDate && (
-                          <div className="text-xs text-gray-500 dark:text-muted-foreground/80 pt-1 border-t border-border/50">
-                            <span className="font-medium">Last read:</span> {new Date(book.lastReadDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          ) : (
-            // List view implementation would go here...
-            <div className="space-y-4">
-              <div className="text-center py-8 text-gray-600 dark:text-muted-foreground">
-                List view implementation - Coming soon!
+            isLoading ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <BookCardsLoadingSkeleton count={8} />
               </div>
-            </div>
-          )}
+            ) : /* Empty State */
+              filteredBooks.length === 0 ? (
+                <BooksEmptyState
+                  type="no-results"
+                  searchTerm={filters.searchTerm}
+                  onClearFilters={handleClearFilters}
+                />
+              ) : /* Books Grid/List */
+                viewMode === 'grid' ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5">
+                    {filteredBooks.map((book, index) => (
+                      <motion.div
+                        key={book.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{
+                          duration: 0.4,
+                          delay: index * 0.05, // Stagger effect
+                          ease: [0.25, 0.1, 0.25, 1]
+                        }}
+                        whileHover={{
+                          y: -8,
+                          transition: { duration: 0.2, ease: [0.25, 0.1, 0.25, 1] }
+                        }}
+                        className="group"
+                      >
+                        <Card className="h-full border shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden rounded-xl">
+                          <Link to={`/book/${book.id}`} className="relative aspect-[3/4] overflow-hidden block">
+                            <img
+                              src={getCoverImageUrl(book.coverImage)}
+                              alt={book.title}
+                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+
+                            {/* Reading Progress Overlay with Gradient */}
+                            {book.readingProgress! > 0 && (
+                              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent text-white p-3">
+                                <div className="text-xs font-medium mb-1.5 flex items-center justify-between">
+                                  <span>{book.readingProgress}% Complete</span>
+                                  <span className="text-white/80">{book.readingProgress === 100 ? '✓' : '→'}</span>
+                                </div>
+                                {renderProgressBar(book.readingProgress!)}
+                              </div>
+                            )}
+
+                            {/* Hover Overlay - Elegant with backdrop blur */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4">
+                              <Button
+                                size="lg"
+                                className="bg-white text-gray-900 hover:bg-white/90 shadow-xl font-semibold w-full max-w-[200px]"
+                                onClick={(e) => {
+                                  e.preventDefault()
+                                  e.stopPropagation()
+                                  navigate(`/book/${book.id}/read`)
+                                }}
+                              >
+                                <Play className="h-4 w-4 mr-2" />
+                                {book.readingProgress! > 0 ? 'Continue' : 'Start Reading'}
+                              </Button>
+
+                              {/* Secondary Actions Dropdown */}
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button size="sm" variant="ghost" className="bg-white/10 hover:bg-white/20 text-white border border-white/30 backdrop-blur-md">
+                                    <MoreVertical className="h-4 w-4 mr-1" />
+                                    More
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="center" className="w-48">
+                                  <DropdownMenuLabel>Quick Actions</DropdownMenuLabel>
+                                  <DropdownMenuSeparator />
+                                  {book.hasQuiz && (
+                                    <DropdownMenuItem
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        navigate(`/book/${book.id}/quiz`)
+                                      }}
+                                      className="flex items-center cursor-pointer"
+                                    >
+                                      <Target className="h-4 w-4 mr-2" />
+                                      {book.quizCompleted ? 'Retake Quiz' : 'Take Quiz'}
+                                    </DropdownMenuItem>
+                                  )}
+                                  <DropdownMenuItem onClick={() => toggleFavorite(book.id)}>
+                                    <Heart className={`h-4 w-4 mr-2 ${book.isFavorite ? 'fill-current text-red-600' : ''}`} />
+                                    {book.isFavorite ? 'Unfavorite' : 'Add to Favorites'}
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+
+                            {/* Top Right Badge - Consolidated Status/Progress */}
+                            <div className="absolute top-3 right-3">
+                              {book.quizCompleted ? (
+                                <Badge className="bg-emerald-500/90 backdrop-blur-md text-white text-xs font-medium flex items-center gap-1 px-2.5 py-1 shadow-lg border border-white/20">
+                                  <Award className="h-3 w-3" />
+                                  Complete
+                                </Badge>
+                              ) : book.hasQuiz && book.readingProgress! >= 80 ? (
+                                <Badge className="bg-purple-500/90 backdrop-blur-md text-white text-xs font-medium flex items-center gap-1 px-2.5 py-1 shadow-lg border border-white/20">
+                                  <Target className="h-3 w-3" />
+                                  Quiz
+                                </Badge>
+                              ) : book.notes! > 0 ? (
+                                <Badge className="bg-blue-500/90 backdrop-blur-md text-white text-xs font-medium flex items-center gap-1 px-2.5 py-1 shadow-lg border border-white/20">
+                                  <StickyNote className="h-3 w-3" />
+                                  {book.notes}
+                                </Badge>
+                              ) : book.isFavorite ? (
+                                <Badge className="bg-rose-500/90 backdrop-blur-md text-white text-xs font-medium flex items-center gap-1 px-2.5 py-1 shadow-lg border border-white/20">
+                                  <Heart className="h-3 w-3 fill-current" />
+                                </Badge>
+                              ) : null}
+                            </div>
+                          </Link>
+
+                          <Link to={`/book/${book.id}`}>
+                            <CardHeader className="pb-3 pt-4 cursor-pointer">
+                              <CardTitle className="text-base font-semibold text-gray-900 dark:text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-tight mb-1">
+                                {book.title}
+                              </CardTitle>
+                              <CardDescription className="text-sm font-medium text-gray-600 dark:text-muted-foreground">
+                                {book.author}
+                              </CardDescription>
+                            </CardHeader>
+                          </Link>
+
+                          <CardContent className="pt-0 pb-4">
+                            <div className="space-y-3">
+                              <div className="flex items-center">
+                                {renderStars(book.rating)}
+                              </div>
+                              <div className="flex items-center justify-between text-xs text-gray-600 dark:text-muted-foreground">
+                                {book.readingTime && (
+                                  <div className="flex items-center gap-1">
+                                    <Clock className="h-3.5 w-3.5" />
+                                    <span className="font-medium">{book.readingTime}</span>
+                                  </div>
+                                )}
+                                {book.subject && (
+                                  <Badge variant="secondary" className="text-xs">
+                                    {book.subject}
+                                  </Badge>
+                                )}
+                              </div>
+                              {book.lastReadDate && (
+                                <div className="text-xs text-gray-500 dark:text-muted-foreground/80 pt-1 border-t border-border/50">
+                                  <span className="font-medium">Last read:</span> {new Date(book.lastReadDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                </div>
+                              )}
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </div>
+                ) : (
+                  // List view implementation would go here...
+                  <div className="space-y-4">
+                    <div className="text-center py-8 text-gray-600 dark:text-muted-foreground">
+                      List view implementation - Coming soon!
+                    </div>
+                  </div>
+                )}
         </motion.div>
       </div>
     </div>
