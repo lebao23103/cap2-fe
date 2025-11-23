@@ -22,6 +22,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { BookDetailSkeleton, BooksErrorState } from '@/components/books';
 import { useAnnounce } from '@/hooks/useAnnounce';
 import { getLoadingAriaAttributes } from '@/utils/accessibility';
+import { getCoverImageUrl } from '@/lib/utils/mediaUtils';
 
 export default function BookDetail() {
   const { id } = useParams<{ id: string }>();
@@ -37,7 +38,7 @@ export default function BookDetail() {
   const [isFavorited, setIsFavorited] = useState(false);
   const [favoritingState, setFavoritingState] = useState<'idle' | 'loading' | 'success'>('idle');
   const [sharingState, setSharingState] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-  
+
   // Review form state
   const [userRating, setUserRating] = useState(0);
   const [userReview, setUserReview] = useState('');
@@ -55,16 +56,16 @@ export default function BookDetail() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Fetch real data from API
       const [bookData, reviewsData] = await Promise.all([
         booksService.getBookById(Number(id)),
         booksService.getBookReviews(Number(id)).catch(() => [])
       ]);
-      
+
       setBook(bookData);
       setReviews(reviewsData);
-      
+
       // Check if book is favorited
       try {
         const favorites = await userService.getFavorites();
@@ -99,27 +100,27 @@ export default function BookDetail() {
     try {
       setFavoritingState('loading');
       const newFavoritedState = !isFavorited;
-      
+
       // Call real API
       if (newFavoritedState) {
         await userService.addToFavorites(Number(id));
       } else {
         await userService.removeFromFavorites(Number(id));
       }
-      
+
       setIsFavorited(newFavoritedState);
       setFavoritingState('success');
-      
+
       const message = newFavoritedState ? 'Added to favorites' : 'Removed from favorites';
       announce(message, 'polite');
-      
+
       toast({
         title: message,
         description: newFavoritedState
           ? 'Book added to your favorites'
           : 'Book removed from your favorites',
       });
-      
+
       // Reset state after animation
       setTimeout(() => setFavoritingState('idle'), 2000);
     } catch (error) {
@@ -137,26 +138,26 @@ export default function BookDetail() {
     try {
       setSharingState('loading');
       await navigator.clipboard.writeText(window.location.href);
-      
+
       setSharingState('success');
       announce('Link copied to clipboard', 'polite');
-      
+
       toast({
         title: 'Link copied!',
         description: 'Book link copied to clipboard',
       });
-      
+
       setTimeout(() => setSharingState('idle'), 2000);
     } catch (error) {
       setSharingState('error');
       announce('Failed to copy link', 'assertive');
-      
+
       toast({
         title: 'Error',
         description: 'Failed to copy link',
         variant: 'destructive',
       });
-      
+
       setTimeout(() => setSharingState('idle'), 2000);
     }
   };
@@ -186,7 +187,7 @@ export default function BookDetail() {
       setSubmittingReview(true);
       setReviewSubmitState('idle');
       announce('Submitting review', 'polite');
-      
+
       // Submit review via API
       await booksService.addReview(Number(id), {
         rating: userRating,
@@ -195,7 +196,7 @@ export default function BookDetail() {
 
       setReviewSubmitState('success');
       announce('Review submitted successfully', 'polite');
-      
+
       toast({
         title: 'Review submitted!',
         description: 'Thank you for your feedback',
@@ -203,21 +204,21 @@ export default function BookDetail() {
 
       setUserRating(0);
       setUserReview('');
-      
+
       // Reset success state
       setTimeout(() => setReviewSubmitState('idle'), 3000);
-      
+
       loadBookData(); // Reload to show new review
     } catch (error) {
       setReviewSubmitState('error');
       announce('Failed to submit review', 'assertive');
-      
+
       toast({
         title: 'Error',
         description: 'Failed to submit review',
         variant: 'destructive',
       });
-      
+
       setTimeout(() => setReviewSubmitState('idle'), 3000);
     } finally {
       setSubmittingReview(false);
@@ -254,11 +255,10 @@ export default function BookDetail() {
             className={interactive ? 'cursor-pointer' : 'cursor-default'}
           >
             <Star
-              className={`h-5 w-5 transition-colors ${
-                star <= (interactive ? hoveredRating || userRating : rating)
-                  ? 'fill-amber-400 text-amber-400'
-                  : 'text-gray-300'
-              }`}
+              className={`h-5 w-5 transition-colors ${star <= (interactive ? hoveredRating || userRating : rating)
+                ? 'fill-amber-400 text-amber-400'
+                : 'text-gray-300'
+                }`}
             />
           </button>
         ))}
@@ -270,12 +270,12 @@ export default function BookDetail() {
     // Calculate real distribution from reviews
     const distribution = [5, 4, 3, 2, 1].map(stars => {
       const count = reviews.filter(review => review.rating === stars).length;
-      const percentage = reviews.length > 0 
-        ? Math.round((count / reviews.length) * 100) 
+      const percentage = reviews.length > 0
+        ? Math.round((count / reviews.length) * 100)
         : 0;
       return { stars, count, percentage };
     });
-    
+
     return distribution;
   };
 
@@ -337,14 +337,14 @@ export default function BookDetail() {
           <div className="lg:col-span-4">
             <div className="bg-white dark:bg-card rounded-lg shadow-sm border border-border/50 overflow-hidden lg:sticky lg:top-4 transition-shadow hover:shadow-md">
               <img
-                src={book.cover_image}
+                src={getCoverImageUrl(book.cover_image)}
                 alt={`${book.title} by ${book.author} - Book cover`}
-                className="w-full aspect-[2/3] object-cover"
+                className="w-full h-full object-cover"
                 loading="lazy"
               />
               <div className="p-3 sm:p-4 space-y-2">
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm hover:shadow"
                   onClick={handleStartReading}
                 >
@@ -352,101 +352,100 @@ export default function BookDetail() {
                   Start Reading
                 </Button>
                 <div className="flex gap-2">
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="flex-1 hover:bg-muted/50 transition-all duration-200 group relative"
-                  onClick={handleToggleFavorite}
-                  disabled={favoritingState === 'loading'}
-                  aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-                  {...getLoadingAriaAttributes(favoritingState === 'loading', 'Updating favorites')}
-                  data-testid="favorite-button"
-                >
-                  <AnimatePresence mode="wait">
-                    {favoritingState === 'loading' ? (
-                      <motion.div
-                        key="loading"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1, rotate: 360 }}
-                        exit={{ scale: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"
-                      />
-                    ) : favoritingState === 'success' ? (
-                      <motion.div
-                        key="success"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        exit={{ scale: 0 }}
-                      >
-                        <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="heart"
-                        initial={false}
-                        animate={isFavorited ? { scale: [1, 1.2, 1] } : {}}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <Heart
-                          className={`h-4 w-4 transition-all duration-300 ${
-                            isFavorited 
-                              ? 'fill-red-500 text-red-500' 
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="flex-1 hover:bg-muted/50 transition-all duration-200 group relative"
+                    onClick={handleToggleFavorite}
+                    disabled={favoritingState === 'loading'}
+                    aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
+                    {...getLoadingAriaAttributes(favoritingState === 'loading', 'Updating favorites')}
+                    data-testid="favorite-button"
+                  >
+                    <AnimatePresence mode="wait">
+                      {favoritingState === 'loading' ? (
+                        <motion.div
+                          key="loading"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1, rotate: 360 }}
+                          exit={{ scale: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"
+                        />
+                      ) : favoritingState === 'success' ? (
+                        <motion.div
+                          key="success"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                        >
+                          <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="heart"
+                          initial={false}
+                          animate={isFavorited ? { scale: [1, 1.2, 1] } : {}}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Heart
+                            className={`h-4 w-4 transition-all duration-300 ${isFavorited
+                              ? 'fill-red-500 text-red-500'
                               : 'text-gray-600 dark:text-foreground group-hover:scale-110'
-                          }`}
-                          aria-hidden="true"
+                              }`}
+                            aria-hidden="true"
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </Button>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="flex-1 hover:bg-muted/50 transition-all duration-200 group relative"
+                    onClick={handleShare}
+                    disabled={sharingState === 'loading'}
+                    aria-label="Share book"
+                    {...getLoadingAriaAttributes(sharingState === 'loading', 'Copying link')}
+                    data-testid="share-button"
+                  >
+                    <AnimatePresence mode="wait">
+                      {sharingState === 'loading' ? (
+                        <motion.div
+                          key="loading"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1, rotate: 360 }}
+                          exit={{ scale: 0 }}
+                          transition={{ duration: 0.3 }}
+                          className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"
                         />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="flex-1 hover:bg-muted/50 transition-all duration-200 group relative"
-                  onClick={handleShare}
-                  disabled={sharingState === 'loading'}
-                  aria-label="Share book"
-                  {...getLoadingAriaAttributes(sharingState === 'loading', 'Copying link')}
-                  data-testid="share-button"
-                >
-                  <AnimatePresence mode="wait">
-                    {sharingState === 'loading' ? (
-                      <motion.div
-                        key="loading"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1, rotate: 360 }}
-                        exit={{ scale: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"
-                      />
-                    ) : sharingState === 'success' ? (
-                      <motion.div
-                        key="success"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        exit={{ scale: 0 }}
-                      >
-                        <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="share"
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        whileTap={{ scale: 0.95 }}
-                      >
-                        <Share2 
-                          className="h-4 w-4 text-gray-600 dark:text-foreground" 
-                          aria-hidden="true" 
-                        />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </Button>
+                      ) : sharingState === 'success' ? (
+                        <motion.div
+                          key="success"
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                        >
+                          <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="share"
+                          whileHover={{ scale: 1.1, rotate: 5 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Share2
+                            className="h-4 w-4 text-gray-600 dark:text-foreground"
+                            aria-hidden="true"
+                          />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </Button>
                 </div>
-                <Button 
-                  size="default" 
-                  variant="outline" 
+                <Button
+                  size="default"
+                  variant="outline"
                   className="w-full hover:bg-muted/50 transition-colors !text-gray-900 dark:!text-foreground"
                   onClick={handleTakeQuiz}
                 >
@@ -542,15 +541,14 @@ export default function BookDetail() {
                   {userReview.length} / 150 characters
                 </p>
               </div>
-              <Button 
-                className={`transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${
-                  reviewSubmitState === 'success' 
-                    ? 'bg-green-600 hover:bg-green-700' 
-                    : reviewSubmitState === 'error'
+              <Button
+                className={`transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${reviewSubmitState === 'success'
+                  ? 'bg-green-600 hover:bg-green-700'
+                  : reviewSubmitState === 'error'
                     ? 'bg-red-600 hover:bg-red-700'
                     : 'bg-blue-600 hover:bg-blue-700'
-                } text-white`}
-                onClick={handleSubmitReview} 
+                  } text-white`}
+                onClick={handleSubmitReview}
                 disabled={submittingReview || !userRating || userReview.length < 50}
                 {...getLoadingAriaAttributes(submittingReview, 'Submitting review')}
                 data-testid="submit-review-button"
@@ -604,65 +602,65 @@ export default function BookDetail() {
                 </p>
               </div>
             ) : (
-            <div className="space-y-5">
-              {reviews.map((review, index) => (
-                <div key={review.id}>
-                  <div className="flex items-start gap-3">
-                    <Avatar className="h-10 w-10 flex-shrink-0">
-                      <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user.email}`} />
-                      <AvatarFallback className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                        {review.user.first_name[0]}{review.user.last_name[0]}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-start justify-between gap-2 mb-1">
-                        <div className="min-w-0">
-                          <p className="font-semibold text-sm text-gray-900 dark:text-foreground truncate">
-                            {review.user.first_name} {review.user.last_name}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-muted-foreground">
-                            {new Date(review.created_at).toLocaleDateString('en-US', {
-                              month: 'long',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })}
-                          </p>
+              <div className="space-y-5">
+                {reviews.map((review, index) => (
+                  <div key={review.id}>
+                    <div className="flex items-start gap-3">
+                      <Avatar className="h-10 w-10 flex-shrink-0">
+                        <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user.email}`} />
+                        <AvatarFallback className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
+                          {review.user.first_name[0]}{review.user.last_name[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between gap-2 mb-1">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-sm text-gray-900 dark:text-foreground truncate">
+                              {review.user.first_name} {review.user.last_name}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-muted-foreground">
+                              {new Date(review.created_at).toLocaleDateString('en-US', {
+                                month: 'long',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-0.5 flex-shrink-0">
+                            {renderStarRating(review.rating)}
+                          </div>
                         </div>
-                        <div className="flex items-center gap-0.5 flex-shrink-0">
-                          {renderStarRating(review.rating)}
+                        <p className="text-sm text-gray-700 dark:text-foreground leading-relaxed mb-2">
+                          {review.comment}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 text-xs px-2 hover:bg-muted/50 transition-colors"
+                            onClick={() => handleMarkHelpful(review.id)}
+                          >
+                            <ThumbsUp className="h-3 w-3 mr-1" />
+                            Helpful
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-7 text-xs px-2 hover:bg-muted/50 transition-colors"
+                            onClick={() => handleReportReview(review.id)}
+                          >
+                            <Flag className="h-3 w-3 mr-1" />
+                            Report
+                          </Button>
                         </div>
-                      </div>
-                      <p className="text-sm text-gray-700 dark:text-foreground leading-relaxed mb-2">
-                        {review.comment}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 text-xs px-2 hover:bg-muted/50 transition-colors"
-                          onClick={() => handleMarkHelpful(review.id)}
-                        >
-                          <ThumbsUp className="h-3 w-3 mr-1" />
-                          Helpful
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-7 text-xs px-2 hover:bg-muted/50 transition-colors"
-                          onClick={() => handleReportReview(review.id)}
-                        >
-                          <Flag className="h-3 w-3 mr-1" />
-                          Report
-                        </Button>
                       </div>
                     </div>
+                    {index < reviews.length - 1 && (
+                      <div className="border-t border-border/30 my-5" />
+                    )}
                   </div>
-                  {index < reviews.length - 1 && (
-                    <div className="border-t border-border/30 my-5" />
-                  )}
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
             )}
           </div>
         </div>

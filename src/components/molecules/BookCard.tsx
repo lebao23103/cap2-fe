@@ -37,13 +37,13 @@ export function BookCard({
   };
 
   const cardVariants = {
-    hidden: { 
-      opacity: 0, 
+    hidden: {
+      opacity: 0,
       y: 20,
       rotateX: -15
     },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       rotateX: 0,
       transition: {
@@ -64,8 +64,8 @@ export function BookCard({
       onHoverEnd={() => setIsHovered(false)}
       className={cn("group relative", className)}
     >
-      <GlassCard 
-        variant="gradient" 
+      <GlassCard
+        variant="gradient"
         hover={true}
         className="h-full overflow-hidden"
       >
@@ -86,7 +86,7 @@ export function BookCard({
               className="h-full w-full object-cover"
               loading="lazy"
             />
-            
+
             {/* Gradient Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </motion.div>
@@ -131,8 +131,8 @@ export function BookCard({
           {/* Language Badge */}
           {book.language && (
             <div className="flex flex-wrap gap-1">
-              <Badge 
-                variant="secondary" 
+              <Badge
+                variant="secondary"
                 className="text-xs bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border-indigo-500/20"
               >
                 {book.language}
@@ -186,14 +186,14 @@ export function BookCard({
         style={{ transformStyle: "preserve-3d" }}
       >
         {/* Book Spine (3D effect) */}
-        <div 
+        <div
           className="absolute -left-4 top-0 bottom-0 w-4 bg-gradient-to-r from-gray-800 to-gray-700"
           style={{ transform: "rotateY(-90deg) translateZ(2rem)" }}
         />
-        
+
         {/* Main Card */}
-        <GlassCard 
-          variant="aurora" 
+        <GlassCard
+          variant="aurora"
           glow={true}
           className="h-full relative overflow-hidden"
         >
@@ -203,7 +203,7 @@ export function BookCard({
               alt={book.title}
               className="h-full w-full object-cover"
             />
-            
+
             {/* Holographic Effect */}
             <motion.div
               className="absolute inset-0 bg-gradient-to-br from-transparent via-white/20 to-transparent"
@@ -223,13 +223,13 @@ export function BookCard({
               {book.title}
             </h3>
             <p className="text-sm text-muted-foreground">{book.author}</p>
-            
+
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                 <span className="text-sm font-medium">{book.rating || 0}</span>
               </div>
-              
+
               <div className="flex gap-2">
                 <motion.button
                   whileHover={{ scale: 1.1 }}
@@ -242,7 +242,7 @@ export function BookCard({
                     isFavorited ? "fill-red-500 text-red-500" : "text-pink-400"
                   )} />
                 </motion.button>
-                
+
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
@@ -255,8 +255,8 @@ export function BookCard({
             </div>
           </div>
         </GlassCard>
-      </motion.div>
-    </motion.div>
+      </motion.div >
+    </motion.div >
   );
 
   const renderCompactCard = () => (
@@ -280,16 +280,18 @@ export function BookCard({
             <div className="flex items-center gap-1">
               <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
               <span className="text-xs">{book.rating || 0}</span>
-            </div>
-            {book.reviews_count && (
-              <span className="text-xs text-muted-foreground">
-                ({book.reviews_count} reviews)
-              </span>
-            )}
-          </div>
-        </div>
-      </GlassCard>
-    </motion.div>
+            </div >
+            {
+              book.reviews_count && (
+                <span className="text-xs text-muted-foreground">
+                  ({book.reviews_count} reviews)
+                </span>
+              )
+            }
+          </div >
+        </div >
+      </GlassCard >
+    </motion.div >
   );
 
   switch (variant) {
