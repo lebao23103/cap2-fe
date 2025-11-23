@@ -37,6 +37,8 @@ const HIGHLIGHT_COLORS = {
     pink: '#E91E63',
 } as const
 
+console.log('HIGHLIGHT_COLORS:', HIGHLIGHT_COLORS);
+
 /**
  * NoteHighlightOverlay Component
  * 
@@ -49,107 +51,227 @@ export default function NoteHighlightOverlay({
     onHighlightClick,
     containerRef,
 }: NoteHighlightOverlayProps) {
+    console.log('NoteHighlightOverlay rendered with props:', { notes, currentPage });
+    
     const [highlightRects, setHighlightRects] = useState<HighlightRect[]>([])
     const [hoveredNoteId, setHoveredNoteId] = useState<string | null>(null)
+    
+    console.log('Highlight rects state:', highlightRects);
 
     /**
      * Calculate highlight rectangles from notes
      * Uses PDF.js textLayer to map character positions to DOM coordinates
      */
     const calculateHighlights = useCallback(async () => {
+        console.log('Calculating highlights for notes:', notes);
         if (!notes.length) {
             setHighlightRects([])
             return
         }
 
-        // Find the PDF textLayer element
-        const textLayer = document.querySelector('.react-pdf__Page__textContent')
+        // Find the PDF textLayer element - try multiple selectors
+        let textLayer = document.querySelector('.react-pdf__Page__textContent') as HTMLElement | null;
+        console.log('First text layer query result:', textLayer);
+        
         if (!textLayer) {
+            textLayer = document.querySelector('.textLayer') as HTMLElement | null;
+            console.log('Second text layer query result:', textLayer);
+        }
+        
+        if (!textLayer) {
+            // Try to find any element with text content
+            const possibleLayers = document.querySelectorAll('[class*="text"]') as NodeListOf<HTMLElement>;
+            console.log('Possible text layers:', possibleLayers);
+            if (possibleLayers.length > 0) {
+                textLayer = possibleLayers[0];
+                console.log('Using first possible text layer:', textLayer);
+            }
+        }
+
+        if (!textLayer) {
+            // Log all elements to see what's available
+            console.log('Document elements for debugging:');
+            const allElements = document.querySelectorAll('*');
+            const classNames = new Set<string>();
+            allElements.forEach(el => {
+                if (el.className && typeof el.className === 'string') {
+                    el.className.split(' ').forEach(cls => {
+                        if (cls) classNames.add(cls);
+                    });
+                }
+            });
+            console.log('All class names in document:', Array.from(classNames).sort());
+            
             console.warn('TextLayer not found, highlights cannot be rendered')
             return
         }
 
         const rects: HighlightRect[] = []
+        const containerRect = textLayer.getBoundingClientRect()
+        console.log('Container rect:', containerRect);
 
         for (const note of notes) {
-            // For MVP: Simple approach - find text in textLayer
-            // In future: Use position_start/end for precise positioning
-
             if (!note.text) continue
 
             try {
                 // Get all text spans in the textLayer
-                const textSpans = Array.from(textLayer.querySelectorAll('span'))
-
-                // Find spans that contain the highlighted text
-                let foundText = false
-                let startSpan: HTMLElement | null = null
-                let endSpan: HTMLElement | null = null
-                let startOffset = 0
-                let endOffset = 0
-
-                // Simple text matching (can be improved with position_start/end)
+                const textSpans = Array.from(textLayer.querySelectorAll('span')) as HTMLElement[]
+                console.log('Text spans for note:', note.text, textSpans);
+                
+                // Normalize the note text for better matching
+                const normalizedNoteText = note.text.trim().replace(/\s+/g, ' ')
+                console.log('Normalized note text:', normalizedNoteText);
+                
+                // Try to find the text in spans
+                let foundMatch = false
+                
+                // Simple approach: Look for exact match in all spans
                 for (let i = 0; i < textSpans.length; i++) {
-                    const span = textSpans[i] as HTMLElement
-                    const spanText = span.textContent || ''
-
-                    if (!foundText && spanText.includes(note.text.substring(0, 10))) {
-                        // Found start of highlighted text
-                        foundText = true
-                        startSpan = span
-                        startOffset = spanText.indexOf(note.text.substring(0, 10))
-
-                        // Check if entire text is within this span
-                        if (spanText.includes(note.text)) {
-                            endSpan = span
-                            endOffset = spanText.indexOf(note.text) + note.text.length
-                            break
+                    const span = textSpans[i]
+                    const spanText = (span.textContent || '').trim().replace(/\s+/g, ' ')
+                    
+                    // Check for exact match
+                    const exactIndex = spanText.indexOf(normalizedNoteText)
+                    if (exactIndex !== -1) {
+                        console.log('Found exact match in span:', i, spanText);
+                        foundMatch = true
+                        
+                        // Create a range to get precise positioning
+                        const range = document.createRange()
+                        try {
+                            range.setStart(span.firstChild || span, exactIndex)
+                            range.setEnd(span.firstChild || span, exactIndex + normalizedNoteText.length)
+                            
+                            const clientRects = range.getClientRects()
+                            
+                            // Create highlight rectangles for each line
+                            for (let j = 0; j < clientRects.length; j++) {
+                                const rect = clientRects[j]
+                                const x = rect.left - containerRect.left
+                                const y = rect.top - containerRect.top
+                                const width = rect.width
+                                const height = rect.height
+                                
+                                rects.push({
+                                    x,
+                                    y,
+                                    width,
+                                    height,
+                                    noteId: note.id,
+                                    color: HIGHLIGHT_COLORS[note.color || 'yellow'],
+                                })
+                                console.log('Added highlight rect:', {
+                                    x,
+                                    y,
+                                    width,
+                                    height,
+                                    noteId: note.id,
+                                    color: HIGHLIGHT_COLORS[note.color || 'yellow'],
+                                });
+                            }
+                        } catch (rangeError) {
+                            // Fallback to bounding box approach
+                            const spanRect = span.getBoundingClientRect()
+                            const totalWidth = spanRect.width
+                            const charWidth = totalWidth / (spanText.length || 1)
+                            const x = spanRect.left - containerRect.left + (exactIndex * charWidth)
+                            const y = spanRect.top - containerRect.top
+                            const width = normalizedNoteText.length * charWidth
+                            const height = spanRect.height
+                            
+                            rects.push({
+                                x,
+                                y,
+                                width,
+                                height,
+                                noteId: note.id,
+                                color: HIGHLIGHT_COLORS[note.color || 'yellow'],
+                            })
+                            console.log('Added fallback highlight rect:', {
+                                x,
+                                y,
+                                width,
+                                height,
+                                noteId: note.id,
+                                color: HIGHLIGHT_COLORS[note.color || 'yellow'],
+                            });
                         }
-                    } else if (foundText && spanText.includes(note.text.slice(-10))) {
-                        // Found end of highlighted text
-                        endSpan = span
-                        endOffset = spanText.indexOf(note.text.slice(-10)) + 10
                         break
                     }
                 }
-
-                if (startSpan && endSpan) {
-                    // Get bounding rectangles
-                    const startRect = startSpan.getBoundingClientRect()
-                    const endRect = endSpan.getBoundingClientRect()
-                    const containerRect = textLayer.getBoundingClientRect()
-
-                    // Calculate relative position to textLayer
-                    const x = startRect.left - containerRect.left
-                    const y = startRect.top - containerRect.top
-                    const width = endRect.right - startRect.left
-                    const height = Math.max(startRect.height, endRect.height)
-
-                    rects.push({
-                        x,
-                        y,
-                        width,
-                        height,
-                        noteId: note.id,
-                        color: HIGHLIGHT_COLORS[note.color || 'yellow'],
-                    })
+                
+                // If no exact match, try approximate matching
+                if (!foundMatch) {
+                    console.log('No exact match found, trying approximate matching');
+                    for (let i = 0; i < textSpans.length; i++) {
+                        const span = textSpans[i]
+                        const spanText = span.textContent || ''
+                        console.log('Checking span for approximate match:', spanText);
+                        
+                        // Check for partial match (first few characters)
+                        if (spanText.includes(note.text.substring(0, Math.min(10, note.text.length)))) {
+                            console.log('Found approximate match in span:', i, spanText);
+                            foundMatch = true
+                            
+                            // Create highlight using bounding box approach
+                            const spanRect = span.getBoundingClientRect()
+                            const x = spanRect.left - containerRect.left
+                            const y = spanRect.top - containerRect.top
+                            const width = spanRect.width
+                            const height = spanRect.height
+                            
+                            rects.push({
+                                x,
+                                y,
+                                width,
+                                height,
+                                noteId: note.id,
+                                color: HIGHLIGHT_COLORS[note.color || 'yellow'],
+                            })
+                            console.log('Added second fallback highlight rect:', {
+                                x,
+                                y,
+                                width,
+                                height,
+                                noteId: note.id,
+                                color: HIGHLIGHT_COLORS[note.color || 'yellow'],
+                            });
+                            break
+                        }
+                    }
                 }
             } catch (error) {
                 console.error('Error calculating highlight for note:', note.id, error)
             }
         }
 
+        console.log('Generated highlight rects:', rects)
         setHighlightRects(rects)
     }, [notes])
 
     // Recalculate highlights when notes change or page loads
     useEffect(() => {
-        // Wait for textLayer to render
-        const timer = setTimeout(() => {
-            calculateHighlights()
-        }, 300)
-
-        return () => clearTimeout(timer)
+        let attempts = 0;
+        const maxAttempts = 10;
+        
+        const tryCalculateHighlights = () => {
+            attempts++;
+            const textLayer = document.querySelector('.react-pdf__Page__textContent')
+            
+            if (textLayer) {
+                // Add a small delay to ensure text layer is fully rendered
+                setTimeout(() => {
+                    calculateHighlights()
+                }, 50)
+            } else if (attempts < maxAttempts) {
+                // Retry every 100ms until text layer is available or max attempts reached
+                setTimeout(tryCalculateHighlights, 100)
+            } else {
+                console.warn('Text layer not found after', maxAttempts, 'attempts')
+            }
+        }
+        
+        tryCalculateHighlights()
     }, [calculateHighlights, currentPage])
 
     // Handle click on highlight
@@ -161,12 +283,15 @@ export default function NoteHighlightOverlay({
     }
 
     if (!highlightRects.length) {
-        return null
+        console.log('No highlight rects to render');
+        return null;
     }
+    
+    console.log('Rendering highlight rects:', highlightRects);
 
     return (
         <div
-            className="absolute inset-0 pointer-events-none z-10"
+            className="absolute inset-0 pointer-events-none z-50"
             style={{
                 top: 0,
                 left: 0,
@@ -190,9 +315,9 @@ export default function NoteHighlightOverlay({
                                 width={rect.width}
                                 height={rect.height}
                                 fill={rect.color}
-                                opacity={isHovered ? 0.5 : 0.3}
+                                opacity={isHovered ? 0.7 : 0.5} // Increased opacity
                                 initial={{ opacity: 0 }}
-                                animate={{ opacity: isHovered ? 0.5 : 0.3 }}
+                                animate={{ opacity: isHovered ? 0.7 : 0.5 }} // Increased opacity
                                 exit={{ opacity: 0 }}
                                 transition={{ duration: 0.2 }}
                                 className="cursor-pointer transition-opacity"

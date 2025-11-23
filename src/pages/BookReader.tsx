@@ -154,7 +154,18 @@ export default function BookReader() {
   // Load book data from API
   useEffect(() => {
     if (id) {
-      loadBookData()
+      // First check if we have notes in localStorage
+      const localNotes = localStorage.getItem(`book_notes_${id}`);
+      if (localNotes) {
+        try {
+          const parsedNotes = JSON.parse(localNotes);
+          setNotes(parsedNotes);
+        } catch (e) {
+          console.error('Error parsing local notes:', e);
+        }
+      }
+      
+      loadBookData();
     }
   }, [id])
 
@@ -170,7 +181,11 @@ export default function BookReader() {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
           }
-        }).then(res => res.json()).catch(() => []),
+        }).then(res => res.json()).catch(() => {
+          // Fallback to localStorage if API fails
+          const localNotes = localStorage.getItem(`book_notes_${id}`);
+          return localNotes ? JSON.parse(localNotes) : [];
+        }),
         userService.getFavorites().catch(() => [])
       ])
 
@@ -207,15 +222,21 @@ export default function BookReader() {
         })
       }
 
-      setNotes(bookNotes.map((note: any) => ({
-        id: note.id.toString(),
+      const transformedNotes = bookNotes.map((note: any) => ({
+        id: note.id?.toString() || Date.now().toString(), // Generate ID if not provided
         text: note.selected_text,
         note: note.note_content,
         page: note.page_number || 1,
-        timestamp: note.created_at,
+        timestamp: note.created_at || new Date().toISOString(),
         color: note.color === '#FFEB3B' ? 'yellow' : note.color === '#2196F3' ? 'blue' : note.color === '#4CAF50' ? 'green' : 'pink',
         isPublic: note.is_public
-      })))
+      }));
+
+      setNotes(transformedNotes)
+      
+      // Save to localStorage as backup
+      localStorage.setItem(`book_notes_${id}`, JSON.stringify(transformedNotes));
+      
       setIsFavorite(favorites.some((fav: any) => fav.book.id === Number(id)))
 
       // Track reading history
@@ -369,47 +390,100 @@ export default function BookReader() {
           highlightColor === 'blue' ? '#2196F3' :
             highlightColor === 'green' ? '#4CAF50' : '#E91E63'
 
+        // Get more precise position information
+        const selection = window.getSelection()
+        let positionStart = 0
+        let positionEnd = selectedText.length
+
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0)
+          // We'll store the text content of the start container to help with matching later
+          const startContainerText = range.startContainer.textContent || ''
+          const endContainerText = range.endContainer.textContent || ''
+          
+          // Calculate relative positions within the container
+          positionStart = range.startOffset
+          positionEnd = range.endOffset
+        }
+
+        // Create the new note object
+        const newNoteObj = {
+          id: Date.now().toString(), // Generate a unique ID
+          text: selectedText,
+          note: newNote,
+          page: currentPage,
+          timestamp: new Date().toISOString(),
+          color: highlightColor,
+          isPublic: false,
+          position_start: positionStart,
+          position_end: positionEnd
+        };
+
         if (editingNote) {
           // Update existing note
-          const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/notes/${editingNote.id}/update/`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-            },
-            body: JSON.stringify({
-              note_content: newNote,
-              color: colorHex
+          try {
+            const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/notes/${editingNote.id}/update/`, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+              },
+              body: JSON.stringify({
+                note_content: newNote,
+                color: colorHex
+              })
             })
-          })
 
-          if (response.ok) {
-            await loadBookData()
-            toast({ title: 'Note updated!', description: 'Your note has been updated' })
+            if (response.ok) {
+              await loadBookData()
+              toast({ title: 'Note updated!', description: 'Your note has been updated' })
+            } else {
+              throw new Error('Failed to update note on server')
+            }
+          } catch (error) {
+            // Fallback to localStorage
+            console.log('Server update failed, saving to localStorage')
+            const updatedNotes = notes.map(note => 
+              note.id === editingNote.id ? { ...note, note: newNote, color: highlightColor } : note
+            );
+            setNotes(updatedNotes);
+            localStorage.setItem(`book_notes_${id}`, JSON.stringify(updatedNotes));
+            toast({ title: 'Note updated!', description: 'Your note has been updated locally' })
           }
           setEditingNote(null)
         } else {
           // Create new note
-          const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/notes/create/`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-            },
-            body: JSON.stringify({
-              selected_text: selectedText,
-              note_content: newNote,
-              page_number: currentPage,
-              color: colorHex,
-              is_public: false,
-              position_start: 0,
-              position_end: selectedText.length
+          try {
+            const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/notes/create/`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+              },
+              body: JSON.stringify({
+                selected_text: selectedText,
+                note_content: newNote,
+                page_number: currentPage,
+                color: colorHex,
+                is_public: false,
+                position_start: positionStart,
+                position_end: positionEnd
+              })
             })
-          })
 
-          if (response.ok) {
-            await loadBookData()
-            toast({ title: 'Note saved!', description: 'Your note has been saved' })
+            if (response.ok) {
+              await loadBookData()
+              toast({ title: 'Note saved!', description: 'Your note has been saved' })
+            } else {
+              throw new Error('Failed to save note to server')
+            }
+          } catch (error) {
+            // Fallback to localStorage
+            console.log('Server save failed, saving to localStorage')
+            const updatedNotes = [...notes, newNoteObj];
+            setNotes(updatedNotes);
+            localStorage.setItem(`book_notes_${id}`, JSON.stringify(updatedNotes));
+            toast({ title: 'Note saved!', description: 'Your note has been saved locally' })
           }
         }
 
@@ -417,6 +491,8 @@ export default function BookReader() {
         setSelectedText("")
         setNewNote("")
         setHighlightColor('yellow')
+        // Clear browser text selection
+        window.getSelection()?.removeAllRanges()
       } catch (error) {
         toast({ title: 'Error', description: 'Failed to save note', variant: 'destructive' })
       }
@@ -434,10 +510,20 @@ export default function BookReader() {
 
       if (response.ok) {
         setNotes(prev => prev.filter(n => n.id !== noteId))
+        // Update localStorage
+        const updatedNotes = notes.filter(n => n.id !== noteId);
+        localStorage.setItem(`book_notes_${id}`, JSON.stringify(updatedNotes));
         toast({ title: 'Note deleted', description: 'Your note has been removed' })
+      } else {
+        throw new Error('Failed to delete note on server')
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to delete note', variant: 'destructive' })
+      // Fallback to localStorage
+      console.log('Server delete failed, removing from localStorage')
+      const updatedNotes = notes.filter(n => n.id !== noteId);
+      setNotes(updatedNotes);
+      localStorage.setItem(`book_notes_${id}`, JSON.stringify(updatedNotes));
+      toast({ title: 'Note deleted', description: 'Your note has been removed locally' })
     }
   }
 
@@ -466,13 +552,28 @@ export default function BookReader() {
       })
 
       if (response.ok) {
-        setNotes(prev => prev.map(n =>
+        const updatedNotes = notes.map(n =>
           n.id === noteId ? { ...n, isPublic: !n.isPublic } : n
-        ))
+        );
+        setNotes(updatedNotes);
+        // Update localStorage
+        localStorage.setItem(`book_notes_${id}`, JSON.stringify(updatedNotes));
         toast({ title: note.isPublic ? 'Note made private' : 'Note shared publicly' })
+      } else {
+        throw new Error('Failed to update note on server')
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to update note', variant: 'destructive' })
+      // Fallback to localStorage
+      console.log('Server update failed, updating localStorage')
+      const note = notes.find(n => n.id === noteId)
+      if (!note) return
+      
+      const updatedNotes = notes.map(n =>
+        n.id === noteId ? { ...n, isPublic: !n.isPublic } : n
+      );
+      setNotes(updatedNotes);
+      localStorage.setItem(`book_notes_${id}`, JSON.stringify(updatedNotes));
+      toast({ title: note.isPublic ? 'Note made private' : 'Note shared publicly', description: 'Updated locally' })
     }
   }
 
@@ -654,283 +755,229 @@ export default function BookReader() {
 
                     <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/50">
                       <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-                        <span className="px-2 py-0.5 bg-background/50 rounded-md font-medium">Page {part.note.page}</span>
-                        <span>·</span>
-                        <span>{new Date(part.note.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                        <span>Page {part.note.page}</span>
+                        <span>•</span>
+                        <span>{new Date(part.note.timestamp).toLocaleDateString()}</span>
                       </div>
-                      {part.note.isPublic && (
-                        <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md text-[10px] font-medium">
-                          <Share2 className="h-2.5 w-2.5" />
-                          Shared
-                        </div>
-                      )}
+                      <div className="flex items-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 text-xs hover:bg-blue-50 dark:hover:bg-blue-950/30 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            if (part.note) {
+                              editNote(part.note)
+                            }
+                          }}
+                        >
+                          <Edit className="h-3 w-3 mr-1" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-6 text-xs hover:bg-red-50 dark:hover:bg-red-950/30 text-muted-foreground hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            if (part.note) {
+                              deleteNote(part.note.id)
+                            }
+                          }}
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Delete
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </PopoverContent>
               </Popover>
             )
           }
-          return <span key={index}>{part.text}</span>
+          return part.text
         })}
       </>
     )
   }
 
-  const toggleBookmark = () => {
-    if (!bookData) return // Guard clause
+  const toggleBookmark = async () => {
+    if (!bookData) return
 
-    setBookData(prev => prev ? ({
-      ...prev,
-      bookmarks: isBookmarked
-        ? (prev.bookmarks || []).filter(page => page !== currentPage)
-        : [...(prev.bookmarks || []), currentPage]
-    }) : null)
-    setIsBookmarked(!isBookmarked)
-  }
-
-  const toggleFavorite = async () => {
     try {
-      if (isFavorite) {
-        await userService.removeFromFavorites(Number(id))
-      } else {
-        await userService.addToFavorites(Number(id))
-      }
+      const isCurrentlyBookmarked = bookData.bookmarks?.includes(currentPage)
 
-      setIsFavorite(!isFavorite)
-      if (bookData) {
-        setBookData(prev => prev ? ({ ...prev, isFavorite: !isFavorite }) : null)
-      }
-
-      toast({
-        title: isFavorite ? 'Removed from favorites' : 'Added to favorites'
+      const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/bookmarks/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({
+          page_number: currentPage,
+          action: isCurrentlyBookmarked ? 'remove' : 'add'
+        })
       })
+
+      if (response.ok) {
+        const updatedBookmarks = isCurrentlyBookmarked
+          ? bookData.bookmarks.filter(page => page !== currentPage)
+          : [...(bookData.bookmarks || []), currentPage]
+
+        setBookData(prev => prev ? {
+          ...prev,
+          bookmarks: updatedBookmarks
+        } : null)
+
+        setIsBookmarked(!isCurrentlyBookmarked)
+
+        toast({
+          title: isCurrentlyBookmarked ? 'Bookmark removed' : 'Page bookmarked',
+          description: isCurrentlyBookmarked
+            ? 'This page is no longer bookmarked'
+            : 'This page has been bookmarked'
+        })
+      }
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to update favorites', variant: 'destructive' })
+      toast({
+        title: 'Error',
+        description: 'Failed to update bookmark',
+        variant: 'destructive'
+      })
     }
   }
 
-  const goToQuiz = () => {
-    navigate(`/book/${id}/quiz`)
+  const toggleFavorite = async () => {
+    if (!bookData) return
+
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/favorite/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+      })
+
+      if (response.ok) {
+        const newFavoriteStatus = !isFavorite
+        setIsFavorite(newFavoriteStatus)
+
+        toast({
+          title: newFavoriteStatus ? 'Added to favorites' : 'Removed from favorites',
+          description: newFavoriteStatus
+            ? 'This book has been added to your favorites'
+            : 'This book has been removed from your favorites'
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to update favorite status',
+        variant: 'destructive'
+      })
+    }
   }
 
   const renderStars = (rating: number) => {
-    return (
-      <div className="flex items-center gap-0.5">
-        {[1, 2, 3, 4, 5].map((star) => {
-          const isFilled = star <= Math.floor(rating)
-          const isHalfFilled = star === Math.ceil(rating) && rating % 1 !== 0
-
-          return (
-            <div key={star} className="relative">
-              <Star
-                className={`h-4 w-4 transition-colors ${isFilled
-                  ? 'fill-yellow-400 text-yellow-400'
-                  : isHalfFilled
-                    ? 'fill-yellow-400/50 text-yellow-400'
-                    : 'fill-muted text-muted-foreground/20'
-                  }`}
-              />
-            </div>
-          )
-        })}
-      </div>
-    )
+    return Array.from({ length: 5 }).map((_, index) => (
+      <Star
+        key={index}
+        className={`h-4 w-4 ${index < rating ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/20'}`}
+      />
+    ))
   }
 
-  // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-6"></div>
-          <h2 className="text-2xl font-bold mb-2">Loading book...</h2>
-          <p className="text-muted-foreground">Please wait while we prepare your reading experience</p>
-        </div>
-      </div>
-    )
-  }
-
-  // Error state - no book data
-  if (!bookData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">
-        <div className="text-center max-w-md">
-          <h2 className="text-3xl font-bold mb-4">Book not found</h2>
-          <p className="text-muted-foreground mb-6">The book you're looking for doesn't exist or you don't have access to it.</p>
-          <ModernButton
-            icon={ArrowLeft}
-            onClick={() => navigate('/readnex')}
-          >
-            Back to Library
-          </ModernButton>
-        </div>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-primary"></div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Header */}
-      <div className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border/50 shadow-lg">
-        <div className="p-4">
-          <div className="max-w-6xl mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <ModernButton
-                icon={ArrowLeft}
-                size="sm"
-                onClick={() => navigate('/readnex')}
-              >
-                Library
-              </ModernButton>
-              <div className="border-l border-border/50 pl-4">
-                <h1 className="text-lg font-bold text-foreground line-clamp-1">
-                  {bookData?.title}
-                </h1>
-                <p className="text-xs text-muted-foreground font-medium">
-                  by {bookData?.author}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={toggleBookmark}
-                className={`group p-2.5 rounded-lg border transition-all duration-300 ${isBookmarked
-                  ? 'border-amber-500/30 bg-gradient-to-br from-amber-500/15 to-amber-500/5 text-amber-600 dark:text-amber-500 shadow-sm'
-                  : 'border-transparent hover:border-amber-500/20 hover:bg-amber-500/5'
-                  }`}
-              >
-                <Bookmark className={`h-4 w-4 transition-transform duration-300 group-hover:scale-110 ${isBookmarked ? 'fill-current' : ''}`} />
-              </button>
-
-              <button
-                onClick={toggleFavorite}
-                className={`group p-2.5 rounded-lg border transition-all duration-300 ${isFavorite
-                  ? 'border-rose-500/30 bg-gradient-to-br from-rose-500/15 to-rose-500/5 text-rose-600 dark:text-rose-500 shadow-sm'
-                  : 'border-transparent hover:border-rose-500/20 hover:bg-rose-500/5'
-                  }`}
-              >
-                <Heart className={`h-4 w-4 transition-transform duration-300 group-hover:scale-110 ${isFavorite ? 'fill-current' : ''}`} />
-              </button>
-
-              {bookData?.hasQuiz && (
-                <ModernButton
-                  icon={Target}
-                  size="sm"
-                  onClick={goToQuiz}
-                  className="ml-1 border-purple-500/30 bg-gradient-to-r from-purple-500/15 via-purple-500/10 to-purple-500/5 hover:from-purple-500/25 hover:via-purple-500/20 hover:to-purple-500/10 text-purple-600 dark:text-purple-400"
+    <div className={`min-h-screen transition-colors duration-500 ${getThemeStyles().bg} ${getThemeStyles().text}`}>
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
+          <div className="xl:col-span-8">
+            {/* Header */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <Button
+                  onClick={() => navigate('/readnex')}
+                  variant="ghost"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Take Quiz
-                </ModernButton>
-              )}
-
-              {bookData?.readingProgress === 100 && (
-                <ModernButton
-                  icon={Star}
-                  size="sm"
-                  onClick={() => setShowReviewDialog(true)}
-                  className="ml-1 border-amber-500/30 bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-amber-500/5 hover:from-amber-500/25 hover:via-amber-500/20 hover:to-amber-500/10 text-amber-600 dark:text-amber-400"
-                >
-                  {hasSubmittedReview ? 'View Review' : 'Write Review'}
-                </ModernButton>
-              )}
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="group p-2.5 rounded-lg border border-transparent hover:border-border/30 hover:bg-muted/50 transition-all duration-300">
-                    <Settings className="h-4 w-4 transition-transform duration-300 group-hover:rotate-90" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuLabel className="text-xs uppercase tracking-wider">Reading Theme</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setTheme('light')} className="cursor-pointer">
-                    <Sun className="h-4 w-4 mr-2" />
-                    <span className={theme === 'light' ? 'font-bold text-primary' : 'font-medium'}>Light</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme('dark')} className="cursor-pointer">
-                    <Moon className="h-4 w-4 mr-2" />
-                    <span className={theme === 'dark' ? 'font-bold text-primary' : 'font-medium'}>Dark</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setTheme('sepia')} className="cursor-pointer">
-                    <Palette className="h-4 w-4 mr-2" />
-                    <span className={theme === 'sepia' ? 'font-bold text-primary' : 'font-medium'}>Sepia</span>
-                  </DropdownMenuItem>
-
-                  <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="text-xs uppercase tracking-wider">Font Size</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => setFontSize(14)} className="cursor-pointer">
-                    <span className={fontSize === 14 ? 'font-bold text-primary' : 'font-medium'}>Small (14px)</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFontSize(16)} className="cursor-pointer">
-                    <span className={fontSize === 16 ? 'font-bold text-primary' : 'font-medium'}>Medium (16px)</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFontSize(18)} className="cursor-pointer">
-                    <span className={fontSize === 18 ? 'font-bold text-primary' : 'font-medium'}>Large (18px)</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => setFontSize(20)} className="cursor-pointer">
-                    <span className={fontSize === 20 ? 'font-bold text-primary' : 'font-medium'}>Extra Large (20px)</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="max-w-6xl mx-auto mt-4 pt-4 border-t border-border/30">
-            <div className="flex items-center gap-4">
-              <div className="px-3 py-1.5 rounded-lg bg-muted/50 border border-border/30">
-                <span className="text-xs font-bold text-foreground">
-                  {currentPage}
-                </span>
-                <span className="text-xs text-muted-foreground mx-1">/</span>
-                <span className="text-xs font-medium text-muted-foreground">
-                  {bookData?.totalPages || 0}
-                </span>
-              </div>
-              <div className="flex-1">
-                <Progress value={bookData?.readingProgress || 0} className="h-2" />
-              </div>
-              <div className="px-3 py-1.5 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
-                <span className="text-xs font-bold text-primary">
-                  {bookData?.readingProgress || 0}%
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="container mx-auto max-w-7xl py-6 lg:py-8">
-        <div className={`grid grid-cols-1 gap-6 lg:gap-8 transition-all duration-300 ${sidebarOpen ? "xl:grid-cols-12" : "xl:grid-cols-1"}`}>
-          {/* Main Content - Reading Area */}
-          <div className={`transition-all duration-300 ${sidebarOpen ? "xl:col-span-8" : "xl:col-span-12"}`}>
-            {/* Floating Toggle Button (when sidebar closed) */}
-            <AnimatePresence>
-              {!sidebarOpen && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="fixed right-6 top-28 z-[9999]"
-                >
+                  <ArrowLeft className="h-4 w-4" />
+                  <span>Back to Library</span>
+                </Button>
+                
+                <div className="flex items-center gap-2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="gap-2">
+                        <Settings className="h-4 w-4" />
+                        <span className="hidden sm:inline">Settings</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuLabel>Reading Settings</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setTheme('light')}>
+                        <Sun className="h-4 w-4 mr-2" />
+                        Light Theme
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setTheme('dark')}>
+                        <Moon className="h-4 w-4 mr-2" />
+                        Dark Theme
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setTheme('sepia')}>
+                        <Palette className="h-4 w-4 mr-2" />
+                        Sepia Theme
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  
                   <Button
-                    onClick={() => setSidebarOpen(true)}
-                    className="h-11 px-5 rounded-full shadow-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground border border-primary-foreground/20"
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleFavorite}
+                    className={isFavorite ? "text-amber-500 hover:text-amber-600" : "text-muted-foreground hover:text-foreground"}
                   >
-                    <StickyNote className="h-4 w-4 mr-2" />
-                    <span className="font-semibold text-sm">Notes</span>
-                    <Badge className="ml-2 bg-primary-foreground/30 text-primary-foreground border-0 text-xs font-semibold">
-                      {notes.length}
-                    </Badge>
+                    <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
                   </Button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-
-
+                  
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleBookmark}
+                    className={isBookmarked ? "text-blue-500 hover:text-blue-600" : "text-muted-foreground hover:text-foreground"}
+                  >
+                    <Bookmark className={`h-4 w-4 ${isBookmarked ? "fill-current" : ""}`} />
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div>
+                  <h1 className="text-2xl font-bold">{bookData?.title}</h1>
+                  <p className="text-muted-foreground">by {bookData?.author}</p>
+                </div>
+                
+                <div className="flex items-center gap-4">
+                  <div className="hidden sm:flex items-center gap-2 text-sm">
+                    <span className="font-semibold">{currentPage}</span>
+                    <span className="text-muted-foreground">/</span>
+                    <span className="text-muted-foreground">{bookData?.totalPages || 0}</span>
+                  </div>
+                  
+                  <div className="flex items-center gap-1">
+                    {renderStars(bookData?.rating || 0)}
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <Card className={`border-0 shadow-2xl bg-gradient-to-br ${getThemeStyles().cardBg} backdrop-blur-sm overflow-hidden transition-colors duration-500`}>
               <CardContent className="p-0">
@@ -1239,508 +1286,231 @@ export default function BookReader() {
                               <p className="text-sm font-semibold text-foreground leading-snug">
                                 "{note.text}"
                               </p>
-                              {note.isPublic && (
-                                <div className="inline-flex items-center gap-1 mt-2 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-md text-[10px] font-medium">
-                                  <Share2 className="h-2.5 w-2.5" />
-                                  Shared
-                                </div>
-                              )}
                             </div>
                           </div>
 
                           {/* Note Content */}
-                          <p className="text-xs text-muted-foreground leading-relaxed mb-3 pl-11">
+                          <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                             {note.note}
                           </p>
 
                           {/* Footer */}
-                          <div className="flex items-center justify-between pl-11">
-                            <div className="flex items-center gap-2 text-[10px] text-muted-foreground/70 font-medium">
-                              <span className="px-2 py-0.5 bg-background/50 rounded-md">Page {note.page}</span>
-                              <span>·</span>
-                              <span>{new Date(note.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                              <span className="flex items-center gap-1">
+                                <Target className="h-3 w-3" />
+                                Page {note.page}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {new Date(note.timestamp).toLocaleDateString()}
+                              </span>
                             </div>
+                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0 hover:bg-blue-50 dark:hover:bg-blue-950/30 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  editNote(note);
+                                }}
+                              >
+                                <Edit className="h-3.5 w-3.5" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 w-7 p-0 hover:bg-red-50 dark:hover:bg-red-950/30 text-muted-foreground hover:text-red-600 dark:hover:text-red-400"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteNote(note.id);
+                                }}
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
+                          </div>
 
-                            {/* Action Buttons - Show on hover */}
-                            {hoveredNoteId === note.id && (
-                              <div className="flex gap-1 animate-in fade-in duration-200">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-7 w-7 p-0 hover:bg-background/80 hover:text-primary transition-colors"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    editNote(note)
-                                  }}
-                                >
-                                  <Edit className="h-3 w-3" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-7 w-7 p-0 hover:bg-background/80 hover:text-green-600 transition-colors"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    shareNote(note.id)
-                                  }}
-                                >
-                                  <Share2 className={`h-3 w-3 ${note.isPublic ? 'text-green-600 dark:text-green-500' : ''}`} />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-7 w-7 p-0 hover:bg-red-100 dark:hover:bg-red-950/50 hover:text-red-600 transition-colors"
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    deleteNote(note.id)
-                                  }}
-                                >
-                                  <Trash2 className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            )}
+                          {/* Hover indicator */}
+                          <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className={`w-2 h-2 rounded-full ${style.accent}`} />
                           </div>
                         </div>
                       )
                     })}
+
                     {notes.length === 0 && (
-                      <div className="text-center py-12">
-                        <div className="relative inline-block">
-                          <div className="absolute inset-0 bg-amber-500/10 blur-2xl rounded-full" />
-                          <div className="relative p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/20">
-                            <StickyNote className="h-10 w-10 mx-auto text-amber-500" />
-                          </div>
+                      <div className="text-center py-8">
+                        <div className="inline-block p-3 rounded-full bg-amber-100 dark:bg-amber-900/30 mb-3">
+                          <StickyNote className="h-6 w-6 text-amber-600 dark:text-amber-400" />
                         </div>
-                        <p className="text-sm font-semibold text-foreground mt-4">
-                          No notes yet
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-2 max-w-[200px] mx-auto">
-                          Select text while reading to create your first note
+                        <h3 className="font-semibold mb-1">No notes yet</h3>
+                        <p className="text-sm text-muted-foreground">
+                          Highlight text in the PDF and add your first note
                         </p>
                       </div>
                     )}
-                  </CardContent>
-                </Card>
-
-                {/* Bookmarks */}
-                <Card className="border-0 shadow-xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm hover:shadow-2xl transition-shadow duration-300">
-                  <CardHeader className="pb-4 border-b border-border/30">
-                    <SectionHeader
-                      title="Bookmarks"
-                      icon={Bookmark}
-                      badge={bookData?.bookmarks?.length || 0}
-                      variant="warning"
-                    />
-                  </CardHeader>
-                  <CardContent className="pt-5">
-                    <div className="space-y-2">
-                      {(bookData?.bookmarks || []).map((page) => (
-                        <Button
-                          key={page}
-                          variant="ghost"
-                          size="sm"
-                          className="group w-full justify-start text-sm hover:bg-gradient-to-r hover:from-amber-50 hover:to-amber-50/50 dark:hover:from-amber-950/20 dark:hover:to-amber-950/10 hover:text-amber-700 dark:hover:text-amber-400 transition-all duration-200"
-                          onClick={() => setCurrentPage(page)}
-                        >
-                          <Bookmark className="h-3 w-3 mr-2 fill-current group-hover:scale-110 transition-transform duration-200" />
-                          <span className="font-medium">Page {page}</span>
-                        </Button>
-                      ))}
-                      {(bookData?.bookmarks?.length || 0) === 0 && (
-                        <div className="text-center py-12">
-                          <div className="relative inline-block">
-                            <div className="absolute inset-0 bg-amber-500/10 blur-2xl rounded-full" />
-                            <div className="relative p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-amber-500/5 border border-amber-500/20">
-                              <Bookmark className="h-10 w-10 mx-auto text-amber-500" />
-                            </div>
-                          </div>
-                          <p className="text-sm font-semibold text-foreground mt-4">
-                            No bookmarks yet
-                          </p>
-                          <p className="text-xs text-muted-foreground mt-2 max-w-[200px] mx-auto">
-                            Bookmark pages to quickly return to them later
-                          </p>
-                        </div>
-                      )}
-                    </div>
                   </CardContent>
                 </Card>
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
-      </div>
 
-      {/* Note Dialog - Enhanced */}
-      <Dialog open={showNoteDialog} onOpenChange={(open) => {
-        setShowNoteDialog(open)
-        if (!open) {
-          setSelectedText("")
-          setNewNote("")
-          setEditingNote(null)
-          setHighlightColor('yellow')
-          // Clear browser text selection
-          window.getSelection()?.removeAllRanges()
-        }
-      }}>
-        <DialogContent className="sm:max-w-[550px] p-0 gap-0 overflow-hidden">
-          <div className="bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent p-6 border-b border-border/50">
+          {/* Floating Notes Button (when sidebar is closed) */}
+          {!sidebarOpen && (
+            <AnimatePresence>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="fixed right-6 top-28 z-[9999]"
+              >
+                <Button
+                  onClick={() => setSidebarOpen(true)}
+                  className="h-11 px-5 rounded-full shadow-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground border border-primary-foreground/20"
+                >
+                  <StickyNote className="h-4 w-4 mr-2" />
+                  <span className="font-semibold text-sm">Notes</span>
+                  <Badge className="ml-2 bg-primary-foreground/30 text-primary-foreground border-0 text-xs font-semibold">
+                    {notes.length}
+                  </Badge>
+                </Button>
+              </motion.div>
+            </AnimatePresence>
+          )}
+        </div>
+
+        {/* Note Dialog */}
+        <Dialog open={showNoteDialog} onOpenChange={setShowNoteDialog}>
+          <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-xl">
-                <div className="p-2 rounded-lg bg-amber-500/20" aria-hidden="true">
-                  <StickyNote className="h-5 w-5 text-amber-600 dark:text-amber-500" aria-hidden="true" />
-                </div>
-                {editingNote ? 'Edit Note' : 'Add Note'}
-              </DialogTitle>
-              <DialogDescription className="text-sm">
-                {editingNote ? 'Update your note and highlight color' : 'Add your thoughts about the selected text passage'}
+              <DialogTitle>Add Note</DialogTitle>
+              <DialogDescription>
+                Highlight some text and add a note to it.
               </DialogDescription>
             </DialogHeader>
-          </div>
-          <div className="p-6 space-y-5">
-            {/* Selected Text */}
-            <div>
-              <label className="text-sm font-semibold flex items-center gap-2 mb-2">
-                <Highlighter className="h-4 w-4 text-amber-600 dark:text-amber-500" aria-hidden="true" />
-                Selected Text
-              </label>
-              <div className={`text-sm p-4 rounded-xl border-2 ${getHighlightClass(highlightColor)} font-medium`}>
-                "{selectedText}"
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-foreground">Selected Text:</p>
+                <p className="text-sm text-foreground font-semibold">
+                  "{selectedText}"
+                </p>
               </div>
-            </div>
-
-            {/* Highlight Color Selector */}
-            <div>
-              <label className="text-sm font-semibold block mb-3">Highlight Color</label>
-              <div className="flex gap-3">
-                {(['yellow', 'blue', 'green', 'pink'] as const).map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => setHighlightColor(color)}
-                    className={`group relative w-12 h-12 rounded-xl border-2 transition-all duration-300 ${highlightColor === color
-                      ? 'border-foreground scale-110 shadow-lg ring-4 ring-offset-2 ring-offset-background'
-                      : 'border-border hover:scale-105 hover:border-foreground/50'
-                      } ${color === 'yellow' ? 'bg-gradient-to-br from-amber-300 to-amber-400 ring-amber-200' :
-                        color === 'blue' ? 'bg-gradient-to-br from-blue-300 to-blue-400 ring-blue-200' :
-                          color === 'green' ? 'bg-gradient-to-br from-green-300 to-green-400 ring-green-200' :
-                            'bg-gradient-to-br from-pink-300 to-pink-400 ring-pink-200'
-                      }`}
-                    aria-label={`${color} highlight`}
-                  >
-                    {highlightColor === color && (
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-3 h-3 bg-foreground rounded-full" />
-                      </div>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Note Textarea */}
-            <div>
-              <label className="text-sm font-semibold flex items-center gap-2 mb-2">
-                <FileText className="h-4 w-4 text-amber-600 dark:text-amber-500" aria-hidden="true" />
-                Your Note
-              </label>
               <Textarea
+                placeholder="Write your note here..."
                 value={newNote}
                 onChange={(e) => setNewNote(e.target.value)}
-                placeholder="Write your insights, questions, or thoughts about this passage..."
-                className="min-h-[120px] resize-none rounded-xl"
-                rows={5}
+                className="resize-none"
               />
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-muted-foreground">
-                  {newNote.length} characters
-                </p>
-                {newNote.length > 500 && (
-                  <p className="text-xs text-amber-600 dark:text-amber-500 font-medium">
-                    Consider keeping notes concise
-                  </p>
-                )}
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-foreground">Highlight Color:</p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setHighlightColor('yellow')}
+                    className={`w-6 h-6 rounded-full bg-amber-200 dark:bg-amber-500/30 ${highlightColor === 'yellow' ? 'ring-2 ring-amber-500' : ''}`}
+                  />
+                  <button
+                    onClick={() => setHighlightColor('blue')}
+                    className={`w-6 h-6 rounded-full bg-blue-200 dark:bg-blue-500/30 ${highlightColor === 'blue' ? 'ring-2 ring-blue-500' : ''}`}
+                  />
+                  <button
+                    onClick={() => setHighlightColor('green')}
+                    className={`w-6 h-6 rounded-full bg-green-200 dark:bg-green-500/30 ${highlightColor === 'green' ? 'ring-2 ring-green-500' : ''}`}
+                  />
+                  <button
+                    onClick={() => setHighlightColor('pink')}
+                    className={`w-6 h-6 rounded-full bg-pink-200 dark:bg-pink-500/30 ${highlightColor === 'pink' ? 'ring-2 ring-pink-500' : ''}`}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-          <DialogFooter className="gap-2 p-6 bg-muted/30 border-t border-border/50">
-            <ModernButton
-              variant="ghost"
-              onClick={() => {
-                setShowNoteDialog(false)
-                setSelectedText("")
-                setNewNote("")
-                setEditingNote(null)
-                setHighlightColor('yellow')
-              }}
-            >
-              Cancel
-            </ModernButton>
-            <ModernButton
-              onClick={saveNote}
-              disabled={!newNote.trim()}
-              className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white border-0 shadow-md hover:shadow-lg"
-              icon={StickyNote}
-            >
-              {editingNote ? 'Update Note' : 'Save Note'}
-            </ModernButton>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            <DialogFooter>
+              <Button onClick={saveNote} className="w-full">
+                Save Note
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-      {/* Review Dialog */}
-      <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
-        <DialogContent className="sm:max-w-[580px] max-h-[90vh] p-0 gap-0 overflow-hidden flex flex-col">
-          <div className="bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-4 border-b border-border/50 flex-shrink-0">
+        {/* Review Dialog */}
+        <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
+          <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-xl">
-                <div className="p-1.5 rounded-lg bg-primary/20" aria-hidden="true">
-                  <Star className="h-5 w-5 text-primary fill-current" aria-hidden="true" />
-                </div>
-                You've Finished the Book!
-              </DialogTitle>
-              <DialogDescription className="text-sm mt-1.5">
-                Share your thoughts and rate "{bookData?.title}" to help other readers
+              <DialogTitle>Write a Review</DialogTitle>
+              <DialogDescription>
+                Share your thoughts about this book.
               </DialogDescription>
             </DialogHeader>
-          </div>
-
-          <div className="p-4 space-y-4 overflow-y-auto flex-1">
-            {/* Rating Section */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-semibold">
-                  Your Rating
-                </label>
-                {userRating > 0 && (
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-500/10 to-amber-500/5 border border-amber-500/20">
-                    <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                    <span className="text-base font-bold text-amber-600 dark:text-amber-400">
-                      {userRating.toFixed(1)}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              {/* Star Display */}
-              <div className="flex items-center justify-center gap-1 mb-4 p-3 rounded-xl bg-gradient-to-br from-amber-500/5 via-transparent to-transparent border border-border/50">
-                {[1, 2, 3, 4, 5].map((star) => {
-                  const displayRating = hoveredRating > 0 ? hoveredRating : userRating
-                  const baseRating = Math.floor(displayRating)
-                  const isFullStar = star <= baseRating
-                  const isPartialStar = star === baseRating + 1 && (displayRating % 1 > 0)
-                  const partialFill = isPartialStar ? (displayRating % 1) * 100 : 0
-
-                  return (
-                    <button
-                      key={star}
-                      onClick={() => setUserRating(star)}
-                      onMouseEnter={() => setHoveredRating(star)}
-                      onMouseLeave={() => setHoveredRating(0)}
-                      className="group transition-all duration-200 hover:scale-125 focus:scale-125 focus:outline-none relative"
-                      aria-label={`Rate ${star} stars`}
-                    >
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <div key={star} className="relative">
                       <Star
-                        className={`h-10 w-10 transition-all duration-200 drop-shadow-sm ${isFullStar
-                          ? 'fill-amber-400 text-amber-400 group-hover:fill-amber-500 group-hover:text-amber-500'
-                          : 'fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700 group-hover:fill-gray-300 dark:group-hover:fill-gray-600'
+                        className={`h-4 w-4 transition-colors ${hoveredRating >= star
+                          ? 'fill-yellow-400 text-yellow-400'
+                          : 'fill-muted text-muted-foreground/20'
                           }`}
+                        onMouseEnter={() => setHoveredRating(star)}
+                        onMouseLeave={() => setHoveredRating(0)}
+                        onClick={() => setUserRating(star)}
                       />
-                      {isPartialStar && (
-                        <div
-                          className="absolute inset-0 overflow-hidden pointer-events-none"
-                          style={{ clipPath: `inset(0 ${100 - partialFill}% 0 0)` }}
-                        >
-                          <Star className="h-10 w-10 fill-amber-400 text-amber-400 drop-shadow-sm" />
-                        </div>
-                      )}
-                    </button>
-                  )
-                })}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-sm text-foreground">
+                  {userRating > 0 ? `${userRating} stars` : 'Rate this book'}
+                </p>
               </div>
-
-              {/* Fine-tune Slider */}
-              {userRating > 0 && (
-                <div className="space-y-2.5 p-3 rounded-xl bg-muted/30 border border-border/50">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-foreground flex items-center gap-1.5">
-                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                      Fine-tune your rating
-                    </span>
-                    <div className="flex gap-1.5">
-                      <button
-                        onClick={() => {
-                          const newRating = Math.max(0.5, userRating - 0.1)
-                          setUserRating(Math.round(newRating * 10) / 10)
-                        }}
-                        className="w-6 h-6 rounded-md bg-background hover:bg-muted border border-border/50 flex items-center justify-center transition-colors"
-                        aria-label="Decrease rating"
-                      >
-                        <span className="text-base font-bold">−</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          const newRating = Math.min(5.0, userRating + 0.1)
-                          setUserRating(Math.round(newRating * 10) / 10)
-                        }}
-                        className="w-6 h-6 rounded-md bg-background hover:bg-muted border border-border/50 flex items-center justify-center transition-colors"
-                        aria-label="Increase rating"
-                      >
-                        <span className="text-base font-bold">+</span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="relative pt-0.5">
-                    <input
-                      type="range"
-                      min="0.5"
-                      max="5.0"
-                      step="0.1"
-                      value={userRating}
-                      onChange={(e) => {
-                        const value = parseFloat(e.target.value)
-                        setUserRating(Math.round(value * 10) / 10)
-                      }}
-                      className="w-full h-2 rounded-full appearance-none cursor-pointer transition-all"
-                      style={{
-                        background: `linear-gradient(to right, 
-                          rgb(251, 191, 36) 0%, 
-                          rgb(251, 191, 36) ${((userRating - 0.5) / 4.5) * 100}%, 
-                          rgb(229, 231, 235) ${((userRating - 0.5) / 4.5) * 100}%, 
-                          rgb(229, 231, 235) 100%
-                        )`,
-                        WebkitAppearance: 'none',
-                      }}
-                    />
-                  </div>
-
-                  <div className="flex justify-between items-center text-[10px]">
-                    <span className="text-muted-foreground">0.5</span>
-                    <div className="flex gap-3 text-muted-foreground">
-                      <span className="hover:text-foreground cursor-pointer transition-colors" onClick={() => setUserRating(2.0)}>2.0</span>
-                      <span className="hover:text-foreground cursor-pointer transition-colors" onClick={() => setUserRating(3.0)}>3.0</span>
-                      <span className="hover:text-foreground cursor-pointer transition-colors" onClick={() => setUserRating(4.0)}>4.0</span>
-                    </div>
-                    <span className="text-muted-foreground">5.0</span>
-                  </div>
-
-                  {/* Quick Rating Buttons */}
-                  <div className="flex gap-1.5 pt-2 border-t border-border/50">
-                    <span className="text-[10px] text-muted-foreground mr-1 self-center">Quick:</span>
-                    {[3.0, 3.5, 4.0, 4.5, 5.0].map((rating) => (
-                      <button
-                        key={rating}
-                        onClick={() => setUserRating(rating)}
-                        className={`flex-1 px-1.5 py-1 text-[11px] font-semibold rounded-md transition-all ${userRating === rating
-                          ? 'bg-amber-500 text-white shadow-md'
-                          : 'bg-background hover:bg-muted border border-border/50'
-                          }`}
-                      >
-                        {rating.toFixed(1)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {userRating === 0 && (
-                <div className="text-center py-2 rounded-xl bg-muted/30 border border-dashed border-border">
-                  <p className="text-xs text-muted-foreground">
-                    👆 Click on the stars above to rate this book
-                  </p>
-                </div>
-              )}
-            </div>
-
-            {/* Review Text Section */}
-            <div>
-              <label className="text-sm font-semibold flex items-center gap-1.5 mb-1.5">
-                <FileText className="h-3.5 w-3.5 text-primary" />
-                Your Review
-              </label>
               <Textarea
+                placeholder="Write your review here..."
                 value={reviewText}
                 onChange={(e) => setReviewText(e.target.value)}
-                placeholder="What did you think about this book? Share your insights, favorite moments, or overall impressions..."
-                className="min-h-[100px] resize-none rounded-xl text-sm"
-                rows={4}
+                className="resize-none"
               />
-              <div className="flex items-center justify-between mt-1.5">
-                <p className="text-[10px] text-muted-foreground">
-                  {reviewText.length} characters
-                </p>
-                {reviewText.length < 50 && reviewText.length > 0 && (
-                  <p className="text-[10px] text-amber-600 dark:text-amber-500 font-medium">
-                    Try to write at least 50 characters
-                  </p>
-                )}
-              </div>
             </div>
+            <DialogFooter>
+              <Button
+                variant="ghost"
+                onClick={() => setShowReviewDialog(false)}
+              >
+                Maybe Later
+              </Button>
+              <Button
+                onClick={submitReview}
+                disabled={userRating === 0 || reviewText.trim().length < 10}
+                className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground border-0 shadow-md hover:shadow-lg"
+              >
+                Submit Review
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
-            {/* Book Info Summary */}
-            <div className="rounded-xl bg-muted/50 p-3 border border-border/50">
-              <h4 className="font-semibold text-sm mb-1">{bookData?.title}</h4>
-              <p className="text-xs text-muted-foreground mb-2">by {bookData?.author}</p>
-              <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  <span>{bookData?.readingTime}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <FileText className="h-3 w-3" />
-                  <span>{bookData?.totalPages} pages</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <StickyNote className="h-3 w-3" />
-                  <span>{notes.length} notes</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter className="gap-2 p-4 bg-muted/30 border-t border-border/50 flex-shrink-0">
-            <ModernButton
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowReviewDialog(false)}
-            >
-              Maybe Later
-            </ModernButton>
-            <ModernButton
-              size="sm"
-              onClick={submitReview}
-              disabled={userRating === 0 || reviewText.trim().length < 10}
-              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground border-0 shadow-md hover:shadow-lg"
-              icon={Star}
-            >
-              Submit Review
-            </ModernButton>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Note Popover - Shows when clicking on a highlight */}
-      <NotePopover
-        note={selectedNote}
-        position={popoverPosition}
-        onClose={() => {
-          setSelectedNote(null)
-          setPopoverPosition(null)
-        }}
-        onEdit={(note) => {
-          setSelectedNote(null)
-          setPopoverPosition(null)
-          editNote(note)
-        }}
-        onDelete={(noteId) => {
-          setSelectedNote(null)
-          setPopoverPosition(null)
-          deleteNote(noteId)
-        }}
-        onShare={(noteId) => {
-          shareNote(noteId)
-        }}
-      />
+        {/* Note Popover - Shows when clicking on a highlight */}
+        <NotePopover
+          note={selectedNote}
+          position={popoverPosition}
+          onClose={() => {
+            setSelectedNote(null)
+            setPopoverPosition(null)
+          }}
+          onEdit={(note) => {
+            setSelectedNote(null)
+            setPopoverPosition(null)
+            editNote(note)
+          }}
+          onDelete={(noteId) => {
+            setSelectedNote(null)
+            setPopoverPosition(null)
+            deleteNote(noteId)
+          }}
+          onShare={(noteId) => {
+            shareNote(noteId)
+          }}
+        />
+      </div>
     </div>
   )
 }
