@@ -2,11 +2,11 @@ import { useState, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
-  BookOpen, 
-  Star, 
-  Filter, 
-  Search, 
-  Grid3x3, 
+  BookOpen,
+  Star,
+  Filter,
+  Search,
+  Grid3x3,
   List,
   StickyNote,
   ChevronDown,
@@ -30,13 +30,13 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { ModernButton } from '@/components/ui/modern'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import {
   Dialog,
@@ -221,7 +221,7 @@ export default function NoteShare() {
 
   // Filter and sort data
   const filteredNotes = useMemo(() => {
-    let filtered = mockSharedNotes.filter(note => 
+    let filtered = mockSharedNotes.filter(note =>
       note.bookTitle.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       note.userName.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       note.userNote.toLowerCase().includes(filters.searchTerm.toLowerCase())
@@ -230,7 +230,7 @@ export default function NoteShare() {
     if (filters.noteFilter === "Most Liked") {
       filtered = filtered.filter(note => note.likes >= 20)
     } else if (filters.noteFilter === "Recent") {
-      filtered = filtered.filter(note => 
+      filtered = filtered.filter(note =>
         new Date(note.sharedDate) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
       )
     }
@@ -244,7 +244,7 @@ export default function NoteShare() {
   }, [filters])
 
   const filteredBooks = useMemo(() => {
-    const filtered = mockUserBooks.filter(book => 
+    const filtered = mockUserBooks.filter(book =>
       book.title.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       book.author.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       book.description.toLowerCase().includes(filters.searchTerm.toLowerCase())
@@ -309,7 +309,7 @@ export default function NoteShare() {
     if (!selectedNote) return
     const bookContent = mockBookContent[selectedNote.bookId] || []
     const maxPage = Math.ceil(bookContent.length / 1) // Simplified: 1 page per content block
-    
+
     if (direction === 'next' && previewPage < maxPage) {
       setPreviewPage(prev => prev + 1)
     } else if (direction === 'prev' && previewPage > 1) {
@@ -319,14 +319,15 @@ export default function NoteShare() {
 
   const renderHighlightedText = (text: string, note: SharedNote | null) => {
     if (!note) return <span>{text}</span>
-    
+
     // Only highlight on the page where the note was created
     const pageIndex = previewPage - 1
     const notePageIndex = Math.ceil(note.page / 5) - 1 // Map actual page to content index
-    
+
     if (pageIndex !== notePageIndex && pageIndex !== 0) {
       return <span>{text}</span>
     }
+
 
     const noteTextIndex = text.indexOf(note.noteText)
     if (noteTextIndex === -1) {
@@ -343,72 +344,55 @@ export default function NoteShare() {
             </mark>
           </PopoverTrigger>
           <PopoverContent className="w-96 p-0 border-0 shadow-2xl" align="start">
+            {/* Arrow pointing to highlight */}
+            <div className="absolute -top-2 left-4 w-4 h-4 rotate-45 bg-gradient-to-br from-background to-background border-l border-t border-border/50" />
+
             <Card className="border-0 shadow-none bg-gradient-to-br from-amber-50/40 via-background to-background dark:from-amber-950/20 dark:via-background dark:to-background">
               <div className="border-l-4 border-l-amber-500 dark:border-l-amber-600">
-                <CardContent className="p-4">
-                  {/* User Info */}
-                  <div className="flex items-center gap-3 mb-3 pb-3 border-b border-border/30">
-                    <img
-                      src={note.userAvatar}
-                      alt={note.userName}
-                      className="w-8 h-8 rounded-full border-2 border-amber-500/30 shadow-sm"
-                    />
-                    <div className="flex-1">
-                      <p className="text-sm font-bold text-foreground">{note.userName}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(note.sharedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </p>
+                <CardContent className="p-0">
+                  {/* Header with color dot icon and close button */}
+                  <div className="flex items-start justify-between p-4 pb-3 border-b border-border/30">
+                    <div className="flex items-center gap-2 flex-1">
+                      {/* Color indicator icon */}
+                      <div className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-900/50">
+                        <div className="w-2 h-2 rounded-full bg-amber-600 dark:bg-amber-400" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-muted-foreground">
+                          Page {note.page}
+                        </p>
+                      </div>
                     </div>
-                    <Badge variant="outline" className="text-xs bg-background/50">
-                      Page {note.page}
-                    </Badge>
-                  </div>
-
-                  {/* Highlighted Quote */}
-                  <div className="mb-3 relative group">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Quote className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                      <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 uppercase tracking-wide">
-                        Highlighted
-                      </span>
-                    </div>
-                    <blockquote className="text-lg font-medium text-foreground/90 italic leading-relaxed pl-3 border-l-2 border-amber-400">
-                      "{note.noteText}"
-                    </blockquote>
                     <Button
                       variant="ghost"
                       size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        copyQuoteToClipboard(note.noteText)
-                      }}
-                      className="absolute -right-1 -top-1 opacity-0 group-hover:opacity-100 transition-opacity h-6 w-6 p-0 rounded-lg"
+                      className="h-6 w-6 p-0 -mt-1 -mr-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      onClick={() => setShowNotePopover(false)}
                     >
-                      {copiedQuote ? (
-                        <Check className="h-3 w-3 text-green-600" />
-                      ) : (
-                        <Copy className="h-3 w-3" />
-                      )}
+                      <X className="h-3.5 w-3.5" />
                     </Button>
                   </div>
 
-                  {/* Personal Note */}
+                  {/* Highlighted Text Section */}
+                  <div className="px-4 pt-3 pb-2">
+                    <p className="text-xs font-medium text-muted-foreground mb-1">Highlighted Text</p>
+                    <p className="text-sm font-semibold text-foreground leading-snug">
+                      "{note.noteText}"
+                    </p>
+                  </div>
+
+                  {/* Note Content Section */}
                   {note.userNote && (
-                    <div className="mb-3">
-                      <div className="flex items-center gap-2 mb-2">
-                        <StickyNote className="h-3.5 w-3.5 text-primary" />
-                        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                          Note
-                        </span>
-                      </div>
-                      <p className="text-sm text-foreground/80 leading-relaxed pl-3">
+                    <div className="px-4 pb-3">
+                      <p className="text-xs font-medium text-muted-foreground mb-1">Note</p>
+                      <p className="text-sm text-foreground/90 leading-relaxed">
                         {note.userNote}
                       </p>
                     </div>
                   )}
 
-                  {/* Engagement */}
-                  <div className="flex items-center gap-3 pt-3 border-t border-border/30">
+                  {/* Engagement Actions */}
+                  <div className="flex items-center gap-1 px-3 py-2 bg-background/30 border-t border-border/30">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -416,19 +400,57 @@ export default function NoteShare() {
                         e.stopPropagation()
                         toggleLike(note.id)
                       }}
-                      className={`h-7 gap-1.5 hover:bg-rose-50 dark:hover:bg-rose-950/30 ${note.isLiked ? 'text-rose-600' : 'text-muted-foreground'}`}
+                      className={`h-7 text-xs transition-colors ${note.isLiked
+                        ? 'text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30'
+                        : 'text-muted-foreground hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-400'
+                        }`}
                     >
-                      <ThumbsUp className={`h-3 w-3 ${note.isLiked ? 'fill-current' : ''}`} />
-                      <span className="text-xs font-semibold">{note.likes}</span>
+                      <ThumbsUp className={`h-3 w-3 mr-1 ${note.isLiked ? 'fill-current' : ''}`} />
+                      {note.likes}
                     </Button>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 gap-1.5 hover:bg-blue-50 dark:hover:bg-blue-950/30 text-muted-foreground"
+                      className="h-7 text-xs hover:bg-blue-50 dark:hover:bg-blue-950/30 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                     >
-                      <MessageCircle className="h-3 w-3" />
-                      <span className="text-xs font-semibold">{note.comments}</span>
+                      <MessageCircle className="h-3 w-3 mr-1" />
+                      {note.comments}
                     </Button>
+                    <div className="flex-1" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        copyQuoteToClipboard(note.noteText)
+                      }}
+                      className="h-7 text-xs hover:bg-background/80 transition-colors"
+                    >
+                      {copiedQuote ? (
+                        <>
+                          <Check className="h-3 w-3 mr-1 text-green-600" />
+                          Copied
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3 w-3 mr-1" />
+                          Copy
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* Timestamp footer */}
+                  <div className="px-4 py-1.5 bg-background/20 border-t border-border/20">
+                    <p className="text-[10px] text-muted-foreground/70">
+                      {new Date(note.sharedDate).toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      })}
+                    </p>
                   </div>
                 </CardContent>
               </div>
@@ -446,11 +468,10 @@ export default function NoteShare() {
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`h-3 w-3 ${
-              star <= rating 
-                ? 'fill-yellow-400 text-yellow-400' 
-                : 'text-gray-300'
-            }`}
+            className={`h-3 w-3 ${star <= rating
+              ? 'fill-yellow-400 text-yellow-400'
+              : 'text-gray-300'
+              }`}
           />
         ))}
         <span className="ml-1 text-xs text-gray-600 dark:text-gray-400">
@@ -463,9 +484,9 @@ export default function NoteShare() {
   return (
     <div className="relative w-full min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-8">
       <div className="container mx-auto">
-        
+
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -484,7 +505,7 @@ export default function NoteShare() {
         </motion.div>
 
         {/* Community Stats */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1, duration: 0.6 }}
@@ -501,7 +522,7 @@ export default function NoteShare() {
               <div className="text-xs sm:text-sm text-muted-foreground">Shared Notes</div>
             </CardContent>
           </Card>
-          
+
           <Card className="border shadow-md bg-card hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
             <CardContent className="p-3 sm:p-4 text-center">
               <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-green-500/10 to-green-500/5 w-fit mx-auto mb-1.5 sm:mb-2">
@@ -513,7 +534,7 @@ export default function NoteShare() {
               <div className="text-xs sm:text-sm text-muted-foreground">User Books</div>
             </CardContent>
           </Card>
-          
+
           <Card className="border shadow-md bg-card hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
             <CardContent className="p-3 sm:p-4 text-center">
               <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-500/5 w-fit mx-auto mb-1.5 sm:mb-2">
@@ -525,7 +546,7 @@ export default function NoteShare() {
               <div className="text-xs sm:text-sm text-muted-foreground">Contributors</div>
             </CardContent>
           </Card>
-          
+
           <Card className="border shadow-md bg-card hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
             <CardContent className="p-3 sm:p-4 text-center">
               <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-rose-500/10 to-rose-500/5 w-fit mx-auto mb-1.5 sm:mb-2">
@@ -540,7 +561,7 @@ export default function NoteShare() {
         </motion.div>
 
         {/* Search Bar */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.6 }}
@@ -787,7 +808,7 @@ export default function NoteShare() {
                             </Link>
                           </div>
                         </div>
-                        
+
                         <CardContent className="p-2.5 sm:p-3">
                           <h3 className="text-sm sm:text-base font-semibold text-foreground mb-1 line-clamp-2">
                             {book.title}
@@ -868,9 +889,9 @@ export default function NoteShare() {
                               {/* Button */}
                               <div className="mt-auto">
                                 <Link to={`/book/${book.id}/read`}>
-                                  <ModernButton 
-                                    size="sm" 
-                                    icon={BookOpen} 
+                                  <ModernButton
+                                    size="sm"
+                                    icon={BookOpen}
                                     className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:shadow-lg w-full sm:w-auto text-xs sm:text-sm h-8 sm:h-9"
                                   >
                                     Read Now
@@ -907,8 +928,8 @@ export default function NoteShare() {
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <Link to={`/book/${selectedNote.bookId}/read`}>
-                        <ModernButton 
-                          size="sm" 
+                        <ModernButton
+                          size="sm"
                           icon={BookOpen}
                           className="bg-gradient-to-r from-primary to-secondary text-primary-foreground hover:shadow-xl whitespace-nowrap"
                         >
@@ -925,7 +946,7 @@ export default function NoteShare() {
                       </Button>
                     </div>
                   </div>
-                  
+
                   {/* User Info - Compact Single Line */}
                   <div className="flex items-center gap-2 text-xs">
                     <img
@@ -949,19 +970,19 @@ export default function NoteShare() {
                         {/* Reading Container */}
                         <div className="flex flex-col">
                           {/* Text Content */}
-                          <div 
+                          <div
                             className="flex-1 p-6 md:p-8"
-                            style={{ 
-                              maxWidth: '65ch', 
-                              marginLeft: 'auto', 
+                            style={{
+                              maxWidth: '65ch',
+                              marginLeft: 'auto',
                               marginRight: 'auto',
                               width: '100%'
                             }}
                           >
-                            <div 
+                            <div
                               className="prose prose-lg dark:prose-invert max-w-none leading-relaxed selection:bg-amber-300 selection:text-amber-950 dark:selection:bg-amber-500 dark:selection:text-white transition-all duration-300"
-                              style={{ 
-                                fontSize: '16px', 
+                              style={{
+                                fontSize: '16px',
                                 lineHeight: '1.85',
                                 letterSpacing: '0.015em',
                                 textAlign: 'justify',
@@ -977,11 +998,11 @@ export default function NoteShare() {
                               )}
                             </div>
                           </div>
-                        
+
                           {/* Navigation Footer */}
                           <div className="px-6 md:px-8 pb-6 pt-4 border-t border-border/30 bg-gradient-to-b from-transparent to-muted/20">
                             <div className="flex items-center justify-between gap-4" style={{ maxWidth: '65ch', marginLeft: 'auto', marginRight: 'auto', width: '100%' }}>
-                              <Button 
+                              <Button
                                 variant="ghost"
                                 size="lg"
                                 onClick={() => handlePreviewPageChange('prev')}
@@ -993,7 +1014,7 @@ export default function NoteShare() {
                                   <span className="hidden sm:inline font-semibold">Previous</span>
                                 </div>
                               </Button>
-                              
+
                               <div className="flex items-center gap-2">
                                 <div className="relative overflow-hidden px-6 py-3 bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 rounded-xl border border-primary/30 shadow-md">
                                   <div className="flex items-center gap-2.5">
@@ -1007,8 +1028,8 @@ export default function NoteShare() {
                                   </div>
                                 </div>
                               </div>
-                              
-                              <Button 
+
+                              <Button
                                 variant="ghost"
                                 size="lg"
                                 onClick={() => handlePreviewPageChange('next')}

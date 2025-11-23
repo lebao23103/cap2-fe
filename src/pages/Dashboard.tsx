@@ -52,38 +52,47 @@ export default function Dashboard() {
         notesService.getUserNotesStatistics().catch(() => ({ total_notes: 0 }))
       ])
 
-      // Transform books for recommendations (show first 3 approved books)
-      const transformedRecommendations: BookData[] = booksData.slice(0, 3).map((book: any) => ({
-        id: book.id.toString(),
-        title: book.title,
-        author: book.author,
-        cover: book.cover_image || 'https://via.placeholder.com/150x200',
-        rating: book.rating || 0,
-        genre: book.subject ? [book.subject] : ['General']
-      }))
+      // Transform books for recommendations (show first 3 approved books with null checks)
+      const transformedRecommendations: BookData[] = booksData
+        .filter((book: any) => book && book.id && book.title)
+        .slice(0, 3)
+        .map((book: any) => ({
+          id: book.id.toString(),
+          title: book.title,
+          author: book.author || 'Unknown Author',
+          cover: book.cover_image || 'https://via.placeholder.com/150x200',
+          rating: book.rating || 0,
+          genre: book.subject ? [book.subject] : ['General']
+        }))
 
-      // Transform favorites
-      const transformedFavorites: BookData[] = favoritesData.slice(0, 2).map((fav: any) => ({
-        id: fav.book.id.toString(),
-        title: fav.book.title,
-        author: fav.book.author,
-        cover: fav.book.cover_image || 'https://via.placeholder.com/150x200',
-        rating: fav.book.rating || 0,
-        genre: fav.book.subject ? [fav.book.subject] : ['General']
-      }))
+      // Transform favorites (with null checks)
+      const transformedFavorites: BookData[] = favoritesData
+        .filter((fav: any) => fav && fav.book && fav.book.id)
+        .slice(0, 2)
+        .map((fav: any) => ({
+          id: fav.book.id.toString(),
+          title: fav.book.title,
+          author: fav.book.author || 'Unknown Author',
+          cover: fav.book.cover_image || 'https://via.placeholder.com/150x200',
+          rating: fav.book.rating || 0,
+          genre: fav.book.subject ? [fav.book.subject] : ['General']
+        }))
 
-      // Transform reading history
-      const transformedHistory: BookData[] = historyData.slice(0, 2).map((item: any) => ({
-        id: item.book.id.toString(),
-        title: item.book.title,
-        author: item.book.author,
-        cover: item.book.cover_image || 'https://via.placeholder.com/150x200',
-        rating: item.book.rating || 0,
-        genre: item.book.subject ? [item.book.subject] : ['General']
-      }))
+      // Transform reading history (with null checks)
+      const transformedHistory: BookData[] = historyData
+        .filter((item: any) => item && item.book && item.book.id)
+        .slice(0, 2)
+        .map((item: any) => ({
+          id: item.book.id.toString(),
+          title: item.book.title,
+          author: item.book.author || 'Unknown Author',
+          cover: item.book.cover_image || 'https://via.placeholder.com/150x200',
+          rating: item.book.rating || 0,
+          genre: item.book.subject ? [item.book.subject] : ['General']
+        }))
 
-      // Calculate stats
-      const completedBooks = historyData.filter((item: any) => item.status === 'completed').length
+      // Calculate stats (with null checks)
+      const completedBooks = historyData.filter((item: any) => item && item.status === 'completed').length
       
       setRecommendations(transformedRecommendations)
       setFavorites(transformedFavorites)

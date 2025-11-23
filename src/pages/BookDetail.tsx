@@ -16,6 +16,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import type { Book, Review } from '@/lib/api/books';
+import booksService from '@/lib/api/books';
+import userService from '@/lib/api/user';
 import { useToast } from '@/components/ui/use-toast';
 import { BookDetailSkeleton, BooksErrorState } from '@/components/books';
 import { useAnnounce } from '@/hooks/useAnnounce';
@@ -54,87 +56,23 @@ export default function BookDetail() {
       setLoading(true);
       setError(null);
       
-      // TODO: Connect to real API
-      // const bookData = await booksService.getBookById(Number(id));
-      // const reviewsData = await booksService.getBookReviews(Number(id));
-      // setBook(bookData);
-      // setReviews(reviewsData);
-
-      // Mock data for now
-      const mockBook: Book = {
-        id: Number(id),
-        title: 'The Great Gatsby',
-        author: 'F. Scott Fitzgerald',
-        language: 'English',
-        description: 'A classic novel set in the Jazz Age that explores themes of wealth, love, and the American Dream. The story follows the mysterious millionaire Jay Gatsby and his obsession with Daisy Buchanan.',
-        cover_image: `https://picsum.photos/seed/${id}/400/600`,
-        rating: 4.5,
-        reviews_count: 2847,
-        created_at: '2024-01-15T10:00:00Z',
-      };
-
-      const mockReviews: Review[] = [
-        {
-          id: 1,
-          user: {
-            id: 1,
-            first_name: 'Sarah',
-            last_name: 'Johnson',
-            email: 'sarah@example.com',
-          },
-          book: Number(id),
-          rating: 5,
-          comment: 'An absolute masterpiece! Fitzgerald\'s prose is beautiful and the story is timeless. The characters are complex and the themes are still relevant today.',
-          created_at: '2024-12-15T14:30:00Z',
-        },
-        {
-          id: 2,
-          user: {
-            id: 2,
-            first_name: 'Michael',
-            last_name: 'Chen',
-            email: 'michael@example.com',
-          },
-          book: Number(id),
-          rating: 4,
-          comment: 'Great read, though the pacing felt slow at times. The symbolism and writing style make up for it. Highly recommend for anyone interested in American literature.',
-          created_at: '2024-12-10T09:15:00Z',
-        },
-      ];
-
-      const mockRelatedBooks: Book[] = [
-        {
-          id: 2,
-          title: 'To Kill a Mockingbird',
-          author: 'Harper Lee',
-          description: 'A gripping tale of racial injustice and childhood innocence.',
-          cover_image: 'https://picsum.photos/seed/2/300/450',
-          rating: 4.8,
-          reviews_count: 3521,
-        },
-        {
-          id: 3,
-          title: '1984',
-          author: 'George Orwell',
-          description: 'A haunting vision of a totalitarian future.',
-          cover_image: 'https://picsum.photos/seed/3/300/450',
-          rating: 4.6,
-          reviews_count: 4123,
-        },
-        {
-          id: 4,
-          title: 'Pride and Prejudice',
-          author: 'Jane Austen',
-          description: 'A timeless romance exploring love and social class.',
-          cover_image: 'https://picsum.photos/seed/4/300/450',
-          rating: 4.7,
-          reviews_count: 2918,
-        },
-      ];
-
-      setBook(mockBook);
-      setReviews(mockReviews);
-      setRelatedBooks(mockRelatedBooks);
+      // Fetch real data from API
+      const [bookData, reviewsData] = await Promise.all([
+        booksService.getBookById(Number(id)),
+        booksService.getBookReviews(Number(id)).catch(() => [])
+      ]);
+      
+      setBook(bookData);
+      setReviews(reviewsData);
+      
+      // Check if book is favorited
+      try {
+        const favorites = await userService.getFavorites();
+        const isFav = favorites.some((fav: any) => fav.book.id === Number(id));
+        setIsFavorited(isFav);
+      } catch (err) {
+        console.log('Could not load favorite status');
+      }
     } catch (err) {
       console.error('Error loading book:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to load book details';
@@ -162,11 +100,12 @@ export default function BookDetail() {
       setFavoritingState('loading');
       const newFavoritedState = !isFavorited;
       
-      // TODO: Connect to favorites API
-      // await booksService.toggleFavorite(Number(id));
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // Call real API
+      if (newFavoritedState) {
+        await userService.addToFavorites(Number(id));
+      } else {
+        await userService.removeFromFavorites(Number(id));
+      }
       
       setIsFavorited(newFavoritedState);
       setFavoritingState('success');
@@ -248,14 +187,11 @@ export default function BookDetail() {
       setReviewSubmitState('idle');
       announce('Submitting review', 'polite');
       
-      // TODO: Connect to real API
-      // await booksService.addReview(Number(id), {
-      //   rating: userRating,
-      //   comment: userReview,
-      // });
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Submit review via API
+      await booksService.addReview(Number(id), {
+        rating: userRating,
+        comment: userReview,
+      });
 
       setReviewSubmitState('success');
       announce('Review submitted successfully', 'polite');
@@ -331,14 +267,16 @@ export default function BookDetail() {
   };
 
   const calculateRatingDistribution = () => {
-    // TODO: Get real data from API
-    return [
-      { stars: 5, count: 1520, percentage: 53 },
-      { stars: 4, count: 856, percentage: 30 },
-      { stars: 3, count: 285, percentage: 10 },
-      { stars: 2, count: 142, percentage: 5 },
-      { stars: 1, count: 44, percentage: 2 },
-    ];
+    // Calculate real distribution from reviews
+    const distribution = [5, 4, 3, 2, 1].map(stars => {
+      const count = reviews.filter(review => review.rating === stars).length;
+      const percentage = reviews.length > 0 
+        ? Math.round((count / reviews.length) * 100) 
+        : 0;
+      return { stars, count, percentage };
+    });
+    
+    return distribution;
   };
 
   if (loading) {
@@ -532,13 +470,13 @@ export default function BookDetail() {
               {/* Rating */}
               <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <div className="flex items-center gap-1">
-                  {renderStarRating(book.rating)}
+                  {renderStarRating(book.rating || 0)}
                 </div>
                 <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-foreground">
-                  {book.rating.toFixed(1)}
+                  {(book.rating || 0).toFixed(1)}
                 </span>
                 <span className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">
-                  {book.reviews_count?.toLocaleString()} reviews
+                  {book.reviews_count?.toLocaleString() || 0} reviews
                 </span>
               </div>
             </div>
@@ -552,28 +490,6 @@ export default function BookDetail() {
               <p className="text-sm text-gray-600 dark:text-muted-foreground leading-relaxed">
                 {book.description}
               </p>
-            </div>
-
-            {/* Book Metadata */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase">Language</p>
-                <p className="text-sm font-semibold text-gray-900 dark:text-foreground">{book.language || 'English'}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase">Published</p>
-                <p className="text-sm font-semibold text-gray-900 dark:text-foreground">
-                  {new Date(book.created_at || '').getFullYear()}
-                </p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase">Author</p>
-                <p className="text-sm font-semibold text-gray-900 dark:text-foreground truncate">{book.author}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-xs font-medium text-gray-500 dark:text-muted-foreground uppercase">Status</p>
-                <p className="text-sm font-semibold text-green-600 dark:text-green-500">Available</p>
-              </div>
             </div>
           </div>
         </div>
@@ -680,6 +596,14 @@ export default function BookDetail() {
           {/* Reviews List */}
           <div className="bg-white dark:bg-card rounded-lg p-6 shadow-sm border border-border/50 transition-shadow hover:shadow-md">
             <h2 className="text-base font-semibold text-gray-900 dark:text-foreground mb-5">Reviews ({reviews.length})</h2>
+            {reviews.length === 0 ? (
+              <div className="text-center py-8">
+                <Star className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                <p className="text-gray-600 dark:text-muted-foreground text-sm">
+                  No reviews yet. Be the first to review this book!
+                </p>
+              </div>
+            ) : (
             <div className="space-y-5">
               {reviews.map((review, index) => (
                 <div key={review.id}>
@@ -739,6 +663,7 @@ export default function BookDetail() {
                 </div>
               ))}
             </div>
+            )}
           </div>
         </div>
       </div>

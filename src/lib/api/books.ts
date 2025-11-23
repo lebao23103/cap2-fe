@@ -42,9 +42,9 @@ export interface CreateUserBookData {
 }
 
 class BooksService {
-  // Get all approved books (public)
+  // Get all books from main catalog (app_book table)
   async getApprovedBooks(): Promise<Book[]> {
-    const response = await apiClient.get('/api/list-approved-books/');
+    const response = await apiClient.get('/api/books/');
     return response.data;
   }
 
@@ -122,10 +122,10 @@ class BooksService {
     return response.data;
   }
 
-  // Get book content
-  async getBookContent(bookId: number): Promise<string> {
+  // Get book content (PDF URL)
+  async getBookContent(bookId: number): Promise<{ pdf_url: string }> {
     const response = await apiClient.get(`/api/books/${bookId}/content/`);
-    return response.data.content || response.data;
+    return response.data;
   }
 }
 

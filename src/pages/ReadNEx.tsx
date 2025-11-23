@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { fadeInUp } from '@/lib/animations'
 import { useToast } from '@/components/ui/use-toast'
 import booksService from '@/lib/api/books'
@@ -78,6 +78,7 @@ interface FilterState {
 
 export default function ReadNEx() {
   const { toast } = useToast()
+  const navigate = useNavigate()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [filters, setFilters] = useState<FilterState>({
     statusFilter: "All",
@@ -472,11 +473,17 @@ export default function ReadNEx() {
                       
                       {/* Hover Overlay - Elegant with backdrop blur */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4">
-                        <Button size="lg" asChild className="bg-white text-gray-900 hover:bg-white/90 shadow-xl font-semibold w-full max-w-[200px]">
-                          <Link to={`/book/${book.id}/read`}>
-                            <Play className="h-4 w-4 mr-2" />
-                            {book.readingProgress! > 0 ? 'Continue' : 'Start Reading'}
-                          </Link>
+                        <Button 
+                          size="lg" 
+                          className="bg-white text-gray-900 hover:bg-white/90 shadow-xl font-semibold w-full max-w-[200px]"
+                          onClick={(e) => {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            navigate(`/book/${book.id}/read`)
+                          }}
+                        >
+                          <Play className="h-4 w-4 mr-2" />
+                          {book.readingProgress! > 0 ? 'Continue' : 'Start Reading'}
                         </Button>
                         
                         {/* Secondary Actions Dropdown */}
@@ -491,11 +498,15 @@ export default function ReadNEx() {
                             <DropdownMenuLabel>Quick Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             {book.hasQuiz && (
-                              <DropdownMenuItem asChild>
-                                <Link to={`/book/${book.id}/quiz`} className="flex items-center">
-                                  <Target className="h-4 w-4 mr-2" />
-                                  {book.quizCompleted ? 'Retake Quiz' : 'Take Quiz'}
-                                </Link>
+                              <DropdownMenuItem 
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  navigate(`/book/${book.id}/quiz`)
+                                }}
+                                className="flex items-center cursor-pointer"
+                              >
+                                <Target className="h-4 w-4 mr-2" />
+                                {book.quizCompleted ? 'Retake Quiz' : 'Take Quiz'}
                               </DropdownMenuItem>
                             )}
                             <DropdownMenuItem onClick={() => toggleFavorite(book.id)}>

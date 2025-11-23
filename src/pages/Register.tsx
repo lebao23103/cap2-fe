@@ -74,7 +74,7 @@ export default function Register() {
     setGeneralError('')
     
     try {
-      // Call AuthContext register (handles tokens, state AND navigation)
+      // Call AuthContext register (handles navigation)
       await authRegister({
         email: data.email,
         password: data.password,
@@ -83,12 +83,12 @@ export default function Register() {
         last_name: data.lastName
       })
       
-      // Success! (AuthContext handles navigation to dashboard)
+      // Success! AuthContext will redirect to dashboard or login page
       setIsSuccess(true)
       
     } catch (error: any) {
       console.error('Registration error:', error)
-      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Registration failed. Please try again.'
+      const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Registration failed. Please try again.'
       setGeneralError(errorMessage)
     } finally {
       setIsLoading(false)
@@ -248,7 +248,7 @@ export default function Register() {
                   isLoading={isLoading}
                   isSuccess={isSuccess}
                   loadingText="Creating your account..."
-                  successText="Success! Redirecting..."
+                  successText="Account created!"
                   className="w-full h-12 text-base shadow-lg hover:shadow-xl"
                 >
                   Create Account

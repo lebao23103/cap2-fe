@@ -67,8 +67,8 @@ class AuthService {
     const response = await apiClient.post('/api/register/', userData);
     const data = response.data;
     
-    // Store tokens and user info (auto-login after registration)
-    if (data.access) {
+    // Store tokens and user info only if backend provides them (auto-login)
+    if (data.access && data.user) {
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
       localStorage.setItem('user', JSON.stringify(data.user));
