@@ -12,37 +12,26 @@ import NotePopover from '@/components/reader/NotePopover'
 import {
   ChevronLeft,
   ChevronRight,
-  Search,
   Settings,
   Bookmark,
   Share2,
-  MoreVertical,
-  X,
-  Menu,
-  Maximize2,
-  Minimize2,
-  Type,
   Sun,
   Moon,
-  Monitor,
   Clock,
-  FileText,
   StickyNote,
   Edit,
   Trash2,
-  Plus,
-  BookOpen,
   Star,
   Target,
   ArrowLeft,
   Palette,
-  Heart
+  Heart,
+  FileText
 } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
-import { ModernButton } from '@/components/ui/modern'
 import {
   DropdownMenu,
   DropdownMenuContent,
