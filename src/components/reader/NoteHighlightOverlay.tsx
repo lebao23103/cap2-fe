@@ -25,7 +25,7 @@ interface HighlightRect {
 interface NoteHighlightOverlayProps {
     notes: BookNote[]
     currentPage: number
-    onHighlightClick?: (note: BookNote) => void
+    onHighlightClick?: (note: BookNote, position: { x: number, y: number, rect?: DOMRect }) => void
     containerRef?: React.RefObject<HTMLDivElement>
 }
 
@@ -57,106 +57,207 @@ export default function NoteHighlightOverlay({
      * Uses PDF.js textLayer to map character positions to DOM coordinates
      */
     const calculateHighlights = useCallback(async () => {
+        console.log('Calculating highlights for page:', currentPage, 'Notes:', notes.length)
         if (!notes.length) {
             setHighlightRects([])
             return
         }
 
         // Find the PDF textLayer element
-        const textLayer = document.querySelector('.react-pdf__Page__textContent')
+        // We look for the textLayer specifically within the current page context if possible
+        // or fall back to the generic selector but check for visibility/existence
+        const textLayer = document.querySelector(`.react-pdf__Page[data-page-number="${currentPage}"] .react-pdf__Page__textContent`) ||
+            document.querySelector('.react-pdf__Page__textContent')
+
         if (!textLayer) {
-            console.warn('TextLayer not found, highlights cannot be rendered')
+            console.log('Text layer not found yet')
+            // Retry a few times if text layer isn't ready yet
             return
         }
+        console.log('Text layer found:', textLayer)
 
         const rects: HighlightRect[] = []
+        // Use the passed container ref or fallback to the textLayer itself as the reference frame
+        // If using containerRef, we calculate position relative to that container
+        const referenceRect = containerRef?.current?.getBoundingClientRect() || textLayer.getBoundingClientRect()
+        console.log('Reference rect:', referenceRect)
 
         for (const note of notes) {
-            // For MVP: Simple approach - find text in textLayer
-            // In future: Use position_start/end for precise positioning
-
             if (!note.text) continue
+            console.log('Processing note:', note.id, note.text.substring(0, 20) + '...')
 
             try {
                 // Get all text spans in the textLayer
                 const textSpans = Array.from(textLayer.querySelectorAll('span'))
 
-                // Find spans that contain the highlighted text
-                let foundText = false
-                let startSpan: HTMLElement | null = null
-                let endSpan: HTMLElement | null = null
-                let startOffset = 0
-                let endOffset = 0
+                // Robust Text Matching Strategy: Concatenate and Map (Whitespace Agnostic)
+                // 1. Filter visible spans and build a full text string
+                // 2. Keep a mapping of "clean" character indices (no whitespace) to spans and offsets
+                // 3. Find the note text (also cleaned) in the full clean string
+                // 4. Map back to spans to get coordinates
 
-                // Simple text matching (can be improved with position_start/end)
-                for (let i = 0; i < textSpans.length; i++) {
-                    const span = textSpans[i] as HTMLElement
-                    const spanText = span.textContent || ''
+                const visibleSpans: { span: HTMLElement, text: string }[] = []
 
-                    if (!foundText && spanText.includes(note.text.substring(0, 10))) {
-                        // Found start of highlighted text
-                        foundText = true
-                        startSpan = span
-                        startOffset = spanText.indexOf(note.text.substring(0, 10))
+                // Map from clean index to { spanIndex, offsetInSpan }
+                const cleanIndexMap: { spanIndex: number, offset: number }[] = []
+                let fullCleanText = ''
 
-                        // Check if entire text is within this span
-                        if (spanText.includes(note.text)) {
-                            endSpan = span
-                            endOffset = spanText.indexOf(note.text) + note.text.length
-                            break
-                        }
-                    } else if (foundText && spanText.includes(note.text.slice(-10))) {
-                        // Found end of highlighted text
-                        endSpan = span
-                        endOffset = spanText.indexOf(note.text.slice(-10)) + 10
-                        break
-                    }
-                }
+                textSpans.forEach((span, spanIndex) => {
+                    const rect = span.getBoundingClientRect()
+                    // Skip invisible spans
+                    if (rect.width === 0 || rect.height === 0) return
 
-                if (startSpan && endSpan) {
-                    // Get bounding rectangles
-                    const startRect = startSpan.getBoundingClientRect()
-                    const endRect = endSpan.getBoundingClientRect()
-                    const containerRect = textLayer.getBoundingClientRect()
+                    const text = span.textContent || ''
+                    if (!text) return
 
-                    // Calculate relative position to textLayer
-                    const x = startRect.left - containerRect.left
-                    const y = startRect.top - containerRect.top
-                    const width = endRect.right - startRect.left
-                    const height = Math.max(startRect.height, endRect.height)
-
-                    rects.push({
-                        x,
-                        y,
-                        width,
-                        height,
-                        noteId: note.id,
-                        color: HIGHLIGHT_COLORS[note.color || 'yellow'],
+                    visibleSpans.push({
+                        span: span as HTMLElement,
+                        text: text
                     })
+
+                    // Build clean text and mapping
+                    for (let i = 0; i < text.length; i++) {
+                        const char = text[i]
+                        // If char is not whitespace, add to clean text and map
+                        if (/\S/.test(char)) {
+                            cleanIndexMap.push({
+                                spanIndex: visibleSpans.length - 1,
+                                offset: i
+                            })
+                            fullCleanText += char.toLowerCase()
+                        }
+                    }
+                })
+
+                // Normalize note text (remove all whitespace)
+                const cleanNoteText = note.text.replace(/\s+/g, '').toLowerCase()
+
+                // Find matches in clean text
+                const matchIndex = fullCleanText.indexOf(cleanNoteText)
+
+                if (matchIndex !== -1) {
+                    console.log('Found match at clean index:', matchIndex)
+                    const matchEndIndex = matchIndex + cleanNoteText.length
+
+                    // Identify spans involved in the match
+                    const startMap = cleanIndexMap[matchIndex]
+                    // For end map, we need the index of the last character, which is matchEndIndex - 1
+                    // But if matchEndIndex is 0 (empty string), this would be -1.
+                    // Assuming cleanNoteText is not empty.
+                    const endMap = cleanIndexMap[matchEndIndex - 1]
+
+                    if (startMap && endMap) {
+                        const startSpanIndex = startMap.spanIndex
+                        const endSpanIndex = endMap.spanIndex
+
+                        // Iterate through spans from start to end
+                        for (let i = startSpanIndex; i <= endSpanIndex; i++) {
+                            const spanData = visibleSpans[i]
+                            const span = spanData.span
+
+                            // Determine start and end offsets for this span
+                            let startOffset = 0
+                            let endOffset = spanData.text.length
+
+                            // If this is the first span, use the start offset from map
+                            if (i === startSpanIndex) {
+                                startOffset = startMap.offset
+                            }
+
+                            // If this is the last span, use the end offset from map (+1 for exclusive range)
+                            if (i === endSpanIndex) {
+                                endOffset = endMap.offset + 1
+                            }
+
+                            try {
+                                const range = document.createRange()
+                                const textNode = span.firstChild
+                                if (!textNode) {
+                                    // Fallback if no text node
+                                    rects.push({
+                                        ...span.getBoundingClientRect(),
+                                        x: span.getBoundingClientRect().left - referenceRect.left,
+                                        y: span.getBoundingClientRect().top - referenceRect.top,
+                                        noteId: note.id,
+                                        color: HIGHLIGHT_COLORS[note.color || 'yellow']
+                                    } as HighlightRect)
+                                    continue
+                                }
+
+                                // Ensure offsets are within bounds
+                                const safeStart = Math.min(startOffset, textNode.textContent?.length || 0)
+                                const safeEnd = Math.min(endOffset, textNode.textContent?.length || 0)
+
+                                if (safeStart < safeEnd) {
+                                    range.setStart(textNode, safeStart)
+                                    range.setEnd(textNode, safeEnd)
+
+                                    const clientRects = range.getClientRects()
+                                    for (let j = 0; j < clientRects.length; j++) {
+                                        const r = clientRects[j]
+                                        rects.push({
+                                            x: r.left - referenceRect.left,
+                                            y: r.top - referenceRect.top,
+                                            width: r.width,
+                                            height: r.height,
+                                            noteId: note.id,
+                                            color: HIGHLIGHT_COLORS[note.color || 'yellow'],
+                                        })
+                                    }
+                                }
+                            } catch (e) {
+                                console.error('Error creating range for span:', e)
+                            }
+                        }
+                    }
+                } else {
+                    console.log('No match found in full text for note:', note.id)
                 }
             } catch (error) {
                 console.error('Error calculating highlight for note:', note.id, error)
             }
         }
 
+        console.log('Total rects generated:', rects.length)
         setHighlightRects(rects)
-    }, [notes])
+    }, [notes, currentPage, containerRef])
 
     // Recalculate highlights when notes change or page loads
     useEffect(() => {
         // Wait for textLayer to render
-        const timer = setTimeout(() => {
-            calculateHighlights()
-        }, 300)
+        // We poll a few times to ensure textLayer is ready
+        let attempts = 0
+        const maxAttempts = 10
+
+        const checkAndCalculate = () => {
+            const textLayer = document.querySelector(`.react-pdf__Page[data-page-number="${currentPage}"] .react-pdf__Page__textContent`) ||
+                document.querySelector('.react-pdf__Page__textContent')
+
+            if (textLayer && textLayer.children.length > 0) {
+                calculateHighlights()
+            } else if (attempts < maxAttempts) {
+                attempts++
+                setTimeout(checkAndCalculate, 200)
+            }
+        }
+
+        const timer = setTimeout(checkAndCalculate, 300)
 
         return () => clearTimeout(timer)
     }, [calculateHighlights, currentPage])
 
     // Handle click on highlight
-    const handleHighlightClick = (noteId: string) => {
+    const handleHighlightClick = (noteId: string, e: React.MouseEvent) => {
+        console.log('Highlight clicked:', noteId)
         const note = notes.find(n => n.id === noteId)
         if (note && onHighlightClick) {
-            onHighlightClick(note)
+            // Get the bounding rect of the clicked element (the highlight rect)
+            const target = e.currentTarget as Element
+            const rect = target.getBoundingClientRect()
+
+            console.log('Calling onHighlightClick with position:', { x: e.clientX, y: e.clientY, rect })
+            // Pass the click coordinates directly, plus the rect for better positioning
+            onHighlightClick(note, { x: e.clientX, y: e.clientY, rect })
         }
     }
 
@@ -179,12 +280,12 @@ export default function NoteHighlightOverlay({
                 style={{ pointerEvents: 'none' }}
             >
                 <AnimatePresence>
-                    {highlightRects.map((rect) => {
+                    {highlightRects.map((rect, i) => {
                         const isHovered = hoveredNoteId === rect.noteId
 
                         return (
                             <motion.rect
-                                key={rect.noteId}
+                                key={`${rect.noteId}-${i}`}
                                 x={rect.x}
                                 y={rect.y}
                                 width={rect.width}
@@ -200,7 +301,11 @@ export default function NoteHighlightOverlay({
                                     pointerEvents: 'auto',
                                     mixBlendMode: 'multiply',
                                 }}
-                                onClick={() => handleHighlightClick(rect.noteId)}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    // @ts-ignore
+                                    handleHighlightClick(rect.noteId, e)
+                                }}
                                 onMouseEnter={() => setHoveredNoteId(rect.noteId)}
                                 onMouseLeave={() => setHoveredNoteId(null)}
                             />

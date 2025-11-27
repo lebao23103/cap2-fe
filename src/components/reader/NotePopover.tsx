@@ -109,7 +109,7 @@ export default function NotePopover({
                         <Button
                             variant="ghost"
                             size="sm"
-                            className="h-6 w-6 p-0 -mt-1 -mr-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                            className="h-6 w-6 p-0 -mt-1 -mr-1 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-foreground transition-colors"
                             onClick={onClose}
                         >
                             <X className="h-3.5 w-3.5" />
