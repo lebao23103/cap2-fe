@@ -9,20 +9,23 @@ import {
   ThumbsUp,
   Flag,
   ArrowLeft,
-  CheckCircle2
+  Globe,
+  Book,
+  User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
-import type { Book, Review } from '@/lib/api/books';
+import type { Book as BookType, Review } from '@/lib/api/books';
 import booksService from '@/lib/api/books';
 import userService from '@/lib/api/user';
 import { useToast } from '@/components/ui/use-toast';
 import { BookDetailSkeleton, BooksErrorState } from '@/components/books';
 import { useAnnounce } from '@/hooks/useAnnounce';
-import { getLoadingAriaAttributes } from '@/utils/accessibility';
 import { getCoverImageUrl } from '@/lib/utils/mediaUtils';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 
 export default function BookDetail() {
   const { id } = useParams<{ id: string }>();
@@ -30,9 +33,8 @@ export default function BookDetail() {
   const { toast } = useToast();
   const announce = useAnnounce();
 
-  const [book, setBook] = useState<Book | null>(null);
+  const [book, setBook] = useState<BookType | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [, setRelatedBooks] = useState<Book[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFavorited, setIsFavorited] = useState(false);
@@ -44,7 +46,6 @@ export default function BookDetail() {
   const [userReview, setUserReview] = useState('');
   const [hoveredRating, setHoveredRating] = useState(0);
   const [submittingReview, setSubmittingReview] = useState(false);
-  const [reviewSubmitState, setReviewSubmitState] = useState<'idle' | 'success' | 'error'>('idle');
 
   useEffect(() => {
     if (id) {
@@ -185,7 +186,6 @@ export default function BookDetail() {
 
     try {
       setSubmittingReview(true);
-      setReviewSubmitState('idle');
       announce('Submitting review', 'polite');
 
       // Submit review via API
@@ -194,7 +194,6 @@ export default function BookDetail() {
         comment: userReview,
       });
 
-      setReviewSubmitState('success');
       announce('Review submitted successfully', 'polite');
 
       toast({
@@ -205,12 +204,8 @@ export default function BookDetail() {
       setUserRating(0);
       setUserReview('');
 
-      // Reset success state
-      setTimeout(() => setReviewSubmitState('idle'), 3000);
-
       loadBookData(); // Reload to show new review
     } catch (error) {
-      setReviewSubmitState('error');
       announce('Failed to submit review', 'assertive');
 
       toast({
@@ -218,8 +213,6 @@ export default function BookDetail() {
         description: 'Failed to submit review',
         variant: 'destructive',
       });
-
-      setTimeout(() => setReviewSubmitState('idle'), 3000);
     } finally {
       setSubmittingReview(false);
     }
@@ -252,12 +245,12 @@ export default function BookDetail() {
             onClick={() => interactive && setUserRating(star)}
             onMouseEnter={() => interactive && setHoveredRating(star)}
             onMouseLeave={() => interactive && setHoveredRating(0)}
-            className={interactive ? 'cursor-pointer' : 'cursor-default'}
+            className={interactive ? 'cursor-pointer transition-transform hover:scale-110' : 'cursor-default'}
           >
             <Star
               className={`h-5 w-5 transition-colors ${star <= (interactive ? hoveredRating || userRating : rating)
                 ? 'fill-amber-400 text-amber-400'
-                : 'text-gray-300'
+                : 'text-gray-300 dark:text-gray-600'
                 }`}
             />
           </button>
@@ -285,12 +278,13 @@ export default function BookDetail() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-background">
-        <div className="container mx-auto py-8 max-w-5xl">
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        <div className="container mx-auto py-8 max-w-5xl relative z-10">
           <div className="mb-6">
             <Button
               variant="outline"
               onClick={() => navigate('/readnex')}
+              className="hover:bg-primary/5"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Library
@@ -304,9 +298,9 @@ export default function BookDetail() {
 
   if (!book) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-background">
-        <div className="container mx-auto py-16 text-center">
-          <h1 className="text-3xl font-bold mb-4 text-gray-900 dark:text-foreground">Book Not Found</h1>
+      <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center">
+        <div className="container mx-auto py-16 text-center relative z-10">
+          <h1 className="text-3xl font-bold mb-4 text-foreground">Book Not Found</h1>
           <p className="text-muted-foreground mb-8">
             The book you're looking for doesn't exist or has been removed.
           </p>
@@ -317,348 +311,330 @@ export default function BookDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-background">
-      <div className="container mx-auto py-4 sm:py-6 md:py-8 max-w-5xl">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px]" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-secondary/5 blur-[120px]" />
+      </div>
+
+      <div className="container mx-auto py-6 sm:py-8 md:py-12 max-w-6xl relative z-10 px-4">
         {/* Back Button */}
-        <div className="flex justify-start mb-4 sm:mb-6">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex justify-start mb-6 sm:mb-8"
+        >
           <Button
-            variant="outline"
-            className="bg-white dark:bg-card !text-gray-900 dark:!text-foreground border-gray-300 dark:border-border hover:bg-gray-100 dark:hover:bg-muted transition-colors shadow-sm"
+            variant="ghost"
+            className="group hover:bg-primary/10 hover:text-primary transition-all"
             onClick={() => navigate('/readnex')}
           >
-            <ArrowLeft className="h-4 w-4 mr-2 text-gray-900 dark:text-foreground" />
-            <span className="text-gray-900 dark:text-foreground">Back to Library</span>
+            <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+            Back to Library
           </Button>
-        </div>
+        </motion.div>
 
         {/* Hero Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 mb-6 sm:mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 mb-12"
+        >
           {/* Book Cover - Left Side */}
-          <div className="lg:col-span-4">
-            <div className="bg-white dark:bg-card rounded-lg shadow-sm border border-border/50 overflow-hidden lg:sticky lg:top-4 transition-shadow hover:shadow-md">
-              <img
-                src={getCoverImageUrl(book.cover_image)}
-                alt={`${book.title} by ${book.author} - Book cover`}
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-              <div className="p-3 sm:p-4 space-y-2">
+          <div className="lg:col-span-4 flex flex-col gap-6">
+            <div className="relative group perspective-1000">
+              <div className="absolute -inset-1 bg-gradient-to-r from-primary to-secondary rounded-xl blur opacity-25 group-hover:opacity-50 transition duration-500"></div>
+              <div className="relative aspect-[2/3] rounded-xl overflow-hidden shadow-2xl transform transition-transform duration-500 group-hover:rotate-y-6 group-hover:scale-[1.02]">
+                <img
+                  src={getCoverImageUrl(book.cover_image)}
+                  alt={`${book.title} by ${book.author} - Book cover`}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <Button
+                size="lg"
+                className="w-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 text-white transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                onClick={handleStartReading}
+              >
+                <BookOpen className="h-5 w-5 mr-2" />
+                Start Reading
+              </Button>
+
+              <div className="flex gap-3">
                 <Button
                   size="lg"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white transition-colors shadow-sm hover:shadow"
-                  onClick={handleStartReading}
-                >
-                  <BookOpen className="h-4 w-4 mr-2" />
-                  Start Reading
-                </Button>
-                <div className="flex gap-2">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="flex-1 hover:bg-muted/50 transition-all duration-200 group relative"
-                    onClick={handleToggleFavorite}
-                    disabled={favoritingState === 'loading'}
-                    aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
-                    {...getLoadingAriaAttributes(favoritingState === 'loading', 'Updating favorites')}
-                    data-testid="favorite-button"
-                  >
-                    <AnimatePresence mode="wait">
-                      {favoritingState === 'loading' ? (
-                        <motion.div
-                          key="loading"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1, rotate: 360 }}
-                          exit={{ scale: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"
-                        />
-                      ) : favoritingState === 'success' ? (
-                        <motion.div
-                          key="success"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          exit={{ scale: 0 }}
-                        >
-                          <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          key="heart"
-                          initial={false}
-                          animate={isFavorited ? { scale: [1, 1.2, 1] } : {}}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <Heart
-                            className={`h-4 w-4 transition-all duration-300 ${isFavorited
-                              ? 'fill-red-500 text-red-500'
-                              : 'text-gray-600 dark:text-foreground group-hover:scale-110'
-                              }`}
-                            aria-hidden="true"
-                          />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </Button>
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="flex-1 hover:bg-muted/50 transition-all duration-200 group relative"
-                    onClick={handleShare}
-                    disabled={sharingState === 'loading'}
-                    aria-label="Share book"
-                    {...getLoadingAriaAttributes(sharingState === 'loading', 'Copying link')}
-                    data-testid="share-button"
-                  >
-                    <AnimatePresence mode="wait">
-                      {sharingState === 'loading' ? (
-                        <motion.div
-                          key="loading"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1, rotate: 360 }}
-                          exit={{ scale: 0 }}
-                          transition={{ duration: 0.3 }}
-                          className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin"
-                        />
-                      ) : sharingState === 'success' ? (
-                        <motion.div
-                          key="success"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          exit={{ scale: 0 }}
-                        >
-                          <CheckCircle2 className="h-4 w-4 text-green-600" aria-hidden="true" />
-                        </motion.div>
-                      ) : (
-                        <motion.div
-                          key="share"
-                          whileHover={{ scale: 1.1, rotate: 5 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          <Share2
-                            className="h-4 w-4 text-gray-600 dark:text-foreground"
-                            aria-hidden="true"
-                          />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </Button>
-                </div>
-                <Button
-                  size="default"
                   variant="outline"
-                  className="w-full hover:bg-muted/50 transition-colors !text-gray-900 dark:!text-foreground"
-                  onClick={handleTakeQuiz}
+                  className="flex-1 bg-card/50 backdrop-blur-sm hover:bg-card hover:text-primary border-border/50 transition-all"
+                  onClick={handleToggleFavorite}
+                  disabled={favoritingState === 'loading'}
                 >
-                  Take Quiz
+                  <AnimatePresence mode="wait">
+                    {favoritingState === 'loading' ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1, rotate: 360 }}
+                        exit={{ scale: 0 }}
+                        className="h-5 w-5 border-2 border-current border-t-transparent rounded-full animate-spin"
+                      />
+                    ) : (
+                      <Heart
+                        className={`h-5 w-5 transition-colors ${isFavorited ? 'fill-rose-500 text-rose-500' : ''}`}
+                      />
+                    )}
+                  </AnimatePresence>
+                </Button>
+
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="flex-1 bg-card/50 backdrop-blur-sm hover:bg-card hover:text-primary border-border/50 transition-all"
+                  onClick={handleShare}
+                  disabled={sharingState === 'loading'}
+                >
+                  <AnimatePresence mode="wait">
+                    {sharingState === 'loading' ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1, rotate: 360 }}
+                        exit={{ scale: 0 }}
+                        className="h-5 w-5 border-2 border-current border-t-transparent rounded-full animate-spin"
+                      />
+                    ) : (
+                      <Share2 className="h-5 w-5" />
+                    )}
+                  </AnimatePresence>
                 </Button>
               </div>
-            </div>
-          </div>
 
-          {/* Book Info - Right Side */}
-          <div className="lg:col-span-8 space-y-3 sm:space-y-4">
-            {/* Title and Author */}
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold mb-2 text-gray-900 dark:text-foreground leading-tight">
-                {book.title}
-              </h1>
-              <p className="text-sm sm:text-base text-gray-600 dark:text-muted-foreground mb-3">
-                by {book.author}
-              </p>
-
-              {/* Rating */}
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                <div className="flex items-center gap-1">
-                  {renderStarRating(book.rating || 0)}
-                </div>
-                <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-foreground">
-                  {(book.rating || 0).toFixed(1)}
-                </span>
-                <span className="text-xs sm:text-sm text-gray-600 dark:text-muted-foreground">
-                  {book.reviews_count?.toLocaleString() || 0} reviews
-                </span>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div className="bg-white dark:bg-card rounded-lg p-5 shadow-sm border border-border/50 transition-shadow hover:shadow-md">
-              <div className="flex items-center gap-2 mb-3">
-                <BookOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                <h2 className="text-base font-semibold text-gray-900 dark:text-foreground">About this book</h2>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-muted-foreground leading-relaxed">
-                {book.description}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Rating Distribution & Reviews Section */}
-        <div className="space-y-6">
-          {/* Rating Distribution */}
-          <div className="bg-white dark:bg-card rounded-lg p-6 shadow-sm border border-border/50 transition-shadow hover:shadow-md">
-            <div className="p-0">
-              <div className="flex items-center gap-2 mb-5">
-                <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-                <h2 className="text-base font-semibold text-gray-900 dark:text-foreground">Rating Distribution</h2>
-              </div>
-              <div className="space-y-2.5">
-                {calculateRatingDistribution().map((dist) => (
-                  <div key={dist.stars} className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-900 dark:text-foreground w-8 flex items-center gap-1">
-                      {dist.stars} <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                    </span>
-                    <Progress value={dist.percentage} className="flex-1 h-2" />
-                    <span className="text-xs text-gray-600 dark:text-muted-foreground w-24 text-right">
-                      {dist.count} ({dist.percentage}%)
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Write Review */}
-          <div className="bg-white dark:bg-card rounded-lg p-6 shadow-sm border border-border/50 transition-shadow hover:shadow-md">
-            <h2 className="text-base font-semibold text-gray-900 dark:text-foreground mb-5">Write a Review</h2>
-            <div className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-900 dark:text-foreground mb-2 block">Your Rating</label>
-                <div className="flex items-center gap-1">
-                  {renderStarRating(userRating, true)}
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-900 dark:text-foreground mb-2 block">Your Review</label>
-                <Textarea
-                  placeholder="Share your thoughts about the book..."
-                  value={userReview}
-                  onChange={(e) => setUserReview(e.target.value)}
-                  rows={4}
-                  className="resize-none"
-                />
-                <p className="text-xs text-gray-500 dark:text-muted-foreground mt-1.5">
-                  {userReview.length} / 150 characters
-                </p>
-              </div>
               <Button
-                className={`transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${reviewSubmitState === 'success'
-                  ? 'bg-green-600 hover:bg-green-700'
-                  : reviewSubmitState === 'error'
-                    ? 'bg-red-600 hover:bg-red-700'
-                    : 'bg-blue-600 hover:bg-blue-700'
-                  } text-white`}
-                onClick={handleSubmitReview}
-                disabled={submittingReview || !userRating || userReview.length < 50}
-                {...getLoadingAriaAttributes(submittingReview, 'Submitting review')}
-                data-testid="submit-review-button"
+                className="w-full bg-secondary text-white hover:bg-secondary/90 shadow-md hover:shadow-lg transition-all font-semibold"
+                onClick={handleTakeQuiz}
               >
-                <AnimatePresence mode="wait">
-                  {submittingReview ? (
-                    <motion.div
-                      key="submitting"
-                      className="flex items-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <div className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      Submitting...
-                    </motion.div>
-                  ) : reviewSubmitState === 'success' ? (
-                    <motion.div
-                      key="success"
-                      className="flex items-center"
-                      initial={{ scale: 0.8, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      <CheckCircle2 className="h-4 w-4 mr-2" aria-hidden="true" />
-                      Submitted!
-                    </motion.div>
-                  ) : (
-                    <motion.span
-                      key="idle"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      Submit Review
-                    </motion.span>
-                  )}
-                </AnimatePresence>
+                Take Quiz
               </Button>
             </div>
           </div>
 
-          {/* Reviews List */}
-          <div className="bg-white dark:bg-card rounded-lg p-6 shadow-sm border border-border/50 transition-shadow hover:shadow-md">
-            <h2 className="text-base font-semibold text-gray-900 dark:text-foreground mb-5">Reviews ({reviews.length})</h2>
-            {reviews.length === 0 ? (
-              <div className="text-center py-8">
-                <Star className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                <p className="text-gray-600 dark:text-muted-foreground text-sm">
-                  No reviews yet. Be the first to review this book!
-                </p>
+          {/* Book Info - Right Side */}
+          <div className="lg:col-span-8 space-y-8">
+            {/* Header Info */}
+            <div>
+              <div className="flex flex-wrap gap-2 mb-4">
+                {book.subject && (
+                  <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20 border-0 px-3 py-1">
+                    {book.subject}
+                  </Badge>
+                )}
+                <Badge variant="outline" className="text-muted-foreground border-border/50">
+                  {book.language || 'English'}
+                </Badge>
               </div>
-            ) : (
-              <div className="space-y-5">
-                {reviews.map((review, index) => (
-                  <div key={review.id}>
-                    <div className="flex items-start gap-3">
-                      <Avatar className="h-10 w-10 flex-shrink-0">
-                        <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user.email}`} />
-                        <AvatarFallback className="bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300">
-                          {review.user.first_name[0]}{review.user.last_name[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <div className="min-w-0">
-                            <p className="font-semibold text-sm text-gray-900 dark:text-foreground truncate">
-                              {review.user.first_name} {review.user.last_name}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-muted-foreground">
-                              {new Date(review.created_at).toLocaleDateString('en-US', {
-                                month: 'long',
-                                day: 'numeric',
-                                year: 'numeric',
-                              })}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-0.5 flex-shrink-0">
-                            {renderStarRating(review.rating)}
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-700 dark:text-foreground leading-relaxed mb-2">
-                          {review.comment}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 text-xs px-2 hover:bg-muted/50 transition-colors"
-                            onClick={() => handleMarkHelpful(review.id)}
-                          >
-                            <ThumbsUp className="h-3 w-3 mr-1" />
-                            Helpful
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 text-xs px-2 hover:bg-muted/50 transition-colors"
-                            onClick={() => handleReportReview(review.id)}
-                          >
-                            <Flag className="h-3 w-3 mr-1" />
-                            Report
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                    {index < reviews.length - 1 && (
-                      <div className="border-t border-border/30 my-5" />
-                    )}
+
+              <h1 className="text-4xl sm:text-5xl font-bold mb-3 text-foreground leading-tight tracking-tight">
+                {book.title}
+              </h1>
+
+              <div className="flex items-center gap-2 text-lg text-muted-foreground mb-6">
+                <User className="h-5 w-5" />
+                <span className="font-medium text-foreground">{book.author}</span>
+              </div>
+
+              {/* Rating & Stats */}
+              <div className="flex flex-wrap items-center gap-6 p-4 rounded-xl bg-card/40 border border-border/50 backdrop-blur-sm">
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1">
+                    <Star className="h-5 w-5 fill-amber-400 text-amber-400" />
+                    <span className="text-xl font-bold text-foreground">{(book.rating || 0).toFixed(1)}</span>
                   </div>
+                  <span className="text-sm text-muted-foreground">
+                    ({book.reviews_count?.toLocaleString() || 0} reviews)
+                  </span>
+                </div>
+
+                <div className="w-px h-8 bg-border/50 hidden sm:block" />
+
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Book className="h-4 w-4" />
+                  <span>{book.pages || 'N/A'} Pages</span>
+                </div>
+
+
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className="space-y-4">
+              <h2 className="text-2xl font-semibold text-foreground flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-primary" />
+                About this book
+              </h2>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                {book.description}
+              </p>
+            </div>
+
+            {/* Additional Details Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Card className="bg-card/40 border-border/50 backdrop-blur-sm">
+                <CardContent className="p-4 flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-blue-500/10 text-blue-500">
+                    <Globe className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Language</p>
+                    <p className="font-semibold text-foreground">{book.language || 'English'}</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Reviews Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Column: Rating Distribution & Write Review */}
+          <div className="lg:col-span-4 space-y-6">
+            <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-lg">
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+                  <Star className="h-5 w-5 text-amber-400 fill-amber-400" />
+                  Rating Distribution
+                </h3>
+                <div className="space-y-3">
+                  {calculateRatingDistribution().map((dist) => (
+                    <div key={dist.stars} className="flex items-center gap-3">
+                      <span className="text-sm font-medium w-3">{dist.stars}</span>
+                      <Progress value={dist.percentage} className="h-2 bg-muted" />
+                      <span className="text-xs text-muted-foreground w-10 text-right">
+                        {dist.percentage}%
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/50 bg-card/50 backdrop-blur-sm shadow-lg">
+              <CardContent className="p-6 space-y-4">
+                <h3 className="text-lg font-semibold">Write a Review</h3>
+                <div>
+                  <label className="text-sm font-medium mb-2 block text-muted-foreground">Your Rating</label>
+                  <div className="flex justify-center p-4 bg-background/50 rounded-xl border border-border/50">
+                    {renderStarRating(userRating, true)}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block text-muted-foreground">Your Review</label>
+                  <Textarea
+                    placeholder="Share your thoughts..."
+                    value={userReview}
+                    onChange={(e) => setUserReview(e.target.value)}
+                    rows={4}
+                    className="resize-none bg-background/50 border-border/50 focus:border-primary"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1.5 text-right">
+                    {userReview.length} / 50 min chars
+                  </p>
+                </div>
+                <Button
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                  onClick={handleSubmitReview}
+                  disabled={submittingReview || !userRating || userReview.length < 50}
+                >
+                  {submittingReview ? 'Submitting...' : 'Submit Review'}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column: Reviews List */}
+          <div className="lg:col-span-8">
+            <h3 className="text-2xl font-bold mb-6 text-foreground">
+              Reviews <span className="text-muted-foreground text-lg font-normal">({reviews.length})</span>
+            </h3>
+
+            {reviews.length === 0 ? (
+              <Card className="border-dashed border-2 border-border/50 bg-transparent">
+                <CardContent className="p-12 text-center">
+                  <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Star className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h4 className="text-lg font-medium text-foreground mb-2">No reviews yet</h4>
+                  <p className="text-muted-foreground">
+                    Be the first to share your thoughts on this book!
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="space-y-4">
+                {reviews.map((review, index) => (
+                  <motion.div
+                    key={review.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                  >
+                    <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all">
+                      <CardContent className="p-6">
+                        <div className="flex items-start gap-4">
+                          <Avatar className="h-10 w-10 border border-border/50">
+                            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user.email}`} />
+                            <AvatarFallback>{review.user.first_name[0]}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <h4 className="font-semibold text-foreground">
+                                  {review.user.first_name} {review.user.last_name}
+                                </h4>
+                                <p className="text-xs text-muted-foreground">
+                                  {new Date(review.created_at).toLocaleDateString(undefined, {
+                                    year: 'numeric',
+                                    month: 'long',
+                                    day: 'numeric'
+                                  })}
+                                </p>
+                              </div>
+                              <div className="flex">{renderStarRating(review.rating)}</div>
+                            </div>
+                            <p className="text-foreground/90 leading-relaxed mb-4">
+                              {review.comment}
+                            </p>
+                            <div className="flex gap-2">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 text-xs text-muted-foreground hover:text-foreground"
+                                onClick={() => handleMarkHelpful(review.id)}
+                              >
+                                <ThumbsUp className="h-3 w-3 mr-1.5" />
+                                Helpful
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-8 text-xs text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                onClick={() => handleReportReview(review.id)}
+                              >
+                                <Flag className="h-3 w-3 mr-1.5" />
+                                Report
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
                 ))}
               </div>
             )}
@@ -668,5 +644,3 @@ export default function BookDetail() {
     </div>
   );
 }
-
-

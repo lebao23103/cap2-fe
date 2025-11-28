@@ -66,10 +66,10 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background">
       {/* Header/Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background backdrop-blur-xl shadow-md" role="banner">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl shadow-sm" role="banner">
         {/* Subtle gradient overlay - spans full width */}
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-primary/5 pointer-events-none" aria-hidden="true" />
-        
+
         {/* Content container - max-width constrained */}
         <div className="container mx-auto relative">
           <nav className="flex h-16 items-center justify-between gap-2" role="navigation" aria-label="Main navigation">
@@ -94,14 +94,13 @@ export function Layout({ children }: LayoutProps) {
 
             {/* Center - Navigation Menu */}
             <div className="hidden md:flex items-center flex-1 justify-center">
-              <div className="flex items-center space-x-2 bg-muted/30 backdrop-blur-sm rounded-xl p-1.5 border border-border/50 shadow-sm">
+              <div className="flex items-center space-x-1 bg-background/50 backdrop-blur-md rounded-full px-2 py-1.5 border border-white/10 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
                 <Link
                   to="/"
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
-                    isActivePath('/')
-                      ? 'bg-background text-primary shadow-sm border border-border/50'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${isActivePath('/')
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                    }`}
                   aria-current={isActivePath('/') ? 'page' : undefined}
                 >
                   <Home className="h-4 w-4" aria-hidden="true" />
@@ -109,11 +108,10 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
                 <Link
                   to="/readnex"
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
-                    isActivePath('/readnex')
-                      ? 'bg-background text-primary shadow-sm border border-border/50'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${isActivePath('/readnex')
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                    }`}
                   aria-current={isActivePath('/readnex') ? 'page' : undefined}
                 >
                   <Library className="h-4 w-4" aria-hidden="true" />
@@ -121,11 +119,10 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
                 <Link
                   to="/create"
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
-                    isActivePath('/create')
-                      ? 'bg-background text-primary shadow-sm border border-border/50'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${isActivePath('/create')
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                    }`}
                   aria-current={isActivePath('/create') ? 'page' : undefined}
                 >
                   <Plus className="h-4 w-4" aria-hidden="true" />
@@ -133,11 +130,10 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
                 <Link
                   to="/noteshare"
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
-                    isActivePath('/noteshare')
-                      ? 'bg-background text-primary shadow-sm border border-border/50'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${isActivePath('/noteshare')
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                    }`}
                   aria-current={isActivePath('/noteshare') ? 'page' : undefined}
                 >
                   <Sparkles className="h-4 w-4" aria-hidden="true" />
@@ -145,11 +141,10 @@ export function Layout({ children }: LayoutProps) {
                 </Link>
                 <Link
                   to="/about"
-                  className={`flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-300 ${
-                    isActivePath('/about')
-                      ? 'bg-background text-primary shadow-sm border border-border/50'
-                      : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-background/50'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-full transition-all duration-300 ${isActivePath('/about')
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-accent/50'
+                    }`}
                   aria-current={isActivePath('/about') ? 'page' : undefined}
                 >
                   <Info className="h-4 w-4" aria-hidden="true" />
@@ -162,7 +157,7 @@ export function Layout({ children }: LayoutProps) {
             <div className="flex items-center justify-end gap-2 flex-1">
               {/* Theme Toggle - Mobile & Desktop */}
               <ThemeToggle />
-              
+
               {/* Mobile Menu Button - Mobile Only */}
               <Button
                 variant="ghost"
@@ -178,81 +173,81 @@ export function Layout({ children }: LayoutProps) {
                 <>
                   {/* User Menu - Desktop */}
                   <div className="hidden md:block">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="flex items-center gap-2" aria-label="User menu">
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={user?.email ? `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}` : undefined} />
-                              <AvatarFallback>
-                                {user?.first_name?.[0]}{user?.last_name?.[0]}
-                              </AvatarFallback>
-                            </Avatar>
-                            <span className="hidden sm:inline-block max-w-[120px] truncate">
-                              {user?.first_name}
-                            </span>
-                            {isAdmin && (
-                              <Badge variant="secondary" className="ml-1 text-xs">
-                                Admin
-                              </Badge>
-                            )}
-                            <ChevronDown className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56">
-                          <DropdownMenuLabel>
-                            <div className="flex flex-col space-y-1">
-                              <p className="text-sm font-medium leading-none">
-                                {user?.first_name} {user?.last_name}
-                              </p>
-                              <p className="text-xs leading-none text-muted-foreground">
-                                {user?.email}
-                              </p>
-                            </div>
-                          </DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => navigate('/dashboard')}>
-                            <LayoutDashboard className="mr-2 h-4 w-4" />
-                            <span>Dashboard</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => navigate('/profile')}>
-                            <User className="mr-2 h-4 w-4" />
-                            <span>Profile</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => navigate('/settings')}>
-                            <Settings className="mr-2 h-4 w-4" />
-                            <span>Settings</span>
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={handleLogout}>
-                            <LogOut className="mr-2 h-4 w-4" />
-                            <span>Log out</span>
-                          </DropdownMenuItem>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="flex items-center gap-2" aria-label="User menu">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={user?.email ? `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}` : undefined} />
+                            <AvatarFallback>
+                              {user?.first_name?.[0]}{user?.last_name?.[0]}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="hidden sm:inline-block max-w-[120px] truncate">
+                            {user?.first_name}
+                          </span>
+                          {isAdmin && (
+                            <Badge variant="secondary" className="ml-1 text-xs">
+                              Admin
+                            </Badge>
+                          )}
+                          <ChevronDown className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56">
+                        <DropdownMenuLabel>
+                          <div className="flex flex-col space-y-1">
+                            <p className="text-sm font-medium leading-none">
+                              {user?.first_name} {user?.last_name}
+                            </p>
+                            <p className="text-xs leading-none text-muted-foreground">
+                              {user?.email}
+                            </p>
+                          </div>
+                        </DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => navigate('/dashboard')}>
+                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                          <span>Dashboard</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate('/profile')}>
+                          <User className="mr-2 h-4 w-4" />
+                          <span>Profile</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => navigate('/settings')}>
+                          <Settings className="mr-2 h-4 w-4" />
+                          <span>Settings</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleLogout}>
+                          <LogOut className="mr-2 h-4 w-4" />
+                          <span>Log out</span>
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
                 </>
               ) : (
                 <div className="hidden md:flex items-center gap-3">
-                    <ModernButton
-                      variant="ghost"
-                      size="md"
-                      className="!text-gray-900 dark:!text-foreground hover:text-primary font-semibold"
-                      onClick={() => navigate('/login')}
-                    >
-                      Sign In
-                    </ModernButton>
-                    <Button
-                      size="lg"
-                      className="bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 border-0 shadow-lg hover:shadow-xl font-semibold transition-all duration-300"
-                      onClick={() => navigate('/register')}
-                    >
-                      Get Started
+                  <ModernButton
+                    variant="ghost"
+                    size="md"
+                    className="!text-gray-900 dark:!text-foreground hover:text-primary font-semibold"
+                    onClick={() => navigate('/login')}
+                  >
+                    Sign In
+                  </ModernButton>
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-primary to-secondary text-white hover:opacity-90 border-0 shadow-lg hover:shadow-xl font-semibold transition-all duration-300"
+                    onClick={() => navigate('/register')}
+                  >
+                    Get Started
                   </Button>
                 </div>
               )}
             </div>
           </nav>
-          
+
           {/* Mobile Navigation Menu - Outside nav to prevent flex issues */}
           {isMobileMenuOpen && (
             <div className="md:hidden pb-4 pt-4 border-t border-border/40 bg-background">
@@ -261,11 +256,10 @@ export function Layout({ children }: LayoutProps) {
                 <Link
                   to="/"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
-                    isActivePath('/')
+                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${isActivePath('/')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
-                  }`}
+                    }`}
                 >
                   <Home className="h-5 w-5" />
                   Home
@@ -273,11 +267,10 @@ export function Layout({ children }: LayoutProps) {
                 <Link
                   to="/readnex"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
-                    isActivePath('/readnex')
+                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${isActivePath('/readnex')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
-                  }`}
+                    }`}
                 >
                   <Library className="h-5 w-5" />
                   ReadNEx
@@ -285,11 +278,10 @@ export function Layout({ children }: LayoutProps) {
                 <Link
                   to="/create"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
-                    isActivePath('/create')
+                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${isActivePath('/create')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
-                  }`}
+                    }`}
                 >
                   <Plus className="h-5 w-5" />
                   Create
@@ -297,11 +289,10 @@ export function Layout({ children }: LayoutProps) {
                 <Link
                   to="/noteshare"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
-                    isActivePath('/noteshare')
+                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${isActivePath('/noteshare')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
-                  }`}
+                    }`}
                 >
                   <Sparkles className="h-5 w-5" />
                   NoteShare
@@ -309,11 +300,10 @@ export function Layout({ children }: LayoutProps) {
                 <Link
                   to="/about"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
-                    isActivePath('/about')
+                  className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${isActivePath('/about')
                       ? 'bg-primary/10 text-primary'
                       : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
-                  }`}
+                    }`}
                 >
                   <Info className="h-5 w-5" />
                   About
@@ -330,11 +320,10 @@ export function Layout({ children }: LayoutProps) {
                           key={item.path}
                           to={item.path}
                           onClick={() => setIsMobileMenuOpen(false)}
-                          className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
-                            isActivePath(item.path)
+                          className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${isActivePath(item.path)
                               ? 'bg-primary/10 text-primary'
                               : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
-                          }`}
+                            }`}
                         >
                           <Icon className="h-5 w-5" />
                           {item.label}
@@ -346,11 +335,10 @@ export function Layout({ children }: LayoutProps) {
                     <Link
                       to="/profile"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
-                        isActivePath('/profile')
+                      className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${isActivePath('/profile')
                           ? 'bg-primary/10 text-primary'
                           : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
-                      }`}
+                        }`}
                     >
                       <User className="h-5 w-5" />
                       Profile
@@ -358,11 +346,10 @@ export function Layout({ children }: LayoutProps) {
                     <Link
                       to="/settings"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${
-                        isActivePath('/settings')
+                      className={`flex items-center gap-3 px-4 py-3 text-base font-medium rounded-lg transition-all min-h-[44px] ${isActivePath('/settings')
                           ? 'bg-primary/10 text-primary'
                           : 'text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground hover:bg-accent'
-                      }`}
+                        }`}
                     >
                       <Settings className="h-5 w-5" />
                       Settings
@@ -377,13 +364,13 @@ export function Layout({ children }: LayoutProps) {
                     </button>
                   </>
                 )}
-                
+
                 {!isAuthenticated && (
                   <>
                     <div className="h-px bg-border my-2" />
                     <div className="flex flex-col space-y-2 px-3">
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         size="lg"
                         className="w-full justify-center min-h-[44px]"
                         asChild
@@ -392,7 +379,7 @@ export function Layout({ children }: LayoutProps) {
                           Sign In
                         </Link>
                       </Button>
-                      <Button 
+                      <Button
                         size="lg"
                         className="bg-gradient-to-r from-primary to-secondary text-primary-foreground w-full justify-center min-h-[44px]"
                         asChild
@@ -420,7 +407,7 @@ export function Layout({ children }: LayoutProps) {
         <footer className="relative border-t border-border/40 bg-muted/30 backdrop-blur-sm py-12 md:py-16 mt-20" role="contentinfo">
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-background/50 via-transparent to-transparent pointer-events-none" />
-          
+
           <div className="container mx-auto relative">
             <div className="grid md:grid-cols-3 gap-12">
               {/* Company Info */}
@@ -445,7 +432,7 @@ export function Layout({ children }: LayoutProps) {
                   <span>Built for learners.</span>
                 </div>
               </div>
-              
+
               {/* Contact Information */}
               <div className="space-y-4">
                 <h4 className="font-semibold text-gray-900 dark:text-foreground text-base mb-5 tracking-tight">Contact Us</h4>
@@ -480,27 +467,27 @@ export function Layout({ children }: LayoutProps) {
                   </div>
                 </div>
               </div>
-              
+
               {/* Quick Links */}
               <div className="space-y-4">
                 <h4 className="font-semibold text-gray-900 dark:text-foreground text-base mb-5 tracking-tight">Quick Links</h4>
                 <div className="space-y-3 text-sm">
-                  <Link 
-                    to="/about" 
+                  <Link
+                    to="/about"
                     className="group flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-primary transition-all duration-300"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-primary/50 group-hover:bg-primary group-hover:scale-125 transition-all" />
                     <span className="group-hover:translate-x-0.5 transition-transform">About Us</span>
                   </Link>
-                  <Link 
-                    to="/faq" 
+                  <Link
+                    to="/faq"
                     className="group flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-primary transition-all duration-300"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-primary/50 group-hover:bg-primary group-hover:scale-125 transition-all" />
                     <span className="group-hover:translate-x-0.5 transition-transform">FAQ</span>
                   </Link>
-                  <Link 
-                    to="/contact" 
+                  <Link
+                    to="/contact"
                     className="group flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-primary transition-all duration-300"
                   >
                     <span className="h-1.5 w-1.5 rounded-full bg-primary/50 group-hover:bg-primary group-hover:scale-125 transition-all" />
@@ -509,7 +496,7 @@ export function Layout({ children }: LayoutProps) {
                 </div>
               </div>
             </div>
-            
+
             {/* Bottom Divider */}
             <div className="mt-12 pt-8 border-t border-border/40">
               <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 dark:text-muted-foreground">
@@ -524,7 +511,7 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </footer>
       )}
-      
+
       {/* Global Floating Chat Widget */}
       <ChatWidget />
     </div>

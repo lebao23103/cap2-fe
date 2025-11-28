@@ -14,6 +14,7 @@ export interface Book {
   updated_at?: string;
   is_approved?: boolean;
   created_by?: number;
+  pages?: number;
 }
 
 export interface Review {

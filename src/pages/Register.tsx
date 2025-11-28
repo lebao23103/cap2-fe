@@ -4,12 +4,13 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Card, CardContent, CardHeader } from '../components/ui/card'
-import { BookOpen, UserPlus, Sparkles } from 'lucide-react'
+import { BookOpen, Sparkles, ArrowRight } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { FormInput, PasswordStrengthIndicator, usePasswordStrength } from '../components/auth'
 import { ModernButton } from '../components/ui/modern'
 import { useErrorAnnouncement, useSuccessAnnouncement } from '../hooks/useAnnounce'
 import { useAuth } from '../contexts/AuthContext'
+import { Button } from '@/components/ui/button'
 
 // Zod validation schema
 const registerSchema = z.object({
@@ -72,7 +73,7 @@ export default function Register() {
 
     setIsLoading(true)
     setGeneralError('')
-    
+
     try {
       // Call AuthContext register (handles navigation)
       await authRegister({
@@ -82,10 +83,10 @@ export default function Register() {
         first_name: data.firstName,
         last_name: data.lastName
       })
-      
+
       // Success! AuthContext will redirect to dashboard or login page
       setIsSuccess(true)
-      
+
     } catch (error: any) {
       console.error('Registration error:', error)
       const errorMessage = error.response?.data?.error || error.response?.data?.message || 'Registration failed. Please try again.'
@@ -96,180 +97,208 @@ export default function Register() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4 overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 -left-20 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 -right-20 w-72 h-72 bg-secondary/5 rounded-full blur-3xl" />
+    <div className="relative min-h-screen flex items-center justify-center bg-background overflow-hidden">
+      {/* Background Decorative Elements */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[100px] animate-pulse-slow" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-secondary/5 blur-[100px] animate-pulse-slow delay-1000" />
       </div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.5 }} 
-        className="w-full max-w-lg relative z-10"
-      >
-        {/* Hero Quote */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="hidden md:block text-center mb-8 px-4"
+      <div className="container relative z-10 flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-24 px-4">
+        {/* Left Side - Hero Content (Hidden on mobile) */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.6 }}
+          className="hidden lg:flex flex-col max-w-lg"
         >
-          <div className="relative inline-block mb-4">
-            <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
-            <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20 shadow-lg">
-              <BookOpen className="h-10 w-10 text-primary" />
+          <div className="flex items-center gap-3 mb-8">
+            <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
+              <BookOpen className="h-8 w-8 text-white" />
             </div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              Knowly
+            </h1>
           </div>
-          <p className="text-xl font-semibold text-gray-900 dark:text-foreground mb-2">
-            "A reader lives a thousand lives before he dies."
+
+          <h2 className="text-4xl font-bold text-foreground mb-6 leading-tight">
+            Start your journey <br />
+            with <span className="text-primary">Knowly</span>
+          </h2>
+
+          <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+            "A reader lives a thousand lives before he dies." <br />
+            <span className="text-sm font-medium text-foreground/80">— George R.R. Martin</span>
           </p>
-          <p className="text-sm text-gray-600 dark:text-muted-foreground">— George R.R. Martin</p>
+
+          <div className="flex items-center gap-4">
+            <div className="flex -space-x-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="w-10 h-10 rounded-full border-2 border-background bg-muted overflow-hidden">
+                  <img
+                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`}
+                    alt="User"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Join <span className="font-bold text-foreground">15k+</span> learners today
+            </p>
+          </div>
         </motion.div>
 
-        <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm">
-          <CardHeader className="text-center pb-6 pt-8 border-b border-border/30">
-            <motion.div
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-              className="inline-flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/10 shadow-lg"
-            >
-              <UserPlus className="h-8 w-8 text-primary" />
-            </motion.div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-foreground mb-2">
-              Create Your Account
-            </h2>
-            <p className="text-sm text-gray-600 dark:text-muted-foreground">
-              Join our community of readers and start your journey
-            </p>
-          </CardHeader>
-          <CardContent className="px-8 pb-8 pt-6">
-            <form onSubmit={hookFormSubmit(onSubmit)} className="space-y-5" aria-label="Registration form" noValidate>
-              {/* General error message */}
-              {generalError && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
-                  role="alert"
-                >
-                  <p className="text-sm text-destructive font-medium">{generalError}</p>
-                </motion.div>
-              )}
-
-              {/* Name fields in grid */}
-              <div className="grid grid-cols-2 gap-4">
-                <FormInput
-                  label="First Name"
-                  type="text"
-                  placeholder="John"
-                  {...register('firstName')}
-                  error={touchedFields.firstName ? errors.firstName?.message : ''}
-                  success={touchedFields.firstName && !errors.firstName}
-                  disabled={isLoading || isSuccess}
-                  required
-                  autoComplete="given-name"
-                />
-                <FormInput
-                  label="Last Name"
-                  type="text"
-                  placeholder="Doe"
-                  {...register('lastName')}
-                  error={touchedFields.lastName ? errors.lastName?.message : ''}
-                  success={touchedFields.lastName && !errors.lastName}
-                  disabled={isLoading || isSuccess}
-                  required
-                  autoComplete="family-name"
-                />
+        {/* Right Side - Register Form */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="w-full max-w-lg"
+        >
+          <Card className="w-full border-border/50 shadow-2xl bg-card/50 backdrop-blur-xl">
+            <CardHeader className="text-center pb-2 pt-8">
+              <div className="lg:hidden flex justify-center mb-6">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
+                  <BookOpen className="h-6 w-6 text-white" />
+                </div>
               </div>
-              
-              {/* Email field */}
-              <FormInput
-                label="Email Address"
-                type="email"
-                placeholder="john.doe@example.com"
-                {...register('email')}
-                error={touchedFields.email ? errors.email?.message : ''}
-                success={touchedFields.email && !errors.email}
-                disabled={isLoading || isSuccess}
-                required
-                autoComplete="email"
-              />
-              
-              {/* Password field with strength indicator */}
-              <div>
+              <h2 className="text-2xl font-bold text-foreground mb-2">
+                Create Account
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                Join our community of readers and start your journey
+              </p>
+            </CardHeader>
+            <CardContent className="px-8 pb-8 pt-6">
+              <form onSubmit={hookFormSubmit(onSubmit)} className="space-y-5" aria-label="Registration form" noValidate>
+                {/* General error message */}
+                {generalError && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
+                    role="alert"
+                  >
+                    <p className="text-sm text-destructive font-medium">{generalError}</p>
+                  </motion.div>
+                )}
+
+                {/* Name fields in grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  <FormInput
+                    label="First Name"
+                    type="text"
+                    placeholder="John"
+                    {...register('firstName')}
+                    error={touchedFields.firstName ? errors.firstName?.message : ''}
+                    success={touchedFields.firstName && !errors.firstName}
+                    disabled={isLoading || isSuccess}
+                    required
+                    autoComplete="given-name"
+                  />
+                  <FormInput
+                    label="Last Name"
+                    type="text"
+                    placeholder="Doe"
+                    {...register('lastName')}
+                    error={touchedFields.lastName ? errors.lastName?.message : ''}
+                    success={touchedFields.lastName && !errors.lastName}
+                    disabled={isLoading || isSuccess}
+                    required
+                    autoComplete="family-name"
+                  />
+                </div>
+
+                {/* Email field */}
                 <FormInput
-                  label="Password"
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="Create your password"
-                  {...register('password')}
-                  error={touchedFields.password ? errors.password?.message : ''}
-                  success={touchedFields.password && !errors.password && passwordStrength.score >= 2}
+                  label="Email Address"
+                  type="email"
+                  placeholder="john.doe@example.com"
+                  {...register('email')}
+                  error={touchedFields.email ? errors.email?.message : ''}
+                  success={touchedFields.email && !errors.email}
+                  disabled={isLoading || isSuccess}
+                  required
+                  autoComplete="email"
+                />
+
+                {/* Password field with strength indicator */}
+                <div>
+                  <FormInput
+                    label="Password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Create your password"
+                    {...register('password')}
+                    error={touchedFields.password ? errors.password?.message : ''}
+                    success={touchedFields.password && !errors.password && passwordStrength.score >= 2}
+                    showPasswordToggle
+                    showPassword={showPassword}
+                    onPasswordToggle={() => setShowPassword(!showPassword)}
+                    disabled={isLoading || isSuccess}
+                    required
+                    autoComplete="new-password"
+                  />
+                  {/* Password strength indicator */}
+                  <PasswordStrengthIndicator
+                    password={password}
+                    show={password.length > 0}
+                    className="mt-2"
+                  />
+                </div>
+
+                {/* Confirm password field */}
+                <FormInput
+                  label="Confirm Password"
+                  type={showConfirmPassword ? 'text' : 'password'}
+                  placeholder="Repeat your password"
+                  {...register('confirmPassword')}
+                  error={touchedFields.confirmPassword ? errors.confirmPassword?.message : ''}
+                  success={touchedFields.confirmPassword && !errors.confirmPassword}
                   showPasswordToggle
-                  showPassword={showPassword}
-                  onPasswordToggle={() => setShowPassword(!showPassword)}
+                  showPassword={showConfirmPassword}
+                  onPasswordToggle={() => setShowConfirmPassword(!showConfirmPassword)}
                   disabled={isLoading || isSuccess}
                   required
                   autoComplete="new-password"
                 />
-                {/* Password strength indicator */}
-                <PasswordStrengthIndicator
-                  password={password}
-                  show={password.length > 0}
-                  className="mt-2"
-                />
-              </div>
-              
-              {/* Confirm password field */}
-              <FormInput
-                label="Confirm Password"
-                type={showConfirmPassword ? 'text' : 'password'}
-                placeholder="Repeat your password"
-                {...register('confirmPassword')}
-                error={touchedFields.confirmPassword ? errors.confirmPassword?.message : ''}
-                success={touchedFields.confirmPassword && !errors.confirmPassword}
-                showPasswordToggle
-                showPassword={showConfirmPassword}
-                onPasswordToggle={() => setShowConfirmPassword(!showConfirmPassword)}
-                disabled={isLoading || isSuccess}
-                required
-                autoComplete="new-password"
-              />
-              
-              {/* Submit button with loading and success states */}
-              <div className="pt-2">
-                <ModernButton
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  icon={Sparkles}
-                  isLoading={isLoading}
-                  isSuccess={isSuccess}
-                  loadingText="Creating your account..."
-                  successText="Account created!"
-                  className="w-full h-12 text-base shadow-lg hover:shadow-xl"
+
+                {/* Submit button with loading and success states */}
+                <div className="pt-2">
+                  <ModernButton
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    icon={Sparkles}
+                    isLoading={isLoading}
+                    isSuccess={isSuccess}
+                    loadingText="Creating your account..."
+                    successText="Account created!"
+                    className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-primary/25"
+                  >
+                    Create Account
+                  </ModernButton>
+                </div>
+              </form>
+
+              <div className="mt-8 pt-6 border-t border-border/50 text-center">
+                <p className="text-sm text-muted-foreground mb-4">
+                  Already have an account?
+                </p>
+                <Button
+                  variant="outline"
+                  className="w-full border-primary/20 hover:bg-primary/5 hover:text-primary transition-colors"
+                  asChild
                 >
-                  Create Account
-                </ModernButton>
+                  <Link to="/login">
+                    Sign In <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
               </div>
-            </form>
-            
-            <div className="mt-6 pt-6 border-t border-border/30">
-              <p className="text-center text-sm text-gray-600 dark:text-muted-foreground">
-                Already have an account?{' '}
-                <Link 
-                  to="/login" 
-                  className="text-primary hover:text-primary/80 font-semibold transition-colors"
-                >
-                  Sign in
-                </Link>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
     </div>
   )
 }
