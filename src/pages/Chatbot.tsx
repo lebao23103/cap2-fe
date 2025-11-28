@@ -8,24 +8,24 @@ import { Avatar, AvatarFallback } from '../components/ui/avatar'
 import { ScrollArea } from '../components/ui/scroll-area'
 import { useToast } from '../components/ui/use-toast'
 import aiService from '../lib/api/ai'
-import { 
-  Send, 
-  User, 
+import {
+  Send,
+  User,
   Bot,
-  BookOpen, 
+  BookOpen,
   Star,
   Sparkles,
   Menu,
   X,
   ArrowLeft
 } from 'lucide-react'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
 } from '../components/ui/dropdown-menu'
 
 interface Message {
@@ -88,8 +88,8 @@ export default function Chatbot() {
 
     try {
       // Call real AI API
-      const response = await aiService.sendMessage(userInput, conversationId)
-      
+      const response = await aiService.sendMessage(userInput, conversationId, selectedRole)
+
       // Save conversation ID for future messages
       if (!conversationId && response.conversation_id) {
         setConversationId(response.conversation_id)
@@ -105,7 +105,7 @@ export default function Chatbot() {
       setMessages(prev => [...prev, botResponse])
     } catch (error) {
       console.error('Error sending message:', error)
-      
+
       // Add error message
       const errorMessage: Message = {
         id: Date.now(),
@@ -113,12 +113,12 @@ export default function Chatbot() {
         content: 'Sorry, I encountered an error processing your request. Please try again.',
         timestamp: new Date()
       }
-      
+
       setMessages(prev => [...prev, errorMessage])
-      
+
       toast({
         title: 'Error',
-        description: 'Failed to send message',
+        description: error instanceof Error ? error.message : 'Failed to send message',
         variant: 'destructive'
       })
     } finally {
@@ -133,9 +133,9 @@ export default function Chatbot() {
     <Card className="mb-4 hover:shadow-md transition-shadow cursor-pointer">
       <CardContent className="p-3">
         <div className="flex gap-3">
-          <img 
-            src={book.cover} 
-            alt={book.title} 
+          <img
+            src={book.cover}
+            alt={book.title}
             className="w-12 h-16 object-cover rounded"
           />
           <div className="flex-1">
@@ -181,8 +181,8 @@ export default function Chatbot() {
                     <div className="flex-1">
                       <CardTitle className="text-lg text-gray-900 dark:text-foreground flex items-center gap-2">
                         <Sparkles className="h-5 w-5 text-primary" />
-                        Chat with {selectedRole === 'book advisor' ? 'Book Advisor' : 
-                                  selectedRole === 'literary expert' ? 'Literary Expert' : 'Book Enthusiast'}
+                        Chat with {selectedRole === 'book advisor' ? 'Book Advisor' :
+                          selectedRole === 'literary expert' ? 'Literary Expert' : 'Book Enthusiast'}
                       </CardTitle>
                       <CardDescription className="mt-1 text-gray-600 dark:text-muted-foreground">
                         Ask me anything about books, get recommendations, or discuss literature!
@@ -211,11 +211,11 @@ export default function Chatbot() {
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    
+
                     {/* Mobile Sidebar Toggle */}
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
+                    <Button
+                      variant="ghost"
+                      size="icon"
                       className="lg:hidden"
                       onClick={() => setSidebarOpen(!sidebarOpen)}
                       aria-label="Toggle sidebar"
@@ -225,13 +225,13 @@ export default function Chatbot() {
                   </div>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="flex-1 flex flex-col p-0">
                 <ScrollArea className="flex-1 px-6">
                   <div className="space-y-4 pb-4">
                     {messages.map((message) => (
-                      <div 
-                        key={message.id} 
+                      <div
+                        key={message.id}
                         className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
                         {message.type === 'bot' && (
@@ -241,18 +241,17 @@ export default function Chatbot() {
                             </AvatarFallback>
                           </Avatar>
                         )}
-                        
+
                         <div className={`max-w-[85%] sm:max-w-[70%] md:max-w-[60%] ${message.type === 'user' ? 'order-first' : ''}`}>
-                          <div 
-                            className={`rounded-lg px-4 py-2 ${
-                              message.type === 'user' 
-                                ? 'bg-primary text-primary-foreground ml-auto' 
-                                : 'bg-muted'
-                            }`}
+                          <div
+                            className={`rounded-lg px-4 py-2 ${message.type === 'user'
+                              ? 'bg-primary text-primary-foreground ml-auto'
+                              : 'bg-muted'
+                              }`}
                           >
                             <p className="text-sm">{message.content}</p>
                           </div>
-                          
+
                           {message.bookRecommendations && (
                             <div className="mt-3 space-y-2">
                               <p className="text-xs text-muted-foreground font-medium">Recommended books:</p>
@@ -261,12 +260,12 @@ export default function Chatbot() {
                               ))}
                             </div>
                           )}
-                          
+
                           <p className="text-xs text-muted-foreground mt-1">
                             {message.timestamp.toLocaleTimeString()}
                           </p>
                         </div>
-                        
+
                         {message.type === 'user' && (
                           <Avatar className="w-8 h-8">
                             <AvatarFallback>
@@ -276,7 +275,7 @@ export default function Chatbot() {
                         )}
                       </div>
                     ))}
-                    
+
                     {isLoading && (
                       <div className="flex gap-3 justify-start">
                         <Avatar className="w-8 h-8">
@@ -287,17 +286,17 @@ export default function Chatbot() {
                         <div className="bg-muted rounded-lg px-4 py-2">
                           <div className="flex gap-1">
                             <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
-                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
-                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                           </div>
                         </div>
                       </div>
                     )}
-                    
+
                     <div ref={messagesEndRef} />
                   </div>
                 </ScrollArea>
-                
+
                 {/* Input Area */}
                 <div className="border-t p-4">
                   <div className="flex gap-2">
@@ -309,8 +308,8 @@ export default function Chatbot() {
                       disabled={isLoading}
                       maxLength={500}
                     />
-                    <Button 
-                      onClick={handleSendMessage} 
+                    <Button
+                      onClick={handleSendMessage}
                       disabled={isLoading || !inputMessage.trim()}
                       size="icon"
                       aria-label="Send message"
@@ -332,9 +331,9 @@ export default function Chatbot() {
           <div className={`${sidebarOpen ? 'fixed inset-0 z-50 bg-black/50 lg:relative lg:bg-transparent' : 'hidden'} lg:block space-y-4`}>
             <div className={`${sidebarOpen ? 'fixed right-0 top-0 bottom-0 w-80 bg-background shadow-xl p-4 overflow-y-auto' : ''} lg:relative lg:w-auto lg:p-0 lg:shadow-none space-y-4`}>
               {sidebarOpen && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
+                <Button
+                  variant="ghost"
+                  size="icon"
                   className="lg:hidden absolute top-2 right-2"
                   onClick={() => setSidebarOpen(false)}
                   aria-label="Close sidebar"
@@ -342,49 +341,49 @@ export default function Chatbot() {
                   <X className="h-4 w-4" />
                 </Button>
               )}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">Quick Suggestions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {[
-                  "Recommend a mystery novel",
-                  "Best books of 2024",
-                  "Classic literature suggestions",
-                  "Sci-fi recommendations"
-                ].map((suggestion, index) => (
-                  <Button
-                    key={index}
-                    variant="ghost"
-                    size="sm"
-                    className="w-full justify-start text-left h-auto p-2"
-                    onClick={() => setInputMessage(suggestion)}
-                  >
-                    {suggestion}
-                  </Button>
-                ))}
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">Quick Suggestions</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  {[
+                    "Recommend a mystery novel",
+                    "Best books of 2024",
+                    "Classic literature suggestions",
+                    "Sci-fi recommendations"
+                  ].map((suggestion, index) => (
+                    <Button
+                      key={index}
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start text-left h-auto p-2"
+                      onClick={() => setInputMessage(suggestion)}
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                </CardContent>
+              </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-sm">AI Capabilities</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-xs text-muted-foreground">
-                <div className="flex items-center gap-2">
-                  <BookOpen className="w-3 h-3" />
-                  <span>Book recommendations</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Star className="w-3 h-3" />
-                  <span>Literary analysis</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Bot className="w-3 h-3" />
-                  <span>Contextual conversations</span>
-                </div>
-              </CardContent>
-            </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-sm">AI Capabilities</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-2">
+                    <BookOpen className="w-3 h-3" />
+                    <span>Book recommendations</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Star className="w-3 h-3" />
+                    <span>Literary analysis</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Bot className="w-3 h-3" />
+                    <span>Contextual conversations</span>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>

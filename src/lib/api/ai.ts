@@ -25,6 +25,7 @@ export interface Conversation {
 export interface ChatSendRequest {
   message: string;
   conversation_id?: string;
+  role?: string;
 }
 
 export interface ChatSendResponse {
@@ -35,12 +36,26 @@ export interface ChatSendResponse {
 
 class AIService {
   // Send a chat message (creates new conversation or continues existing one)
-  async sendMessage(message: string, conversationId?: string): Promise<ChatSendResponse> {
-    const response = await apiClient.post('/chat/send', {
-      message,
-      conversation_id: conversationId
-    });
-    return response.data;
+  async sendMessage(message: string, conversationId?: string, role?: string): Promise<ChatSendResponse> {
+    console.log('Sending chat request:', { message, conversation_id: conversationId, role });
+    try {
+      const response = await apiClient.post('/chat/send', {
+        message,
+        conversation_id: conversationId,
+        role
+      });
+      console.log('Chat response:', response.data);
+
+      // Transform backend response to match frontend interface
+      return {
+        reply: response.data.message.ai,
+        conversation_id: response.data.conversation_id,
+        message_id: Date.now()
+      };
+    } catch (error) {
+      console.error('Chat API Error:', error);
+      throw error;
+    }
   }
 
   // Get all user's conversations
