@@ -2,15 +2,16 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { fadeInUp } from '@/lib/animations'
 import {
-  Upload, 
-  FileText, 
-  Image, 
-  Save, 
-  Eye, 
+  Upload,
+  FileText,
+  Image,
+  Save,
+  Eye,
   Check,
   AlertCircle,
   ChevronRight,
-  Feather
+  Feather,
+  X
 } from 'lucide-react'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -64,7 +65,7 @@ export default function Create() {
     }
 
     // Validate file based on type
-    const validation = field === 'coverImage' 
+    const validation = field === 'coverImage'
       ? validateImageFile(file)
       : validateBookFile(file)
 
@@ -87,7 +88,7 @@ export default function Create() {
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {}
-    
+
     if (!bookData.title.trim()) {
       errors.title = 'Title is required'
     }
@@ -99,7 +100,7 @@ export default function Create() {
     } else if (bookData.description.length < 50) {
       errors.description = 'Description must be at least 50 characters'
     }
-    
+
     setValidationErrors(errors)
     return Object.keys(errors).length === 0
   }
@@ -114,25 +115,25 @@ export default function Create() {
       setActiveTab('info')
       return
     }
-    
+
     setIsUploading(true)
     setUploadProgress(0)
-    
+
     try {
       // Simulate upload process with progress
       for (let i = 0; i <= 100; i += 10) {
         setUploadProgress(i)
         await new Promise(resolve => setTimeout(resolve, 200))
       }
-      
+
       // Here you would typically send the data to your backend
       console.log('Publishing book:', bookData)
-      
+
       toast({
         title: "Success!",
         description: "Your book has been published successfully.",
       })
-      
+
       setIsUploading(false)
       setUploadProgress(0)
     } catch (error) {
@@ -147,21 +148,22 @@ export default function Create() {
   }
 
   return (
-    <div className="relative w-full min-h-screen bg-gradient-to-br from-background via-background to-muted/20 py-12">
-      <div className="container mx-auto max-w-6xl">
-        
+    <div className="relative w-full min-h-screen bg-background py-12 font-mono">
+      {/* Background Grid */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+
+      <div className="container mx-auto max-w-6xl relative z-10">
+
         {/* Header */}
         <motion.div {...fadeInUp} className="mb-12 text-center">
-          <Badge variant="secondary" className="mb-6 px-4 py-2 rounded-full bg-primary/10 text-primary border-0 text-sm font-semibold">
+          <Badge variant="outline" className="mb-6 px-4 py-2 bg-white text-black border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-sm font-bold uppercase">
             <Feather className="mr-2 h-4 w-4" />
             Create & Publish
           </Badge>
-          <h1 className="font-sans text-4xl md:text-5xl font-bold mb-4 tracking-tight">
-            <span className="bg-gradient-to-r from-foreground to-primary/80 bg-clip-text text-transparent">
-              Share Your Story
-            </span>
+          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 tracking-tight uppercase">
+            Share Your <span className="bg-primary text-black px-2">Story</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed font-mono">
             Transform your manuscript into a published book and share it with readers worldwide.
           </p>
         </motion.div>
@@ -173,32 +175,41 @@ export default function Create() {
           transition={{ delay: 0.2, duration: 0.6 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8 h-auto p-1.5 bg-card/50 backdrop-blur-md border-0 shadow-xl rounded-2xl">
-              <TabsTrigger value="info" className="flex items-center gap-2 py-3 px-4 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all duration-300">
+            <TabsList className="grid w-full grid-cols-3 mb-8 h-auto p-0 bg-transparent gap-4">
+              <TabsTrigger
+                value="info"
+                className="flex items-center gap-2 py-4 px-4 border-2 border-black bg-white data-[state=active]:bg-black data-[state=active]:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 font-bold uppercase"
+              >
                 <FileText className="h-4 w-4" />
-                <span className="hidden sm:inline font-semibold">Book Info</span>
+                <span className="hidden sm:inline">Book Info</span>
               </TabsTrigger>
-              <TabsTrigger value="media" className="flex items-center gap-2 py-3 px-4 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all duration-300">
+              <TabsTrigger
+                value="media"
+                className="flex items-center gap-2 py-4 px-4 border-2 border-black bg-white data-[state=active]:bg-black data-[state=active]:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 font-bold uppercase"
+              >
                 <Upload className="h-4 w-4" />
-                <span className="hidden sm:inline font-semibold">Upload Files</span>
+                <span className="hidden sm:inline">Upload Files</span>
               </TabsTrigger>
-              <TabsTrigger value="preview" className="flex items-center gap-2 py-3 px-4 rounded-xl data-[state=active]:bg-background data-[state=active]:shadow-lg transition-all duration-300">
+              <TabsTrigger
+                value="preview"
+                className="flex items-center gap-2 py-4 px-4 border-2 border-black bg-white data-[state=active]:bg-black data-[state=active]:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 font-bold uppercase"
+              >
                 <Eye className="h-4 w-4" />
-                <span className="hidden sm:inline font-semibold">Preview</span>
+                <span className="hidden sm:inline">Preview</span>
               </TabsTrigger>
             </TabsList>
 
             {/* Book Information Tab */}
             <TabsContent value="info">
-              <Card className="border-0 shadow-2xl bg-card/50 backdrop-blur-sm rounded-2xl overflow-hidden hover:shadow-3xl transition-shadow duration-300">
-                <CardHeader className="bg-gradient-to-br from-primary/5 via-transparent to-transparent pb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-xl bg-primary/10 shadow-sm">
-                      <FileText className="h-6 w-6 text-primary" />
+              <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none">
+                <CardHeader className="border-b-2 border-black pb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 border-2 border-black bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                      <FileText className="h-6 w-6 text-black" />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl font-bold">Book Information</CardTitle>
-                      <CardDescription className="mt-1.5">
+                      <CardTitle className="text-2xl font-bold uppercase font-display">Book Information</CardTitle>
+                      <CardDescription className="mt-1.5 font-mono text-black">
                         Fill in the essential details about your book
                       </CardDescription>
                     </div>
@@ -206,10 +217,10 @@ export default function Create() {
                 </CardHeader>
                 <CardContent className="p-8 space-y-8">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
-                    
+
                     {/* Title */}
                     <div className="space-y-2">
-                      <Label htmlFor="title" className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <Label htmlFor="title" className="text-sm font-bold text-black flex items-center gap-2 uppercase">
                         Book Title <span className="text-red-500">*</span>
                       </Label>
                       <Input
@@ -221,11 +232,11 @@ export default function Create() {
                           handleInputChange('title', e.target.value)
                           setValidationErrors(prev => ({ ...prev, title: '' }))
                         }}
-                        className={`h-11 rounded-xl ${validationErrors.title ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                        className={`h-12 border-2 border-black rounded-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${validationErrors.title ? 'border-red-500' : ''}`}
                       />
                       <div className="min-h-[20px]">
                         {validationErrors.title && (
-                          <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                          <p className="text-xs text-red-500 flex items-center gap-1 mt-1 font-bold">
                             <AlertCircle className="h-3 w-3" />
                             {validationErrors.title}
                           </p>
@@ -235,7 +246,7 @@ export default function Create() {
 
                     {/* Author */}
                     <div className="space-y-2">
-                      <Label htmlFor="author" className="text-sm font-semibold text-foreground flex items-center gap-2">
+                      <Label htmlFor="author" className="text-sm font-bold text-black flex items-center gap-2 uppercase">
                         Author <span className="text-red-500">*</span>
                       </Label>
                       <Input
@@ -247,11 +258,11 @@ export default function Create() {
                           handleInputChange('author', e.target.value)
                           setValidationErrors(prev => ({ ...prev, author: '' }))
                         }}
-                        className={`h-11 rounded-xl ${validationErrors.author ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                        className={`h-12 border-2 border-black rounded-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${validationErrors.author ? 'border-red-500' : ''}`}
                       />
                       <div className="min-h-[20px]">
                         {validationErrors.author && (
-                          <p className="text-xs text-red-500 flex items-center gap-1 mt-1">
+                          <p className="text-xs text-red-500 flex items-center gap-1 mt-1 font-bold">
                             <AlertCircle className="h-3 w-3" />
                             {validationErrors.author}
                           </p>
@@ -263,7 +274,7 @@ export default function Create() {
 
                   {/* Description */}
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="description" className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <Label htmlFor="description" className="text-sm font-bold text-black flex items-center gap-2 uppercase">
                       Book Description <span className="text-red-500">*</span>
                     </Label>
                     <Textarea
@@ -274,21 +285,21 @@ export default function Create() {
                         handleInputChange('description', e.target.value)
                         setValidationErrors(prev => ({ ...prev, description: '' }))
                       }}
-                      className={`min-h-[140px] rounded-xl resize-none ${validationErrors.description ? 'border-red-500 focus-visible:ring-red-500' : ''}`}
+                      className={`min-h-[140px] border-2 border-black rounded-none resize-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${validationErrors.description ? 'border-red-500' : ''}`}
                       rows={6}
                     />
                     <div className="flex justify-between items-center min-h-[20px]">
                       {validationErrors.description ? (
-                        <p className="text-xs text-red-500 flex items-center gap-1">
+                        <p className="text-xs text-red-500 flex items-center gap-1 font-bold">
                           <AlertCircle className="h-3 w-3" />
                           {validationErrors.description}
                         </p>
                       ) : (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-gray-500 font-mono">
                           {bookData.description.length < 50 ? `${50 - bookData.description.length} more characters needed` : 'Looks good!'}
                         </p>
                       )}
-                      <p className="text-xs text-muted-foreground font-medium">
+                      <p className="text-xs text-black font-bold font-mono">
                         {bookData.description.length} / 50
                       </p>
                     </div>
@@ -301,49 +312,48 @@ export default function Create() {
 
             {/* Media Upload Tab */}
             <TabsContent value="media">
-              <Card className="border-0 shadow-2xl bg-card/50 backdrop-blur-sm rounded-2xl overflow-hidden hover:shadow-3xl transition-shadow duration-300">
-                <CardHeader className="bg-gradient-to-br from-purple-500/5 via-transparent to-transparent pb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-xl bg-purple-500/10 shadow-sm">
-                      <Upload className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+              <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none">
+                <CardHeader className="border-b-2 border-black pb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 border-2 border-black bg-purple-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                      <Upload className="h-6 w-6 text-black" />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl font-bold">Upload Files</CardTitle>
-                      <CardDescription className="mt-1.5">
+                      <CardTitle className="text-2xl font-bold uppercase font-display">Upload Files</CardTitle>
+                      <CardDescription className="mt-1.5 font-mono text-black">
                         Add your cover image and book file for readers
                       </CardDescription>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  
+                <CardContent className="space-y-6 p-8">
+
                   {/* Cover Image Upload */}
                   <div className="space-y-4">
-                    <Label className="text-sm font-semibold flex items-center gap-2">
-                      <Image className="h-4 w-4 text-primary" />
+                    <Label className="text-sm font-bold flex items-center gap-2 uppercase">
+                      <Image className="h-4 w-4 text-black" />
                       Book Cover Image
                     </Label>
-                    <div className="group relative border-2 border-dashed border-border/30 hover:border-primary/40 rounded-2xl p-12 text-center transition-all duration-300 bg-gradient-to-br from-primary/5 via-transparent to-transparent hover:shadow-xl hover:scale-[1.01]">
+                    <div className="group relative border-2 border-dashed border-black hover:bg-gray-50 p-12 text-center transition-all duration-300 rounded-none">
                       {bookData.coverImage ? (
                         <div className="space-y-4">
                           <div className="relative inline-block">
-                            <div className="absolute inset-0 bg-green-500/20 blur-2xl rounded-full" />
-                            <div className="relative p-4 rounded-2xl bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20">
-                              <Image className="h-12 w-12 mx-auto text-green-600 dark:text-green-500" />
+                            <div className="relative p-4 bg-green-100 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                              <Image className="h-12 w-12 mx-auto text-black" />
                             </div>
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-foreground mb-1">
+                            <p className="text-sm font-bold text-black mb-1 uppercase">
                               {bookData.coverImage.name}
                             </p>
-                            <p className="text-xs text-muted-foreground mb-3">
+                            <p className="text-xs text-gray-500 mb-3 font-mono">
                               {formatFileSize(bookData.coverImage.size)}
                             </p>
                             <ModernButton
-                              variant="ghost"
-                              size="sm" 
+                              variant="danger"
+                              size="sm"
                               onClick={() => handleFileUpload('coverImage', null)}
-                              className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400"
+                              className="h-8 text-xs"
                             >
                               Remove Image
                             </ModernButton>
@@ -352,14 +362,13 @@ export default function Create() {
                       ) : (
                         <div className="space-y-4">
                           <div className="relative inline-block">
-                            <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full" />
-                            <div className="relative p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
-                              <Image className="h-12 w-12 mx-auto text-primary group-hover:scale-110 transition-transform duration-300" />
+                            <div className="relative p-4 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] transition-transform">
+                              <Image className="h-12 w-12 mx-auto text-black" />
                             </div>
                           </div>
                           <div>
-                            <p className="text-base font-semibold text-foreground mb-1">Upload book cover</p>
-                            <p className="text-sm text-muted-foreground mb-4">
+                            <p className="text-base font-bold text-black mb-1 uppercase">Upload book cover</p>
+                            <p className="text-sm text-gray-500 mb-4 font-mono">
                               PNG or JPG • Maximum 10MB
                             </p>
                             <input
@@ -372,7 +381,6 @@ export default function Create() {
                             <ModernButton
                               icon={Upload}
                               variant="secondary"
-                              className="border-primary/30 hover:bg-primary/10 hover:border-primary/50"
                               onClick={() => document.getElementById('cover-upload')?.click()}
                             >
                               Choose File
@@ -385,31 +393,30 @@ export default function Create() {
 
                   {/* Book File Upload */}
                   <div className="space-y-4">
-                    <Label className="text-sm font-semibold flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+                    <Label className="text-sm font-bold flex items-center gap-2 uppercase">
+                      <FileText className="h-4 w-4 text-black" />
                       Book File (Optional)
                     </Label>
-                    <div className="group relative border-2 border-dashed border-border/30 hover:border-purple-500/40 rounded-2xl p-12 text-center transition-all duration-300 bg-gradient-to-br from-purple-500/5 via-transparent to-transparent hover:shadow-xl hover:scale-[1.01]">
+                    <div className="group relative border-2 border-dashed border-black hover:bg-gray-50 p-12 text-center transition-all duration-300 rounded-none">
                       {bookData.bookFile ? (
                         <div className="space-y-4">
                           <div className="relative inline-block">
-                            <div className="absolute inset-0 bg-green-500/20 blur-2xl rounded-full" />
-                            <div className="relative p-4 rounded-2xl bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20">
-                              <FileText className="h-12 w-12 mx-auto text-green-600 dark:text-green-500" />
+                            <div className="relative p-4 bg-green-100 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                              <FileText className="h-12 w-12 mx-auto text-black" />
                             </div>
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-foreground mb-1">
+                            <p className="text-sm font-bold text-black mb-1 uppercase">
                               {bookData.bookFile.name}
                             </p>
-                            <p className="text-xs text-muted-foreground mb-3">
+                            <p className="text-xs text-gray-500 mb-3 font-mono">
                               {formatFileSize(bookData.bookFile.size)}
                             </p>
                             <ModernButton
-                              variant="ghost"
-                              size="sm" 
+                              variant="danger"
+                              size="sm"
                               onClick={() => handleFileUpload('bookFile', null)}
-                              className="hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/50 dark:hover:text-red-400"
+                              className="h-8 text-xs"
                             >
                               Remove File
                             </ModernButton>
@@ -418,14 +425,13 @@ export default function Create() {
                       ) : (
                         <div className="space-y-4">
                           <div className="relative inline-block">
-                            <div className="absolute inset-0 bg-purple-500/10 blur-2xl rounded-full" />
-                            <div className="relative p-4 rounded-2xl bg-gradient-to-br from-purple-500/10 to-purple-500/5 border border-purple-500/20">
-                              <FileText className="h-12 w-12 mx-auto text-purple-600 dark:text-purple-400 group-hover:scale-110 transition-transform duration-300" />
+                            <div className="relative p-4 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] transition-transform">
+                              <FileText className="h-12 w-12 mx-auto text-black" />
                             </div>
                           </div>
                           <div>
-                            <p className="text-base font-semibold text-foreground mb-1">Upload book file</p>
-                            <p className="text-sm text-muted-foreground mb-4">
+                            <p className="text-base font-bold text-black mb-1 uppercase">Upload book file</p>
+                            <p className="text-sm text-gray-500 mb-4 font-mono">
                               PDF, EPUB, DOCX, or TXT • Maximum 50MB
                             </p>
                             <input
@@ -438,7 +444,6 @@ export default function Create() {
                             <ModernButton
                               icon={Upload}
                               variant="secondary"
-                              className="border-purple-500/30 hover:bg-purple-500/10 hover:border-purple-500/50"
                               onClick={() => document.getElementById('book-upload')?.click()}
                             >
                               Choose File
@@ -454,49 +459,49 @@ export default function Create() {
 
             {/* Preview Tab */}
             <TabsContent value="preview">
-              <Card className="border-0 shadow-2xl bg-card/50 backdrop-blur-sm rounded-2xl overflow-hidden hover:shadow-3xl transition-shadow duration-300">
-                <CardHeader className="bg-gradient-to-br from-amber-500/5 via-transparent to-transparent pb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-xl bg-amber-500/10 shadow-sm">
-                      <Eye className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none">
+                <CardHeader className="border-b-2 border-black pb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 border-2 border-black bg-amber-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                      <Eye className="h-6 w-6 text-black" />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl font-bold">Book Preview</CardTitle>
-                      <CardDescription className="mt-1.5">
+                      <CardTitle className="text-2xl font-bold uppercase font-display">Book Preview</CardTitle>
+                      <CardDescription className="mt-1.5 font-mono text-black">
                         See how your book will appear to readers
                       </CardDescription>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-8">
                   <div className="max-w-4xl mx-auto">
                     {/* Book Card Preview */}
-                    <div className="rounded-2xl shadow-2xl overflow-hidden border-0 bg-card/50 backdrop-blur-sm hover:shadow-3xl hover:scale-[1.01] transition-all duration-300">
+                    <div className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none overflow-hidden">
                       <div className="flex flex-col sm:flex-row p-8 gap-6">
-                        <div className="flex-shrink-0 w-full sm:w-40 h-56 sm:h-52 bg-gradient-to-br from-muted to-muted/60 rounded-xl flex items-center justify-center shadow-xl">
+                        <div className="flex-shrink-0 w-full sm:w-40 h-56 sm:h-52 bg-gray-100 border-2 border-black flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                           {bookData.coverImage ? (
-                            <img 
-                              src={URL.createObjectURL(bookData.coverImage)} 
-                              alt="Book cover" 
-                              className="w-full h-full object-cover rounded-md"
+                            <img
+                              src={URL.createObjectURL(bookData.coverImage)}
+                              alt="Book cover"
+                              className="w-full h-full object-cover"
                             />
                           ) : (
-                            <Image className="h-16 w-16 text-muted-foreground" />
+                            <Image className="h-16 w-16 text-gray-400" />
                           )}
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-semibold text-foreground mb-2">
+                          <h3 className="text-xl font-bold text-black mb-2 uppercase font-display">
                             {bookData.title || 'Book Title'}
                           </h3>
-                          <p className="text-muted-foreground mb-2">
+                          <p className="text-gray-600 mb-2 font-mono uppercase text-sm">
                             by {bookData.author || 'Author Name'}
                           </p>
                           <div className="flex gap-2 mb-3">
-                            <Badge className="bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-200">
+                            <Badge className="bg-green-400 text-black border-2 border-black rounded-none font-bold uppercase">
                               ✍️ User Created
                             </Badge>
                           </div>
-                          <p className="text-muted-foreground text-sm mb-3">
+                          <p className="text-gray-600 text-sm mb-3 font-mono leading-relaxed">
                             {bookData.description || 'Book description will appear here...'}
                           </p>
                         </div>
@@ -505,12 +510,12 @@ export default function Create() {
 
                     {/* Content Preview */}
                     {bookData.bookFile && (
-                      <div className="mt-6 p-6 bg-card rounded-lg border-0 shadow-sm">
-                        <h4 className="font-semibold mb-3">Uploaded Book File:</h4>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground">
+                      <div className="mt-6 p-6 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <h4 className="font-bold mb-3 uppercase text-sm">Uploaded Book File:</h4>
+                        <div className="flex items-center gap-3 text-sm text-gray-600 font-mono">
                           <FileText className="h-5 w-5" />
                           <span>{bookData.bookFile.name}</span>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant="outline" className="text-xs border-black rounded-none bg-gray-100">
                             {(bookData.bookFile.size / (1024 * 1024)).toFixed(2)} MB
                           </Badge>
                         </div>
@@ -530,6 +535,7 @@ export default function Create() {
                   size="lg"
                   icon={ChevronRight}
                   iconPosition="right"
+                  variant="primary"
                   onClick={() => {
                     if (validateForm()) {
                       setActiveTab('media')
@@ -541,12 +547,12 @@ export default function Create() {
                       })
                     }
                   }}
-                  className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground shadow-lg hover:shadow-xl px-8"
+                  className="px-8"
                 >
                   Continue to Upload Files
                 </ModernButton>
                 {(!bookData.title || !bookData.author || !bookData.description || bookData.description.length < 50) && (
-                  <p className="text-xs text-muted-foreground flex items-center gap-1.5">
+                  <p className="text-xs text-red-500 flex items-center gap-1.5 font-bold uppercase">
                     <AlertCircle className="h-3.5 w-3.5" />
                     Complete all required (*) fields to continue
                   </p>
@@ -557,8 +563,8 @@ export default function Create() {
                 size="lg"
                 icon={ChevronRight}
                 iconPosition="right"
+                variant="primary"
                 onClick={() => setActiveTab('preview')}
-                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl"
               >
                 Continue to Preview
               </ModernButton>
@@ -566,28 +572,27 @@ export default function Create() {
               <div className="flex flex-col gap-4 w-full max-w-md">
                 {isUploading && (
                   <div className="space-y-2">
-                    <div className="flex justify-between text-sm text-muted-foreground">
+                    <div className="flex justify-between text-sm text-black font-bold font-mono">
                       <span>Uploading...</span>
                       <span>{uploadProgress}%</span>
                     </div>
-                    <Progress value={uploadProgress} className="w-full" />
+                    <Progress value={uploadProgress} className="w-full h-4 border-2 border-black rounded-none bg-white [&>div]:bg-primary" />
                   </div>
                 )}
-                <ModernButton 
-                  variant="secondary" 
-                  size="lg" 
+                <ModernButton
+                  variant="secondary"
+                  size="lg"
                   icon={Save}
                   disabled={isUploading}
-                  className="border-border/50 hover:bg-muted/50"
                 >
                   Save Draft
                 </ModernButton>
                 <ModernButton
-                  size="lg" 
+                  size="lg"
+                  variant="primary"
                   icon={isUploading ? AlertCircle : Check}
                   onClick={handlePublish}
                   disabled={!bookData.title || !bookData.author || !bookData.description || isUploading}
-                  className="bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg hover:shadow-xl"
                 >
                   {isUploading ? 'Publishing...' : 'Publish Book'}
                 </ModernButton>
@@ -599,4 +604,3 @@ export default function Create() {
     </div>
   )
 }
-

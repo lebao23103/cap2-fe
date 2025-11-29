@@ -190,7 +190,7 @@ export default function Profile() {
       setIsLoading(true);
       // TODO: Connect to API
       // const profileData = await userService.getProfile();
-      
+
       // Mock data for now
       if (user) {
         setFormData({
@@ -288,7 +288,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-4 sm:py-6 md:py-8">
+    <div className="min-h-screen bg-background py-4 sm:py-6 md:py-8 font-mono">
       <div className="container mx-auto max-w-7xl">
         {/* Profile Header Card */}
         <motion.div
@@ -296,14 +296,14 @@ export default function Profile() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm mb-6 sm:mb-8 overflow-hidden">
+          <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white mb-6 sm:mb-8 overflow-hidden rounded-none">
             {/* Cover Photo */}
-            <div className="h-24 sm:h-32 bg-gradient-to-r from-primary/20 via-primary/10 to-secondary/20 relative">
+            <div className="h-24 sm:h-32 bg-primary relative border-b-2 border-black">
               {!isEditing && (
                 <Button
                   variant="secondary"
                   size="icon"
-                  className="absolute top-4 right-4 shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+                  className="absolute top-4 right-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all rounded-none border-2 border-black bg-white text-black hover:bg-gray-100"
                   onClick={() => setIsEditing(true)}
                 >
                   <Edit className="h-4 w-4" />
@@ -315,9 +315,9 @@ export default function Profile() {
               <div className="flex flex-col md:flex-row items-start gap-4 sm:gap-6">
                 {/* Avatar */}
                 <div className="relative -mt-12 sm:-mt-16 md:-mt-20">
-                  <Avatar className="h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-32 ring-4 ring-background">
+                  <Avatar className="h-20 w-20 sm:h-24 sm:w-24 md:h-32 md:w-32 ring-4 ring-black rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white">
                     <AvatarImage src={user?.email ? `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}` : undefined} />
-                    <AvatarFallback className="text-2xl">
+                    <AvatarFallback className="text-2xl font-bold bg-yellow-400 text-black rounded-none">
                       {user?.first_name?.[0]}{user?.last_name?.[0]}
                     </AvatarFallback>
                   </Avatar>
@@ -325,7 +325,7 @@ export default function Profile() {
                     <Button
                       size="icon"
                       variant="secondary"
-                      className="absolute bottom-0 right-0 h-8 w-8 rounded-full"
+                      className="absolute bottom-0 right-0 h-8 w-8 rounded-none border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] bg-white text-black hover:bg-gray-100"
                     >
                       <Camera className="h-4 w-4" />
                     </Button>
@@ -339,7 +339,7 @@ export default function Profile() {
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label htmlFor="firstName">First Name</Label>
+                          <Label htmlFor="firstName" className="font-bold uppercase">First Name</Label>
                           <Input
                             id="firstName"
                             {...register('firstName')}
@@ -351,17 +351,17 @@ export default function Profile() {
                             }}
                             autoComplete="given-name"
                             disabled={isSaving}
-                            className={errors.firstName ? 'border-destructive' : ''}
+                            className={`rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-visible:ring-0 ${errors.firstName ? 'border-red-500' : ''}`}
                             aria-invalid={!!errors.firstName}
                           />
                           {errors.firstName && (
-                            <p className="text-sm text-destructive" role="alert">
+                            <p className="text-sm text-red-500 font-bold" role="alert">
                               {errors.firstName.message}
                             </p>
                           )}
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="lastName">Last Name</Label>
+                          <Label htmlFor="lastName" className="font-bold uppercase">Last Name</Label>
                           <Input
                             id="lastName"
                             {...register('lastName')}
@@ -373,18 +373,18 @@ export default function Profile() {
                             }}
                             autoComplete="family-name"
                             disabled={isSaving}
-                            className={errors.lastName ? 'border-destructive' : ''}
+                            className={`rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-visible:ring-0 ${errors.lastName ? 'border-red-500' : ''}`}
                             aria-invalid={!!errors.lastName}
                           />
                           {errors.lastName && (
-                            <p className="text-sm text-destructive" role="alert">
+                            <p className="text-sm text-red-500 font-bold" role="alert">
                               {errors.lastName.message}
                             </p>
                           )}
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="bio">Bio</Label>
+                        <Label htmlFor="bio" className="font-bold uppercase">Bio</Label>
                         <Textarea
                           id="bio"
                           {...register('bio')}
@@ -397,25 +397,25 @@ export default function Profile() {
                           rows={3}
                           maxLength={200}
                           disabled={isSaving}
-                          className={errors.bio ? 'border-destructive' : ''}
+                          className={`rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-visible:ring-0 ${errors.bio ? 'border-red-500' : ''}`}
                           aria-invalid={!!errors.bio}
                           aria-describedby={errors.bio ? 'bio-error' : 'bio-hint'}
                         />
                         {errors.bio ? (
-                          <p id="bio-error" className="text-sm text-destructive" role="alert">
+                          <p id="bio-error" className="text-sm text-red-500 font-bold" role="alert">
                             {errors.bio.message}
                           </p>
                         ) : (
-                          <p id="bio-hint" className="text-xs text-muted-foreground">
+                          <p id="bio-hint" className="text-xs text-gray-500 font-bold">
                             {formData.bio.length}/200 characters
                           </p>
                         )}
                       </div>
                       <div className="flex gap-3 pt-2">
-                        <Button type="submit" disabled={isSaving} aria-label={isSaving ? 'Saving profile changes' : 'Save profile changes'}>
+                        <Button type="submit" disabled={isSaving} className="rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-primary text-black hover:bg-primary/90 uppercase font-bold hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all" aria-label={isSaving ? 'Saving profile changes' : 'Save profile changes'}>
                           {isSaving ? 'Saving...' : 'Save Changes'}
                         </Button>
-                        <Button type="button" variant="outline" onClick={handleCancel} disabled={isSaving} aria-label="Cancel editing">
+                        <Button type="button" variant="outline" onClick={handleCancel} disabled={isSaving} className="rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white text-black hover:bg-gray-100 uppercase font-bold hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all" aria-label="Cancel editing">
                           Cancel
                         </Button>
                       </div>
@@ -424,17 +424,17 @@ export default function Profile() {
                     // View Mode
                     <>
                       <div>
-                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold">
+                        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold uppercase">
                           {formData.firstName} {formData.lastName}
                         </h1>
-                        <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground mt-1">
+                        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 font-bold mt-1 font-mono">
                           <Mail className="h-4 w-4" />
                           {formData.email}
                         </div>
                       </div>
-                      <p className="text-muted-foreground">{formData.bio}</p>
+                      <p className="text-gray-600 font-mono border-l-4 border-primary pl-4 italic">{formData.bio}</p>
                       <div className="flex flex-wrap gap-3">
-                        <Button variant="outline" size="sm">
+                        <Button variant="outline" size="sm" className="rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white text-black hover:bg-gray-100 uppercase font-bold hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all">
                           <Share2 className="mr-2 h-4 w-4" />
                           Share Profile
                         </Button>
@@ -490,37 +490,36 @@ export default function Profile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
             >
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Award className="h-5 w-5 text-amber-500" />
+              <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                <CardHeader className="border-b-2 border-black bg-gray-50">
+                  <CardTitle className="flex items-center gap-2 uppercase font-bold">
+                    <Award className="h-5 w-5 text-black" />
                     Achievements
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                     {achievements.map((achievement) => (
                       <div
                         key={achievement.id}
-                        className={`p-4 rounded-xl border transition-all ${
-                          achievement.earned
-                            ? 'bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/20 hover:shadow-md'
-                            : 'bg-muted/30 border-border/30 opacity-60'
-                        }`}
+                        className={`p-4 border-2 transition-all rounded-none ${achievement.earned
+                            ? 'bg-yellow-100 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]'
+                            : 'bg-gray-100 border-gray-300 opacity-60 grayscale'
+                          }`}
                       >
                         <div className="text-center space-y-2">
                           <div className="text-3xl">{achievement.icon}</div>
-                          <h4 className="font-semibold text-sm">{achievement.title}</h4>
-                          <p className="text-xs text-muted-foreground">
+                          <h4 className="font-bold text-sm uppercase">{achievement.title}</h4>
+                          <p className="text-xs text-gray-600 font-mono">
                             {achievement.description}
                           </p>
                           {!achievement.earned && achievement.progress && achievement.total && (
                             <div className="space-y-1">
                               <Progress
                                 value={(achievement.progress / achievement.total) * 100}
-                                className="h-1"
+                                className="h-2 border border-black rounded-none [&>div]:bg-black"
                               />
-                              <p className="text-xs text-muted-foreground">
+                              <p className="text-xs text-gray-600 font-bold">
                                 {achievement.progress}/{achievement.total}
                               </p>
                             </div>
@@ -539,29 +538,29 @@ export default function Profile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.3 }}
             >
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
+              <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                <CardHeader className="border-b-2 border-black bg-gray-50">
+                  <CardTitle className="flex items-center gap-2 uppercase font-bold">
+                    <TrendingUp className="h-5 w-5 text-black" />
                     Recent Activity
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <div className="space-y-4">
                     {recentActivity.map((activity) => (
                       <div
                         key={activity.id}
-                        className="flex items-start gap-4 p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                        className="flex items-start gap-4 p-4 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all"
                       >
-                        <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                        <div className="p-2 border-2 border-black bg-primary text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                           {getActivityIcon(activity.type)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-sm">{activity.title}</h4>
-                          <p className="text-xs text-muted-foreground mt-1">
+                          <h4 className="font-bold text-sm uppercase">{activity.title}</h4>
+                          <p className="text-xs text-gray-600 mt-1 font-mono">
                             {activity.description}
                           </p>
-                          <p className="text-xs text-muted-foreground mt-1">
+                          <p className="text-xs text-gray-500 mt-1 font-bold uppercase">
                             {activity.timestamp}
                           </p>
                         </div>
@@ -581,27 +580,27 @@ export default function Profile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.4 }}
             >
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
+              <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                <CardHeader className="border-b-2 border-black bg-gray-50">
+                  <CardTitle className="flex items-center gap-2 text-lg uppercase font-bold">
                     🔥 Reading Streak
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4 p-6">
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-primary mb-2">
+                    <div className="text-4xl font-black text-black mb-2 font-display">
                       {stats.currentStreak}
                     </div>
-                    <p className="text-sm text-muted-foreground">Days in a row</p>
+                    <p className="text-sm text-gray-600 font-bold uppercase">Days in a row</p>
                   </div>
-                  <div className="p-4 rounded-lg bg-muted/30">
+                  <div className="p-4 border-2 border-black bg-gray-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="text-xs text-muted-foreground">
+                      <span className="text-xs text-gray-600 font-bold uppercase">
                         Longest Streak
                       </span>
-                      <Badge variant="secondary">{stats.longestStreak} days</Badge>
+                      <Badge variant="secondary" className="bg-white text-black border-2 border-black rounded-none">{stats.longestStreak} days</Badge>
                     </div>
-                    <Progress value={(stats.currentStreak / stats.longestStreak) * 100} />
+                    <Progress value={(stats.currentStreak / stats.longestStreak) * 100} className="h-3 border border-black rounded-none [&>div]:bg-black" />
                   </div>
                 </CardContent>
               </Card>
@@ -613,14 +612,14 @@ export default function Profile() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.5 }}
             >
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="text-lg">Quick Links</CardTitle>
+              <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                <CardHeader className="border-b-2 border-black bg-gray-50">
+                  <CardTitle className="text-lg uppercase font-bold">Quick Links</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="space-y-2 p-6">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start"
+                    className="w-full justify-start rounded-none border-2 border-transparent hover:border-black hover:bg-black hover:text-white uppercase font-bold transition-all"
                     onClick={() => (window.location.href = '/favorites')}
                     aria-label="View my favorites"
                   >
@@ -628,7 +627,7 @@ export default function Profile() {
                   </Button>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start"
+                    className="w-full justify-start rounded-none border-2 border-transparent hover:border-black hover:bg-black hover:text-white uppercase font-bold transition-all"
                     onClick={() => (window.location.href = '/reading-history')}
                     aria-label="View reading history"
                   >
@@ -636,7 +635,7 @@ export default function Profile() {
                   </Button>
                   <Button
                     variant="ghost"
-                    className="w-full justify-start"
+                    className="w-full justify-start rounded-none border-2 border-transparent hover:border-black hover:bg-black hover:text-white uppercase font-bold transition-all"
                     onClick={() => (window.location.href = '/settings')}
                     aria-label="Open account settings"
                   >
@@ -651,6 +650,3 @@ export default function Profile() {
     </div>
   );
 }
-
-
-

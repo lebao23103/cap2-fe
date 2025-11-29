@@ -337,26 +337,26 @@ export default function NoteShare() {
         <span>{text.substring(0, noteTextIndex)}</span>
         <Popover open={showNotePopover} onOpenChange={setShowNotePopover}>
           <PopoverTrigger asChild>
-            <mark className="bg-amber-200/40 dark:bg-amber-400/15 hover:bg-amber-300/50 dark:hover:bg-amber-400/25 px-1 py-0.5 rounded cursor-pointer transition-all duration-200">
+            <mark className="bg-amber-200/40 hover:bg-amber-300/50 px-1 py-0.5 rounded-none cursor-pointer transition-all duration-200">
               {note.noteText}
             </mark>
           </PopoverTrigger>
-          <PopoverContent className="w-96 p-0 border-0 shadow-2xl" align="start">
+          <PopoverContent className="w-96 p-0 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none" align="start">
             {/* Arrow pointing to highlight */}
-            <div className="absolute -top-2 left-4 w-4 h-4 rotate-45 bg-gradient-to-br from-background to-background border-l border-t border-border/50" />
+            <div className="absolute -top-2 left-4 w-4 h-4 rotate-45 bg-white border-l-2 border-t-2 border-black" />
 
-            <Card className="border-0 shadow-none bg-gradient-to-br from-amber-50/40 via-background to-background dark:from-amber-950/20 dark:via-background dark:to-background">
-              <div className="border-l-4 border-l-amber-500 dark:border-l-amber-600">
+            <Card className="border-0 shadow-none bg-white rounded-none">
+              <div className="border-l-4 border-l-black">
                 <CardContent className="p-0">
                   {/* Header with color dot icon and close button */}
-                  <div className="flex items-start justify-between p-4 pb-3 border-b border-border/30">
+                  <div className="flex items-start justify-between p-4 pb-3 border-b-2 border-black">
                     <div className="flex items-center gap-2 flex-1">
                       {/* Color indicator icon */}
-                      <div className="p-1.5 rounded-lg bg-amber-100 dark:bg-amber-900/50">
-                        <div className="w-2 h-2 rounded-full bg-amber-600 dark:bg-amber-400" />
+                      <div className="p-1.5 border-2 border-black bg-amber-100">
+                        <div className="w-2 h-2 bg-black" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-xs font-semibold text-muted-foreground">
+                        <p className="text-xs font-bold text-black uppercase">
                           Page {note.page}
                         </p>
                       </div>
@@ -364,7 +364,7 @@ export default function NoteShare() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-6 w-6 p-0 -mt-1 -mr-1 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                      className="h-6 w-6 p-0 -mt-1 -mr-1 hover:bg-black hover:text-white transition-colors rounded-none"
                       onClick={() => setShowNotePopover(false)}
                     >
                       <X className="h-3.5 w-3.5" />
@@ -373,8 +373,8 @@ export default function NoteShare() {
 
                   {/* Highlighted Text Section */}
                   <div className="px-4 pt-3 pb-2">
-                    <p className="text-xs font-medium text-muted-foreground mb-1">Highlighted Text</p>
-                    <p className="text-sm font-semibold text-foreground leading-snug">
+                    <p className="text-xs font-bold text-black uppercase mb-1">Highlighted Text</p>
+                    <p className="text-sm font-bold text-black leading-snug font-serif italic">
                       "{note.noteText}"
                     </p>
                   </div>
@@ -382,15 +382,15 @@ export default function NoteShare() {
                   {/* Note Content Section */}
                   {note.userNote && (
                     <div className="px-4 pb-3">
-                      <p className="text-xs font-medium text-muted-foreground mb-1">Note</p>
-                      <p className="text-sm text-foreground/90 leading-relaxed">
+                      <p className="text-xs font-bold text-black uppercase mb-1">Note</p>
+                      <p className="text-sm text-black leading-relaxed font-mono">
                         {note.userNote}
                       </p>
                     </div>
                   )}
 
                   {/* Engagement Actions */}
-                  <div className="flex items-center gap-1 px-3 py-2 bg-background/30 border-t border-border/30">
+                  <div className="flex items-center gap-1 px-3 py-2 bg-gray-50 border-t-2 border-black">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -398,9 +398,9 @@ export default function NoteShare() {
                         e.stopPropagation()
                         toggleLike(note.id)
                       }}
-                      className={`h-7 text-xs transition-colors ${note.isLiked
-                        ? 'text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30'
-                        : 'text-muted-foreground hover:bg-rose-50 dark:hover:bg-rose-950/30 hover:text-rose-600 dark:hover:text-rose-400'
+                      className={`h-7 text-xs transition-colors rounded-none border-2 border-transparent hover:border-black ${note.isLiked
+                        ? 'text-black bg-red-100 border-black'
+                        : 'text-gray-600 hover:bg-white'
                         }`}
                     >
                       <ThumbsUp className={`h-3 w-3 mr-1 ${note.isLiked ? 'fill-current' : ''}`} />
@@ -409,7 +409,7 @@ export default function NoteShare() {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-7 text-xs hover:bg-blue-50 dark:hover:bg-blue-950/30 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      className="h-7 text-xs hover:bg-white text-gray-600 hover:text-black transition-colors rounded-none border-2 border-transparent hover:border-black"
                     >
                       <MessageCircle className="h-3 w-3 mr-1" />
                       {note.comments}
@@ -422,7 +422,7 @@ export default function NoteShare() {
                         e.stopPropagation()
                         copyQuoteToClipboard(note.noteText)
                       }}
-                      className="h-7 text-xs hover:bg-background/80 transition-colors"
+                      className="h-7 text-xs hover:bg-white hover:text-black rounded-none border-2 border-transparent hover:border-black transition-colors"
                     >
                       {copiedQuote ? (
                         <>
@@ -439,8 +439,8 @@ export default function NoteShare() {
                   </div>
 
                   {/* Timestamp footer */}
-                  <div className="px-4 py-1.5 bg-background/20 border-t border-border/20">
-                    <p className="text-[10px] text-muted-foreground/70">
+                  <div className="px-4 py-1.5 bg-gray-100 border-t-2 border-black">
+                    <p className="text-[10px] text-gray-600 font-mono uppercase">
                       {new Date(note.sharedDate).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
@@ -467,12 +467,12 @@ export default function NoteShare() {
           <Star
             key={star}
             className={`h-3 w-3 ${star <= rating
-              ? 'fill-yellow-400 text-yellow-400'
+              ? 'fill-black text-black'
               : 'text-gray-300'
               }`}
           />
         ))}
-        <span className="ml-1 text-xs text-gray-600 dark:text-gray-400">
+        <span className="ml-1 text-xs text-black font-bold">
           {rating.toFixed(1)}
         </span>
       </div>
@@ -480,12 +480,9 @@ export default function NoteShare() {
   }
 
   return (
-    <div className="relative w-full min-h-screen bg-background overflow-hidden">
-      {/* Background Decorative Elements */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[120px] animate-pulse-slow" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-secondary/5 blur-[120px] animate-pulse-slow delay-1000" />
-      </div>
+    <div className="relative w-full min-h-screen bg-background overflow-hidden font-mono">
+      {/* Background Grid */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       <div className="container mx-auto py-8 relative z-10 px-4">
 
@@ -497,13 +494,13 @@ export default function NoteShare() {
           className="mb-8 text-center"
         >
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-primary" />
-            <h1 className="font-sans text-4xl md:text-5xl font-bold tracking-tight">
-              <span className="bg-gradient-to-r from-foreground via-primary to-secondary bg-clip-text text-transparent animate-gradient-x">NoteShare</span>
+            <div className="h-1 w-16 bg-black" />
+            <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight uppercase">
+              <span className="bg-primary text-black px-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">NoteShare</span>
             </h1>
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-primary" />
+            <div className="h-1 w-16 bg-black" />
           </div>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-mono">
             A community space for sharing book insights and discovering user-created content
           </p>
         </motion.div>
@@ -516,57 +513,57 @@ export default function NoteShare() {
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
         >
           <motion.div variants={fadeInUp}>
-            <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
               <CardContent className="p-4 text-center">
-                <div className="p-3 rounded-xl bg-amber-500/10 w-fit mx-auto mb-2">
-                  <StickyNote className="h-6 w-6 text-amber-600" />
+                <div className="p-3 border-2 border-black bg-amber-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <StickyNote className="h-6 w-6 text-black" />
                 </div>
-                <div className="text-2xl font-bold text-foreground">
+                <div className="text-2xl font-bold text-black font-display">
                   {mockSharedNotes.length}
                 </div>
-                <div className="text-sm text-muted-foreground">Shared Notes</div>
+                <div className="text-sm text-gray-600 font-bold uppercase">Shared Notes</div>
               </CardContent>
             </Card>
           </motion.div>
 
           <motion.div variants={fadeInUp}>
-            <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
               <CardContent className="p-4 text-center">
-                <div className="p-3 rounded-xl bg-green-500/10 w-fit mx-auto mb-2">
-                  <Feather className="h-6 w-6 text-green-600" />
+                <div className="p-3 border-2 border-black bg-green-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <Feather className="h-6 w-6 text-black" />
                 </div>
-                <div className="text-2xl font-bold text-foreground">
+                <div className="text-2xl font-bold text-black font-display">
                   {mockUserBooks.length}
                 </div>
-                <div className="text-sm text-muted-foreground">User Books</div>
+                <div className="text-sm text-gray-600 font-bold uppercase">User Books</div>
               </CardContent>
             </Card>
           </motion.div>
 
           <motion.div variants={fadeInUp}>
-            <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
               <CardContent className="p-4 text-center">
-                <div className="p-3 rounded-xl bg-blue-500/10 w-fit mx-auto mb-2">
-                  <Users className="h-6 w-6 text-blue-600" />
+                <div className="p-3 border-2 border-black bg-blue-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <Users className="h-6 w-6 text-black" />
                 </div>
-                <div className="text-2xl font-bold text-foreground">
+                <div className="text-2xl font-bold text-black font-display">
                   {new Set([...mockSharedNotes.map(n => n.userName), ...mockUserBooks.map(b => b.author)]).size}
                 </div>
-                <div className="text-sm text-muted-foreground">Contributors</div>
+                <div className="text-sm text-gray-600 font-bold uppercase">Contributors</div>
               </CardContent>
             </Card>
           </motion.div>
 
           <motion.div variants={fadeInUp}>
-            <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
               <CardContent className="p-4 text-center">
-                <div className="p-3 rounded-xl bg-rose-500/10 w-fit mx-auto mb-2">
-                  <ThumbsUp className="h-6 w-6 text-rose-600" />
+                <div className="p-3 border-2 border-black bg-red-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <ThumbsUp className="h-6 w-6 text-black" />
                 </div>
-                <div className="text-2xl font-bold text-foreground">
+                <div className="text-2xl font-bold text-black font-display">
                   {mockSharedNotes.reduce((sum, note) => sum + note.likes, 0)}
                 </div>
-                <div className="text-sm text-muted-foreground">Total Likes</div>
+                <div className="text-sm text-gray-600 font-bold uppercase">Total Likes</div>
               </CardContent>
             </Card>
           </motion.div>
@@ -580,13 +577,13 @@ export default function NoteShare() {
           className="mb-8"
         >
           <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-black" />
             <input
               type="text"
               placeholder="Search notes, books, or users..."
               value={filters.searchTerm}
               onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 text-base border-0 rounded-full bg-card/50 backdrop-blur-md shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-foreground placeholder:text-muted-foreground transition-all duration-200"
+              className="w-full pl-12 pr-4 py-3 text-base border-2 border-black rounded-none bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] focus:translate-x-[-2px] focus:translate-y-[-2px] text-black placeholder:text-gray-500 transition-all duration-200 font-mono"
             />
           </div>
         </motion.div>
@@ -598,12 +595,18 @@ export default function NoteShare() {
           transition={{ delay: 0.3, duration: 0.6 }}
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-8 h-12 bg-muted/30 backdrop-blur-sm p-1 rounded-xl">
-              <TabsTrigger value="notes" className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-md transition-all">
+            <TabsList className="grid w-full grid-cols-2 mb-8 h-14 bg-transparent gap-4 p-0">
+              <TabsTrigger
+                value="notes"
+                className="border-2 border-black bg-white data-[state=active]:bg-black data-[state=active]:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all font-bold uppercase h-full"
+              >
                 <Quote className="h-4 w-4 mr-2" />
                 Shared Notes ({filteredNotes.length})
               </TabsTrigger>
-              <TabsTrigger value="books" className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-md transition-all">
+              <TabsTrigger
+                value="books"
+                className="border-2 border-black bg-white data-[state=active]:bg-black data-[state=active]:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all font-bold uppercase h-full"
+              >
                 <BookOpen className="h-4 w-4 mr-2" />
                 User Books ({filteredBooks.length})
               </TabsTrigger>
@@ -615,19 +618,19 @@ export default function NoteShare() {
               <div className="mb-6 flex flex-wrap gap-3 items-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="gap-2 bg-card/50 backdrop-blur-sm border-border/50">
+                    <Button variant="outline" className="gap-2 bg-white border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all font-bold uppercase">
                       <Filter className="h-4 w-4" />
                       {filters.noteFilter}
                       <ChevronDown className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-48">
-                    <DropdownMenuLabel>Filter Notes</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                  <DropdownMenuContent align="start" className="w-48 border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <DropdownMenuLabel className="font-bold uppercase border-b-2 border-black">Filter Notes</DropdownMenuLabel>
                     {filterOptions.map((option) => (
                       <DropdownMenuItem
                         key={option}
                         onClick={() => handleFilterChange('noteFilter', option)}
+                        className="font-mono cursor-pointer hover:bg-primary hover:text-black focus:bg-primary focus:text-black rounded-none"
                       >
                         {option}
                       </DropdownMenuItem>
@@ -635,7 +638,7 @@ export default function NoteShare() {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
+                <Badge variant="secondary" className="bg-primary text-black border-2 border-black rounded-none font-bold uppercase px-3 py-1.5">
                   {filteredNotes.length} notes found
                 </Badge>
               </div>
@@ -644,52 +647,52 @@ export default function NoteShare() {
               <motion.div variants={stagger} initial="initial" animate="animate" className="space-y-6">
                 {filteredNotes.map((note) => (
                   <motion.div key={note.id} variants={fadeInUp}>
-                    <Card className="border-0 shadow-lg bg-card/50 backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.01] overflow-hidden group">
+                    <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 group">
                       <CardContent className="p-6">
                         {/* Header: Book Info & Date */}
-                        <div className="flex items-start justify-between mb-4 pb-4 border-b border-border/50">
+                        <div className="flex items-start justify-between mb-4 pb-4 border-b-2 border-black">
                           <div className="flex items-center gap-4">
                             <img
                               src={note.bookCover}
                               alt={note.bookTitle}
-                              className="w-16 h-24 object-cover rounded-lg shadow-md group-hover:scale-105 transition-transform duration-300"
+                              className="w-16 h-24 object-cover border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                             />
                             <div>
-                              <h3 className="text-lg font-bold text-foreground mb-1 group-hover:text-primary transition-colors">
+                              <h3 className="text-lg font-bold text-black mb-1 uppercase font-display">
                                 {note.bookTitle}
                               </h3>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-sm text-gray-600 font-mono">
                                 by {note.bookAuthor} • Page {note.page}
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded-full">
+                          <div className="flex items-center gap-1.5 text-xs text-black font-bold uppercase bg-gray-100 border-2 border-black px-2 py-1">
                             <Calendar className="h-3.5 w-3.5" />
                             <span>{new Date(note.sharedDate).toLocaleDateString()}</span>
                           </div>
                         </div>
 
                         {/* Quoted Text */}
-                        <div className="bg-amber-50/50 dark:bg-amber-950/30 border-l-4 border-amber-400 p-4 mb-4 rounded-r-lg">
-                          <p className="text-base text-foreground/90 italic leading-relaxed font-serif">
+                        <div className="bg-amber-100 border-l-4 border-black p-4 mb-4">
+                          <p className="text-base text-black italic leading-relaxed font-serif">
                             "{note.noteText}"
                           </p>
                         </div>
 
                         {/* User Note */}
-                        <p className="text-base text-muted-foreground mb-6 leading-relaxed">
+                        <p className="text-base text-gray-800 mb-6 leading-relaxed font-mono">
                           {note.userNote}
                         </p>
 
                         {/* Footer: User Info and Actions */}
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t border-border/50">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t-2 border-black">
                           <div className="flex items-center gap-3">
                             <img
                               src={note.userAvatar}
                               alt={note.userName}
-                              className="w-8 h-8 rounded-full ring-2 ring-primary/20"
+                              className="w-8 h-8 rounded-none border-2 border-black"
                             />
-                            <span className="text-sm font-semibold text-foreground">
+                            <span className="text-sm font-bold text-black uppercase">
                               {note.userName}
                             </span>
                           </div>
@@ -702,19 +705,19 @@ export default function NoteShare() {
                                 e.stopPropagation()
                                 toggleLike(note.id)
                               }}
-                              className={`h-9 px-3 hover:bg-rose-500/10 ${note.isLiked ? "text-rose-500" : "text-muted-foreground hover:text-rose-500"}`}
+                              className={`h-9 px-3 border-2 border-transparent hover:border-black rounded-none ${note.isLiked ? "text-red-500 bg-red-50 border-black" : "text-gray-600 hover:bg-white"}`}
                             >
                               <ThumbsUp className={`h-4 w-4 mr-1.5 ${note.isLiked ? 'fill-current' : ''}`} />
                               <span>{note.likes}</span>
                             </Button>
-                            <Button variant="ghost" size="sm" className="h-9 px-3 hover:bg-blue-500/10 text-muted-foreground hover:text-blue-500">
+                            <Button variant="ghost" size="sm" className="h-9 px-3 border-2 border-transparent hover:border-black rounded-none text-gray-600 hover:bg-white">
                               <MessageCircle className="h-4 w-4 mr-1.5" />
                               <span>{note.comments}</span>
                             </Button>
                             <Button
                               size="sm"
                               onClick={() => handleNoteClick(note)}
-                              className="h-9 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all"
+                              className="h-9 bg-black text-white hover:bg-primary hover:text-black border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold transition-all"
                             >
                               <Eye className="h-4 w-4 mr-1.5" />
                               Preview
@@ -735,19 +738,19 @@ export default function NoteShare() {
                 <div className="flex items-center gap-3">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="gap-2 bg-card/50 backdrop-blur-sm border-border/50">
+                      <Button variant="outline" className="gap-2 bg-white border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all font-bold uppercase">
                         <Filter className="h-4 w-4" />
                         Sort: {filters.bookSort}
                         <ChevronDown className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-48">
-                      <DropdownMenuLabel>Sort Books</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
+                    <DropdownMenuContent align="start" className="w-48 border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                      <DropdownMenuLabel className="font-bold uppercase border-b-2 border-black">Sort Books</DropdownMenuLabel>
                       {sortOptions.map((option) => (
                         <DropdownMenuItem
                           key={option}
                           onClick={() => handleFilterChange('bookSort', option)}
+                          className="font-mono cursor-pointer hover:bg-primary hover:text-black focus:bg-primary focus:text-black rounded-none"
                         >
                           {option}
                         </DropdownMenuItem>
@@ -755,25 +758,26 @@ export default function NoteShare() {
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                  <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
+                  <Badge variant="secondary" className="bg-primary text-black border-2 border-black rounded-none font-bold uppercase px-3 py-1.5">
                     {filteredBooks.length} books found
                   </Badge>
                 </div>
 
-                <div className="flex rounded-lg border border-border/50 overflow-hidden shadow-sm bg-card/50 backdrop-blur-sm">
+                <div className="flex border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white">
                   <Button
                     variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
                     size="sm"
                     onClick={() => setViewMode('grid')}
-                    className="rounded-none px-3 h-9"
+                    className={`rounded-none px-3 h-9 ${viewMode === 'grid' ? 'bg-black text-white' : 'hover:bg-gray-100'}`}
                   >
                     <Grid3x3 className="h-4 w-4" />
                   </Button>
+                  <div className="w-0.5 bg-black"></div>
                   <Button
                     variant={viewMode === 'list' ? 'secondary' : 'ghost'}
                     size="sm"
                     onClick={() => setViewMode('list')}
-                    className="rounded-none px-3 h-9"
+                    className={`rounded-none px-3 h-9 ${viewMode === 'list' ? 'bg-black text-white' : 'hover:bg-gray-100'}`}
                   >
                     <List className="h-4 w-4" />
                   </Button>
@@ -785,47 +789,33 @@ export default function NoteShare() {
                 <motion.div variants={stagger} initial="initial" animate="animate" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {filteredBooks.map((book) => (
                     <motion.div key={book.id} variants={fadeInUp}>
-                      <Card className="h-full border-0 shadow-lg bg-card/50 backdrop-blur-sm hover:shadow-2xl transition-all duration-300 group rounded-xl hover:-translate-y-1 overflow-hidden">
-                        <div className="relative aspect-[2/3] overflow-hidden">
+                      <Card className="h-full border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 group overflow-hidden">
+                        <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-black">
                           <img
                             src={book.coverImage}
                             alt={book.title}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                            className="w-full h-full object-cover transition-transform duration-700"
                           />
                           <div className="absolute top-3 left-3">
-                            <Badge className="bg-black/60 backdrop-blur-md text-white border-0">
+                            <Badge className="bg-black text-white border-2 border-white rounded-none font-bold uppercase text-xs shadow-md">
                               User Created
                             </Badge>
                           </div>
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
-                            <Button className="w-full bg-white text-black hover:bg-white/90 font-semibold">
+                          <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 border-2 border-black m-2">
+                            <Button className="w-full bg-white text-black hover:bg-black hover:text-white font-bold border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase">
                               View Details
                             </Button>
                           </div>
                         </div>
-                        <CardContent className="p-5">
-                          <h3 className="font-bold text-lg text-foreground line-clamp-1 mb-1 group-hover:text-primary transition-colors">
+                        <CardContent className="p-4">
+                          <h3 className="font-bold text-lg text-black line-clamp-1 mb-1 uppercase font-display">
                             {book.title}
                           </h3>
-                          <p className="text-sm text-muted-foreground font-medium mb-3">by {book.author}</p>
-
-                          <div className="flex items-center gap-2 mb-3">
+                          <p className="text-sm text-gray-600 font-mono mb-2 uppercase">{book.author}</p>
+                          <div className="flex justify-between items-center mt-3 pt-3 border-t-2 border-black">
                             {renderStars(book.rating)}
-                            <span className="text-xs text-muted-foreground">({book.reviewCount})</span>
-                          </div>
-
-                          <div className="flex flex-wrap gap-1.5 mb-4">
-                            {book.tags.slice(0, 2).map(tag => (
-                              <Badge key={tag} variant="secondary" className="text-[10px] px-1.5 py-0 h-5">
-                                {tag}
-                              </Badge>
-                            ))}
-                          </div>
-
-                          <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 border-t border-border/50">
-                            <span>{new Date(book.createdDate).toLocaleDateString()}</span>
-                            <span className="flex items-center gap-1">
-                              <Users className="h-3 w-3" /> {book.downloads}
+                            <span className="text-xs font-bold bg-gray-100 px-2 py-1 border-2 border-black">
+                              {book.downloads} DLs
                             </span>
                           </div>
                         </CardContent>
@@ -837,51 +827,42 @@ export default function NoteShare() {
                 <motion.div variants={stagger} initial="initial" animate="animate" className="space-y-4">
                   {filteredBooks.map((book) => (
                     <motion.div key={book.id} variants={fadeInUp}>
-                      <Card className="border-0 shadow-md bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 group overflow-hidden">
+                      <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
                         <div className="flex flex-col sm:flex-row">
-                          <div className="sm:w-32 md:w-40 aspect-[2/3] sm:aspect-auto relative overflow-hidden">
+                          <div className="w-full sm:w-32 h-48 sm:h-auto relative border-b-2 sm:border-b-0 sm:border-r-2 border-black">
                             <img
                               src={book.coverImage}
                               alt={book.title}
-                              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                              className="w-full h-full object-cover"
                             />
                           </div>
-                          <CardContent className="flex-1 p-5">
-                            <div className="flex justify-between items-start mb-2">
+                          <CardContent className="flex-1 p-6">
+                            <div className="flex flex-col h-full justify-between">
                               <div>
-                                <h3 className="font-bold text-xl text-foreground mb-1 group-hover:text-primary transition-colors">
-                                  {book.title}
-                                </h3>
-                                <p className="text-sm text-muted-foreground font-medium">by {book.author}</p>
-                              </div>
-                              <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
-                                {book.genre}
-                              </Badge>
-                            </div>
-
-                            <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                              {book.description}
-                            </p>
-
-                            <div className="flex items-center gap-4 mb-4">
-                              {renderStars(book.rating)}
-                              <div className="h-4 w-px bg-border" />
-                              <span className="text-sm text-muted-foreground flex items-center gap-1">
-                                <Users className="h-4 w-4" /> {book.downloads} downloads
-                              </span>
-                            </div>
-
-                            <div className="flex items-center justify-between mt-auto pt-4 border-t border-border/50">
-                              <div className="flex gap-2">
-                                {book.tags.map(tag => (
-                                  <Badge key={tag} variant="outline" className="text-xs">
-                                    {tag}
+                                <div className="flex justify-between items-start mb-2">
+                                  <h3 className="text-xl font-bold text-black uppercase font-display">{book.title}</h3>
+                                  <Badge className="bg-black text-white border-2 border-black rounded-none font-bold uppercase text-xs">
+                                    {book.genre}
                                   </Badge>
-                                ))}
+                                </div>
+                                <p className="text-gray-600 font-mono mb-3 uppercase">by {book.author}</p>
+                                <p className="text-gray-800 line-clamp-2 mb-4 font-mono">{book.description}</p>
                               </div>
-                              <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                                View Details
-                              </Button>
+
+                              <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t-2 border-black">
+                                <div className="flex items-center gap-4">
+                                  {renderStars(book.rating)}
+                                  <span className="text-sm font-bold text-gray-600">({book.reviewCount} reviews)</span>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <span className="text-sm font-bold bg-gray-100 px-2 py-1 border-2 border-black">
+                                    {book.downloads} Downloads
+                                  </span>
+                                  <Button size="sm" className="bg-black text-white hover:bg-primary hover:text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
+                                    Details
+                                  </Button>
+                                </div>
+                              </div>
                             </div>
                           </CardContent>
                         </div>
@@ -893,67 +874,6 @@ export default function NoteShare() {
             </TabsContent>
           </Tabs>
         </motion.div>
-
-        {/* Note Preview Dialog */}
-        <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
-          <DialogContent className="max-w-4xl h-[80vh] flex flex-col p-0 gap-0 bg-background/95 backdrop-blur-xl border-border/50">
-            {selectedNote && (
-              <>
-                <div className="flex items-center justify-between p-4 border-b border-border/50">
-                  <div>
-                    <DialogTitle className="text-xl font-bold flex items-center gap-2">
-                      <BookOpen className="h-5 w-5 text-primary" />
-                      {selectedNote.bookTitle}
-                    </DialogTitle>
-                    <DialogDescription>
-                      by {selectedNote.bookAuthor}
-                    </DialogDescription>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="h-7">
-                      Page {previewPage}
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-muted/10">
-                  <div className="max-w-2xl mx-auto bg-card shadow-sm border border-border/50 p-8 md:p-12 rounded-xl min-h-full">
-                    {mockBookContent[selectedNote.bookId]?.map((paragraph, index) => (
-                      <p key={index} className="mb-6 text-lg leading-relaxed text-foreground/90 font-serif">
-                        {renderHighlightedText(paragraph, selectedNote)}
-                      </p>
-                    )) || (
-                        <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-                          <BookOpen className="h-12 w-12 mb-4 opacity-20" />
-                          <p>Book content preview not available</p>
-                        </div>
-                      )}
-                  </div>
-                </div>
-
-                <div className="p-4 border-t border-border/50 bg-background/50 backdrop-blur-sm flex justify-between items-center">
-                  <Button
-                    variant="outline"
-                    onClick={() => handlePreviewPageChange('prev')}
-                    disabled={previewPage <= 1}
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-2" /> Previous Page
-                  </Button>
-                  <span className="text-sm text-muted-foreground font-medium">
-                    Reading Mode
-                  </span>
-                  <Button
-                    variant="outline"
-                    onClick={() => handlePreviewPageChange('next')}
-                    disabled={!mockBookContent[selectedNote.bookId] || previewPage >= Math.ceil(mockBookContent[selectedNote.bookId].length / 1)}
-                  >
-                    Next Page <ChevronRight className="h-4 w-4 ml-2" />
-                  </Button>
-                </div>
-              </>
-            )}
-          </DialogContent>
-        </Dialog>
       </div>
     </div>
   )

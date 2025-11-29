@@ -121,12 +121,9 @@ export default function Dashboard() {
 
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
-      {/* Background Decorative Elements */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[100px] animate-pulse-slow" />
-        <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[100px] animate-pulse-slow delay-1000" />
-      </div>
+    <div className="min-h-screen bg-background relative overflow-hidden font-mono">
+      {/* Background Grid */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       <main className="container mx-auto py-8 sm:py-12 relative z-10 px-4">
         {/* Welcome Section */}
@@ -135,10 +132,10 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8 sm:mb-12"
         >
-          <h1 className="text-3xl sm:text-4xl font-bold mb-3 text-foreground tracking-tight">
-            Welcome back, <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{user?.first_name || 'Scholar'}</span>! <span role="img" aria-label="waving hand" className="animate-pulse inline-block">👋</span>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-3 text-foreground tracking-tight uppercase font-display">
+            Welcome back, <span className="bg-primary text-black px-2">{user?.first_name || 'Scholar'}</span>! <span role="img" aria-label="waving hand" className="animate-pulse inline-block">👋</span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl">
+          <p className="text-lg text-muted-foreground max-w-2xl font-mono">
             Your personal knowledge hub is ready. Continue where you left off or discover something new.
           </p>
         </motion.div>
@@ -158,20 +155,20 @@ export default function Dashboard() {
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {[
-                { label: 'Books Read', value: stats.booksRead, icon: BookOpen, color: 'text-primary', bg: 'bg-primary/10' },
-                { label: 'Day Streak', value: stats.dayStreak, icon: Target, color: 'text-green-500', bg: 'bg-green-500/10' },
-                { label: 'Favorites', value: stats.favoritesCount, icon: Heart, color: 'text-rose-500', bg: 'bg-rose-500/10' },
-                { label: 'Notes Made', value: stats.notesCount, icon: StickyNote, color: 'text-amber-500', bg: 'bg-amber-500/10' }
+                { label: 'Books Read', value: stats.booksRead, icon: BookOpen, color: 'text-black', bg: 'bg-blue-400' },
+                { label: 'Day Streak', value: stats.dayStreak, icon: Target, color: 'text-black', bg: 'bg-green-400' },
+                { label: 'Favorites', value: stats.favoritesCount, icon: Heart, color: 'text-black', bg: 'bg-red-400' },
+                { label: 'Notes Made', value: stats.notesCount, icon: StickyNote, color: 'text-black', bg: 'bg-yellow-400' }
               ].map((stat, index) => (
                 <motion.div key={index} variants={fadeInUp}>
-                  <Card className="border-0 bg-card/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+                  <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
                     <CardContent className="p-6 flex items-center gap-4">
-                      <div className={`p-3 rounded-xl ${stat.bg} ${stat.color}`}>
+                      <div className={`p-3 border-2 border-black ${stat.bg} ${stat.color} shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}>
                         <stat.icon className="h-6 w-6" />
                       </div>
                       <div>
-                        <div className="text-2xl font-bold text-foreground">{stat.value}</div>
-                        <p className="text-sm text-muted-foreground font-medium">{stat.label}</p>
+                        <div className="text-2xl font-bold text-black font-mono">{stat.value}</div>
+                        <p className="text-sm text-gray-600 font-bold uppercase">{stat.label}</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -183,27 +180,27 @@ export default function Dashboard() {
             <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Button
                 variant="outline"
-                className="h-auto py-6 flex flex-col gap-2 items-center justify-center bg-card/50 backdrop-blur-sm border-dashed border-2 hover:border-primary/50 hover:bg-primary/5 transition-all group"
+                className="h-auto py-6 flex flex-col gap-2 items-center justify-center bg-white border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-primary hover:text-black transition-all group uppercase font-bold"
                 onClick={() => navigate('/reading-history')}
               >
-                <BookOpen className="h-6 w-6 text-muted-foreground group-hover:text-primary transition-colors" />
-                <span className="font-semibold text-foreground group-hover:text-primary">Continue Reading</span>
+                <BookOpen className="h-6 w-6 text-black group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-black">Continue Reading</span>
               </Button>
               <Button
                 variant="outline"
-                className="h-auto py-6 flex flex-col gap-2 items-center justify-center bg-card/50 backdrop-blur-sm border-dashed border-2 hover:border-rose-500/50 hover:bg-rose-500/5 transition-all group"
+                className="h-auto py-6 flex flex-col gap-2 items-center justify-center bg-white border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-red-400 hover:text-black transition-all group uppercase font-bold"
                 onClick={() => navigate('/favorites')}
               >
-                <Heart className="h-6 w-6 text-muted-foreground group-hover:text-rose-500 transition-colors" />
-                <span className="font-semibold text-foreground group-hover:text-rose-500">My Favorites</span>
+                <Heart className="h-6 w-6 text-black group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-black">My Favorites</span>
               </Button>
               <Button
                 variant="outline"
-                className="h-auto py-6 flex flex-col gap-2 items-center justify-center bg-card/50 backdrop-blur-sm border-dashed border-2 hover:border-blue-500/50 hover:bg-blue-500/5 transition-all group"
+                className="h-auto py-6 flex flex-col gap-2 items-center justify-center bg-white border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-blue-400 hover:text-black transition-all group uppercase font-bold"
                 onClick={() => navigate('/chatbot')}
               >
-                <MessageCircle className="h-6 w-6 text-muted-foreground group-hover:text-blue-500 transition-colors" />
-                <span className="font-semibold text-foreground group-hover:text-blue-500">Chat with AI</span>
+                <MessageCircle className="h-6 w-6 text-black group-hover:scale-110 transition-transform" />
+                <span className="font-bold text-black">Chat with AI</span>
               </Button>
             </motion.div>
 
@@ -212,19 +209,19 @@ export default function Dashboard() {
               {/* Recommendations */}
               <motion.div variants={fadeInUp} className="lg:col-span-2 space-y-6">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
-                    <TrendingUp className="h-5 w-5 text-primary" />
+                  <h2 className="text-xl font-bold text-foreground flex items-center gap-2 uppercase font-display">
+                    <TrendingUp className="h-5 w-5 text-black" />
                     Recommended for You
                   </h2>
-                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary" onClick={() => navigate('/readnex')}>
+                  <Button variant="ghost" size="sm" className="text-gray-600 hover:text-black hover:bg-primary/20 font-bold uppercase" onClick={() => navigate('/readnex')}>
                     View All <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
                 </div>
 
                 <div className="space-y-4">
                   {recommendations.length === 0 ? (
-                    <Card className="bg-card/30 border-dashed">
-                      <CardContent className="p-8 text-center text-muted-foreground">
+                    <Card className="bg-white border-2 border-dashed border-black rounded-none">
+                      <CardContent className="p-8 text-center text-gray-600 font-mono">
                         No recommendations available yet. Start reading to get personalized suggestions!
                       </CardContent>
                     </Card>
@@ -239,16 +236,16 @@ export default function Dashboard() {
               {/* Sidebar */}
               <motion.div variants={fadeInUp} className="space-y-6">
                 {/* Reading History */}
-                <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-lg">
-                  <CardHeader className="pb-3 border-b border-border/50">
-                    <CardTitle className="text-lg font-bold flex items-center gap-2">
-                      <BookOpen className="h-4 w-4 text-primary" />
+                <Card className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                  <CardHeader className="pb-3 border-b-2 border-black">
+                    <CardTitle className="text-lg font-bold flex items-center gap-2 uppercase">
+                      <BookOpen className="h-4 w-4 text-black" />
                       Continue Reading
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-4 space-y-4">
                     {readingHistory.length === 0 ? (
-                      <p className="text-center text-sm text-muted-foreground py-4">No reading history yet</p>
+                      <p className="text-center text-sm text-gray-600 py-4 font-mono">No reading history yet</p>
                     ) : (
                       readingHistory.map((book) => (
                         <BookCard key={book.id} book={book} size="sm" />
@@ -258,16 +255,16 @@ export default function Dashboard() {
                 </Card>
 
                 {/* Favorites */}
-                <Card className="bg-card/50 backdrop-blur-sm border-border/50 shadow-lg">
-                  <CardHeader className="pb-3 border-b border-border/50">
-                    <CardTitle className="text-lg font-bold flex items-center gap-2">
-                      <Heart className="h-4 w-4 text-rose-500" />
+                <Card className="bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                  <CardHeader className="pb-3 border-b-2 border-black">
+                    <CardTitle className="text-lg font-bold flex items-center gap-2 uppercase">
+                      <Heart className="h-4 w-4 text-red-500 fill-red-500" />
                       My Favorites
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-4 space-y-4">
                     {favorites.length === 0 ? (
-                      <p className="text-center text-sm text-muted-foreground py-4">No favorites yet</p>
+                      <p className="text-center text-sm text-gray-600 py-4 font-mono">No favorites yet</p>
                     ) : (
                       favorites.map((book) => (
                         <BookCard key={book.id} book={book} size="sm" />

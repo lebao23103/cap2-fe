@@ -11,63 +11,63 @@ interface StatCardProps {
   className?: string
 }
 
-export const StatCard = ({ 
-  icon: Icon, 
-  label, 
-  value, 
+export const StatCard = ({
+  icon: Icon,
+  label,
+  value,
   variant = 'primary',
   children,
-  className 
+  className
 }: StatCardProps) => {
-  
+
   const variantStyles = {
     primary: {
-      border: 'border-primary/10 hover:border-primary/20',
-      bg: 'bg-gradient-to-br from-primary/5 via-primary/3 to-transparent',
-      iconBg: 'bg-gradient-to-br from-primary/20 to-primary/10',
-      iconColor: 'text-primary'
+      border: 'border-black',
+      bg: 'bg-white',
+      iconBg: 'bg-primary border-2 border-black',
+      iconColor: 'text-black'
     },
     success: {
-      border: 'border-green-500/10 hover:border-green-500/20',
-      bg: 'bg-gradient-to-br from-green-500/5 via-green-500/3 to-transparent',
-      iconBg: 'bg-gradient-to-br from-green-500/20 to-green-500/10',
-      iconColor: 'text-green-600 dark:text-green-500'
+      border: 'border-black',
+      bg: 'bg-white',
+      iconBg: 'bg-green-400 border-2 border-black',
+      iconColor: 'text-black'
     },
     warning: {
-      border: 'border-amber-500/10 hover:border-amber-500/20',
-      bg: 'bg-gradient-to-br from-amber-500/5 via-amber-500/3 to-transparent',
-      iconBg: 'bg-gradient-to-br from-amber-500/20 to-amber-500/10',
-      iconColor: 'text-amber-600 dark:text-amber-500'
+      border: 'border-black',
+      bg: 'bg-white',
+      iconBg: 'bg-amber-400 border-2 border-black',
+      iconColor: 'text-black'
     },
     info: {
-      border: 'border-blue-500/10 hover:border-blue-500/20',
-      bg: 'bg-gradient-to-br from-blue-500/5 via-blue-500/3 to-transparent',
-      iconBg: 'bg-gradient-to-br from-blue-500/20 to-blue-500/10',
-      iconColor: 'text-blue-600 dark:text-blue-500'
+      border: 'border-black',
+      bg: 'bg-white',
+      iconBg: 'bg-blue-400 border-2 border-black',
+      iconColor: 'text-black'
     }
   }
-  
+
   const styles = variantStyles[variant]
-  
+
   return (
     <div className={cn(
-      "group relative overflow-hidden rounded-xl border p-4 hover:shadow-md transition-all duration-300",
+      "group relative overflow-hidden border-2 p-4 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 rounded-none",
       styles.border,
       styles.bg,
       className
     )}>
       <div className="flex items-center gap-4">
         <div className={cn(
-          "flex-shrink-0 p-3 rounded-xl shadow-sm group-hover:shadow-md group-hover:scale-105 transition-all duration-300",
+          "flex-shrink-0 p-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:scale-105 transition-all duration-300 rounded-none",
           styles.iconBg
         )}>
           <Icon className={cn("h-5 w-5", styles.iconColor)} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-1">
+          <p className="text-xs uppercase tracking-wider text-gray-600 font-bold mb-1 font-mono">
             {label}
           </p>
-          <div className="text-lg font-bold text-foreground">
+          <div className="text-lg font-bold text-black font-mono">
             {value}
           </div>
         </div>

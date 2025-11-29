@@ -38,14 +38,14 @@ export default function ResetPassword() {
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     setIsLoading(true)
-    
+
     try {
       // TODO: Implement reset password API call
       console.log('Reset password request for:', data.email)
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
       setSubmittedEmail(data.email)
       setIsEmailSent(true)
     } catch (error) {
@@ -63,61 +63,53 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20 p-4 overflow-hidden">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 -left-20 w-72 h-72 bg-primary/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 -right-20 w-72 h-72 bg-secondary/5 rounded-full blur-3xl" />
-      </div>
+    <div className="relative min-h-screen flex items-center justify-center bg-background p-4 overflow-hidden font-mono">
+      {/* Background Grid */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }} 
-        animate={{ opacity: 1, y: 0 }} 
-        transition={{ duration: 0.5 }} 
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
         className="w-full max-w-md relative z-10"
       >
         {/* Modern Quote */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
           className="text-center mb-8"
         >
           <div className="relative inline-block mb-4">
-            <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full" />
-            <div className="relative inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/20 shadow-lg">
-              <Quote className="h-8 w-8 text-primary" />
+            <div className="relative inline-flex items-center justify-center w-16 h-16 border-2 border-black bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <Quote className="h-8 w-8 text-black" />
             </div>
           </div>
-          <p className="text-lg font-semibold text-foreground mb-2">
+          <p className="text-lg font-bold text-foreground mb-2 uppercase font-display">
             "Memory is the diary that we all carry about with us."
           </p>
-          <p className="text-sm text-muted-foreground">— Oscar Wilde</p>
+          <p className="text-sm text-muted-foreground font-mono font-bold">— Oscar Wilde</p>
         </motion.div>
 
-        <Card className="w-full border-0 shadow-2xl bg-gradient-to-br from-card via-card to-card/95 backdrop-blur-sm">
-          <CardHeader className="text-center pb-8 pt-8 border-b border-border/30">
+        <Card className="w-full border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none">
+          <CardHeader className="text-center pb-8 pt-8 border-b-2 border-black">
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ delay: 0.3, type: "spring", stiffness: 200 }}
-              className="inline-flex items-center justify-center w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br shadow-lg"
-              style={{
-                backgroundColor: isEmailSent ? 'rgba(34, 197, 94, 0.1)' : 'var(--primary-rgb, rgba(59, 130, 246, 0.1))',
-                borderColor: isEmailSent ? 'rgba(34, 197, 94, 0.2)' : 'var(--primary-rgb, rgba(59, 130, 246, 0.2))'
-              }}
+              className={`inline-flex items-center justify-center w-20 h-20 mx-auto mb-4 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${isEmailSent ? 'bg-green-400' : 'bg-blue-400'}`}
             >
               {isEmailSent ? (
-                <CheckCircle className="h-10 w-10 text-green-600" />
+                <CheckCircle className="h-10 w-10 text-black" />
               ) : (
-                <KeyRound className="h-10 w-10 text-primary" />
+                <KeyRound className="h-10 w-10 text-black" />
               )}
             </motion.div>
-            <h2 className="text-3xl font-bold text-foreground mb-2">
+            <h2 className="text-3xl font-bold text-foreground mb-2 uppercase font-display">
               {isEmailSent ? 'Check Your Email' : 'Reset Password'}
             </h2>
-            <p className="text-sm text-muted-foreground">
-              {isEmailSent 
+            <p className="text-sm text-muted-foreground font-mono">
+              {isEmailSent
                 ? 'We have sent password reset instructions to your email address'
                 : 'Enter your email address and we will send you a link to reset your password'
               }
@@ -128,22 +120,21 @@ export default function ResetPassword() {
               <div className="space-y-6">
                 <div className="text-center space-y-4">
                   <div className="relative inline-block">
-                    <div className="absolute inset-0 bg-green-500/10 blur-2xl rounded-full" />
-                    <div className="relative inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-green-500/15 to-green-500/5 border border-green-500/20 shadow-lg">
-                      <Mail className="h-10 w-10 text-green-600" />
+                    <div className="relative inline-flex items-center justify-center w-20 h-20 border-2 border-black bg-green-100 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                      <Mail className="h-10 w-10 text-black" />
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground font-mono">
                       Password reset instructions have been sent to:
                     </p>
-                    <p className="text-lg font-bold text-foreground">
+                    <p className="text-lg font-bold text-foreground font-mono bg-yellow-100 inline-block px-2 border-2 border-black">
                       {submittedEmail}
                     </p>
                   </div>
-                  <div className="bg-gradient-to-br from-muted/50 to-muted/30 p-5 rounded-xl border border-border/50 shadow-sm">
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      <strong className="font-semibold">Didn't receive the email?</strong><br/>
+                  <div className="bg-gray-50 p-5 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <p className="text-xs text-muted-foreground leading-relaxed font-mono">
+                      <strong className="font-bold text-black uppercase">Didn't receive the email?</strong><br />
                       Check your spam folder or wait a few minutes. The email might take some time to arrive.
                     </p>
                   </div>
@@ -154,16 +145,16 @@ export default function ResetPassword() {
                     onClick={handleResendEmail}
                     variant="secondary"
                     icon={Mail}
-                    className="w-full h-11"
+                    className="w-full h-12"
                   >
                     Resend Email
                   </ModernButton>
-                  
+
                   <Link to="/login">
-                    <ModernButton 
+                    <ModernButton
                       variant="ghost"
                       icon={ArrowLeft}
-                      className="w-full h-11"
+                      className="w-full h-12"
                     >
                       Back to Login
                     </ModernButton>
@@ -173,7 +164,7 @@ export default function ResetPassword() {
             ) : (
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-sm font-semibold text-foreground">
+                  <Label htmlFor="email" className="text-sm font-bold text-foreground uppercase">
                     Email Address
                   </Label>
                   <Input
@@ -181,25 +172,25 @@ export default function ResetPassword() {
                     type="email"
                     placeholder="your.name@example.com"
                     {...register('email')}
-                    className={`bg-background/50 border-border/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 h-12 rounded-xl transition-all ${
-                      errors.email && touchedFields.email ? 'border-destructive' : ''
-                    }`}
+                    className={`bg-white border-2 border-black focus:ring-0 focus:border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] h-12 rounded-none transition-all font-bold ${errors.email && touchedFields.email ? 'border-red-500 focus:border-red-500 focus:shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]' : ''
+                      }`}
                     disabled={isLoading}
                     aria-required="true"
                     aria-invalid={!!errors.email}
                     aria-describedby={errors.email ? 'email-error' : 'email-hint'}
                   />
                   {errors.email && touchedFields.email ? (
-                    <p id="email-error" className="text-xs text-destructive" role="alert">
+                    <p id="email-error" className="text-xs text-red-500 font-bold flex items-center gap-1" role="alert">
+                      <Sparkles className="h-3 w-3" />
                       {errors.email.message}
                     </p>
                   ) : (
-                    <p id="email-hint" className="text-xs text-muted-foreground">
+                    <p id="email-hint" className="text-xs text-muted-foreground font-mono">
                       Enter the email address associated with your account
                     </p>
                   )}
                 </div>
-                
+
                 <div className="pt-2">
                   <ModernButton
                     type="submit"
@@ -207,21 +198,21 @@ export default function ResetPassword() {
                     size="lg"
                     icon={Sparkles}
                     isLoading={isLoading}
-                    className="w-full h-13 text-base shadow-lg hover:shadow-xl"
+                    className="w-full h-14 text-base"
                   >
                     {isLoading ? 'Sending instructions...' : 'Send Reset Link'}
                   </ModernButton>
                 </div>
               </form>
             )}
-            
+
             {!isEmailSent && (
-              <div className="mt-8 pt-6 border-t border-border/30">
-                <p className="text-center text-sm text-muted-foreground mb-3">
+              <div className="mt-8 pt-6 border-t-2 border-black">
+                <p className="text-center text-sm text-muted-foreground mb-3 font-mono">
                   Remember your password?
                 </p>
                 <Link to="/login">
-                  <ModernButton 
+                  <ModernButton
                     variant="ghost"
                     icon={ArrowLeft}
                     className="w-full"

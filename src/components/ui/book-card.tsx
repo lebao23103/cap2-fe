@@ -53,10 +53,11 @@ export function BookCard({ book, size = 'md', className, onClick }: BookCardProp
   const Content = (
     <Card
       className={cn(
-        "group hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border-border/50",
-        "bg-card/50 backdrop-blur-sm hover:bg-card/80",
-        "hover:-translate-y-1 hover:border-primary/20",
-        "active:scale-[0.98]",
+        "group transition-all duration-300 cursor-pointer overflow-hidden border-2 border-black",
+        "bg-white hover:bg-white",
+        "hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
+        "active:translate-y-0 active:translate-x-0 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
+        "rounded-none",
         className
       )}
       onClick={onClick}
@@ -64,36 +65,36 @@ export function BookCard({ book, size = 'md', className, onClick }: BookCardProp
       <CardContent className={cn(variant.container, "relative z-10")}>
         <div className="flex gap-4">
           <div className="flex-shrink-0 relative group-hover:scale-105 transition-transform duration-500">
-            <div className="absolute inset-0 bg-primary/10 rounded-md blur-sm transform translate-y-2 translate-x-2" />
+            <div className="absolute inset-0 bg-black translate-y-1 translate-x-1" />
             <img
               src={book.cover}
               alt={book.title}
               loading="lazy"
               className={cn(
                 variant.cover,
-                "object-cover rounded-md shadow-md relative z-10"
+                "object-cover border-2 border-black relative z-10 bg-white"
               )}
             />
           </div>
           <div className="flex-1 min-w-0 flex flex-col justify-center">
             <h3 className={cn(
-              "font-bold line-clamp-2 mb-1 text-foreground group-hover:text-primary transition-colors",
+              "font-bold line-clamp-2 mb-1 text-black group-hover:underline decoration-2 underline-offset-2 uppercase",
               variant.title
             )}>
               {book.title}
             </h3>
             <p className={cn(
-              "text-muted-foreground line-clamp-1 font-medium",
+              "text-gray-600 line-clamp-1 font-mono uppercase",
               variant.author
             )}>
               {book.author}
             </p>
             <div className="flex items-center gap-1 mt-2">
               <Star className={cn(
-                "fill-amber-400 text-amber-400",
+                "fill-black text-black",
                 variant.rating
               )} />
-              <span className="text-xs font-semibold text-foreground">
+              <span className="text-xs font-bold text-black font-mono">
                 {book.rating.toFixed(1)}
               </span>
             </div>
@@ -103,7 +104,7 @@ export function BookCard({ book, size = 'md', className, onClick }: BookCardProp
                   key={g}
                   variant="secondary"
                   className={cn(
-                    "bg-primary/5 text-primary hover:bg-primary/10 border-0 transition-colors",
+                    "bg-white text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:translate-x-[-1px] transition-transform",
                     variant.badge
                   )}
                 >

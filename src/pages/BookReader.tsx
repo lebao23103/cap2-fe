@@ -554,10 +554,10 @@ export default function BookReader() {
             <div key={star} className="relative">
               <Star
                 className={`h-4 w-4 transition-colors ${isFilled
-                  ? 'fill-yellow-400 text-yellow-400'
+                  ? 'fill-black text-black'
                   : isHalfFilled
-                    ? 'fill-yellow-400/50 text-yellow-400'
-                    : 'fill-muted text-muted-foreground/20'
+                    ? 'fill-black/50 text-black'
+                    : 'fill-muted text-gray-300'
                   }`}
               />
             </div>
@@ -570,10 +570,10 @@ export default function BookReader() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-background font-mono">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-6"></div>
-          <h2 className="text-xl font-medium mb-2">Preparing your book...</h2>
+          <div className="animate-spin h-12 w-12 border-4 border-black border-t-transparent mx-auto mb-6"></div>
+          <h2 className="text-xl font-bold mb-2 uppercase">Preparing your book...</h2>
         </div>
       </div>
     )
@@ -582,13 +582,13 @@ export default function BookReader() {
   // Error state - no book data
   if (!bookData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-background font-mono">
         <div className="text-center max-w-md px-6">
-          <h2 className="text-2xl font-bold mb-4">Book not found</h2>
-          <p className="text-muted-foreground mb-8">The book you're looking for doesn't exist or you don't have access to it.</p>
+          <h2 className="text-2xl font-bold mb-4 uppercase">Book not found</h2>
+          <p className="text-gray-600 mb-8 font-mono">The book you're looking for doesn't exist or you don't have access to it.</p>
           <Button
             onClick={() => navigate('/readnex')}
-            className="rounded-full px-8"
+            className="rounded-none px-8 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold"
           >
             Back to Library
           </Button>
@@ -600,29 +600,29 @@ export default function BookReader() {
   const themeStyles = getThemeStyles()
 
   return (
-    <div className={`min-h-screen transition-colors duration-500 ${themeStyles.bg} ${theme === 'dark' ? 'dark' : ''}`}>
+    <div className={`min-h-screen transition-colors duration-500 ${themeStyles.bg} ${theme === 'dark' ? 'dark' : ''} font-mono`}>
       {/* Header - Minimalist & Floating */}
       <motion.div
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         className="sticky top-0 z-50 px-4 py-3 pointer-events-none"
       >
-        <div className="max-w-6xl mx-auto flex items-center justify-between pointer-events-auto bg-background/80 backdrop-blur-md border border-border/40 shadow-sm rounded-full px-6 py-2">
+        <div className="max-w-6xl mx-auto flex items-center justify-between pointer-events-auto bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] px-6 py-2">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
-              className="rounded-full hover:bg-muted hover:text-foreground"
+              className="rounded-none hover:bg-black hover:text-white border border-transparent hover:border-black transition-all"
               onClick={() => navigate('/readnex')}
             >
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <div className="hidden md:block h-6 w-px bg-border/50" />
+            <div className="hidden md:block h-6 w-0.5 bg-black" />
             <div className="hidden md:block">
-              <h1 className="text-sm font-semibold text-foreground line-clamp-1 max-w-[200px] lg:max-w-[400px]">
+              <h1 className="text-sm font-bold text-black line-clamp-1 max-w-[200px] lg:max-w-[400px] uppercase">
                 {bookData?.title}
               </h1>
-              <p className="text-xs text-muted-foreground font-medium">
+              <p className="text-xs text-gray-600 font-bold font-mono uppercase">
                 {bookData?.author}
               </p>
             </div>
@@ -634,7 +634,7 @@ export default function BookReader() {
                 variant="ghost"
                 size="icon"
                 onClick={goToQuiz}
-                className="rounded-full hover:bg-muted hover:text-foreground text-purple-600 dark:text-purple-400"
+                className="rounded-none hover:bg-black hover:text-white border border-transparent hover:border-black transition-all text-black"
                 title="Take Quiz"
               >
                 <Target className="h-4 w-4" />
@@ -645,7 +645,7 @@ export default function BookReader() {
               variant="ghost"
               size="icon"
               onClick={toggleBookmark}
-              className={`rounded-full transition-all ${isBookmarked ? 'text-amber-500 bg-amber-500/10' : 'hover:bg-muted hover:text-foreground'}`}
+              className={`rounded-none transition-all border border-transparent hover:border-black ${isBookmarked ? 'text-black bg-yellow-400 border-black' : 'hover:bg-black hover:text-white'}`}
               title="Bookmark Page"
             >
               <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
@@ -655,56 +655,55 @@ export default function BookReader() {
               variant="ghost"
               size="icon"
               onClick={toggleFavorite}
-              className={`rounded-full transition-all ${isFavorite ? 'text-rose-500 bg-rose-500/10' : 'hover:bg-muted hover:text-foreground'}`}
+              className={`rounded-none transition-all border border-transparent hover:border-black ${isFavorite ? 'text-black bg-red-400 border-black' : 'hover:bg-black hover:text-white'}`}
               title="Add to Favorites"
             >
               <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
             </Button>
 
-            <div className="h-6 w-px bg-border/50 mx-1" />
+            <div className="h-6 w-0.5 bg-black mx-1" />
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full hover:bg-muted hover:text-foreground">
+                <Button variant="ghost" size="icon" className="rounded-none hover:bg-black hover:text-white border border-transparent hover:border-black transition-all">
                   <Settings className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 rounded-xl border-border/50 shadow-xl backdrop-blur-xl bg-background/95">
-                <DropdownMenuLabel className="text-xs uppercase tracking-wider text-muted-foreground">Appearance</DropdownMenuLabel>
-                <DropdownMenuSeparator />
+              <DropdownMenuContent align="end" className="w-56 rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white">
+                <DropdownMenuLabel className="text-xs uppercase tracking-wider text-black font-bold border-b-2 border-black pb-2 mb-2">Appearance</DropdownMenuLabel>
                 <div className="p-2 grid grid-cols-3 gap-2">
                   <button
                     onClick={() => setTheme('light')}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${theme === 'light' ? 'border-primary bg-primary/5 text-primary' : 'border-border/50 hover:bg-muted hover:text-foreground'}`}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${theme === 'light' ? 'border-black bg-black text-white' : 'border-gray-200 hover:border-black hover:bg-gray-50 text-black'}`}
                   >
                     <Sun className="h-4 w-4" />
-                    <span className="text-[10px] font-medium">Light</span>
+                    <span className="text-[10px] font-bold uppercase">Light</span>
                   </button>
                   <button
                     onClick={() => setTheme('dark')}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${theme === 'dark' ? 'border-primary bg-primary/5 text-primary' : 'border-border/50 hover:bg-muted hover:text-foreground'}`}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${theme === 'dark' ? 'border-black bg-black text-white' : 'border-gray-200 hover:border-black hover:bg-gray-50 text-black'}`}
                   >
                     <Moon className="h-4 w-4" />
-                    <span className="text-[10px] font-medium">Dark</span>
+                    <span className="text-[10px] font-bold uppercase">Dark</span>
                   </button>
                   <button
                     onClick={() => setTheme('sepia')}
-                    className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all ${theme === 'sepia' ? 'border-primary bg-primary/5 text-primary' : 'border-border/50 hover:bg-muted hover:text-foreground'}`}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${theme === 'sepia' ? 'border-black bg-black text-white' : 'border-gray-200 hover:border-black hover:bg-gray-50 text-black'}`}
                   >
                     <Palette className="h-4 w-4" />
-                    <span className="text-[10px] font-medium">Sepia</span>
+                    <span className="text-[10px] font-bold uppercase">Sepia</span>
                   </button>
                 </div>
 
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel className="text-xs uppercase tracking-wider text-muted-foreground">Font Size</DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-black h-0.5 my-2" />
+                <DropdownMenuLabel className="text-xs uppercase tracking-wider text-black font-bold">Font Size</DropdownMenuLabel>
                 <div className="px-2 pb-2 flex items-center justify-between">
-                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setFontSize(Math.max(12, fontSize - 2))}>
-                    <span className="text-xs">A-</span>
+                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-none border-2 border-black hover:bg-black hover:text-white" onClick={() => setFontSize(Math.max(12, fontSize - 2))}>
+                    <span className="text-xs font-bold">A-</span>
                   </Button>
-                  <span className="text-sm font-medium w-12 text-center">{fontSize}px</span>
-                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setFontSize(Math.min(24, fontSize + 2))}>
-                    <span className="text-sm">A+</span>
+                  <span className="text-sm font-bold w-12 text-center text-black">{fontSize}px</span>
+                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-none border-2 border-black hover:bg-black hover:text-white" onClick={() => setFontSize(Math.min(24, fontSize + 2))}>
+                    <span className="text-sm font-bold">A+</span>
                   </Button>
                 </div>
               </DropdownMenuContent>
@@ -728,11 +727,11 @@ export default function BookReader() {
                 >
                   <Button
                     onClick={() => setSidebarOpen(true)}
-                    className="h-12 px-6 rounded-full shadow-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105"
+                    className="h-12 px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-primary text-black border-2 border-black hover:bg-primary/90 transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] uppercase font-bold"
                   >
                     <StickyNote className="h-4 w-4 mr-2" />
-                    <span className="font-semibold">Notes</span>
-                    <Badge variant="secondary" className="ml-2 bg-white/20 text-white border-0">
+                    <span className="font-bold">Notes</span>
+                    <Badge variant="secondary" className="ml-2 bg-white text-black border-2 border-black rounded-none">
                       {notes.length}
                     </Badge>
                   </Button>
@@ -740,7 +739,7 @@ export default function BookReader() {
               )}
             </AnimatePresence>
 
-            <div className={`relative rounded-3xl overflow-hidden shadow-2xl transition-all duration-500 ${themeStyles.cardBg} border border-border/20`}>
+            <div className={`relative border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 ${themeStyles.cardBg}`}>
               {/* PDF Viewer with react-pdf */}
               {pdfUrl ? (
                 <div className="min-h-[80vh] flex flex-col relative">
@@ -775,8 +774,8 @@ export default function BookReader() {
                         loading={
                           <div className="flex items-center justify-center h-full min-h-[600px]">
                             <div className="animate-pulse flex flex-col items-center gap-4">
-                              <div className="h-12 w-12 rounded-full bg-muted"></div>
-                              <div className="h-4 w-32 rounded bg-muted"></div>
+                              <div className="h-12 w-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+                              <div className="h-4 w-32 bg-gray-200 border border-black"></div>
                             </div>
                           </div>
                         }
@@ -785,7 +784,7 @@ export default function BookReader() {
                         {/* Wrap Page with relative positioning for overlays */}
                         <div
                           ref={pageContainerRef}
-                          className="relative inline-block shadow-2xl rounded-sm overflow-hidden"
+                          className="relative inline-block shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-2 border-black overflow-hidden"
                         >
                           <Page
                             pageNumber={currentPage}
@@ -832,23 +831,23 @@ export default function BookReader() {
                   </AnimatePresence>
 
                   {/* Navigation Bar */}
-                  <div className={`px-6 py-4 border-t border-border/10 flex items-center justify-between ${theme === 'dark' ? 'bg-slate-900/90' : 'bg-white/90'} backdrop-blur-sm absolute bottom-0 left-0 right-0 z-20`}>
+                  <div className={`px-6 py-4 border-t-2 border-black flex items-center justify-between ${theme === 'dark' ? 'bg-slate-900' : 'bg-white'} absolute bottom-0 left-0 right-0 z-20`}>
                     <Button
                       variant="ghost"
                       onClick={() => handlePageChange('prev')}
                       disabled={currentPage === 1}
-                      className="hover:bg-muted hover:text-foreground"
+                      className="hover:bg-black hover:text-white rounded-none border-2 border-transparent hover:border-black uppercase font-bold"
                     >
                       <ChevronLeft className="h-5 w-5 mr-1" />
                       <span className="hidden sm:inline">Previous</span>
                     </Button>
 
                     <div className="flex items-center gap-4">
-                      <span className="text-sm font-medium text-muted-foreground">
+                      <span className="text-sm font-bold text-black font-mono">
                         Page {currentPage} of {bookData?.totalPages || 0}
                       </span>
                       <div className="w-32 md:w-48 hidden sm:block">
-                        <Progress value={bookData?.readingProgress || 0} className="h-1.5" />
+                        <Progress value={bookData?.readingProgress || 0} className="h-2 border border-black rounded-none [&>div]:bg-black" />
                       </div>
                     </div>
 
@@ -856,7 +855,7 @@ export default function BookReader() {
                       variant="ghost"
                       onClick={() => handlePageChange('next')}
                       disabled={currentPage === (bookData?.totalPages || 0)}
-                      className="hover:bg-muted hover:text-foreground"
+                      className="hover:bg-black hover:text-white rounded-none border-2 border-transparent hover:border-black uppercase font-bold"
                     >
                       <span className="hidden sm:inline">Next</span>
                       <ChevronRight className="h-5 w-5 ml-1" />
@@ -866,14 +865,14 @@ export default function BookReader() {
               ) : (
                 <div className="min-h-[60vh] flex items-center justify-center p-8">
                   <div className="text-center max-w-md">
-                    <div className="h-20 w-20 bg-muted/30 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <FileText className="h-10 w-10 text-muted-foreground" />
+                    <div className="h-20 w-20 bg-gray-100 border-2 border-black flex items-center justify-center mx-auto mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                      <FileText className="h-10 w-10 text-black" />
                     </div>
-                    <h3 className="text-xl font-bold mb-2">PDF Not Available</h3>
-                    <p className="text-muted-foreground mb-6">
+                    <h3 className="text-xl font-bold mb-2 uppercase">PDF Not Available</h3>
+                    <p className="text-gray-600 mb-6 font-mono">
                       The PDF file for "{bookData?.title}" has not been uploaded yet.
                     </p>
-                    <Button onClick={() => navigate('/readnex')}>
+                    <Button onClick={() => navigate('/readnex')} className="rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
                       Back to Library
                     </Button>
                   </div>
@@ -893,12 +892,12 @@ export default function BookReader() {
                 className="xl:col-span-4 space-y-6 h-fit sticky top-24"
               >
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-lg font-bold">Reading Companion</h2>
+                  <h2 className="text-lg font-bold uppercase border-b-2 border-black pb-1">Reading Companion</h2>
                   <Button
                     onClick={() => setSidebarOpen(false)}
                     variant="ghost"
                     size="sm"
-                    className="hover:bg-muted"
+                    className="hover:bg-black hover:text-white rounded-none border border-transparent hover:border-black uppercase font-bold"
                   >
                     <ChevronRight className="h-4 w-4 mr-1" />
                     Hide
@@ -906,45 +905,45 @@ export default function BookReader() {
                 </div>
 
                 {/* Book Info */}
-                <Card className="border-border/40 shadow-sm overflow-hidden">
+                <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] overflow-hidden rounded-none">
                   <CardContent className="p-0">
-                    <div className="p-4 bg-muted/30 border-b border-border/40">
+                    <div className="p-4 bg-gray-50 border-b-2 border-black">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Progress</span>
-                        <span className="text-sm font-bold text-primary">{bookData?.readingProgress || 0}%</span>
+                        <span className="text-xs font-bold uppercase tracking-wider text-black">Progress</span>
+                        <span className="text-sm font-bold text-black font-mono">{bookData?.readingProgress || 0}%</span>
                       </div>
-                      <Progress value={bookData?.readingProgress || 0} className="h-2 mt-2" />
+                      <Progress value={bookData?.readingProgress || 0} className="h-3 mt-2 border border-black rounded-none [&>div]:bg-black" />
                     </div>
-                    <div className="grid grid-cols-2 divide-x divide-border/40">
+                    <div className="grid grid-cols-2 divide-x-2 divide-black">
                       <div className="p-4 text-center">
-                        <Clock className="h-5 w-5 mx-auto mb-1 text-muted-foreground" />
-                        <div className="text-sm font-bold">{bookData?.readingTime || '0m'}</div>
-                        <div className="text-xs text-muted-foreground">Reading Time</div>
+                        <Clock className="h-5 w-5 mx-auto mb-1 text-black" />
+                        <div className="text-sm font-bold font-mono">{bookData?.readingTime || '0m'}</div>
+                        <div className="text-xs text-gray-600 uppercase font-bold">Reading Time</div>
                       </div>
                       <div className="p-4 text-center">
                         <div className="flex justify-center mb-1">
                           {renderStars(bookData?.rating || 0)}
                         </div>
-                        <div className="text-sm font-bold">{bookData?.rating || 0}</div>
-                        <div className="text-xs text-muted-foreground">Rating</div>
+                        <div className="text-sm font-bold font-mono">{bookData?.rating || 0}</div>
+                        <div className="text-xs text-gray-600 uppercase font-bold">Rating</div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
                 {/* Notes */}
-                <Card className="border-border/40 shadow-sm flex flex-col max-h-[calc(100vh-300px)]">
-                  <CardHeader className="pb-3 border-b border-border/40 bg-muted/10">
+                <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex flex-col max-h-[calc(100vh-300px)] rounded-none">
+                  <CardHeader className="pb-3 border-b-2 border-black bg-gray-50">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <StickyNote className="h-4 w-4 text-primary" />
-                        <h3 className="font-semibold">My Notes</h3>
-                        <Badge variant="secondary" className="text-xs">{notes.length}</Badge>
+                        <StickyNote className="h-4 w-4 text-black" />
+                        <h3 className="font-bold uppercase">My Notes</h3>
+                        <Badge variant="secondary" className="text-xs bg-white text-black border-2 border-black rounded-none">{notes.length}</Badge>
                       </div>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className="h-8 text-xs"
+                        className="h-8 text-xs hover:bg-black hover:text-white rounded-none border border-transparent hover:border-black uppercase font-bold"
                         onClick={() => {
                           setSelectedText("Add a note...")
                           setShowNoteDialog(true)
@@ -957,31 +956,31 @@ export default function BookReader() {
                   </CardHeader>
                   <CardContent className="p-0 overflow-y-auto custom-scrollbar flex-1">
                     {notes.length > 0 ? (
-                      <div className="divide-y divide-border/40">
+                      <div className="divide-y-2 divide-black">
                         {notes.map((note) => {
                           const colorStyles = {
-                            yellow: 'border-l-amber-400 bg-amber-50/50 dark:bg-amber-900/10',
-                            blue: 'border-l-blue-400 bg-blue-50/50 dark:bg-blue-900/10',
-                            green: 'border-l-green-400 bg-green-50/50 dark:bg-green-900/10',
-                            pink: 'border-l-pink-400 bg-pink-50/50 dark:bg-pink-900/10',
+                            yellow: 'border-l-amber-400 bg-amber-50',
+                            blue: 'border-l-blue-400 bg-blue-50',
+                            green: 'border-l-green-400 bg-green-50',
+                            pink: 'border-l-pink-400 bg-pink-50',
                           }
                           const style = colorStyles[note.color || 'yellow']
 
                           return (
                             <div
                               key={note.id}
-                              className={`p-4 hover:bg-muted/50 transition-colors cursor-pointer border-l-4 group relative ${style}`}
+                              className={`p-4 hover:bg-gray-100 transition-colors cursor-pointer border-l-[6px] group relative ${style}`}
                               onClick={() => setCurrentPage(note.page)}
                             >
                               <div className="flex justify-between items-start mb-2">
-                                <span className="text-xs font-medium text-muted-foreground bg-background/80 px-1.5 py-0.5 rounded border border-border/50">
+                                <span className="text-xs font-bold text-black bg-white px-1.5 py-0.5 border-2 border-black uppercase">
                                   Page {note.page}
                                 </span>
-                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity absolute right-2 top-2 bg-background/90 rounded-md shadow-sm border border-border/50 p-0.5">
+                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity absolute right-2 top-2 bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] border-2 border-black p-0.5">
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6 hover:text-primary"
+                                    className="h-6 w-6 hover:bg-black hover:text-white rounded-none"
                                     title="Edit"
                                     onClick={(e) => { e.stopPropagation(); editNote(note) }}
                                   >
@@ -990,7 +989,7 @@ export default function BookReader() {
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6 hover:text-blue-500"
+                                    className="h-6 w-6 hover:bg-blue-400 hover:text-black rounded-none"
                                     title="Share"
                                     onClick={(e) => { e.stopPropagation(); shareNote(note.id) }}
                                   >
@@ -999,7 +998,7 @@ export default function BookReader() {
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6 hover:text-destructive"
+                                    className="h-6 w-6 hover:bg-red-400 hover:text-black rounded-none"
                                     title="Delete"
                                     onClick={(e) => { e.stopPropagation(); deleteNote(note.id) }}
                                   >
@@ -1007,29 +1006,29 @@ export default function BookReader() {
                                   </Button>
                                 </div>
                               </div>
-                              <p className="text-sm font-medium line-clamp-2 mb-1">"{note.text}"</p>
-                              <p className="text-xs text-muted-foreground line-clamp-3">{note.note}</p>
+                              <p className="text-sm font-bold line-clamp-2 mb-1 font-mono">"{note.text}"</p>
+                              <p className="text-xs text-gray-600 line-clamp-3 font-mono">{note.note}</p>
                             </div>
                           )
                         })}
                       </div>
                     ) : (
-                      <div className="p-8 text-center text-muted-foreground">
+                      <div className="p-8 text-center text-gray-500">
                         <StickyNote className="h-10 w-10 mx-auto mb-3 opacity-20" />
-                        <p className="text-sm">No notes yet</p>
-                        <p className="text-xs mt-1">Select text to add a note</p>
+                        <p className="text-sm font-mono">No notes yet</p>
+                        <p className="text-xs mt-1 font-mono">Select text to add a note</p>
                       </div>
                     )}
                   </CardContent>
                 </Card>
 
                 {/* Bookmarks */}
-                <Card className="border-border/40 shadow-sm">
-                  <CardHeader className="pb-3 border-b border-border/40 bg-muted/10">
+                <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                  <CardHeader className="pb-3 border-b-2 border-black bg-gray-50">
                     <div className="flex items-center gap-2">
-                      <Bookmark className="h-4 w-4 text-amber-500" />
-                      <h3 className="font-semibold">Bookmarks</h3>
-                      <Badge variant="secondary" className="text-xs">{bookData?.bookmarks?.length || 0}</Badge>
+                      <Bookmark className="h-4 w-4 text-black" />
+                      <h3 className="font-bold uppercase">Bookmarks</h3>
+                      <Badge variant="secondary" className="text-xs bg-white text-black border-2 border-black rounded-none">{bookData?.bookmarks?.length || 0}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="p-2">
@@ -1039,14 +1038,14 @@ export default function BookReader() {
                           key={page}
                           variant="outline"
                           size="sm"
-                          className="h-9 w-full"
+                          className="h-9 w-full rounded-none border-2 border-black hover:bg-black hover:text-white font-mono font-bold"
                           onClick={() => setCurrentPage(page)}
                         >
                           {page}
                         </Button>
                       ))}
                       {(bookData?.bookmarks?.length || 0) === 0 && (
-                        <div className="col-span-4 py-4 text-center text-xs text-muted-foreground">
+                        <div className="col-span-4 py-4 text-center text-xs text-gray-500 font-mono">
                           No bookmarks
                         </div>
                       )}
@@ -1093,33 +1092,33 @@ export default function BookReader() {
           window.getSelection()?.removeAllRanges()
         }
       }}>
-        <DialogContent className="sm:max-w-[500px] rounded-2xl overflow-hidden p-0 gap-0 border-0 shadow-2xl">
-          <div className={`p-6 ${highlightColor === 'yellow' ? 'bg-amber-100 dark:bg-amber-900/30' :
-            highlightColor === 'blue' ? 'bg-blue-100 dark:bg-blue-900/30' :
-              highlightColor === 'green' ? 'bg-green-100 dark:bg-green-900/30' :
-                'bg-pink-100 dark:bg-pink-900/30'
+        <DialogContent className="sm:max-w-[500px] rounded-none overflow-hidden p-0 gap-0 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className={`p-6 border-b-2 border-black ${highlightColor === 'yellow' ? 'bg-amber-100' :
+            highlightColor === 'blue' ? 'bg-blue-100' :
+              highlightColor === 'green' ? 'bg-green-100' :
+                'bg-pink-100'
             } transition-colors duration-300`}>
             <DialogHeader>
-              <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              <DialogTitle className="text-lg font-bold flex items-center gap-2 uppercase">
                 {editingNote ? <Edit className="h-5 w-5" /> : <StickyNote className="h-5 w-5" />}
                 {editingNote ? 'Edit Note' : 'New Note'}
               </DialogTitle>
-              <DialogDescription className="text-foreground/70">
+              <DialogDescription className="text-black font-mono font-bold">
                 Page {currentPage}
               </DialogDescription>
             </DialogHeader>
-            <div className="mt-4 p-3 bg-background/50 backdrop-blur-sm rounded-xl border border-black/5 text-sm font-medium italic">
+            <div className="mt-4 p-3 bg-white border-2 border-black text-sm font-medium italic font-mono shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               "{selectedText}"
             </div>
           </div>
 
-          <div className="p-6 bg-background">
+          <div className="p-6 bg-white">
             <div className="flex gap-3 mb-4 justify-center">
               {(['yellow', 'blue', 'green', 'pink'] as const).map((color) => (
                 <button
                   key={color}
                   onClick={() => setHighlightColor(color)}
-                  className={`w-8 h-8 rounded-full border-2 transition-all ${highlightColor === color ? 'border-foreground scale-110' : 'border-transparent hover:scale-105'
+                  className={`w-8 h-8 rounded-none border-2 transition-all ${highlightColor === color ? 'border-black scale-110 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-transparent hover:border-black hover:scale-105'
                     } ${color === 'yellow' ? 'bg-amber-400' :
                       color === 'blue' ? 'bg-blue-400' :
                         color === 'green' ? 'bg-green-400' :
@@ -1133,23 +1132,23 @@ export default function BookReader() {
               value={newNote}
               onChange={(e) => setNewNote(e.target.value)}
               placeholder="Type your note here..."
-              className="min-h-[150px] resize-none border-border/50 focus:border-primary rounded-xl text-base p-4"
+              className="min-h-[150px] resize-none border-2 border-black focus:ring-0 focus:border-black rounded-none text-base p-4 font-mono shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
             />
           </div>
 
-          <DialogFooter className="p-4 bg-muted/30 border-t border-border/50">
-            <Button variant="ghost" onClick={() => setShowNoteDialog(false)}>Cancel</Button>
-            <Button onClick={saveNote} disabled={!newNote.trim()}>Save Note</Button>
+          <DialogFooter className="p-4 bg-gray-50 border-t-2 border-black">
+            <Button variant="ghost" onClick={() => setShowNoteDialog(false)} className="rounded-none hover:bg-black hover:text-white border-2 border-transparent hover:border-black uppercase font-bold">Cancel</Button>
+            <Button onClick={saveNote} disabled={!newNote.trim()} className="rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all uppercase font-bold bg-primary text-black hover:bg-primary/90">Save Note</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Review Dialog */}
       <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
-        <DialogContent className="sm:max-w-[500px] rounded-2xl">
+        <DialogContent className="sm:max-w-[500px] rounded-none border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <DialogHeader>
-            <DialogTitle className="text-center text-2xl">Finished!</DialogTitle>
-            <DialogDescription className="text-center">
+            <DialogTitle className="text-center text-2xl uppercase font-bold">Finished!</DialogTitle>
+            <DialogDescription className="text-center font-mono text-black">
               You've completed "{bookData?.title}". How was it?
             </DialogDescription>
           </DialogHeader>
@@ -1163,7 +1162,7 @@ export default function BookReader() {
                 onMouseLeave={() => setHoveredRating(0)}
                 className="transition-transform hover:scale-110"
               >
-                <Star className={`h-10 w-10 ${star <= (hoveredRating || userRating) ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/20'
+                <Star className={`h-10 w-10 ${star <= (hoveredRating || userRating) ? 'fill-black text-black' : 'text-gray-300'
                   }`} />
               </button>
             ))}
@@ -1173,11 +1172,11 @@ export default function BookReader() {
             value={reviewText}
             onChange={(e) => setReviewText(e.target.value)}
             placeholder="Write a brief review..."
-            className="mb-4"
+            className="mb-4 border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-mono focus:ring-0"
           />
 
           <DialogFooter>
-            <Button onClick={submitReview} className="w-full" disabled={userRating === 0}>
+            <Button onClick={submitReview} className="w-full rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold bg-black text-white hover:bg-gray-800" disabled={userRating === 0}>
               Submit Review
             </Button>
           </DialogFooter>

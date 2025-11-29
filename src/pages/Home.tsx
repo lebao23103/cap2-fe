@@ -80,13 +80,9 @@ export default function Home() {
   ]
 
   return (
-    <div className='relative min-h-screen bg-background overflow-hidden'>
-      {/* Background Decorative Elements */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-primary/5 blur-[120px] animate-pulse-slow" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-secondary/5 blur-[120px] animate-pulse-slow delay-1000" />
-        <div className="absolute top-[40%] left-[30%] w-[30%] h-[30%] rounded-full bg-accent/5 blur-[100px] animate-pulse-slow delay-2000" />
-      </div>
+    <div className='relative min-h-screen bg-background overflow-hidden font-mono'>
+      {/* Background Grid */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       {/* Hero Section */}
       <section className='relative w-full py-24 sm:py-32 lg:py-40'>
@@ -100,29 +96,29 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="flex-1 text-center lg:text-left"
             >
-              <Badge variant="outline" className="mb-6 px-4 py-1.5 text-sm border-primary/20 bg-primary/5 text-primary backdrop-blur-sm">
+              <Badge variant="outline" className="mb-6 px-4 py-1.5 text-sm border-2 border-black bg-white text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
                 <Sparkles className="mr-2 h-3.5 w-3.5" />
                 Reimagining Academic Reading
               </Badge>
 
-              <h1 className='font-sans text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 tracking-tight leading-[1.1]'>
+              <h1 className='font-display text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 tracking-tight leading-[1.1] uppercase'>
                 Unlock the Power of <br />
-                <span className='bg-gradient-to-r from-primary via-purple-500 to-secondary bg-clip-text text-transparent animate-gradient-x'>
+                <span className='bg-primary text-black px-2'>
                   Shared Knowledge
                 </span>
               </h1>
 
-              <p className='text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed'>
+              <p className='text-lg sm:text-xl text-muted-foreground mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-mono'>
                 Join a vibrant community of scholars and learners. Annotate, collaborate, and master your subjects with our intelligent interactive platform.
               </p>
 
               <div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
-                <Button size="lg" className="h-14 px-8 text-lg rounded-full bg-gradient-to-r from-primary to-secondary hover:opacity-90 shadow-lg hover:shadow-primary/25 transition-all hover:scale-105 duration-300">
+                <Button size="lg" className="h-14 px-8 text-lg bg-black text-white hover:bg-primary hover:text-black border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
                   <Link to='/readnex' className='flex items-center'>
                     Start Reading <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full border-2 border-primary/20 text-foreground hover:bg-primary/10 hover:text-primary transition-all hover:scale-105 duration-300 backdrop-blur-sm bg-background/50">
+                <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-black bg-white text-black hover:bg-black hover:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
                   <Link to='/noteshare' className='flex items-center'>
                     <Sparkles className="mr-2 h-5 w-5" /> NoteShare
                   </Link>
@@ -130,20 +126,20 @@ export default function Home() {
               </div>
 
               {/* Trust Indicators */}
-              <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-muted-foreground/60 grayscale hover:grayscale-0 transition-all duration-500">
+              <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-black font-bold uppercase">
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
-                  <span className="font-semibold">15k+ Users</span>
+                  <span>15k+ Users</span>
                 </div>
-                <div className="w-px h-6 bg-border" />
+                <div className="w-px h-6 bg-black" />
                 <div className="flex items-center gap-2">
                   <BookOpen className="h-5 w-5" />
-                  <span className="font-semibold">25k+ Books</span>
+                  <span>25k+ Books</span>
                 </div>
-                <div className="w-px h-6 bg-border" />
+                <div className="w-px h-6 bg-black" />
                 <div className="flex items-center gap-2">
                   <Star className="h-5 w-5" />
-                  <span className="font-semibold">4.9/5 Rating</span>
+                  <span>4.9/5 Rating</span>
                 </div>
               </div>
             </motion.div>
@@ -155,12 +151,11 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="flex-1 relative w-full max-w-xl lg:max-w-none"
             >
-              <div className="relative aspect-square md:aspect-[4/3] lg:aspect-square rounded-3xl overflow-hidden shadow-2xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl p-2">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-secondary/20 animate-pulse-slow" />
+              <div className="relative aspect-square md:aspect-[4/3] lg:aspect-square border-4 border-black bg-white p-2 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
                 <img
                   src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&q=80&w=1200"
                   alt="Digital Library Interface"
-                  className="w-full h-full object-cover rounded-2xl opacity-90 hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover border-2 border-black transition-all duration-500"
                 />
 
                 {/* Floating Elements */}
@@ -168,20 +163,20 @@ export default function Home() {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.6 }}
-                  className="absolute bottom-8 left-8 right-8 p-6 rounded-2xl bg-black/60 backdrop-blur-md border border-white/10 text-white shadow-xl"
+                  className="absolute bottom-8 left-8 right-8 p-6 bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
                 >
                   <div className="flex items-center gap-4 mb-3">
-                    <div className="p-2 rounded-full bg-green-500/20 text-green-400">
+                    <div className="p-2 bg-green-400 text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                       <BookMarked className="h-5 w-5" />
                     </div>
                     <div>
-                      <p className="font-semibold text-sm">Reading Progress</p>
-                      <p className="text-xs text-white/60">The Midnight Library</p>
+                      <p className="font-bold text-sm uppercase">Reading Progress</p>
+                      <p className="text-xs text-gray-600 font-mono">The Midnight Library</p>
                     </div>
-                    <span className="ml-auto font-bold text-green-400">78%</span>
+                    <span className="ml-auto font-bold text-black bg-green-400 px-2 border-2 border-black">78%</span>
                   </div>
-                  <div className="w-full bg-white/10 rounded-full h-1.5">
-                    <div className="bg-gradient-to-r from-green-400 to-emerald-500 h-full rounded-full w-[78%]" />
+                  <div className="w-full bg-white border-2 border-black h-4">
+                    <div className="bg-green-400 h-full border-r-2 border-black w-[78%]" />
                   </div>
                 </motion.div>
               </div>
@@ -191,13 +186,13 @@ export default function Home() {
       </section>
 
       {/* Features Grid */}
-      <section className="relative w-full py-20 bg-muted/30">
+      <section className="relative w-full py-20 bg-primary border-y-4 border-black">
         <div className="container mx-auto px-4">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Everything you need to <span className="text-primary">excel</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-black mb-4 uppercase font-display">
+              Everything you need to <span className="bg-white px-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">excel</span>
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-black font-mono max-w-2xl mx-auto font-bold">
               Our platform combines powerful tools to enhance your reading and learning experience.
             </p>
           </motion.div>
@@ -208,34 +203,34 @@ export default function Home() {
                 icon: Coffee,
                 title: 'Immersive Reading',
                 description: 'Distraction-free environment with customizable themes and fonts.',
-                color: 'text-amber-500',
-                bg: 'bg-amber-500/10'
+                color: 'text-black',
+                bg: 'bg-amber-400'
               },
               {
                 icon: Feather,
                 title: 'Smart Annotations',
                 description: 'Highlight, take notes, and share insights with your peers instantly.',
-                color: 'text-purple-500',
-                bg: 'bg-purple-500/10'
+                color: 'text-black',
+                bg: 'bg-purple-400'
               },
               {
                 icon: Sparkles,
                 title: 'AI-Powered Quizzes',
                 description: 'Test your knowledge with automatically generated quizzes from any book.',
-                color: 'text-blue-500',
-                bg: 'bg-blue-500/10'
+                color: 'text-black',
+                bg: 'bg-blue-400'
               }
             ].map((feature, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full border-0 bg-card/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2 group">
+                <Card className="h-full border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 rounded-none group">
                   <CardHeader>
-                    <div className={`w-14 h-14 rounded-2xl ${feature.bg} ${feature.color} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                    <div className={`w-14 h-14 border-2 border-black ${feature.bg} ${feature.color} flex items-center justify-center mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
                       <feature.icon className="h-7 w-7" />
                     </div>
-                    <CardTitle className="text-xl font-bold">{feature.title}</CardTitle>
+                    <CardTitle className="text-xl font-bold uppercase">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <p className="text-gray-600 font-mono leading-relaxed">
                       {feature.description}
                     </p>
                   </CardContent>
@@ -251,14 +246,14 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-end mb-12">
             <motion.div {...fadeInUp}>
-              <Badge variant="outline" className="mb-4 text-primary border-primary/20 bg-primary/5">
+              <Badge variant="outline" className="mb-4 text-black border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none uppercase font-bold">
                 <TrendingUp className="mr-2 h-3 w-3" /> Trending
               </Badge>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground uppercase font-display">
                 Featured Books
               </h2>
             </motion.div>
-            <Button variant="ghost" className="hidden sm:flex group" asChild>
+            <Button variant="ghost" className="hidden sm:flex group border-2 border-black rounded-none hover:bg-black hover:text-white font-bold uppercase" asChild>
               <Link to="/readnex">
                 View All <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -268,29 +263,29 @@ export default function Home() {
           <motion.div {...stagger} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {featuredBooks.map((book) => (
               <motion.div key={book.id} {...fadeInUp}>
-                <Card className="h-full border-0 bg-card/50 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 group overflow-hidden rounded-2xl">
-                  <div className="relative aspect-[2/3] overflow-hidden">
+                <Card className="h-full border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 group overflow-hidden rounded-none">
+                  <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-black">
                     <img
                       src={book.coverImage}
                       alt={book.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-all duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
-                      <Button className="w-full bg-white text-black hover:bg-white/90 font-semibold" asChild>
+                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 border-2 border-black m-2">
+                      <Button className="w-full bg-white text-black hover:bg-black hover:text-white font-bold border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase" asChild>
                         <Link to={`/book/${book.id}`}>View Details</Link>
                       </Button>
                     </div>
-                    <div className="absolute top-3 right-3 bg-black/60 backdrop-blur-md text-white text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1">
-                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                    <div className="absolute top-3 right-3 bg-yellow-400 text-black border-2 border-black text-xs font-bold px-2.5 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-1">
+                      <Star className="h-3 w-3 fill-black text-black" />
                       {book.rating}
                     </div>
                   </div>
                   <CardContent className="p-5">
-                    <h3 className="font-bold text-lg text-foreground line-clamp-1 mb-1 group-hover:text-primary transition-colors">
+                    <h3 className="font-bold text-lg text-foreground line-clamp-1 mb-1 group-hover:underline decoration-2 underline-offset-2 uppercase">
                       {book.title}
                     </h3>
-                    <p className="text-sm text-muted-foreground font-medium mb-3">{book.author}</p>
-                    <p className="text-sm text-muted-foreground/80 line-clamp-2">
+                    <p className="text-sm text-gray-600 font-mono mb-3 uppercase">{book.author}</p>
+                    <p className="text-sm text-gray-600 line-clamp-2 font-mono">
                       {book.description}
                     </p>
                   </CardContent>
@@ -300,7 +295,7 @@ export default function Home() {
           </motion.div>
 
           <div className="mt-8 text-center sm:hidden">
-            <Button variant="outline" className="w-full" asChild>
+            <Button variant="outline" className="w-full border-2 border-black rounded-none uppercase font-bold" asChild>
               <Link to="/readnex">View All Books</Link>
             </Button>
           </div>
@@ -308,13 +303,13 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className='relative w-full py-24 bg-muted/30'>
+      <section className='relative w-full py-24 bg-secondary border-y-4 border-black'>
         <div className='container mx-auto px-4'>
           <motion.div {...fadeInUp} className='text-center mb-16'>
-            <h2 className='text-3xl md:text-4xl font-bold text-foreground mb-4'>
+            <h2 className='text-3xl md:text-4xl font-bold text-white mb-4 uppercase font-display'>
               Community Voices
             </h2>
-            <p className='text-lg text-muted-foreground max-w-2xl mx-auto'>
+            <p className='text-lg text-white/90 max-w-2xl mx-auto font-mono font-bold'>
               See how Knowly is transforming the learning experience for students and educators.
             </p>
           </motion.div>
@@ -322,25 +317,25 @@ export default function Home() {
           <motion.div {...stagger} className='grid md:grid-cols-3 gap-8'>
             {testimonials.map((testimonial, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full p-8 border-0 bg-card/50 backdrop-blur-sm shadow-lg rounded-2xl relative">
+                <Card className="h-full p-8 border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none relative">
                   <CardContent className="p-0">
                     <div className="flex items-center gap-4 mb-6">
                       <img
                         src={testimonial.avatar}
                         alt={testimonial.name}
-                        className="w-12 h-12 rounded-full ring-2 ring-primary/20"
+                        className="w-12 h-12 rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                       />
                       <div>
-                        <p className="font-bold text-foreground">{testimonial.name}</p>
-                        <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                        <p className="font-bold text-foreground uppercase">{testimonial.name}</p>
+                        <p className="text-sm text-gray-600 font-mono">{testimonial.role}</p>
                       </div>
                     </div>
                     <div className="flex gap-1 mb-4">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                        <Star key={i} className="h-4 w-4 fill-black text-black" />
                       ))}
                     </div>
-                    <p className="text-muted-foreground leading-relaxed italic">
+                    <p className="text-gray-800 leading-relaxed italic font-mono border-l-4 border-black pl-4">
                       "{testimonial.content}"
                     </p>
                   </CardContent>
@@ -360,24 +355,23 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary to-secondary opacity-90" />
-              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-20" />
+            <div className="relative border-4 border-black bg-white shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]">
+              <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
 
-              <div className="relative z-10 p-12 md:p-20 text-center text-white">
-                <h2 className='font-sans text-3xl md:text-5xl font-bold mb-6'>
+              <div className="relative z-10 p-12 md:p-20 text-center text-black">
+                <h2 className='font-display text-3xl md:text-5xl font-bold mb-6 uppercase'>
                   Ready to start your journey?
                 </h2>
-                <p className='text-lg md:text-xl text-white/90 mb-10 max-w-2xl mx-auto'>
+                <p className='text-lg md:text-xl text-gray-800 mb-10 max-w-2xl mx-auto font-mono'>
                   Join thousands of learners today and experience the future of academic reading and collaboration.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" className="h-14 px-8 text-lg bg-white text-primary hover:bg-white/90 font-bold rounded-full shadow-xl hover:shadow-2xl transition-all hover:scale-105" asChild>
+                  <Button size="lg" className="h-14 px-8 text-lg bg-black text-white hover:bg-primary hover:text-black font-bold rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-2 border-black uppercase transition-all hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" asChild>
                     <Link to='/register'>
                       Get Started for Free
                     </Link>
                   </Button>
-                  <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-white text-white hover:bg-white/20 hover:text-white rounded-full transition-all hover:scale-105 bg-transparent" asChild>
+                  <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-black text-black hover:bg-black hover:text-white rounded-none transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] uppercase font-bold" asChild>
                     <Link to='/about'>
                       Learn More
                     </Link>

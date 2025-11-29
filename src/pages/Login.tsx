@@ -104,12 +104,9 @@ export default function Login() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-background overflow-hidden">
-      {/* Background Decorative Elements */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-primary/5 blur-[100px] animate-pulse-slow" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-secondary/5 blur-[100px] animate-pulse-slow delay-1000" />
-      </div>
+    <div className="relative min-h-screen flex items-center justify-center bg-background overflow-hidden font-mono">
+      {/* Background Grid */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       <div className="container relative z-10 flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-24 px-4">
         {/* Left Side - Hero Content (Hidden on mobile) */}
@@ -120,28 +117,28 @@ export default function Login() {
           className="hidden lg:flex flex-col max-w-lg"
         >
           <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
-              <BookOpen className="h-8 w-8 text-white" />
+            <div className="p-3 border-2 border-black bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <BookOpen className="h-8 w-8 text-black" />
             </div>
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold text-foreground uppercase tracking-tight font-display">
               Knowly
             </h1>
           </div>
 
-          <h2 className="text-4xl font-bold text-foreground mb-6 leading-tight">
+          <h2 className="text-4xl font-bold text-foreground mb-6 leading-tight uppercase font-display">
             Welcome back to your <br />
-            <span className="text-primary">Knowledge Hub</span>
+            <span className="bg-primary text-black px-2">Knowledge Hub</span>
           </h2>
 
-          <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+          <p className="text-lg text-muted-foreground mb-8 leading-relaxed font-mono">
             "Books are a uniquely portable magic." <br />
-            <span className="text-sm font-medium text-foreground/80">— Stephen King</span>
+            <span className="text-sm font-bold text-foreground">— Stephen King</span>
           </p>
 
           <div className="flex items-center gap-4">
             <div className="flex -space-x-3">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-10 h-10 rounded-full border-2 border-background bg-muted overflow-hidden">
+                <div key={i} className="w-10 h-10 border-2 border-black bg-white overflow-hidden">
                   <img
                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`}
                     alt="User"
@@ -150,7 +147,7 @@ export default function Login() {
                 </div>
               ))}
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground font-mono">
               Join <span className="font-bold text-foreground">15k+</span> learners today
             </p>
           </div>
@@ -163,17 +160,17 @@ export default function Login() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="w-full max-w-md"
         >
-          <Card className="w-full border-border/50 shadow-2xl bg-card/50 backdrop-blur-xl">
+          <Card className="w-full border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none">
             <CardHeader className="text-center pb-2 pt-8">
               <div className="lg:hidden flex justify-center mb-6">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-primary to-secondary shadow-lg">
-                  <BookOpen className="h-6 w-6 text-white" />
+                <div className="p-3 border-2 border-black bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <BookOpen className="h-6 w-6 text-black" />
                 </div>
               </div>
-              <h2 className="text-2xl font-bold text-foreground mb-2">
+              <h2 className="text-2xl font-bold text-foreground mb-2 uppercase font-display">
                 Sign In
               </h2>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground font-mono">
                 Enter your credentials to access your account
               </p>
             </CardHeader>
@@ -184,10 +181,10 @@ export default function Login() {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
+                    className="p-3 bg-red-100 border-2 border-black text-red-600 font-bold font-mono"
                     role="alert"
                   >
-                    <p className="text-sm text-destructive font-medium">{generalError}</p>
+                    <p className="text-sm">{generalError}</p>
                   </motion.div>
                 )}
 
@@ -211,7 +208,7 @@ export default function Login() {
                   <div className="flex justify-between items-center mb-2">
                     <Link
                       to="/forgot-password"
-                      className="text-xs text-primary hover:text-primary/80 font-medium transition-colors ml-auto"
+                      className="text-xs text-black hover:underline font-bold transition-colors ml-auto font-mono uppercase"
                       tabIndex={isLoading || isSuccess ? -1 : 0}
                     >
                       Forgot password?
@@ -245,20 +242,20 @@ export default function Login() {
                     isSuccess={isSuccess}
                     loadingText="Signing you in..."
                     successText="Success! Redirecting..."
-                    className="w-full h-12 text-base font-semibold shadow-lg hover:shadow-primary/25"
+                    className="w-full h-12 text-base font-bold"
                   >
                     Sign In
                   </ModernButton>
                 </div>
               </form>
 
-              <div className="mt-8 pt-6 border-t border-border/50 text-center">
-                <p className="text-sm text-muted-foreground mb-4">
+              <div className="mt-8 pt-6 border-t-2 border-black text-center">
+                <p className="text-sm text-muted-foreground mb-4 font-mono">
                   Don't have an account yet?
                 </p>
                 <Button
                   variant="outline"
-                  className="w-full border-primary/20 hover:bg-primary/5 hover:text-primary transition-colors"
+                  className="w-full border-2 border-black rounded-none hover:bg-black hover:text-white transition-all uppercase font-bold"
                   asChild
                 >
                   <Link to="/register">

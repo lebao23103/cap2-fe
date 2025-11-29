@@ -101,27 +101,27 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             disabled={disabled || loading}
             required={required}
             className={cn(
-              // Base styles - matching Reset Password styling
-              'bg-background/50 border-border/50 h-12 rounded-xl transition-all pr-10',
+              // Base styles - Neo-Brutalist
+              'bg-white border-2 border-black h-12 rounded-none transition-all pr-10 font-bold',
               // Focus styles
-              'focus:border-primary/50 focus:ring-2 focus:ring-primary/20',
+              'focus:ring-0 focus:border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:translate-x-[-2px] focus:translate-y-[-2px]',
               // Error state
               error && [
-                'border-destructive',
-                'focus:ring-destructive/20',
-                'focus:border-destructive',
+                'border-red-500',
+                'focus:border-red-500',
+                'focus:shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]',
                 'animate-shake',
               ],
               // Success state
               success && !error && [
-                'border-success',
-                'focus:ring-success/20',
-                'focus:border-success',
+                'border-green-500',
+                'focus:border-green-500',
+                'focus:shadow-[4px_4px_0px_0px_rgba(34,197,94,1)]',
               ],
               // Loading state
               loading && 'cursor-wait',
               // Disabled state
-              disabled && 'opacity-50 cursor-not-allowed',
+              disabled && 'opacity-50 cursor-not-allowed bg-gray-100',
               className
             )}
             aria-invalid={error ? 'true' : 'false'}

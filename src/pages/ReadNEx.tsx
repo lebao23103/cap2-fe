@@ -31,7 +31,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
+
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 
@@ -221,13 +221,13 @@ export default function ReadNEx() {
         {[1, 2, 3, 4, 5].map((star) => (
           <Star
             key={star}
-            className={`h-3.5 w-3.5 ${star <= rating
-              ? 'fill-yellow-400 text-yellow-400'
-              : 'text-gray-300 dark:text-gray-600'
+            className={`h-4 w-4 ${star <= rating
+              ? 'fill-primary text-primary'
+              : 'text-muted-foreground'
               }`}
           />
         ))}
-        <span className="ml-1 text-xs font-medium text-gray-600 dark:text-gray-400">
+        <span className="ml-1 text-xs font-bold text-foreground">
           {rating.toFixed(1)}
         </span>
       </div>
@@ -236,9 +236,9 @@ export default function ReadNEx() {
 
   const renderProgressBar = (progress: number) => {
     return (
-      <div className="w-full bg-white/20 rounded-full h-1.5 backdrop-blur-sm overflow-hidden">
+      <div className="w-full bg-white border-2 border-black h-4 overflow-hidden">
         <div
-          className="bg-gradient-to-r from-amber-300 to-amber-500 h-full rounded-full transition-all duration-500 ease-out"
+          className="bg-primary h-full transition-all duration-500 ease-out border-r-2 border-black"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -246,27 +246,24 @@ export default function ReadNEx() {
   }
 
   return (
-    <div className="relative w-full min-h-screen bg-background py-8 sm:py-12 overflow-hidden">
-      {/* Background Decorative Elements */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-primary/5 blur-[100px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-secondary/5 blur-[100px]" />
-      </div>
+    <div className="relative w-full min-h-screen bg-background py-8 sm:py-12 overflow-hidden font-mono">
+      {/* Background Grid */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       <div className="container mx-auto relative z-10 px-4 sm:px-6">
 
         {/* Header with Distinctive Design */}
         <motion.div {...fadeInUp} className="mb-10 sm:mb-12 text-center">
           <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4">
-            <div className="h-px w-12 sm:w-20 bg-gradient-to-r from-transparent to-primary/50" />
-            <h1 className="font-sans text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight">
+            <div className="h-2 w-12 sm:w-20 bg-black dark:bg-white" />
+            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight uppercase">
               <span className="text-foreground">Read</span>
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">NEx</span>
+              <span className="text-primary bg-black px-2">NEx</span>
             </h1>
-            <div className="h-px w-12 sm:w-20 bg-gradient-to-l from-transparent to-primary/50" />
+            <div className="h-2 w-12 sm:w-20 bg-black dark:bg-white" />
           </div>
-          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Your personal library for interactive learning and comprehension mastery
+          <p className="text-base sm:text-lg text-foreground font-bold max-w-2xl mx-auto leading-relaxed uppercase tracking-wider bg-white border-2 border-black p-2 inline-block shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            Your personal library for interactive learning
           </p>
         </motion.div>
 
@@ -282,40 +279,40 @@ export default function ReadNEx() {
               icon: BookOpen,
               label: 'Reading',
               value: books.filter(b => b.readingProgress! > 0 && b.readingProgress! < 100).length,
-              color: 'text-blue-500',
-              bg: 'bg-blue-500/10'
+              color: 'text-black',
+              bg: 'bg-blue-400'
             },
             {
               icon: CheckCircle,
               label: 'Completed',
               value: books.filter(b => b.readingProgress === 100).length,
-              color: 'text-green-500',
-              bg: 'bg-green-500/10'
+              color: 'text-black',
+              bg: 'bg-green-400'
             },
             {
               icon: Heart,
               label: 'Favorites',
               value: books.filter(b => b.isFavorite).length,
-              color: 'text-rose-500',
-              bg: 'bg-rose-500/10'
+              color: 'text-black',
+              bg: 'bg-pink-400'
             },
             {
               icon: Grid3x3,
               label: 'Total Books',
               value: books.length,
-              color: 'text-purple-500',
-              bg: 'bg-purple-500/10'
+              color: 'text-black',
+              bg: 'bg-purple-400'
             }
           ].map((stat, index) => (
-            <Card key={index} className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-card/80 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+            <Card key={index} className="border-2 border-black bg-white hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none">
               <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                <div className={`p-3 rounded-full ${stat.bg} mb-3`}>
+                <div className={`p-3 border-2 border-black ${stat.bg} mb-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}>
                   <stat.icon className={`h-6 w-6 ${stat.color}`} />
                 </div>
-                <div className="text-2xl font-bold text-foreground mb-1">
+                <div className="text-3xl font-bold text-black mb-1 font-display">
                   {stat.value}
                 </div>
-                <div className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                <div className="text-xs font-bold text-black uppercase tracking-wider">
                   {stat.label}
                 </div>
               </CardContent>
@@ -330,18 +327,18 @@ export default function ReadNEx() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="mb-8 sticky top-20 z-30"
         >
-          <div className="glass dark:glass-dark rounded-2xl p-4 shadow-xl border border-white/20 dark:border-white/10 backdrop-blur-xl">
+          <div className="bg-primary border-2 border-black p-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
             <div className="flex flex-col md:flex-row gap-4">
 
               {/* Search Bar */}
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black" />
                 <input
                   type="text"
-                  placeholder="Search by title, author, or subject..."
+                  placeholder="SEARCH BY TITLE, AUTHOR..."
                   value={filters.searchTerm}
                   onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-background/50 border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all text-sm placeholder:text-muted-foreground"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white border-2 border-black focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm placeholder:text-gray-500 font-bold uppercase"
                 />
               </div>
 
@@ -352,23 +349,22 @@ export default function ReadNEx() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
-                      className="h-10 px-4 rounded-xl border-border/50 bg-background/50 hover:bg-background/80 transition-all min-w-[140px] justify-between"
+                      className="h-10 px-4 border-2 border-black bg-white hover:bg-gray-100 transition-all min-w-[140px] justify-between rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold uppercase"
                     >
                       <span className="flex items-center gap-2 text-sm">
-                        <BookmarkCheck className="h-4 w-4 text-primary" />
+                        <BookmarkCheck className="h-4 w-4" />
                         {filters.statusFilter}
                       </span>
-                      <ChevronDown className="h-3 w-3 opacity-50" />
+                      <ChevronDown className="h-3 w-3" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 rounded-xl border-border/50 bg-popover/95 backdrop-blur-xl" align="end">
-                    <DropdownMenuLabel>Filter by Status</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
+                  <DropdownMenuContent className="w-56 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none" align="end">
+                    <DropdownMenuLabel className="uppercase font-bold border-b-2 border-black">Filter by Status</DropdownMenuLabel>
                     {statusFilters.map((status) => (
                       <DropdownMenuItem
                         key={status}
                         onClick={() => handleFilterChange('statusFilter', status)}
-                        className="cursor-pointer focus:bg-primary/10 focus:text-primary rounded-lg my-0.5"
+                        className="cursor-pointer focus:bg-primary focus:text-black rounded-none my-0.5 font-mono uppercase font-bold hover:bg-primary"
                       >
                         {status}
                       </DropdownMenuItem>
@@ -377,16 +373,16 @@ export default function ReadNEx() {
                 </DropdownMenu>
 
                 {/* View Mode Toggle */}
-                <div className="flex bg-background/50 rounded-xl p-1 border border-border/50">
+                <div className="flex bg-white border-2 border-black p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-lg transition-all ${viewMode === 'grid' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+                    className={`p-2 transition-all border-2 ${viewMode === 'grid' ? 'bg-primary border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}
                   >
                     <Grid3x3 className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-lg transition-all ${viewMode === 'list' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+                    className={`p-2 transition-all border-2 ${viewMode === 'list' ? 'bg-primary border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}
                   >
                     <List className="h-4 w-4" />
                   </button>
@@ -432,29 +428,25 @@ export default function ReadNEx() {
                         }}
                         className="group relative"
                       >
-                        <div className="absolute -inset-0.5 bg-gradient-to-b from-primary/20 to-secondary/20 rounded-2xl blur opacity-0 group-hover:opacity-100 transition duration-500" />
-                        <Card className="h-full border-0 bg-card/80 dark:bg-card/40 backdrop-blur-md shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden rounded-2xl relative z-10 flex flex-col hover:-translate-y-1">
+                        <Card className="h-full border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden rounded-none flex flex-col">
 
                           {/* Cover Image Area */}
-                          <Link to={`/book/${book.id}`} className="relative aspect-[2/3] overflow-hidden block">
+                          <Link to={`/book/${book.id}`} className="relative aspect-[2/3] overflow-hidden block border-b-2 border-black">
                             <img
                               src={getCoverImageUrl(book.coverImage)}
                               alt={book.title}
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                              className="w-full h-full object-cover transition-all duration-500"
                             />
-
-                            {/* Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
 
                             {/* Top Badges */}
                             <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
                               {book.quizCompleted && (
-                                <Badge className="bg-emerald-500/90 backdrop-blur-md text-white border-0 shadow-lg">
-                                  <Award className="h-3 w-3 mr-1" /> Complete
+                                <Badge className="bg-green-400 text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                  <Award className="h-3 w-3 mr-1" /> DONE
                                 </Badge>
                               )}
                               {book.isFavorite && (
-                                <div className="p-1.5 rounded-full bg-rose-500/90 backdrop-blur-md text-white shadow-lg">
+                                <div className="p-1.5 bg-pink-400 text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                                   <Heart className="h-3.5 w-3.5 fill-current" />
                                 </div>
                               )}
@@ -462,8 +454,8 @@ export default function ReadNEx() {
 
                             {/* Reading Progress Bar (Overlay) */}
                             {book.readingProgress! > 0 && (
-                              <div className="absolute bottom-0 left-0 right-0 p-3 bg-gradient-to-t from-black/90 to-transparent">
-                                <div className="flex justify-between text-[10px] font-medium text-white/90 mb-1.5 uppercase tracking-wider">
+                              <div className="absolute bottom-0 left-0 right-0 p-3 bg-white border-t-2 border-black">
+                                <div className="flex justify-between text-[10px] font-bold text-black mb-1.5 uppercase tracking-wider">
                                   <span>Progress</span>
                                   <span>{book.readingProgress}%</span>
                                 </div>
@@ -472,10 +464,10 @@ export default function ReadNEx() {
                             )}
 
                             {/* Hover Actions Overlay */}
-                            <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4">
+                            <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4 border-2 border-black m-2">
                               <Button
                                 size="lg"
-                                className="w-full max-w-[160px] bg-white text-black hover:bg-white/90 font-semibold shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-75"
+                                className="w-full max-w-[160px] bg-white text-black hover:bg-black hover:text-white font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black rounded-none uppercase"
                                 onClick={(e) => {
                                   e.preventDefault()
                                   e.stopPropagation()
@@ -483,15 +475,15 @@ export default function ReadNEx() {
                                 }}
                               >
                                 <Play className="h-4 w-4 mr-2 fill-current" />
-                                {book.readingProgress! > 0 ? 'Resume' : 'Read'}
+                                {book.readingProgress! > 0 ? 'RESUME' : 'READ'}
                               </Button>
 
-                              <div className="flex gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 delay-100">
+                              <div className="flex gap-2">
                                 {book.hasQuiz && (
                                   <Button
                                     size="icon"
                                     variant="secondary"
-                                    className="rounded-full h-10 w-10 bg-white/20 hover:bg-white/40 text-white border-0 backdrop-blur-md"
+                                    className="h-10 w-10 bg-white text-black border-2 border-black hover:bg-black hover:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                                     onClick={(e) => {
                                       e.preventDefault()
                                       e.stopPropagation()
@@ -505,7 +497,7 @@ export default function ReadNEx() {
                                 <Button
                                   size="icon"
                                   variant="secondary"
-                                  className="rounded-full h-10 w-10 bg-white/20 hover:bg-white/40 text-white border-0 backdrop-blur-md"
+                                  className="h-10 w-10 bg-white text-black border-2 border-black hover:bg-black hover:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
                                   onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
@@ -513,29 +505,29 @@ export default function ReadNEx() {
                                   }}
                                   title={book.isFavorite ? "Remove from Favorites" : "Add to Favorites"}
                                 >
-                                  <Heart className={`h-5 w-5 ${book.isFavorite ? 'fill-rose-500 text-rose-500' : ''}`} />
+                                  <Heart className={`h-5 w-5 ${book.isFavorite ? 'fill-black text-black' : ''}`} />
                                 </Button>
                               </div>
                             </div>
                           </Link>
 
                           {/* Content Area */}
-                          <div className="p-4 flex flex-col flex-1">
+                          <div className="p-4 flex flex-col flex-1 bg-white">
                             <Link to={`/book/${book.id}`} className="block mb-1">
-                              <h3 className="font-bold text-lg leading-tight text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+                              <h3 className="font-bold text-lg leading-tight text-black uppercase line-clamp-1 group-hover:underline decoration-2 underline-offset-2">
                                 {book.title}
                               </h3>
                             </Link>
-                            <p className="text-sm text-muted-foreground font-medium mb-3">
+                            <p className="text-sm text-gray-600 font-mono mb-3 uppercase">
                               {book.author}
                             </p>
 
-                            <div className="mt-auto flex items-center justify-between pt-3 border-t border-border/50">
+                            <div className="mt-auto flex items-center justify-between pt-3 border-t-2 border-black">
                               {renderStars(book.rating)}
 
                               <div className="flex items-center gap-2">
                                 {book.subject && (
-                                  <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-secondary/10 text-secondary-foreground hover:bg-secondary/20 border-0">
+                                  <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-yellow-300 text-black border-2 border-black rounded-none uppercase font-bold">
                                     {book.subject}
                                   </Badge>
                                 )}
@@ -556,59 +548,59 @@ export default function ReadNEx() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
                       >
-                        <Card className="group overflow-hidden border-0 bg-card/50 hover:bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300">
+                        <Card className="group overflow-hidden border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 rounded-none">
                           <div className="flex flex-col sm:flex-row gap-4 p-4">
-                            <div className="relative w-full sm:w-24 md:w-32 aspect-[2/3] rounded-lg overflow-hidden flex-shrink-0">
+                            <div className="relative w-full sm:w-24 md:w-32 aspect-[2/3] border-2 border-black overflow-hidden flex-shrink-0">
                               <img
                                 src={getCoverImageUrl(book.coverImage)}
                                 alt={book.title}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                className="w-full h-full object-cover transition-all duration-500"
                               />
                             </div>
                             <div className="flex-1 flex flex-col justify-between py-1">
                               <div>
                                 <div className="flex justify-between items-start">
                                   <div>
-                                    <h3 className="font-bold text-xl text-foreground mb-1 group-hover:text-primary transition-colors">
+                                    <h3 className="font-bold text-xl text-black uppercase mb-1 group-hover:underline decoration-2 underline-offset-2">
                                       {book.title}
                                     </h3>
-                                    <p className="text-muted-foreground font-medium mb-2">{book.author}</p>
+                                    <p className="text-gray-600 font-mono mb-2 uppercase">{book.author}</p>
                                   </div>
                                   <div className="flex gap-2">
                                     {book.quizCompleted && (
-                                      <Badge variant="outline" className="border-emerald-500/50 text-emerald-600 bg-emerald-500/5">
+                                      <Badge variant="outline" className="border-2 border-black bg-green-400 text-black rounded-none font-bold uppercase">
                                         Quiz Done
                                       </Badge>
                                     )}
                                   </div>
                                 </div>
-                                <p className="text-sm text-muted-foreground line-clamp-2 mb-4 max-w-2xl">
+                                <p className="text-sm text-gray-600 line-clamp-2 mb-4 max-w-2xl font-mono">
                                   {book.description}
                                 </p>
-                                <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-4 text-sm text-black font-bold">
                                   {renderStars(book.rating)}
                                   <span>•</span>
-                                  <span className="flex items-center gap-1">
+                                  <span className="flex items-center gap-1 uppercase">
                                     <Clock className="h-3.5 w-3.5" /> {book.readingTime || '2h 15m'}
                                   </span>
                                   {book.subject && (
                                     <>
                                       <span>•</span>
-                                      <Badge variant="secondary" className="text-xs">{book.subject}</Badge>
+                                      <Badge variant="secondary" className="text-xs bg-yellow-300 border-2 border-black rounded-none">{book.subject}</Badge>
                                     </>
                                   )}
                                 </div>
                               </div>
 
                               <div className="flex items-center gap-3 mt-4 sm:mt-0">
-                                <Button size="sm" onClick={() => navigate(`/book/${book.id}/read`)}>
+                                <Button size="sm" onClick={() => navigate(`/book/${book.id}/read`)} className="bg-black text-white hover:bg-primary hover:text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
                                   <Play className="h-3.5 w-3.5 mr-2" /> Read
                                 </Button>
-                                <Button size="sm" variant="outline" onClick={() => navigate(`/book/${book.id}`)}>
+                                <Button size="sm" variant="outline" onClick={() => navigate(`/book/${book.id}`)} className="bg-white text-black border-2 border-black hover:bg-gray-100 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
                                   Details
                                 </Button>
-                                <Button size="icon" variant="ghost" onClick={() => toggleFavorite(book.id)}>
-                                  <Heart className={`h-4 w-4 ${book.isFavorite ? 'fill-rose-500 text-rose-500' : ''}`} />
+                                <Button size="icon" variant="ghost" onClick={() => toggleFavorite(book.id)} className="border-2 border-black rounded-none hover:bg-pink-400">
+                                  <Heart className={`h-4 w-4 ${book.isFavorite ? 'fill-black text-black' : ''}`} />
                                 </Button>
                               </div>
                             </div>

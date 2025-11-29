@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Input } from '../components/ui/input'
 import { Badge } from '../components/ui/badge'
-import { Avatar, AvatarFallback } from '../components/ui/avatar'
+
 import { ScrollArea } from '../components/ui/scroll-area'
 import { useToast } from '../components/ui/use-toast'
 import aiService from '../lib/api/ai'
@@ -17,14 +17,15 @@ import {
   Sparkles,
   Menu,
   X,
-  ArrowLeft
+  ArrowLeft,
+  MessageSquare,
+  Zap
 } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '../components/ui/dropdown-menu'
 
@@ -126,28 +127,27 @@ export default function Chatbot() {
     }
   }
 
-  // Note: selectedRole is kept for UI display but not currently used in API calls
-  // Backend chatbot determines its own personality from the conversation context
-
   const BookRecommendation = ({ book }: { book: Book }) => (
-    <Card className="mb-4 hover:shadow-md transition-shadow cursor-pointer">
+    <Card className="mb-4 cursor-pointer rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all bg-white">
       <CardContent className="p-3">
-        <div className="flex gap-3">
-          <img
-            src={book.cover}
-            alt={book.title}
-            className="w-12 h-16 object-cover rounded"
-          />
-          <div className="flex-1">
-            <h4 className="font-semibold text-sm text-gray-900 dark:text-foreground">{book.title}</h4>
-            <p className="text-xs text-gray-600 dark:text-muted-foreground">{book.author}</p>
-            <div className="flex items-center gap-1 mt-1">
-              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-              <span className="text-xs text-gray-600 dark:text-muted-foreground">{book.rating}</span>
+        <div className="flex gap-4">
+          <div className="relative w-16 h-24 shrink-0 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+            <img
+              src={book.cover}
+              alt={book.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="font-black text-sm text-black uppercase truncate">{book.title}</h4>
+            <p className="text-xs text-gray-600 font-bold font-mono mb-2">{book.author}</p>
+            <div className="flex items-center gap-1 mb-2">
+              <Star className="w-3 h-3 fill-black text-black" />
+              <span className="text-xs font-bold">{book.rating}</span>
             </div>
-            <div className="flex gap-1 mt-1">
+            <div className="flex flex-wrap gap-1">
               {book.genre.slice(0, 2).map((g) => (
-                <Badge key={g} variant="secondary" className="text-xs">
+                <Badge key={g} variant="secondary" className="text-[10px] rounded-none border border-black bg-primary/20 text-black font-bold">
                   {g}
                 </Badge>
               ))}
@@ -159,233 +159,249 @@ export default function Chatbot() {
   )
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto py-6 min-h-[400px] max-h-[calc(100vh-200px)]">
+    <div className="min-h-screen bg-background font-mono p-4 md:p-6">
+      <main className="container mx-auto max-w-7xl h-[calc(100vh-100px)] min-h-[600px]">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-full">
-          {/* Chat Area */}
-          <div className="lg:col-span-3 flex flex-col flex-grow">
-            <Card className="flex-1 flex flex-col">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex-1 flex items-center gap-3">
-                    {/* Back Button */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => navigate('/dashboard')}
-                      className="flex items-center gap-2 text-gray-600 dark:text-muted-foreground hover:text-gray-900 dark:hover:text-foreground"
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                      <span className="hidden sm:inline">Back</span>
-                    </Button>
-                    <div className="flex-1">
-                      <CardTitle className="text-lg text-gray-900 dark:text-foreground flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-primary" />
-                        Chat with {selectedRole === 'book advisor' ? 'Book Advisor' :
-                          selectedRole === 'literary expert' ? 'Literary Expert' : 'Book Enthusiast'}
-                      </CardTitle>
-                      <CardDescription className="mt-1 text-gray-600 dark:text-muted-foreground">
-                        Ask me anything about books, get recommendations, or discuss literature!
-                      </CardDescription>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {/* Mode Selector Dropdown */}
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          Mode
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Select Chat Mode</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => setSelectedRole('book advisor')}>
-                          {selectedRole === 'book advisor' && '✓ '}Book Advisor
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSelectedRole('literary expert')}>
-                          {selectedRole === 'literary expert' && '✓ '}Literary Expert
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => setSelectedRole('book enthusiast')}>
-                          {selectedRole === 'book enthusiast' && '✓ '}Book Enthusiast
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
 
-                    {/* Mobile Sidebar Toggle */}
+          {/* Chat Area */}
+          <div className="lg:col-span-3 flex flex-col h-full">
+            <Card className="flex-1 flex flex-col border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none overflow-hidden bg-white dark:bg-zinc-900">
+              {/* Header */}
+              <CardHeader className="py-4 px-6 border-b-4 border-black bg-primary">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="lg:hidden"
-                      onClick={() => setSidebarOpen(!sidebarOpen)}
-                      aria-label="Toggle sidebar"
+                      onClick={() => navigate('/dashboard')}
+                      className="h-10 w-10 border-2 border-black bg-white hover:bg-black hover:text-white rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
                     >
-                      {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                      <ArrowLeft className="h-5 w-5" strokeWidth={3} />
+                    </Button>
+                    <div>
+                      <CardTitle className="text-xl font-black uppercase flex items-center gap-2 text-black">
+                        <MessageSquare className="h-6 w-6" strokeWidth={3} />
+                        AI Assistant
+                      </CardTitle>
+                      <div className="flex items-center gap-2 mt-1">
+                        <div className="h-2 w-2 bg-green-500 border border-black animate-pulse" />
+                        <p className="text-xs font-bold text-black/80 uppercase tracking-wider">
+                          {selectedRole} Mode
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" className="hidden sm:flex h-10 font-bold border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white text-black transition-all">
+                          CHANGE MODE
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-56 border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] p-0">
+                        <DropdownMenuLabel className="p-3 bg-gray-100 border-b-2 border-black font-black uppercase">Select Persona</DropdownMenuLabel>
+                        <div className="p-1 bg-white">
+                          <DropdownMenuItem onClick={() => setSelectedRole('book advisor')} className="font-bold uppercase focus:bg-primary focus:text-black rounded-none cursor-pointer py-2">
+                            Book Advisor
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setSelectedRole('literary expert')} className="font-bold uppercase focus:bg-primary focus:text-black rounded-none cursor-pointer py-2">
+                            Literary Expert
+                          </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => setSelectedRole('book enthusiast')} className="font-bold uppercase focus:bg-primary focus:text-black rounded-none cursor-pointer py-2">
+                            Book Enthusiast
+                          </DropdownMenuItem>
+                        </div>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="lg:hidden h-10 w-10 border-2 border-black bg-white hover:bg-black hover:text-white rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                      onClick={() => setSidebarOpen(!sidebarOpen)}
+                    >
+                      {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
                     </Button>
                   </div>
                 </div>
               </CardHeader>
 
-              <CardContent className="flex-1 flex flex-col p-0">
-                <ScrollArea className="flex-1 px-6">
-                  <div className="space-y-4 pb-4">
+              {/* Messages */}
+              <CardContent className="flex-1 p-0 overflow-hidden bg-dots-pattern">
+                <ScrollArea className="h-full px-4 py-6 md:px-6">
+                  <div className="space-y-6">
                     {messages.map((message) => (
                       <div
                         key={message.id}
-                        className={`flex gap-3 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                        className={`flex gap-4 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
                         {message.type === 'bot' && (
-                          <Avatar className="w-8 h-8">
-                            <AvatarFallback className="bg-primary/10">
-                              <Bot className="w-4 h-4 text-primary" />
-                            </AvatarFallback>
-                          </Avatar>
+                          <div className="w-10 h-10 border-2 border-black bg-white flex items-center justify-center shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            <Bot className="w-6 h-6 text-black" strokeWidth={2.5} />
+                          </div>
                         )}
 
-                        <div className={`max-w-[85%] sm:max-w-[70%] md:max-w-[60%] ${message.type === 'user' ? 'order-first' : ''}`}>
+                        <div className={`max-w-[85%] md:max-w-[75%] ${message.type === 'user' ? 'order-first' : ''}`}>
                           <div
-                            className={`rounded-lg px-4 py-2 ${message.type === 'user'
-                              ? 'bg-primary text-primary-foreground ml-auto'
-                              : 'bg-muted'
+                            className={`p-4 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${message.type === 'user'
+                              ? 'bg-black text-white'
+                              : 'bg-white text-black'
                               }`}
                           >
-                            <p className="text-sm">{message.content}</p>
+                            <p className="text-sm md:text-base font-bold leading-relaxed whitespace-pre-wrap">
+                              {message.content}
+                            </p>
                           </div>
 
                           {message.bookRecommendations && (
-                            <div className="mt-3 space-y-2">
-                              <p className="text-xs text-muted-foreground font-medium">Recommended books:</p>
-                              {message.bookRecommendations.map((book) => (
-                                <BookRecommendation key={book.id} book={book} />
-                              ))}
+                            <div className="mt-4 pl-4 border-l-4 border-black space-y-4">
+                              <div className="flex items-center gap-2">
+                                <Sparkles className="h-4 w-4 text-primary fill-primary" />
+                                <span className="text-xs font-black uppercase bg-black text-white px-2 py-1">Top Picks</span>
+                              </div>
+                              <div className="grid gap-4 sm:grid-cols-2">
+                                {message.bookRecommendations.map((book) => (
+                                  <BookRecommendation key={book.id} book={book} />
+                                ))}
+                              </div>
                             </div>
                           )}
 
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {message.timestamp.toLocaleTimeString()}
+                          <p className={`text-[10px] font-black mt-2 uppercase ${message.type === 'user' ? 'text-right' : 'text-left'} opacity-50`}>
+                            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </p>
                         </div>
 
                         {message.type === 'user' && (
-                          <Avatar className="w-8 h-8">
-                            <AvatarFallback>
-                              <User className="w-4 h-4" />
-                            </AvatarFallback>
-                          </Avatar>
+                          <div className="w-10 h-10 border-2 border-black bg-primary flex items-center justify-center shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            <User className="w-6 h-6 text-black" strokeWidth={2.5} />
+                          </div>
                         )}
                       </div>
                     ))}
 
                     {isLoading && (
-                      <div className="flex gap-3 justify-start">
-                        <Avatar className="w-8 h-8">
-                          <AvatarFallback className="bg-primary/10">
-                            <Bot className="w-4 h-4 text-primary" />
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="bg-muted rounded-lg px-4 py-2">
-                          <div className="flex gap-1">
-                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
-                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                            <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="flex gap-4 justify-start">
+                        <div className="w-10 h-10 border-2 border-black bg-white flex items-center justify-center shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                          <Bot className="w-6 h-6 text-black" strokeWidth={2.5} />
+                        </div>
+                        <div className="bg-white border-2 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                          <div className="flex gap-2">
+                            <div className="w-2 h-2 bg-black animate-bounce" />
+                            <div className="w-2 h-2 bg-black animate-bounce delay-100" />
+                            <div className="w-2 h-2 bg-black animate-bounce delay-200" />
                           </div>
                         </div>
                       </div>
                     )}
-
                     <div ref={messagesEndRef} />
                   </div>
                 </ScrollArea>
-
-                {/* Input Area */}
-                <div className="border-t p-4">
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder={`Ask ${selectedRole} something about books...`}
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                      disabled={isLoading}
-                      maxLength={500}
-                    />
-                    <Button
-                      onClick={handleSendMessage}
-                      disabled={isLoading || !inputMessage.trim()}
-                      size="icon"
-                      aria-label="Send message"
-                    >
-                      <Send className="h-4 w-4" aria-hidden="true" />
-                    </Button>
-                  </div>
-                  {inputMessage.length > 400 && (
-                    <p className="text-xs text-muted-foreground mt-1 text-right">
-                      {inputMessage.length}/500 characters
-                    </p>
-                  )}
-                </div>
               </CardContent>
+
+              {/* Input */}
+              <div className="p-4 md:p-6 bg-white border-t-4 border-black">
+                <div className="flex gap-3">
+                  <Input
+                    placeholder="TYPE YOUR MESSAGE HERE..."
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    disabled={isLoading}
+                    className="h-14 text-lg font-bold border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-visible:ring-0 focus-visible:translate-x-[2px] focus-visible:translate-y-[2px] focus-visible:shadow-none transition-all placeholder:text-gray-400"
+                  />
+                  <Button
+                    onClick={handleSendMessage}
+                    disabled={isLoading || !inputMessage.trim()}
+                    className="h-14 w-14 shrink-0 bg-black text-white hover:bg-primary hover:text-black border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all disabled:opacity-50"
+                  >
+                    <Send className="h-6 w-6" strokeWidth={3} />
+                  </Button>
+                </div>
+                <div className="flex justify-between items-center mt-2 px-1">
+                  <p className="text-[10px] font-bold text-gray-400 uppercase">
+                    Press Enter to send
+                  </p>
+                  <p className="text-[10px] font-bold text-gray-400 uppercase">
+                    {inputMessage.length}/500
+                  </p>
+                </div>
+              </div>
             </Card>
           </div>
 
-          {/* Sidebar - Collapsible on mobile */}
-          <div className={`${sidebarOpen ? 'fixed inset-0 z-50 bg-black/50 lg:relative lg:bg-transparent' : 'hidden'} lg:block space-y-4`}>
-            <div className={`${sidebarOpen ? 'fixed right-0 top-0 bottom-0 w-80 bg-background shadow-xl p-4 overflow-y-auto' : ''} lg:relative lg:w-auto lg:p-0 lg:shadow-none space-y-4`}>
-              {sidebarOpen && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="lg:hidden absolute top-2 right-2"
-                  onClick={() => setSidebarOpen(false)}
-                  aria-label="Close sidebar"
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">Quick Suggestions</CardTitle>
+          {/* Sidebar */}
+          <div className={`
+            fixed inset-0 z-50 lg:static lg:z-auto lg:block
+            ${sidebarOpen ? 'block' : 'hidden'}
+          `}>
+            <div className="absolute inset-0 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
+            <div className="absolute right-0 top-0 bottom-0 w-80 bg-background lg:static lg:w-auto lg:h-full flex flex-col gap-6 p-4 lg:p-0 overflow-y-auto">
+
+              {/* Quick Suggestions */}
+              <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none bg-secondary">
+                <CardHeader className="border-b-4 border-black py-3">
+                  <CardTitle className="text-sm font-black uppercase flex items-center gap-2">
+                    <Zap className="h-4 w-4" />
+                    Quick Actions
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="p-3 space-y-2">
                   {[
-                    "Recommend a mystery novel",
-                    "Best books of 2024",
-                    "Classic literature suggestions",
-                    "Sci-fi recommendations"
-                  ].map((suggestion, index) => (
-                    <Button
-                      key={index}
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start text-left h-auto p-2"
-                      onClick={() => setInputMessage(suggestion)}
+                    "Suggest a mystery thriller",
+                    "Explain magic realism",
+                    "Analyze The Great Gatsby",
+                    "Books like 'Dune'"
+                  ].map((suggestion, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        setInputMessage(suggestion)
+                        setSidebarOpen(false)
+                      }}
+                      className="w-full text-left p-3 text-xs font-bold uppercase border-2 border-black bg-white hover:bg-black hover:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all"
                     >
                       {suggestion}
-                    </Button>
+                    </button>
                   ))}
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-sm">AI Capabilities</CardTitle>
+              {/* Capabilities */}
+              <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none bg-accent">
+                <CardHeader className="border-b-4 border-black py-3">
+                  <CardTitle className="text-sm font-black uppercase flex items-center gap-2">
+                    <Bot className="h-4 w-4" />
+                    Capabilities
+                  </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-2 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <BookOpen className="w-3 h-3" />
-                    <span>Book recommendations</span>
+                <CardContent className="p-3 space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    <BookOpen className="h-5 w-5" />
+                    <span className="text-xs font-bold uppercase">Smart Recommendations</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Star className="w-3 h-3" />
-                    <span>Literary analysis</span>
+                  <div className="flex items-center gap-3 p-3 bg-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    <Star className="h-5 w-5" />
+                    <span className="text-xs font-bold uppercase">Deep Literary Analysis</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Bot className="w-3 h-3" />
-                    <span>Contextual conversations</span>
+                  <div className="flex items-center gap-3 p-3 bg-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                    <MessageSquare className="h-5 w-5" />
+                    <span className="text-xs font-bold uppercase">Context Awareness</span>
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Mobile Close Button */}
+              <Button
+                className="lg:hidden w-full border-2 border-black bg-black text-white rounded-none font-bold uppercase"
+                onClick={() => setSidebarOpen(false)}
+              >
+                Close Menu
+              </Button>
             </div>
           </div>
+
         </div>
       </main>
     </div>

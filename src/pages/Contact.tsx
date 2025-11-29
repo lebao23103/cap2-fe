@@ -24,7 +24,6 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { AnimatedBackground } from "@/components/AnimatedBackground"
 
 // Zod validation schema
 const contactSchema = z.object({
@@ -62,9 +61,9 @@ export default function Contact() {
   })
 
   const fadeInUp = {
-    initial: { opacity: 0, y: 60 },
+    initial: { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6 }
+    transition: { duration: 0.4 }
   }
 
   const stagger = {
@@ -78,23 +77,23 @@ export default function Contact() {
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true)
     setSubmitError('')
-    
+
     try {
       // TODO: Implement contact form API call
       console.log('Form submitted:', data)
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
       // Show success message
       setIsSuccess(true)
-      
+
       // Reset form after showing success
       setTimeout(() => {
         reset()
         setIsSuccess(false)
       }, 3000)
-      
+
     } catch (error) {
       setSubmitError('Failed to send message. Please try again.')
     } finally {
@@ -103,24 +102,23 @@ export default function Contact() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <AnimatedBackground variant="particles" />
+    <div className="min-h-screen bg-background font-mono selection:bg-primary selection:text-black">
 
       {/* Hero Section */}
-      <section className="relative w-full pt-32 pb-20">
-        <div className="container mx-auto max-w-4xl text-center">
+      <section className="relative w-full pt-32 pb-20 border-b-4 border-black bg-white dark:bg-zinc-900">
+        <div className="container mx-auto max-w-4xl text-center px-4">
           <motion.div {...fadeInUp}>
-            <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm">
+            <Badge variant="outline" className="mb-6 px-4 py-2 text-sm font-bold uppercase border-2 border-black rounded-none bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               💬 Get In Touch
             </Badge>
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+            <h1 className="text-5xl md:text-7xl font-black text-black dark:text-white mb-6 uppercase tracking-tighter">
               We'd Love to Hear
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent block">
+              <span className="block text-primary drop-shadow-[4px_4px_0px_rgba(0,0,0,1)]">
                 From You
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-              Have questions about our academic platform? Need help with collaborative features? 
+            <p className="text-xl md:text-2xl font-bold text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+              Have questions about our academic platform? Need help with collaborative features?
               Want to share feedback about your learning experience? We're here to support your educational journey.
             </p>
           </motion.div>
@@ -128,22 +126,22 @@ export default function Contact() {
       </section>
 
       {/* Contact Form & Info Section */}
-      <section className="relative w-full py-20">
-        <div className="container mx-auto">
+      <section className="relative w-full py-20 bg-dots-pattern">
+        <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <motion.div {...fadeInUp} className="h-full">
-              <Card className="h-full flex flex-col">
-                <CardHeader>
-                  <CardTitle className="text-2xl flex items-center">
-                    <MessageSquare className="h-6 w-6 mr-2 text-indigo-600" />
+              <Card className="h-full flex flex-col rounded-none border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white dark:bg-zinc-900">
+                <CardHeader className="border-b-4 border-black bg-gray-50 dark:bg-zinc-800">
+                  <CardTitle className="text-2xl font-black uppercase flex items-center">
+                    <MessageSquare className="h-6 w-6 mr-3 text-black" strokeWidth={2.5} />
                     Send us a Message
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-base font-medium text-black dark:text-gray-300">
                     Fill out the form below and we'll get back to you as soon as possible.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="flex-1 flex flex-col">
+                <CardContent className="flex-1 flex flex-col p-6">
                   {/* Success Message */}
                   <AnimatePresence>
                     {isSuccess && (
@@ -151,11 +149,11 @@ export default function Contact() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="mb-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-3"
+                        className="mb-4 p-4 bg-green-500 text-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center gap-3 font-bold"
                         role="alert"
                       >
-                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
-                        <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                        <CheckCircle2 className="h-6 w-6" strokeWidth={2.5} />
+                        <p>
                           Message sent successfully! We'll get back to you soon.
                         </p>
                       </motion.div>
@@ -167,17 +165,17 @@ export default function Contact() {
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-lg"
+                      className="mb-4 p-4 bg-red-500 text-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-bold"
                       role="alert"
                     >
-                      <p className="text-sm text-destructive font-medium">{submitError}</p>
+                      <p>{submitError}</p>
                     </motion.div>
                   )}
 
                   <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 flex-1 flex flex-col" aria-label="Contact form" noValidate>
-                    <div className="grid md:grid-cols-2 gap-4">
+                    <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="name">Name <span className="text-destructive" aria-label="required">*</span></Label>
+                        <Label htmlFor="name" className="font-bold uppercase text-black dark:text-white">Name <span className="text-red-500">*</span></Label>
                         <Input
                           id="name"
                           {...register('name')}
@@ -187,16 +185,16 @@ export default function Contact() {
                           aria-invalid={!!errors.name}
                           aria-describedby={errors.name ? 'name-error' : undefined}
                           autoComplete="name"
-                          className={errors.name && touchedFields.name ? 'border-destructive' : ''}
+                          className={`rounded-none border-2 border-black focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${errors.name && touchedFields.name ? 'border-red-500 bg-red-50' : ''}`}
                         />
                         {errors.name && touchedFields.name && (
-                          <p id="name-error" className="text-sm text-destructive" role="alert">
+                          <p id="name-error" className="text-sm font-bold text-red-500" role="alert">
                             {errors.name.message}
                           </p>
                         )}
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email <span className="text-destructive" aria-label="required">*</span></Label>
+                        <Label htmlFor="email" className="font-bold uppercase text-black dark:text-white">Email <span className="text-red-500">*</span></Label>
                         <Input
                           id="email"
                           type="email"
@@ -207,17 +205,17 @@ export default function Contact() {
                           aria-invalid={!!errors.email}
                           aria-describedby={errors.email ? 'email-error' : undefined}
                           autoComplete="email"
-                          className={errors.email && touchedFields.email ? 'border-destructive' : ''}
+                          className={`rounded-none border-2 border-black focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${errors.email && touchedFields.email ? 'border-red-500 bg-red-50' : ''}`}
                         />
                         {errors.email && touchedFields.email && (
-                          <p id="email-error" className="text-sm text-destructive" role="alert">
+                          <p id="email-error" className="text-sm font-bold text-red-500" role="alert">
                             {errors.email.message}
                           </p>
                         )}
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="subject">Subject <span className="text-destructive" aria-label="required">*</span></Label>
+                      <Label htmlFor="subject" className="font-bold uppercase text-black dark:text-white">Subject <span className="text-red-500">*</span></Label>
                       <Input
                         id="subject"
                         {...register('subject')}
@@ -226,43 +224,43 @@ export default function Contact() {
                         aria-required="true"
                         aria-invalid={!!errors.subject}
                         aria-describedby={errors.subject ? 'subject-error' : undefined}
-                        className={errors.subject && touchedFields.subject ? 'border-destructive' : ''}
+                        className={`rounded-none border-2 border-black focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${errors.subject && touchedFields.subject ? 'border-red-500 bg-red-50' : ''}`}
                       />
                       {errors.subject && touchedFields.subject && (
-                        <p id="subject-error" className="text-sm text-destructive" role="alert">
+                        <p id="subject-error" className="text-sm font-bold text-red-500" role="alert">
                           {errors.subject.message}
                         </p>
                       )}
                     </div>
                     <div className="space-y-2 flex-1 flex flex-col">
-                      <Label htmlFor="message">Message <span className="text-destructive" aria-label="required">*</span></Label>
+                      <Label htmlFor="message" className="font-bold uppercase text-black dark:text-white">Message <span className="text-red-500">*</span></Label>
                       <Textarea
                         id="message"
                         {...register('message')}
                         placeholder="Tell us more about your question, feedback, or how we can help..."
-                        className={`flex-1 min-h-[120px] resize-none ${errors.message && touchedFields.message ? 'border-destructive' : ''}`}
+                        className={`flex-1 min-h-[120px] resize-none rounded-none border-2 border-black focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${errors.message && touchedFields.message ? 'border-red-500 bg-red-50' : ''}`}
                         disabled={isSubmitting || isSuccess}
                         aria-required="true"
                         aria-invalid={!!errors.message}
                         aria-describedby={errors.message ? 'message-error' : undefined}
                       />
                       {errors.message && touchedFields.message && (
-                        <p id="message-error" className="text-sm text-destructive" role="alert">
+                        <p id="message-error" className="text-sm font-bold text-red-500" role="alert">
                           {errors.message.message}
                         </p>
                       )}
                     </div>
-                    <Button 
-                      type="submit" 
-                      className="w-full mt-auto" 
-                      size="lg" 
+                    <Button
+                      type="submit"
+                      className="w-full mt-auto h-14 text-lg font-black uppercase bg-black text-white border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:bg-black transition-all disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                      size="lg"
                       disabled={isSubmitting || isSuccess}
                       aria-label={isSubmitting ? 'Sending message' : 'Send message'}
                     >
                       {isSubmitting ? (
                         <>
                           <motion.div
-                            className="h-4 w-4 mr-2 border-2 border-white border-t-transparent rounded-full"
+                            className="h-5 w-5 mr-3 border-4 border-white border-t-transparent rounded-full"
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                             aria-hidden="true"
@@ -271,12 +269,12 @@ export default function Contact() {
                         </>
                       ) : isSuccess ? (
                         <>
-                          <CheckCircle2 className="h-4 w-4 mr-2" aria-hidden="true" />
+                          <CheckCircle2 className="h-5 w-5 mr-3" aria-hidden="true" />
                           Sent!
                         </>
                       ) : (
                         <>
-                          <Send className="h-4 w-4 mr-2" aria-hidden="true" />
+                          <Send className="h-5 w-5 mr-3" aria-hidden="true" />
                           Send Message
                         </>
                       )}
@@ -288,14 +286,14 @@ export default function Contact() {
 
             {/* Contact Information */}
             <motion.div {...fadeInUp} className="space-y-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl text-center">Get in Touch</CardTitle>
-                  <CardDescription className="text-center">
+              <Card className="rounded-none border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white dark:bg-zinc-900">
+                <CardHeader className="border-b-4 border-black bg-gray-50 dark:bg-zinc-800">
+                  <CardTitle className="text-2xl font-black uppercase text-center">Get in Touch</CardTitle>
+                  <CardDescription className="text-center text-base font-medium text-black dark:text-gray-300">
                     Prefer to reach out directly? Here are all the ways you can contact us.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-6 p-6">
                   <div className="space-y-6">
                     {[
                       {
@@ -303,38 +301,34 @@ export default function Contact() {
                         title: "Email Us",
                         description: "Drop us an email anytime",
                         contact: "support@knowly.com",
-                        color: "text-blue-600"
                       },
                       {
                         icon: Phone,
                         title: "Call Us",
                         description: "Speak with our team",
                         contact: "+1 (555) 123-4567",
-                        color: "text-green-600"
                       },
                       {
                         icon: MapPin,
                         title: "Visit Us",
                         description: "Come say hello",
                         contact: "123 Knowledge Street, Learning City, LC 12345",
-                        color: "text-red-600"
                       },
                       {
                         icon: Clock,
                         title: "Business Hours",
                         description: "When we're available",
                         contact: "Mon-Fri: 9AM-6PM EST",
-                        color: "text-purple-600"
                       }
                     ].map((item, index) => (
                       <div key={index} className="flex flex-col items-center text-center space-y-2">
-                        <div className={`p-3 rounded-full bg-gray-100 dark:bg-gray-800 ${item.color}`}>
-                          <item.icon className="h-6 w-6" />
+                        <div className="p-3 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                          <item.icon className="h-6 w-6 text-black" strokeWidth={2.5} />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-900 dark:text-white">{item.title}</h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">{item.description}</p>
-                          <p className="text-gray-900 dark:text-white font-medium">{item.contact}</p>
+                          <h3 className="font-black uppercase text-black dark:text-white">{item.title}</h3>
+                          <p className="text-sm font-bold text-gray-500 mb-1">{item.description}</p>
+                          <p className="text-black dark:text-white font-bold font-mono">{item.contact}</p>
                         </div>
                       </div>
                     ))}
@@ -343,24 +337,24 @@ export default function Contact() {
               </Card>
 
               {/* Social Links */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-xl">Follow Us</CardTitle>
-                  <CardDescription>
+              <Card className="rounded-none border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white dark:bg-zinc-900">
+                <CardHeader className="border-b-4 border-black bg-gray-50 dark:bg-zinc-800">
+                  <CardTitle className="text-xl font-black uppercase">Follow Us</CardTitle>
+                  <CardDescription className="text-base font-medium text-black dark:text-gray-300">
                     Stay connected with Knowly on social media.
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <div className="flex flex-col sm:flex-row gap-4">
                     {[
-                      { icon: Instagram, label: "Instagram", color: "hover:text-pink-500", link: "https://instagram.com/knowly" },
-                      { icon: Facebook, label: "Facebook", color: "hover:text-blue-600", link: "https://facebook.com/knowly" },
-                      { icon: Twitter, label: "Twitter", color: "hover:text-blue-500", link: "https://twitter.com/knowly" }
+                      { icon: Instagram, label: "Instagram", link: "https://instagram.com/knowly" },
+                      { icon: Facebook, label: "Facebook", link: "https://facebook.com/knowly" },
+                      { icon: Twitter, label: "Twitter", link: "https://twitter.com/knowly" }
                     ].map((social, index) => (
-              <Button key={index} variant="outline" size="lg" className={`flex-1 ${social.color}`} asChild>
-                        <a 
-                          href={social.link} 
-                          target="_blank" 
+                      <Button key={index} variant="outline" size="lg" className="flex-1 rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:bg-white transition-all font-bold uppercase" asChild>
+                        <a
+                          href={social.link}
+                          target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`Follow us on ${social.label} (opens in new tab)`}
                         >
@@ -378,16 +372,16 @@ export default function Contact() {
       </section>
 
       {/* FAQ Preview Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800/50">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-zinc-800 border-t-4 border-black">
         <div className="max-w-4xl mx-auto text-center">
           <motion.div {...fadeInUp}>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-4xl md:text-5xl font-black text-black dark:text-white mb-6 uppercase">
               Common Questions
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+            <p className="text-xl font-bold text-gray-600 dark:text-gray-300 mb-8">
               Can't find what you're looking for? Check out our FAQ page for quick answers.
             </p>
-            <Button variant="outline" size="lg" asChild>
+            <Button variant="outline" size="lg" className="h-14 px-8 text-lg font-black uppercase bg-white text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:bg-white transition-all" asChild>
               <Link to="/faq">
                 <MessageSquare className="h-5 w-5 mr-2" />
                 View FAQ
@@ -398,13 +392,13 @@ export default function Contact() {
       </section>
 
       {/* Office Hours & Response Times */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-zinc-900 border-t-4 border-black">
         <div className="max-w-7xl mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-4xl md:text-5xl font-black text-black dark:text-white mb-6 uppercase">
               Response Times
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
+            <p className="text-xl font-bold text-gray-600 dark:text-gray-300">
               We pride ourselves on quick responses to all inquiries.
             </p>
           </motion.div>
@@ -431,16 +425,16 @@ export default function Contact() {
               }
             ].map((item, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full text-center hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+                <Card className="h-full text-center rounded-none border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all bg-white dark:bg-zinc-900">
                   <CardHeader>
-                    <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-full w-16 h-16 flex items-center justify-center">
-                      <item.icon className="h-8 w-8 text-indigo-600" />
+                    <div className="mx-auto mb-4 p-3 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-16 h-16 flex items-center justify-center">
+                      <item.icon className="h-8 w-8 text-black" strokeWidth={2.5} />
                     </div>
-                    <CardTitle className="text-xl">{item.title}</CardTitle>
-                    <Badge variant="secondary" className="mx-auto w-fit">{item.time}</Badge>
+                    <CardTitle className="text-xl font-black uppercase">{item.title}</CardTitle>
+                    <Badge variant="secondary" className="mx-auto w-fit rounded-none border-2 border-black bg-gray-100 text-black font-bold">{item.time}</Badge>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-base">
+                    <CardDescription className="text-base font-medium text-black dark:text-gray-300">
                       {item.description}
                     </CardDescription>
                   </CardContent>
