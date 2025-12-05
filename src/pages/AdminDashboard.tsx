@@ -3,284 +3,345 @@ import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
-import { Progress } from '../components/ui/progress'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '../components/ui/dialog'
+import { useToast } from '../components/ui/use-toast'
 import {
   Users,
   BookOpen,
   Star,
-  UserCheck,
-  UserX,
+  CheckCircle,
+  XCircle,
   Edit,
   Trash2,
   Eye,
   BarChart3,
-  PieChart,
-  Activity
+  Activity,
+  FileText,
+  UserPlus,
+  Loader2,
+  RefreshCw,
+  Shield,
+  TrendingUp
 } from 'lucide-react'
+import { motion } from 'framer-motion'
+import adminService, {
+  type ReportStatistics,
+  type RatingStatistics,
+  type AdminUser,
+  type AdminBook,
+  type PendingUserBook
+} from '../lib/api/admin'
 
-interface User {
-  id: string
-  name: string
-  email: string
-  role: 'admin' | 'user'
-  joinDate: string
-  lastActive: string
-  booksRead: number
-  reviewsCount: number
-}
-
-interface Book {
-  id: string
-  title: string
-  author: string
-  status: 'approved' | 'pending' | 'rejected'
-  submittedBy: string
-  submitDate: string
-  genre: string
-  rating: number
+const fadeInUp = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.4 }
 }
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({
-    totalUsers: 0,
-    totalBooks: 0,
-    totalReviews: 0,
-    pendingApprovals: 0
-  })
-  const [users, setUsers] = useState<User[]>([])
-  const [books, setBooks] = useState<Book[]>([])
+  const { toast } = useToast()
+
+  // State
+  const [isLoading, setIsLoading] = useState(true)
+  const [stats, setStats] = useState<ReportStatistics | null>(null)
+  const [ratingStats, setRatingStats] = useState<RatingStatistics | null>(null)
+  const [users, setUsers] = useState<AdminUser[]>([])
+  const [books, setBooks] = useState<AdminBook[]>([])
+  const [pendingBooks, setPendingBooks] = useState<PendingUserBook[]>([])
   const [activeTab, setActiveTab] = useState('overview')
 
+  // Dialog state
+  const [isCreateUserOpen, setIsCreateUserOpen] = useState(false)
+  const [isEditUserOpen, setIsEditUserOpen] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
+  const [newUserForm, setNewUserForm] = useState({ username: '', email: '', password: '' })
+  const [editUserForm, setEditUserForm] = useState({ username: '', email: '', password: '' })
+
+  // Action loading states
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
+
   useEffect(() => {
-    // TODO: Fetch admin dashboard data from API
-    const mockStats = {
-      totalUsers: 1247,
-      totalBooks: 89,
-      totalReviews: 3421,
-      pendingApprovals: 12
-    }
-
-    const mockUsers: User[] = [
-      {
-        id: '1',
-        name: 'John Doe',
-        email: 'john@example.com',
-        role: 'user',
-        joinDate: '2024-01-15',
-        lastActive: '2024-01-20',
-        booksRead: 15,
-        reviewsCount: 8
-      },
-      {
-        id: '2',
-        name: 'Jane Smith',
-        email: 'jane@example.com',
-        role: 'admin',
-        joinDate: '2024-01-10',
-        lastActive: '2024-01-20',
-        booksRead: 23,
-        reviewsCount: 15
-      },
-      {
-        id: '3',
-        name: 'Bob Johnson',
-        email: 'bob@example.com',
-        role: 'user',
-        joinDate: '2024-01-05',
-        lastActive: '2024-01-18',
-        booksRead: 7,
-        reviewsCount: 3
-      }
-    ]
-
-    const mockBooks: Book[] = [
-      {
-        id: '1',
-        title: 'My Amazing Story',
-        author: 'John Doe',
-        status: 'pending',
-        submittedBy: 'john@example.com',
-        submitDate: '2024-01-20',
-        genre: 'Fiction',
-        rating: 0
-      },
-      {
-        id: '2',
-        title: 'Science Adventures',
-        author: 'Jane Smith',
-        status: 'approved',
-        submittedBy: 'jane@example.com',
-        submitDate: '2024-01-19',
-        genre: 'Science Fiction',
-        rating: 4.2
-      },
-      {
-        id: '3',
-        title: 'Mystery Tales',
-        author: 'Bob Johnson',
-        status: 'rejected',
-        submittedBy: 'bob@example.com',
-        submitDate: '2024-01-18',
-        genre: 'Mystery',
-        rating: 0
-      }
-    ]
-
-    setStats(mockStats)
-    setUsers(mockUsers)
-    setBooks(mockBooks)
+    loadDashboardData()
   }, [])
 
-  // TODO: Implement when backend is ready
-  // const handleUserAction = (userId: string, action: 'approve' | 'reject' | 'delete') => {
-  //   // TODO: API call to perform user action
-  //   console.log(`${action} user ${userId}`)
-  // }
+  const loadDashboardData = async () => {
+    try {
+      setIsLoading(true)
 
-  const handleBookAction = (bookId: string, action: 'approve' | 'reject' | 'delete') => {
-    // TODO: API call to perform book action
-    console.log(`${action} book ${bookId}`)
-  }
+      const [statsData, ratingData, usersData, booksData, pendingData] = await Promise.all([
+        adminService.getReportStatistics().catch(() => null),
+        adminService.getRatingStatistics().catch(() => null),
+        adminService.listUsers().catch(() => []),
+        adminService.listBooks().catch(() => []),
+        adminService.listPendingUserBooks().catch(() => [])
+      ])
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'approved': return 'bg-green-500'
-      case 'pending': return 'bg-yellow-500'
-      case 'rejected': return 'bg-red-500'
-      default: return 'bg-gray-500'
+      setStats(statsData)
+      setRatingStats(ratingData)
+      setUsers(usersData)
+      setBooks(booksData)
+      setPendingBooks(pendingData)
+    } catch (error) {
+      console.error('Error loading admin data:', error)
+      toast({
+        title: 'Error',
+        description: 'Failed to load admin dashboard data',
+        variant: 'destructive'
+      })
+    } finally {
+      setIsLoading(false)
     }
   }
 
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'approved': return 'Approved'
-      case 'pending': return 'Pending'
-      case 'rejected': return 'Rejected'
-      default: return status
+  // User actions
+  const handleCreateUser = async () => {
+    try {
+      setActionLoading('createUser')
+      await adminService.createUser(newUserForm)
+      toast({ title: 'Success', description: 'User created successfully!' })
+      setIsCreateUserOpen(false)
+      setNewUserForm({ username: '', email: '', password: '' })
+      loadDashboardData()
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to create user', variant: 'destructive' })
+    } finally {
+      setActionLoading(null)
     }
+  }
+
+  const handleUpdateUser = async () => {
+    if (!selectedUser) return
+    try {
+      setActionLoading('updateUser')
+      await adminService.updateUser(selectedUser.id, editUserForm)
+      toast({ title: 'Success', description: 'User updated successfully!' })
+      setIsEditUserOpen(false)
+      setSelectedUser(null)
+      loadDashboardData()
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to update user', variant: 'destructive' })
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const handleDeleteUser = async (userId: number) => {
+    if (!confirm('Are you sure you want to delete this user?')) return
+    try {
+      setActionLoading(`deleteUser-${userId}`)
+      await adminService.deleteUser(userId)
+      toast({ title: 'Success', description: 'User deleted successfully!' })
+      loadDashboardData()
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete user', variant: 'destructive' })
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  // Book actions
+  const handleDeleteBook = async (bookId: number) => {
+    if (!confirm('Are you sure you want to delete this book?')) return
+    try {
+      setActionLoading(`deleteBook-${bookId}`)
+      await adminService.deleteBook(bookId)
+      toast({ title: 'Success', description: 'Book deleted successfully!' })
+      loadDashboardData()
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to delete book', variant: 'destructive' })
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  // UserBook moderation
+  const handleApproveBook = async (userBookId: number) => {
+    try {
+      setActionLoading(`approveBook-${userBookId}`)
+      await adminService.approveUserBook(userBookId)
+      toast({ title: 'Success', description: 'Book approved and published!' })
+      loadDashboardData()
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to approve book', variant: 'destructive' })
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const handleRejectBook = async (bookId: number) => {
+    if (!confirm('Are you sure you want to reject and delete this book?')) return
+    try {
+      setActionLoading(`rejectBook-${bookId}`)
+      await adminService.rejectUserBook(bookId)
+      toast({ title: 'Success', description: 'Book rejected and deleted!' })
+      loadDashboardData()
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to reject book', variant: 'destructive' })
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const openEditUser = (user: AdminUser) => {
+    setSelectedUser(user)
+    setEditUserForm({ username: user.username, email: user.email, password: '' })
+    setIsEditUserOpen(true)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto py-8">
-        {/* Page Title */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3">
-            <Activity className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+    <div className="min-h-screen bg-background relative overflow-hidden font-mono">
+      {/* Background Grid */}
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+
+      <main className="container mx-auto py-8 sm:py-12 relative z-10 px-4">
+        {/* Header */}
+        <motion.div {...fadeInUp} className="mb-8">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <Shield className="h-8 w-8 text-black" />
+              </div>
+              <div>
+                <h1 className="text-3xl sm:text-4xl font-black uppercase">Admin Panel</h1>
+                <p className="text-gray-600 font-bold">Manage users, books, and content</p>
+              </div>
+            </div>
+            <Button
+              onClick={loadDashboardData}
+              className="bg-white text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-primary transition-all font-bold uppercase"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Refresh
+            </Button>
           </div>
-          <p className="text-muted-foreground mt-2">Manage users, content, and platform settings</p>
-        </div>
-        {/* Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Users</p>
-                  <p className="text-2xl font-bold">{stats.totalUsers.toLocaleString()}</p>
-                </div>
-                <Users className="h-8 w-8 text-blue-500" />
-              </div>
-              <div className="mt-4">
-                <Progress value={75} className="h-2" />
-                <p className="text-xs text-muted-foreground mt-1">+12% from last month</p>
-              </div>
-            </CardContent>
-          </Card>
+        </motion.div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Books</p>
-                  <p className="text-2xl font-bold">{stats.totalBooks}</p>
+        {/* Stats Cards */}
+        <motion.div {...fadeInUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+          {[
+            { label: 'Total Users', value: stats?.total_users || 0, icon: Users, bg: 'bg-blue-400' },
+            { label: 'Total Books', value: stats?.total_books || 0, icon: BookOpen, bg: 'bg-green-400' },
+            { label: 'Total Reviews', value: stats?.total_reviews || 0, icon: Star, bg: 'bg-yellow-400' },
+            { label: 'Pending Approvals', value: pendingBooks.length, icon: FileText, bg: 'bg-red-400' }
+          ].map((stat, index) => (
+            <Card key={index} className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all">
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className={`p-4 border-4 border-black ${stat.bg} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
+                  <stat.icon className="h-6 w-6 text-black" />
                 </div>
-                <BookOpen className="h-8 w-8 text-green-500" />
-              </div>
-              <div className="mt-4">
-                <Progress value={60} className="h-2" />
-                <p className="text-xs text-muted-foreground mt-1">+5 new this week</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Reviews</p>
-                  <p className="text-2xl font-bold">{stats.totalReviews.toLocaleString()}</p>
+                  <div className="text-3xl font-black text-black">{stat.value}</div>
+                  <p className="text-sm text-gray-600 font-bold uppercase">{stat.label}</p>
                 </div>
-                <Star className="h-8 w-8 text-yellow-500" />
-              </div>
-              <div className="mt-4">
-                <Progress value={85} className="h-2" />
-                <p className="text-xs text-muted-foreground mt-1">+8% from last week</p>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          ))}
+        </motion.div>
 
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Pending Approvals</p>
-                  <p className="text-2xl font-bold text-orange-600">{stats.pendingApprovals}</p>
-                </div>
-                <Activity className="h-8 w-8 text-orange-500" />
-              </div>
-              <div className="mt-4">
-                <Progress value={30} className="h-2" />
-                <p className="text-xs text-muted-foreground mt-1">Requires attention</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Main Content Tabs */}
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="books">Books</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
+        {/* Main Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4 h-auto p-0 bg-transparent gap-2">
+            {[
+              { value: 'overview', label: 'Overview', icon: BarChart3 },
+              { value: 'users', label: 'Users', icon: Users },
+              { value: 'books', label: 'Books', icon: BookOpen },
+              { value: 'pending', label: 'Pending', icon: FileText }
+            ].map((tab) => (
+              <TabsTrigger
+                key={tab.value}
+                value={tab.value}
+                className="flex items-center gap-2 py-3 px-4 border-4 border-black bg-white data-[state=active]:bg-primary data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-bold uppercase transition-all"
+              >
+                <tab.icon className="h-4 w-4" />
+                <span className="hidden sm:inline">{tab.label}</span>
+              </TabsTrigger>
+            ))}
           </TabsList>
 
-          <TabsContent value="overview" className="mt-6">
+          {/* Overview Tab */}
+          <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Charts placeholder */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <PieChart className="h-5 w-5" />
-                    User Roles Distribution
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-64 flex items-center justify-center text-muted-foreground">
-                    <div className="text-center">
-                      <PieChart className="h-12 w-12 mx-auto mb-2" />
-                      <p>Pie chart would go here</p>
-                      <p className="text-sm">Showing user role distribution</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="h-5 w-5" />
+              {/* Rating Distribution */}
+              <Card className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                <CardHeader className="border-b-4 border-black bg-yellow-100">
+                  <CardTitle className="flex items-center gap-2 font-black uppercase">
+                    <Star className="h-5 w-5" />
                     Rating Distribution
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="h-64 flex items-center justify-center text-muted-foreground">
-                    <div className="text-center">
-                      <BarChart3 className="h-12 w-12 mx-auto mb-2" />
-                      <p>Bar chart would go here</p>
-                      <p className="text-sm">Showing book rating distribution</p>
+                <CardContent className="p-6">
+                  {ratingStats?.rates ? (
+                    <div className="space-y-3">
+                      {[5, 4, 3, 2, 1].map((rating) => (
+                        <div key={rating} className="flex items-center gap-3">
+                          <span className="font-bold w-4">{rating}</span>
+                          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                          <div className="flex-1 h-6 bg-gray-100 border-2 border-black">
+                            <div
+                              className="h-full bg-yellow-400"
+                              style={{ width: `${((ratingStats.rates[rating] || 0) / Math.max(...Object.values(ratingStats.rates), 1)) * 100}%` }}
+                            />
+                          </div>
+                          <span className="font-mono text-sm w-8">{ratingStats.rates[rating] || 0}</span>
+                        </div>
+                      ))}
+                      <div className="pt-4 border-t-2 border-black">
+                        <p className="font-bold">Average Rating: <span className="text-xl">{ratingStats.average_rating?.toFixed(1) || '0.0'}</span></p>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-center py-8">No rating data available</p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Most Read Book */}
+              <Card className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
+                <CardHeader className="border-b-4 border-black bg-green-100">
+                  <CardTitle className="flex items-center gap-2 font-black uppercase">
+                    <TrendingUp className="h-5 w-5" />
+                    Top Stats
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-6 space-y-6">
+                  {stats?.most_read_book ? (
+                    <div className="p-4 border-2 border-black bg-green-50">
+                      <p className="text-sm text-gray-600 font-bold uppercase mb-2">Most Read Book</p>
+                      <h3 className="font-black text-lg">{stats.most_read_book.title}</h3>
+                      <p className="text-gray-600">by {stats.most_read_book.author}</p>
+                      <div className="mt-2 flex items-center gap-2">
+                        <Eye className="h-4 w-4" />
+                        <span className="font-bold">{stats.most_read_book.read_count} reads</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-gray-500">No reading data yet</p>
+                  )}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-4 border-2 border-black bg-blue-50">
+                      <p className="text-sm text-gray-600 font-bold uppercase">Total Reads</p>
+                      <p className="text-2xl font-black">{stats?.total_reads || 0}</p>
+                    </div>
+                    <div className="p-4 border-2 border-black bg-purple-50">
+                      <p className="text-sm text-gray-600 font-bold uppercase">Avg Rating</p>
+                      <p className="text-2xl font-black">{stats?.average_rating?.toFixed(1) || '0.0'}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -288,185 +349,324 @@ export default function AdminDashboard() {
             </div>
           </TabsContent>
 
-          <TabsContent value="users" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>Manage user accounts and permissions</CardDescription>
+          {/* Users Tab */}
+          <TabsContent value="users" className="space-y-6">
+            <Card className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
+              <CardHeader className="border-b-4 border-black bg-blue-100 flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="font-black uppercase">User Management</CardTitle>
+                  <CardDescription className="font-mono">Manage all registered users</CardDescription>
+                </div>
+                <Button
+                  onClick={() => setIsCreateUserOpen(true)}
+                  className="bg-primary text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all font-bold uppercase"
+                >
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  Add User
+                </Button>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 <div className="space-y-4">
-                  {users.map((user) => (
-                    <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-                          <Users className="w-5 h-5 text-primary" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">{user.name}</h3>
-                          <p className="text-sm text-muted-foreground">{user.email}</p>
-                          <div className="flex items-center gap-4 mt-1">
-                            <span className="text-xs text-muted-foreground">
-                              Joined: {new Date(user.joinDate).toLocaleDateString()}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              Books: {user.booksRead}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              Reviews: {user.reviewsCount}
-                            </span>
+                  {users.length === 0 ? (
+                    <p className="text-center text-gray-500 py-8">No users found</p>
+                  ) : (
+                    users.map((user) => (
+                      <div key={user.id} className="flex items-center justify-between p-4 border-4 border-black bg-white hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-blue-200 border-2 border-black flex items-center justify-center font-black text-xl">
+                            {user.username[0]?.toUpperCase()}
+                          </div>
+                          <div>
+                            <h3 className="font-bold">{user.username}</h3>
+                            <p className="text-sm text-gray-600 font-mono">{user.email}</p>
                           </div>
                         </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
-                          {user.role}
-                        </Badge>
-                        <Button variant="outline" size="sm">
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <Button variant="outline" size="sm">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="books" className="mt-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Book Management</CardTitle>
-                <CardDescription>Review and approve user-submitted books</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {books.map((book) => (
-                    <div key={book.id} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-16 bg-muted rounded flex items-center justify-center">
-                          <BookOpen className="w-6 h-6 text-muted-foreground" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold">{book.title}</h3>
-                          <p className="text-sm text-muted-foreground">by {book.author}</p>
-                          <div className="flex items-center gap-4 mt-1">
-                            <span className="text-xs text-muted-foreground">
-                              Submitted: {new Date(book.submitDate).toLocaleDateString()}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              Genre: {book.genre}
-                            </span>
-                            {book.rating > 0 && (
-                              <div className="flex items-center gap-1">
-                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                                <span className="text-xs text-muted-foreground">{book.rating}</span>
-                              </div>
+                        <div className="flex items-center gap-2">
+                          <Badge className={`${user.is_staff ? 'bg-primary' : 'bg-gray-200'} text-black border-2 border-black rounded-none font-bold uppercase`}>
+                            {user.is_staff ? 'Admin' : 'User'}
+                          </Badge>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditUser(user)}
+                            className="border-2 border-black rounded-none"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteUser(user.id)}
+                            disabled={actionLoading === `deleteUser-${user.id}`}
+                            className="border-2 border-black rounded-none hover:bg-red-100"
+                          >
+                            {actionLoading === `deleteUser-${user.id}` ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
                             )}
-                          </div>
+                          </Button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={`${getStatusColor(book.status)} text-white`}>
-                          {getStatusText(book.status)}
-                        </Badge>
-                        <Button variant="outline" size="sm">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                        {book.status === 'pending' && (
-                          <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleBookAction(book.id, 'approve')}
-                            >
-                              <UserCheck className="w-4 h-4 text-green-500" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleBookAction(book.id, 'reject')}
-                            >
-                              <UserX className="w-4 h-4 text-red-500" />
-                            </Button>
-                          </>
-                        )}
-                        <Button variant="outline" size="sm">
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="reports" className="mt-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Activity</CardTitle>
-                  <CardDescription>Latest system activities</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {[
-                      { action: 'New user registered', time: '2 minutes ago', type: 'user' },
-                      { action: 'Book approved', time: '5 minutes ago', type: 'book' },
-                      { action: 'New review posted', time: '10 minutes ago', type: 'review' },
-                      { action: 'User updated profile', time: '15 minutes ago', type: 'user' }
-                    ].map((activity, index) => (
-                      <div key={index} className="flex items-center gap-3">
-                        <div className="w-2 h-2 bg-primary rounded-full"></div>
-                        <div className="flex-1">
-                          <p className="text-sm">{activity.action}</p>
-                          <p className="text-xs text-muted-foreground">{activity.time}</p>
+          {/* Books Tab */}
+          <TabsContent value="books" className="space-y-6">
+            <Card className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
+              <CardHeader className="border-b-4 border-black bg-green-100">
+                <CardTitle className="font-black uppercase">Book Management</CardTitle>
+                <CardDescription className="font-mono">Manage all published books</CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {books.length === 0 ? (
+                    <p className="text-center text-gray-500 py-8">No books found</p>
+                  ) : (
+                    books.map((book) => (
+                      <div key={book.id} className="flex items-center justify-between p-4 border-4 border-black bg-white hover:bg-gray-50 transition-colors">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-16 bg-green-200 border-2 border-black flex items-center justify-center">
+                            <BookOpen className="h-6 w-6" />
+                          </div>
+                          <div>
+                            <h3 className="font-bold">{book.title}</h3>
+                            <p className="text-sm text-gray-600">by {book.author}</p>
+                            <p className="text-xs text-gray-500 font-mono">{book.pages || 'N/A'} pages</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {book.pdf_url && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => window.open(book.pdf_url!, '_blank')}
+                              className="border-2 border-black rounded-none"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          )}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteBook(book.id)}
+                            disabled={actionLoading === `deleteBook-${book.id}`}
+                            className="border-2 border-black rounded-none hover:bg-red-100"
+                          >
+                            {actionLoading === `deleteBook-${book.id}` ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-4 w-4" />
+                            )}
+                          </Button>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>System Health</CardTitle>
-                  <CardDescription>Current system status</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>Server Load</span>
-                        <span>45%</span>
-                      </div>
-                      <Progress value={45} className="h-2" />
+          {/* Pending Approvals Tab */}
+          <TabsContent value="pending" className="space-y-6">
+            <Card className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
+              <CardHeader className="border-b-4 border-black bg-red-100">
+                <CardTitle className="font-black uppercase flex items-center gap-2">
+                  <Activity className="h-5 w-5" />
+                  Pending Book Approvals ({pendingBooks.length})
+                </CardTitle>
+                <CardDescription className="font-mono">Review and approve user-submitted books</CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {pendingBooks.length === 0 ? (
+                    <div className="text-center py-12">
+                      <CheckCircle className="h-16 w-16 mx-auto text-green-500 mb-4" />
+                      <p className="text-gray-600 font-bold">No pending approvals!</p>
+                      <p className="text-sm text-gray-500">All submissions have been reviewed.</p>
                     </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>Database Usage</span>
-                        <span>67%</span>
+                  ) : (
+                    pendingBooks.map((book) => (
+                      <div key={book.id} className="p-4 border-4 border-black bg-white">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex gap-4">
+                            <div className="w-16 h-20 bg-gray-200 border-2 border-black flex items-center justify-center shrink-0">
+                              {book.cover_image ? (
+                                <img src={book.cover_image} alt={book.title} className="w-full h-full object-cover" />
+                              ) : (
+                                <BookOpen className="h-8 w-8 text-gray-400" />
+                              )}
+                            </div>
+                            <div className="flex-1">
+                              <h3 className="font-bold text-lg">{book.title}</h3>
+                              <p className="text-gray-600">by {book.author}</p>
+                              <p className="text-sm text-gray-500 mt-1 line-clamp-2">{book.description}</p>
+                              <div className="mt-2 text-xs text-gray-500 font-mono">
+                                Submitted by: {book.user?.email || 'Unknown'}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex flex-col gap-2 shrink-0">
+                            <Button
+                              onClick={() => handleApproveBook(book.id)}
+                              disabled={actionLoading === `approveBook-${book.id}`}
+                              className="bg-green-400 text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-green-500 transition-all font-bold uppercase"
+                            >
+                              {actionLoading === `approveBook-${book.id}` ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <CheckCircle className="h-4 w-4 mr-2" />
+                                  Approve
+                                </>
+                              )}
+                            </Button>
+                            <Button
+                              variant="outline"
+                              onClick={() => handleRejectBook(book.id)}
+                              disabled={actionLoading === `rejectBook-${book.id}`}
+                              className="border-4 border-black rounded-none hover:bg-red-100 font-bold uppercase"
+                            >
+                              {actionLoading === `rejectBook-${book.id}` ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <>
+                                  <XCircle className="h-4 w-4 mr-2" />
+                                  Reject
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                      <Progress value={67} className="h-2" />
-                    </div>
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>Storage Used</span>
-                        <span>23%</span>
-                      </div>
-                      <Progress value={23} className="h-2" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+                    ))
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Create User Dialog */}
+      <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
+        <DialogContent className="border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
+          <DialogHeader className="border-b-4 border-black pb-4">
+            <DialogTitle className="font-black uppercase flex items-center gap-2">
+              <UserPlus className="h-5 w-5" />
+              Create New User
+            </DialogTitle>
+            <DialogDescription className="font-mono">Add a new user to the system</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="username" className="font-bold uppercase">Username</Label>
+              <Input
+                id="username"
+                value={newUserForm.username}
+                onChange={(e) => setNewUserForm(prev => ({ ...prev, username: e.target.value }))}
+                className="border-2 border-black rounded-none h-12"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="email" className="font-bold uppercase">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={newUserForm.email}
+                onChange={(e) => setNewUserForm(prev => ({ ...prev, email: e.target.value }))}
+                className="border-2 border-black rounded-none h-12"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="password" className="font-bold uppercase">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={newUserForm.password}
+                onChange={(e) => setNewUserForm(prev => ({ ...prev, password: e.target.value }))}
+                className="border-2 border-black rounded-none h-12"
+              />
+            </div>
+          </div>
+          <DialogFooter className="border-t-4 border-black pt-4">
+            <Button
+              onClick={handleCreateUser}
+              disabled={actionLoading === 'createUser'}
+              className="w-full bg-primary text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-bold uppercase h-12"
+            >
+              {actionLoading === 'createUser' ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                'Create User'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit User Dialog */}
+      <Dialog open={isEditUserOpen} onOpenChange={setIsEditUserOpen}>
+        <DialogContent className="border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
+          <DialogHeader className="border-b-4 border-black pb-4">
+            <DialogTitle className="font-black uppercase flex items-center gap-2">
+              <Edit className="h-5 w-5" />
+              Edit User
+            </DialogTitle>
+            <DialogDescription className="font-mono">Update user information</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="edit-username" className="font-bold uppercase">Username</Label>
+              <Input
+                id="edit-username"
+                value={editUserForm.username}
+                onChange={(e) => setEditUserForm(prev => ({ ...prev, username: e.target.value }))}
+                className="border-2 border-black rounded-none h-12"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-email" className="font-bold uppercase">Email</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                value={editUserForm.email}
+                onChange={(e) => setEditUserForm(prev => ({ ...prev, email: e.target.value }))}
+                className="border-2 border-black rounded-none h-12"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-password" className="font-bold uppercase">New Password (leave empty to keep)</Label>
+              <Input
+                id="edit-password"
+                type="password"
+                value={editUserForm.password}
+                onChange={(e) => setEditUserForm(prev => ({ ...prev, password: e.target.value }))}
+                className="border-2 border-black rounded-none h-12"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+          <DialogFooter className="border-t-4 border-black pt-4">
+            <Button
+              onClick={handleUpdateUser}
+              disabled={actionLoading === 'updateUser'}
+              className="w-full bg-primary text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-bold uppercase h-12"
+            >
+              {actionLoading === 'updateUser' ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -22,6 +22,7 @@ export interface AuthResponse {
     first_name: string;
     last_name: string;
     is_staff?: boolean;
+    is_superuser?: boolean;
   };
 }
 
@@ -49,37 +50,42 @@ class AuthService {
       password: credentials.password,
       username: credentials.email.split('@')[0] // Use email prefix as username fallback
     };
-    
+
     const response = await apiClient.post('/api/login/', loginData);
     const data = response.data;
-    
+
+    // Map is_superuser to is_staff for frontend consistency
+    if (data.user) {
+      data.user.is_staff = data.user.is_superuser || data.user.is_staff;
+    }
+
     // Store tokens and user info
     if (data.access) {
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
       localStorage.setItem('user', JSON.stringify(data.user));
     }
-    
+
     return data;
   }
 
   async register(userData: RegisterData): Promise<AuthResponse> {
     const response = await apiClient.post('/api/register/', userData);
     const data = response.data;
-    
+
     // Store tokens and user info only if backend provides them (auto-login)
     if (data.access && data.user) {
       localStorage.setItem('access_token', data.access);
       localStorage.setItem('refresh_token', data.refresh);
       localStorage.setItem('user', JSON.stringify(data.user));
     }
-    
+
     return data;
   }
 
   async logout(): Promise<void> {
     const refreshToken = localStorage.getItem('refresh_token');
-    
+
     try {
       await apiClient.post('/api/logout/', {
         refresh_token: refreshToken

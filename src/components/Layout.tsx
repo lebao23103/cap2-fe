@@ -147,9 +147,9 @@ export function Layout({ children }: LayoutProps) {
                         </div>
                       </DropdownMenuLabel>
                       <div className="p-2 bg-white dark:bg-zinc-900">
-                        <DropdownMenuItem onClick={() => navigate('/dashboard')} className="font-bold uppercase focus:bg-black focus:text-white rounded-none cursor-pointer py-3">
+                        <DropdownMenuItem onClick={() => navigate(isAdmin ? '/admin' : '/dashboard')} className="font-bold uppercase focus:bg-black focus:text-white rounded-none cursor-pointer py-3">
                           <LayoutDashboard className="mr-3 h-4 w-4" />
-                          <span>Dashboard</span>
+                          <span>{isAdmin ? 'Admin Panel' : 'Dashboard'}</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-black h-0.5 my-2" />
                         <DropdownMenuItem onClick={handleLogout} className="font-bold uppercase text-red-600 focus:bg-red-600 focus:text-white rounded-none cursor-pointer py-3">

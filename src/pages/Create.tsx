@@ -116,34 +116,86 @@ export default function Create() {
       return
     }
 
+    // Check if PDF file is uploaded (required by backend)
+    if (!bookData.bookFile) {
+      toast({
+        title: "Missing File",
+        description: "Please upload a PDF file for your book.",
+        variant: "destructive"
+      })
+      setActiveTab('media')
+      return
+    }
+
     setIsUploading(true)
-    setUploadProgress(0)
+    setUploadProgress(10)
 
     try {
-      // Simulate upload process with progress
-      for (let i = 0; i <= 100; i += 10) {
-        setUploadProgress(i)
-        await new Promise(resolve => setTimeout(resolve, 200))
+      // Create FormData for file upload
+      const formData = new FormData()
+      formData.append('title', bookData.title)
+      formData.append('description', bookData.description)
+      formData.append('pdf_file', bookData.bookFile)
+
+      if (bookData.coverImage) {
+        formData.append('cover_image', bookData.coverImage)
       }
 
-      // Here you would typically send the data to your backend
-      console.log('Publishing book:', bookData)
+      setUploadProgress(30)
+
+      // Get access token
+      const token = localStorage.getItem('access_token')
+      if (!token) {
+        throw new Error('Please login to publish a book')
+      }
+
+      setUploadProgress(50)
+
+      // Send to backend
+      const response = await fetch('http://localhost:8000/api/create-user-book/', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      })
+
+      setUploadProgress(80)
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || 'Failed to publish book')
+      }
+
+      setUploadProgress(100)
 
       toast({
         title: "Success!",
-        description: "Your book has been published successfully.",
+        description: "Your book has been submitted for admin approval.",
       })
 
-      setIsUploading(false)
-      setUploadProgress(0)
+      // Reset form after successful submission
+      setBookData({
+        title: '',
+        description: '',
+        author: '',
+        content: '',
+        coverImage: null,
+        bookFile: null,
+        tags: []
+      })
+      setActiveTab('info')
+
     } catch (error) {
-      setIsUploading(false)
-      setUploadProgress(0)
+      console.error('Publish error:', error)
       toast({
         title: "Upload Failed",
-        description: "There was an error publishing your book. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error publishing your book. Please try again.",
         variant: "destructive"
       })
+    } finally {
+      setIsUploading(false)
+      setUploadProgress(0)
     }
   }
 
