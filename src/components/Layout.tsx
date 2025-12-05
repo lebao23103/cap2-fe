@@ -58,6 +58,21 @@ export function Layout({ children }: LayoutProps) {
     ...(isAdmin ? [{ path: '/admin', label: 'Admin', icon: Shield }] : [])
   ] : [];
 
+  // Check if current page is BookReader - hide main navbar on this page
+  const isBookReaderPage = location.pathname.includes('/book/') && location.pathname.includes('/read');
+
+  // Don't render header on BookReader page
+  if (isBookReaderPage) {
+    return (
+      <div className="min-h-screen bg-background font-mono selection:bg-primary selection:text-black">
+        <main className="flex-1">
+          {children}
+        </main>
+        <ChatWidget />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background font-mono selection:bg-primary selection:text-black">
       {/* Header/Navigation */}
