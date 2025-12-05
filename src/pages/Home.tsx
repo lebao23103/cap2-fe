@@ -398,41 +398,37 @@ export default function Home() {
         </div>
 
         {/* Marquee Container */}
-        <div className="relative py-8">
-          {/* Gradient Overlays - lower z-index so hovered cards appear above */}
-          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-28 bg-gradient-to-r from-white to-transparent z-[5] pointer-events-none" />
-          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-28 bg-gradient-to-l from-white to-transparent z-[5] pointer-events-none" />
-
+        <div className="relative py-12">
           {/* Scrolling Track */}
           <div className="marquee-wrapper flex">
-            <div className="marquee-track flex shrink-0 items-center py-3">
+            <div className="marquee-track flex shrink-0 items-center py-6">
               {techStack.map((tech, index) => (
                 <div
                   key={index}
-                  className={`tech-card flex items-center gap-3 mx-4 px-6 py-4 ${tech.bg} border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer group`}
+                  className={`tech-card flex flex-col items-center gap-4 mx-6 px-10 py-8 ${tech.bg} border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] cursor-pointer group text-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 ${index % 2 === 0 ? 'rotate-1' : '-rotate-1'}`}
                 >
                   <img
                     src={tech.logo}
                     alt={tech.name}
-                    className="h-10 w-10 transition-transform duration-200 group-hover:rotate-6"
+                    className="h-16 w-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 drop-shadow-md"
                   />
-                  <span className="font-bold text-black uppercase whitespace-nowrap tracking-wide">{tech.name}</span>
+                  <span className="font-black text-xl uppercase tracking-tighter">{tech.name}</span>
                 </div>
               ))}
             </div>
             {/* Duplicate for seamless loop */}
-            <div className="marquee-track flex shrink-0 items-center py-3" aria-hidden="true">
+            <div className="marquee-track flex shrink-0 items-center py-6" aria-hidden="true">
               {techStack.map((tech, index) => (
                 <div
                   key={`dup-${index}`}
-                  className={`tech-card flex items-center gap-3 mx-4 px-6 py-4 ${tech.bg} border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer group`}
+                  className={`tech-card flex flex-col items-center gap-4 mx-6 px-10 py-8 ${tech.bg} border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] cursor-pointer group text-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 ${index % 2 === 0 ? 'rotate-1' : '-rotate-1'}`}
                 >
                   <img
                     src={tech.logo}
                     alt={tech.name}
-                    className="h-10 w-10 transition-transform duration-200 group-hover:rotate-6"
+                    className="h-16 w-16 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12 drop-shadow-md"
                   />
-                  <span className="font-bold text-black uppercase whitespace-nowrap tracking-wide">{tech.name}</span>
+                  <span className="font-black text-xl uppercase tracking-tighter">{tech.name}</span>
                 </div>
               ))}
             </div>
@@ -461,15 +457,20 @@ export default function Home() {
           }
           
           .tech-card {
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             position: relative;
             z-index: 10;
           }
           
           .tech-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+            transform: translateY(-8px) scale(1.05) rotate(0deg) !important;
+            box-shadow: 12px 12px 0px 0px rgba(0,0,0,1) !important;
             z-index: 30;
+          }
+
+          /* Dark mode specific hover shadow override */
+          :global(.dark) .tech-card:hover {
+             box-shadow: 12px 12px 0px 0px rgba(255,255,255,1) !important;
           }
         `}</style>
       </section>
