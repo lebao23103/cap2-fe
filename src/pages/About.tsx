@@ -15,7 +15,6 @@ import {
   ArrowRight
 } from "lucide-react"
 import { motion } from "framer-motion"
-import { AnimatedBackground } from "@/components/AnimatedBackground"
 import { PremiumButton } from "@/components/ui/premium-button"
 
 export default function About() {
@@ -34,23 +33,24 @@ export default function About() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <AnimatedBackground variant="mesh" />
+    <div className="min-h-screen bg-background font-mono relative selection:bg-primary selection:text-black">
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       {/* Hero Section */}
-      <section className="relative w-full pt-32 pb-20">
+      <section className="relative w-full pt-32 pb-20 border-b-4 border-black dark:border-white bg-white dark:bg-zinc-800 z-10">
         <div className="container mx-auto max-w-4xl text-center">
           <motion.div {...fadeInUp}>
-            <Badge variant="secondary" className="mb-6 px-4 py-2 text-sm">
+            <Badge variant="outline" className="mb-6 px-4 py-2 text-sm font-bold uppercase border-2 border-black dark:border-white rounded-none bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
               📖 Our Story
             </Badge>
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+            <h1 className="text-4xl md:text-6xl font-black text-black dark:text-white mb-6 uppercase">
               Revolutionizing the
-              <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent block">
+              <span className="bg-black text-white px-2 dark:bg-white dark:text-black mx-2 inline-block transform -rotate-1">
                 Reading Experience
               </span>
             </h1>
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-gray-800 dark:text-gray-300 mb-8 max-w-3xl mx-auto font-bold font-mono">
               Born from a passion for education and knowledge sharing, Knowly combines
               cutting-edge technology with collaborative learning to transform academic reading experiences.
             </p>
@@ -59,13 +59,13 @@ export default function About() {
       </section>
 
       {/* Mission Section */}
-      <section className="relative w-full py-20">
-        <div className="container mx-auto">
+      <section className="relative w-full py-20 z-10">
+        <div className="container mx-auto px-4">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-black text-black dark:text-white mb-6 uppercase bg-white dark:bg-zinc-800 border-4 border-black dark:border-white inline-block px-8 py-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
               Our Mission
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <p className="text-xl text-black dark:text-gray-200 max-w-3xl mx-auto font-bold bg-primary/20 p-6 border-2 border-black dark:border-white">
               To revolutionize academic learning through collaborative knowledge sharing,
               interactive reading experiences, and AI-powered educational insights.
             </p>
@@ -77,31 +77,31 @@ export default function About() {
                 icon: Target,
                 title: "Empower Learners",
                 description: "Provide students and educators with tools to enhance comprehension, share insights, and engage deeply with academic content.",
-                color: "from-blue-500 to-cyan-500"
+                color: "bg-blue-200"
               },
               {
                 icon: Lightbulb,
                 title: "Foster Collaboration",
                 description: "Create opportunities for knowledge sharing through interactive annotations, community discussions, and peer learning.",
-                color: "from-purple-500 to-pink-500"
+                color: "bg-purple-200"
               },
               {
                 icon: Heart,
                 title: "Transform Education",
                 description: "Bridge the gap between traditional reading and modern learning through technology-enhanced academic experiences.",
-                color: "from-red-500 to-orange-500"
+                color: "bg-red-200"
               }
             ].map((item, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full text-center border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-xl">
+                <Card className="h-full text-center border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 rounded-none bg-white dark:bg-zinc-900">
                   <CardHeader>
-                    <div className={`mx-auto mb-4 p-4 bg-gradient-to-r ${item.color} rounded-full w-20 h-20 flex items-center justify-center`}>
-                      <item.icon className="h-10 w-10 text-white" />
+                    <div className={`mx-auto mb-4 p-4 ${item.color} border-4 border-black dark:border-white w-20 h-20 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}>
+                      <item.icon className="h-10 w-10 text-black" strokeWidth={2.5} />
                     </div>
-                    <CardTitle className="text-2xl">{item.title}</CardTitle>
+                    <CardTitle className="text-2xl font-black uppercase text-black dark:text-white">{item.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-base">
+                    <CardDescription className="text-base font-bold text-gray-700 dark:text-gray-300">
                       {item.description}
                     </CardDescription>
                   </CardContent>
@@ -113,13 +113,13 @@ export default function About() {
       </section>
 
       {/* Timeline Section */}
-      <section className="relative w-full py-20 bg-gray-50 dark:bg-gray-800/50">
-        <div className="container mx-auto">
+      <section className="relative w-full py-20 bg-gray-50 dark:bg-zinc-800 border-y-4 border-black dark:border-white z-10">
+        <div className="container mx-auto px-4">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-black text-black dark:text-white mb-6 uppercase">
               Our Journey
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
+            <p className="text-xl font-bold text-gray-600 dark:text-gray-300">
               From idea to reality - here's how Knowly came to life.
             </p>
           </motion.div>
@@ -157,16 +157,16 @@ export default function About() {
             ].map((item, index) => (
               <motion.div key={index} {...fadeInUp} className={`flex items-center ${item.side === 'left' ? 'justify-start' : 'justify-end'}`}>
                 <div className={`w-full md:w-1/2 ${item.side === 'left' ? 'pr-8' : 'pl-8'}`}>
-                  <Card className="border-0 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl">
+                  <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all rounded-none bg-white dark:bg-zinc-900">
                     <CardHeader>
                       <div className="flex items-center mb-2">
-                        <Badge variant="outline" className="mr-3">{item.year}</Badge>
-                        <item.icon className="h-5 w-5 text-indigo-600" />
+                        <Badge variant="outline" className="mr-3 rounded-none border-2 border-black dark:border-white bg-primary text-black font-bold">{item.year}</Badge>
+                        <item.icon className="h-5 w-5 text-black dark:text-white" />
                       </div>
-                      <CardTitle className="text-xl">{item.title}</CardTitle>
+                      <CardTitle className="text-xl font-black uppercase text-black dark:text-white">{item.title}</CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <CardDescription className="text-base">
+                      <CardDescription className="text-base font-bold text-gray-600 dark:text-gray-300">
                         {item.description}
                       </CardDescription>
                     </CardContent>
@@ -179,13 +179,13 @@ export default function About() {
       </section>
 
       {/* Team Section */}
-      <section className="relative w-full py-20">
-        <div className="container mx-auto">
+      <section className="relative w-full py-20 z-10">
+        <div className="container mx-auto px-4">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-black text-black dark:text-white mb-6 uppercase">
               Meet the Team
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
+            <p className="text-xl font-bold text-gray-600 dark:text-gray-300">
               The passionate people behind Knowly's mission to transform academic learning.
             </p>
           </motion.div>
@@ -218,19 +218,19 @@ export default function About() {
               }
             ].map((member, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full text-center border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-xl">
+                <Card className="h-full text-center border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all rounded-none bg-white dark:bg-zinc-900">
                   <CardHeader>
-                    <Avatar className="h-24 w-24 mx-auto mb-4">
+                    <Avatar className="h-24 w-24 mx-auto mb-4 border-4 border-black dark:border-white">
                       <AvatarImage src={member.avatar} alt={`${member.name} profile picture`} />
-                      <AvatarFallback className="text-lg">
+                      <AvatarFallback className="text-lg bg-primary text-black font-bold">
                         {member.name.split(' ').map(n => n[0]).join('')}
                       </AvatarFallback>
                     </Avatar>
-                    <CardTitle className="text-xl">{member.name}</CardTitle>
-                    <Badge variant="secondary">{member.role}</Badge>
+                    <CardTitle className="text-xl font-black uppercase text-black dark:text-white">{member.name}</CardTitle>
+                    <Badge variant="secondary" className="bg-gray-200 dark:bg-zinc-700 text-black dark:text-white rounded-none border border-black dark:border-white">{member.role}</Badge>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-sm">
+                    <CardDescription className="text-sm font-bold text-gray-600 dark:text-gray-300">
                       {member.bio}
                     </CardDescription>
                   </CardContent>
@@ -242,13 +242,13 @@ export default function About() {
       </section>
 
       {/* Values Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-gray-800/50">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-zinc-800 border-t-4 border-black dark:border-white z-10">
         <div className="container mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
+            <h2 className="text-3xl md:text-4xl font-black text-black dark:text-white mb-6 uppercase">
               Our Values
             </h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
+            <p className="text-xl font-bold text-gray-600 dark:text-gray-300">
               The principles that guide everything we do at Knowly.
             </p>
           </motion.div>
@@ -287,15 +287,15 @@ export default function About() {
               }
             ].map((value, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 rounded-xl">
+                <Card className="h-full border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all rounded-none bg-white dark:bg-zinc-900">
                   <CardHeader className="text-center">
-                    <div className="mx-auto mb-4 p-3 bg-gradient-to-r from-indigo-100 to-purple-100 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-full w-16 h-16 flex items-center justify-center">
-                      <value.icon className="h-8 w-8 text-indigo-600" />
+                    <div className="mx-auto mb-4 p-3 bg-white dark:bg-zinc-800 border-4 border-black dark:border-white w-16 h-16 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                      <value.icon className="h-8 w-8 text-black dark:text-white" strokeWidth={2.5} />
                     </div>
-                    <CardTitle className="text-xl">{value.title}</CardTitle>
+                    <CardTitle className="text-xl font-black uppercase text-black dark:text-white">{value.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="text-center text-base">
+                    <CardDescription className="text-center text-base font-bold text-gray-600 dark:text-gray-300">
                       {value.description}
                     </CardDescription>
                   </CardContent>
@@ -307,18 +307,18 @@ export default function About() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 border-t-4 border-black dark:border-white bg-primary z-10">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div {...fadeInUp} className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-12 text-white shadow-xl">
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <motion.div {...fadeInUp} className="bg-white dark:bg-zinc-900 border-4 border-black dark:border-white p-12 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)]">
+            <h2 className="text-3xl md:text-4xl font-black mb-6 uppercase text-black dark:text-white">
               Join Our Mission
             </h2>
-            <p className="text-xl mb-8 opacity-90">
+            <p className="text-xl mb-8 font-bold text-gray-700 dark:text-gray-300">
               Be part of the future of reading. Join thousands of readers who are already
               experiencing the Knowly difference.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <PremiumButton variant="aurora" size="xl" asChild>
+              <PremiumButton variant="aurora" size="xl" asChild className="h-16 px-8 text-lg font-black uppercase bg-black text-white dark:bg-white dark:text-black border-4 border-black dark:border-white rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all">
                 <Link to="/register">
                   Start Reading Today
                   <ArrowRight className="ml-2 h-5 w-5" />

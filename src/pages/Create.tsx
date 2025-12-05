@@ -10,8 +10,7 @@ import {
   Check,
   AlertCircle,
   ChevronRight,
-  Feather,
-  X
+  Feather
 } from 'lucide-react'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -208,12 +207,12 @@ export default function Create() {
 
         {/* Header */}
         <motion.div {...fadeInUp} className="mb-12 text-center">
-          <Badge variant="outline" className="mb-6 px-4 py-2 bg-white text-black border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-sm font-bold uppercase">
+          <Badge variant="outline" className="mb-6 px-4 py-2 bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] text-sm font-bold uppercase">
             <Feather className="mr-2 h-4 w-4" />
             Create & Publish
           </Badge>
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 tracking-tight uppercase">
-            Share Your <span className="bg-primary text-black px-2">Story</span>
+          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 tracking-tight uppercase text-foreground">
+            Share Your <span className="bg-primary text-black px-2 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">Story</span>
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed font-mono">
             Transform your manuscript into a published book and share it with readers worldwide.
@@ -230,38 +229,37 @@ export default function Create() {
             <TabsList className="grid w-full grid-cols-3 mb-8 h-auto p-0 bg-transparent gap-4">
               <TabsTrigger
                 value="info"
-                className="flex items-center gap-2 py-4 px-4 border-2 border-black bg-white data-[state=active]:bg-black data-[state=active]:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 font-bold uppercase"
+                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
               >
                 <FileText className="h-4 w-4" />
                 <span className="hidden sm:inline">Book Info</span>
               </TabsTrigger>
               <TabsTrigger
                 value="media"
-                className="flex items-center gap-2 py-4 px-4 border-2 border-black bg-white data-[state=active]:bg-black data-[state=active]:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 font-bold uppercase"
+                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
               >
                 <Upload className="h-4 w-4" />
                 <span className="hidden sm:inline">Upload Files</span>
               </TabsTrigger>
               <TabsTrigger
                 value="preview"
-                className="flex items-center gap-2 py-4 px-4 border-2 border-black bg-white data-[state=active]:bg-black data-[state=active]:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 font-bold uppercase"
+                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
               >
                 <Eye className="h-4 w-4" />
                 <span className="hidden sm:inline">Preview</span>
               </TabsTrigger>
             </TabsList>
 
-            {/* Book Information Tab */}
             <TabsContent value="info">
-              <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none">
-                <CardHeader className="border-b-2 border-black pb-6">
+              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none">
+                <CardHeader className="border-b-2 border-black dark:border-white pb-6">
                   <div className="flex items-center gap-4">
-                    <div className="p-3 border-2 border-black bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="p-3 border-2 border-black dark:border-white bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                       <FileText className="h-6 w-6 text-black" />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl font-bold uppercase font-display">Book Information</CardTitle>
-                      <CardDescription className="mt-1.5 font-mono text-black">
+                      <CardTitle className="text-2xl font-bold uppercase font-display text-black dark:text-white">Book Information</CardTitle>
+                      <CardDescription className="mt-1.5 font-mono text-black dark:text-gray-300">
                         Fill in the essential details about your book
                       </CardDescription>
                     </div>
@@ -272,7 +270,7 @@ export default function Create() {
 
                     {/* Title */}
                     <div className="space-y-2">
-                      <Label htmlFor="title" className="text-sm font-bold text-black flex items-center gap-2 uppercase">
+                      <Label htmlFor="title" className="text-sm font-bold text-black dark:text-white flex items-center gap-2 uppercase">
                         Book Title <span className="text-red-500">*</span>
                       </Label>
                       <Input
@@ -284,7 +282,7 @@ export default function Create() {
                           handleInputChange('title', e.target.value)
                           setValidationErrors(prev => ({ ...prev, title: '' }))
                         }}
-                        className={`h-12 border-2 border-black rounded-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${validationErrors.title ? 'border-red-500' : ''}`}
+                        className={`h-12 border-2 border-black dark:border-white rounded-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] dark:bg-zinc-900 dark:text-white text-black transition-all ${validationErrors.title ? 'border-red-500' : ''}`}
                       />
                       <div className="min-h-[20px]">
                         {validationErrors.title && (
@@ -298,7 +296,7 @@ export default function Create() {
 
                     {/* Author */}
                     <div className="space-y-2">
-                      <Label htmlFor="author" className="text-sm font-bold text-black flex items-center gap-2 uppercase">
+                      <Label htmlFor="author" className="text-sm font-bold text-black dark:text-white flex items-center gap-2 uppercase">
                         Author <span className="text-red-500">*</span>
                       </Label>
                       <Input
@@ -310,7 +308,7 @@ export default function Create() {
                           handleInputChange('author', e.target.value)
                           setValidationErrors(prev => ({ ...prev, author: '' }))
                         }}
-                        className={`h-12 border-2 border-black rounded-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${validationErrors.author ? 'border-red-500' : ''}`}
+                        className={`h-12 border-2 border-black dark:border-white rounded-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] dark:bg-zinc-900 dark:text-white text-black transition-all ${validationErrors.author ? 'border-red-500' : ''}`}
                       />
                       <div className="min-h-[20px]">
                         {validationErrors.author && (
@@ -326,7 +324,7 @@ export default function Create() {
 
                   {/* Description */}
                   <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="description" className="text-sm font-bold text-black flex items-center gap-2 uppercase">
+                    <Label htmlFor="description" className="text-sm font-bold text-black dark:text-white flex items-center gap-2 uppercase">
                       Book Description <span className="text-red-500">*</span>
                     </Label>
                     <Textarea
@@ -337,7 +335,7 @@ export default function Create() {
                         handleInputChange('description', e.target.value)
                         setValidationErrors(prev => ({ ...prev, description: '' }))
                       }}
-                      className={`min-h-[140px] border-2 border-black rounded-none resize-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${validationErrors.description ? 'border-red-500' : ''}`}
+                      className={`min-h-[140px] border-2 border-black dark:border-white rounded-none resize-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all dark:bg-zinc-900 dark:text-white text-black ${validationErrors.description ? 'border-red-500' : ''}`}
                       rows={6}
                     />
                     <div className="flex justify-between items-center min-h-[20px]">
@@ -364,15 +362,15 @@ export default function Create() {
 
             {/* Media Upload Tab */}
             <TabsContent value="media">
-              <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none">
-                <CardHeader className="border-b-2 border-black pb-6">
+              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none">
+                <CardHeader className="border-b-2 border-black dark:border-white pb-6">
                   <div className="flex items-center gap-4">
-                    <div className="p-3 border-2 border-black bg-purple-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="p-3 border-2 border-black dark:border-white bg-purple-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                       <Upload className="h-6 w-6 text-black" />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl font-bold uppercase font-display">Upload Files</CardTitle>
-                      <CardDescription className="mt-1.5 font-mono text-black">
+                      <CardTitle className="text-2xl font-bold uppercase font-display text-black dark:text-white">Upload Files</CardTitle>
+                      <CardDescription className="mt-1.5 font-mono text-black dark:text-gray-300">
                         Add your cover image and book file for readers
                       </CardDescription>
                     </div>
@@ -382,23 +380,23 @@ export default function Create() {
 
                   {/* Cover Image Upload */}
                   <div className="space-y-4">
-                    <Label className="text-sm font-bold flex items-center gap-2 uppercase">
-                      <Image className="h-4 w-4 text-black" />
+                    <Label className="text-sm font-bold flex items-center gap-2 uppercase text-black dark:text-white">
+                      <Image className="h-4 w-4 text-black dark:text-white" />
                       Book Cover Image
                     </Label>
-                    <div className="group relative border-2 border-dashed border-black hover:bg-gray-50 p-12 text-center transition-all duration-300 rounded-none">
+                    <div className="group relative border-2 border-dashed border-black dark:border-white hover:bg-gray-50 dark:hover:bg-zinc-700 p-12 text-center transition-all duration-300 rounded-none">
                       {bookData.coverImage ? (
                         <div className="space-y-4">
                           <div className="relative inline-block">
-                            <div className="relative p-4 bg-green-100 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            <div className="relative p-4 bg-green-100 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                               <Image className="h-12 w-12 mx-auto text-black" />
                             </div>
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-black mb-1 uppercase">
+                            <p className="text-sm font-bold text-black dark:text-white mb-1 uppercase">
                               {bookData.coverImage.name}
                             </p>
-                            <p className="text-xs text-gray-500 mb-3 font-mono">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-mono">
                               {formatFileSize(bookData.coverImage.size)}
                             </p>
                             <ModernButton
@@ -414,13 +412,13 @@ export default function Create() {
                       ) : (
                         <div className="space-y-4">
                           <div className="relative inline-block">
-                            <div className="relative p-4 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] transition-transform">
-                              <Image className="h-12 w-12 mx-auto text-black" />
+                            <div className="relative p-4 bg-white dark:bg-zinc-800 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] transition-transform">
+                              <Image className="h-12 w-12 mx-auto text-black dark:text-white" />
                             </div>
                           </div>
                           <div>
-                            <p className="text-base font-bold text-black mb-1 uppercase">Upload book cover</p>
-                            <p className="text-sm text-gray-500 mb-4 font-mono">
+                            <p className="text-base font-bold text-black dark:text-white mb-1 uppercase">Upload book cover</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 font-mono">
                               PNG or JPG • Maximum 10MB
                             </p>
                             <input
@@ -445,23 +443,23 @@ export default function Create() {
 
                   {/* Book File Upload */}
                   <div className="space-y-4">
-                    <Label className="text-sm font-bold flex items-center gap-2 uppercase">
-                      <FileText className="h-4 w-4 text-black" />
+                    <Label className="text-sm font-bold flex items-center gap-2 uppercase text-black dark:text-white">
+                      <FileText className="h-4 w-4 text-black dark:text-white" />
                       Book File (Optional)
                     </Label>
-                    <div className="group relative border-2 border-dashed border-black hover:bg-gray-50 p-12 text-center transition-all duration-300 rounded-none">
+                    <div className="group relative border-2 border-dashed border-black dark:border-white hover:bg-gray-50 dark:hover:bg-zinc-700 p-12 text-center transition-all duration-300 rounded-none">
                       {bookData.bookFile ? (
                         <div className="space-y-4">
                           <div className="relative inline-block">
-                            <div className="relative p-4 bg-green-100 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                            <div className="relative p-4 bg-green-100 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                               <FileText className="h-12 w-12 mx-auto text-black" />
                             </div>
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-black mb-1 uppercase">
+                            <p className="text-sm font-bold text-black dark:text-white mb-1 uppercase">
                               {bookData.bookFile.name}
                             </p>
-                            <p className="text-xs text-gray-500 mb-3 font-mono">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-mono">
                               {formatFileSize(bookData.bookFile.size)}
                             </p>
                             <ModernButton
@@ -477,13 +475,13 @@ export default function Create() {
                       ) : (
                         <div className="space-y-4">
                           <div className="relative inline-block">
-                            <div className="relative p-4 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] transition-transform">
-                              <FileText className="h-12 w-12 mx-auto text-black" />
+                            <div className="relative p-4 bg-white dark:bg-zinc-800 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] transition-transform">
+                              <FileText className="h-12 w-12 mx-auto text-black dark:text-white" />
                             </div>
                           </div>
                           <div>
-                            <p className="text-base font-bold text-black mb-1 uppercase">Upload book file</p>
-                            <p className="text-sm text-gray-500 mb-4 font-mono">
+                            <p className="text-base font-bold text-black dark:text-white mb-1 uppercase">Upload book file</p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 font-mono">
                               PDF, EPUB, DOCX, or TXT • Maximum 50MB
                             </p>
                             <input
@@ -511,15 +509,15 @@ export default function Create() {
 
             {/* Preview Tab */}
             <TabsContent value="preview">
-              <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none">
-                <CardHeader className="border-b-2 border-black pb-6">
+              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none">
+                <CardHeader className="border-b-2 border-black dark:border-white pb-6">
                   <div className="flex items-center gap-4">
-                    <div className="p-3 border-2 border-black bg-amber-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="p-3 border-2 border-black dark:border-white bg-amber-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                       <Eye className="h-6 w-6 text-black" />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl font-bold uppercase font-display">Book Preview</CardTitle>
-                      <CardDescription className="mt-1.5 font-mono text-black">
+                      <CardTitle className="text-2xl font-bold uppercase font-display text-black dark:text-white">Book Preview</CardTitle>
+                      <CardDescription className="mt-1.5 font-mono text-black dark:text-gray-300">
                         See how your book will appear to readers
                       </CardDescription>
                     </div>
@@ -528,9 +526,9 @@ export default function Create() {
                 <CardContent className="p-8">
                   <div className="max-w-4xl mx-auto">
                     {/* Book Card Preview */}
-                    <div className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none overflow-hidden">
+                    <div className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none overflow-hidden">
                       <div className="flex flex-col sm:flex-row p-8 gap-6">
-                        <div className="flex-shrink-0 w-full sm:w-40 h-56 sm:h-52 bg-gray-100 border-2 border-black flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <div className="flex-shrink-0 w-full sm:w-40 h-56 sm:h-52 bg-gray-100 dark:bg-zinc-700 border-2 border-black dark:border-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                           {bookData.coverImage ? (
                             <img
                               src={URL.createObjectURL(bookData.coverImage)}
@@ -542,10 +540,10 @@ export default function Create() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <h3 className="text-xl font-bold text-black mb-2 uppercase font-display">
+                          <h3 className="text-xl font-bold text-black dark:text-white mb-2 uppercase font-display">
                             {bookData.title || 'Book Title'}
                           </h3>
-                          <p className="text-gray-600 mb-2 font-mono uppercase text-sm">
+                          <p className="text-gray-600 dark:text-gray-300 mb-2 font-mono uppercase text-sm">
                             by {bookData.author || 'Author Name'}
                           </p>
                           <div className="flex gap-2 mb-3">
@@ -553,7 +551,7 @@ export default function Create() {
                               ✍️ User Created
                             </Badge>
                           </div>
-                          <p className="text-gray-600 text-sm mb-3 font-mono leading-relaxed">
+                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 font-mono leading-relaxed">
                             {bookData.description || 'Book description will appear here...'}
                           </p>
                         </div>
@@ -562,12 +560,12 @@ export default function Create() {
 
                     {/* Content Preview */}
                     {bookData.bookFile && (
-                      <div className="mt-6 p-6 bg-white border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                        <h4 className="font-bold mb-3 uppercase text-sm">Uploaded Book File:</h4>
-                        <div className="flex items-center gap-3 text-sm text-gray-600 font-mono">
+                      <div className="mt-6 p-6 bg-white dark:bg-zinc-800 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                        <h4 className="font-bold mb-3 uppercase text-sm text-black dark:text-white">Uploaded Book File:</h4>
+                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 font-mono">
                           <FileText className="h-5 w-5" />
                           <span>{bookData.bookFile.name}</span>
-                          <Badge variant="outline" className="text-xs border-black rounded-none bg-gray-100">
+                          <Badge variant="outline" className="text-xs border-black dark:border-white rounded-none bg-gray-100 dark:bg-zinc-700 dark:text-white">
                             {(bookData.bookFile.size / (1024 * 1024)).toFixed(2)} MB
                           </Badge>
                         </div>

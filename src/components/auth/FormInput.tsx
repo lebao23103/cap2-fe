@@ -102,26 +102,26 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             required={required}
             className={cn(
               // Base styles - Neo-Brutalist
-              'bg-white border-2 border-black h-12 rounded-none transition-all pr-10 font-bold',
+              'bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white h-12 rounded-none transition-all pr-10 font-bold placeholder:text-gray-500 dark:placeholder:text-gray-400',
               // Focus styles
-              'focus:ring-0 focus:border-black focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:translate-x-[-2px] focus:translate-y-[-2px]',
+              'focus:ring-0 focus:border-black dark:focus:border-white focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] focus:translate-x-[-2px] focus:translate-y-[-2px]',
               // Error state
               error && [
-                'border-red-500',
-                'focus:border-red-500',
-                'focus:shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]',
+                'border-red-500 dark:border-red-400',
+                'focus:border-red-500 dark:focus:border-red-400',
+                'focus:shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(248,113,113,1)]',
                 'animate-shake',
               ],
               // Success state
               success && !error && [
-                'border-green-500',
-                'focus:border-green-500',
-                'focus:shadow-[4px_4px_0px_0px_rgba(34,197,94,1)]',
+                'border-green-500 dark:border-green-400',
+                'focus:border-green-500 dark:focus:border-green-400',
+                'focus:shadow-[4px_4px_0px_0px_rgba(34,197,94,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(74,222,128,1)]',
               ],
               // Loading state
               loading && 'cursor-wait',
               // Disabled state
-              disabled && 'opacity-50 cursor-not-allowed bg-gray-100',
+              disabled && 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-zinc-800',
               className
             )}
             aria-invalid={error ? 'true' : 'false'}
@@ -145,7 +145,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             {/* Success checkmark */}
             {success && !error && !loading && (
               <Check
-                className="h-4 w-4 text-success animate-scale-in"
+                className="h-4 w-4 text-green-500 dark:text-green-400 animate-scale-in"
                 aria-hidden="true"
               />
             )}
@@ -153,7 +153,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             {/* Error icon */}
             {error && !loading && (
               <AlertCircle
-                className="h-4 w-4 text-destructive animate-scale-in"
+                className="h-4 w-4 text-red-500 dark:text-red-400 animate-scale-in"
                 aria-hidden="true"
               />
             )}
@@ -165,8 +165,8 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
                 onClick={onPasswordToggle}
                 disabled={disabled || loading}
                 className={cn(
-                  'p-1 rounded transition-colors',
-                  'hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary/20',
+                  'p-1 rounded transition-colors text-black dark:text-white',
+                  'hover:bg-gray-100 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-primary/20',
                   'disabled:opacity-50 disabled:cursor-not-allowed',
                   'interactive'
                 )}

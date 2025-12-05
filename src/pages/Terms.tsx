@@ -11,8 +11,10 @@ export default function Terms() {
   };
 
   return (
-    <div className="relative w-full min-h-screen pt-20 pb-12">
-      <div className="container mx-auto max-w-4xl">
+    <div className="min-h-screen bg-background font-mono relative selection:bg-primary selection:text-black">
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="container mx-auto max-w-4xl relative z-10 pt-20 pb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -21,14 +23,14 @@ export default function Terms() {
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-4">
-              <div className="p-4 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl">
-                <FileText className="h-12 w-12 text-white" />
+              <div className="p-4 bg-white dark:bg-zinc-800 border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                <FileText className="h-12 w-12 text-black dark:text-white" />
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
+            <h1 className="text-4xl sm:text-5xl font-black uppercase mb-4 text-black dark:text-white bg-white dark:bg-zinc-900 inline-block px-4 py-2 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
               Terms of Service
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-lg font-bold">
               Effective date: {effectiveDate}
             </p>
           </div>
@@ -36,14 +38,14 @@ export default function Terms() {
           <div className="grid lg:grid-cols-4 gap-8">
             {/* Table of Contents - Sticky Sidebar */}
             <nav className="lg:col-span-1 hidden lg:block" aria-label="Terms of service navigation">
-              <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-white/20 sticky top-24">
+              <Card className="sticky top-24 rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
                 <CardContent className="p-6">
-                  <h2 className="font-semibold mb-4 text-lg">Contents</h2>
-                  <ul className="space-y-2 text-sm">
+                  <h2 className="font-black mb-4 text-lg uppercase text-black dark:text-white border-b-2 border-black dark:border-white pb-2">Contents</h2>
+                  <ul className="space-y-2 text-sm font-bold">
                     <li>
                       <button
                         onClick={() => scrollToSection('acceptance')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Acceptance
                       </button>
@@ -51,7 +53,7 @@ export default function Terms() {
                     <li>
                       <button
                         onClick={() => scrollToSection('user-accounts')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         User Accounts
                       </button>
@@ -59,7 +61,7 @@ export default function Terms() {
                     <li>
                       <button
                         onClick={() => scrollToSection('content')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Content & Conduct
                       </button>
@@ -67,7 +69,7 @@ export default function Terms() {
                     <li>
                       <button
                         onClick={() => scrollToSection('intellectual-property')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Intellectual Property
                       </button>
@@ -75,7 +77,7 @@ export default function Terms() {
                     <li>
                       <button
                         onClick={() => scrollToSection('restrictions')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Use Restrictions
                       </button>
@@ -83,7 +85,7 @@ export default function Terms() {
                     <li>
                       <button
                         onClick={() => scrollToSection('liability')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Liability
                       </button>
@@ -91,7 +93,7 @@ export default function Terms() {
                     <li>
                       <button
                         onClick={() => scrollToSection('termination')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Termination
                       </button>
@@ -99,7 +101,7 @@ export default function Terms() {
                     <li>
                       <button
                         onClick={() => scrollToSection('changes')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Changes to Terms
                       </button>
@@ -107,7 +109,7 @@ export default function Terms() {
                     <li>
                       <button
                         onClick={() => scrollToSection('governing-law')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Governing Law
                       </button>
@@ -115,7 +117,7 @@ export default function Terms() {
                     <li>
                       <button
                         onClick={() => scrollToSection('contact')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Contact
                       </button>
@@ -127,19 +129,19 @@ export default function Terms() {
 
             {/* Main Content */}
             <article className="lg:col-span-3">
-              <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-white/20">
-                <CardContent className="p-6 sm:p-8 lg:p-12 space-y-8">
+              <Card className="rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
+                <CardContent className="p-6 sm:p-8 lg:p-12 space-y-8 font-sans">
                   {/* Acceptance */}
                   <section id="acceptance" className="scroll-mt-24">
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-4">Acceptance of Terms</h2>
-                    <div className="space-y-4 text-muted-foreground leading-relaxed">
+                    <h2 className="text-2xl sm:text-3xl font-black mb-4 uppercase text-black dark:text-white">Acceptance of Terms</h2>
+                    <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
                       <p>
-                        Welcome to Knowly. By accessing or using our platform, you agree to be bound by these Terms of Service 
-                        and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited 
+                        Welcome to Knowly. By accessing or using our platform, you agree to be bound by these Terms of Service
+                        and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited
                         from using or accessing this site.
                       </p>
                       <p>
-                        These Terms of Service apply to all users of the platform, including without limitation users who are 
+                        These Terms of Service apply to all users of the platform, including without limitation users who are
                         browsers, readers, contributors, and/or contributors of content.
                       </p>
                     </div>
@@ -151,7 +153,7 @@ export default function Terms() {
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <h3 className="text-xl font-semibold text-foreground mt-6">Account Creation</h3>
                       <p>
-                        To access certain features of Knowly, you must register for an account. When you register for an account, 
+                        To access certain features of Knowly, you must register for an account. When you register for an account,
                         you agree to:
                       </p>
                       <ul className="list-disc list-inside space-y-2 ml-4">
@@ -164,8 +166,8 @@ export default function Terms() {
 
                       <h3 className="text-xl font-semibold text-foreground mt-6">Account Responsibilities</h3>
                       <p>
-                        You are responsible for all activities that occur under your account. You must be at least 13 years old 
-                        to create an account. If you are under 18, you must have your parent or guardian's permission to use 
+                        You are responsible for all activities that occur under your account. You must be at least 13 years old
+                        to create an account. If you are under 18, you must have your parent or guardian's permission to use
                         our services.
                       </p>
                     </div>
@@ -177,12 +179,12 @@ export default function Terms() {
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <h3 className="text-xl font-semibold text-foreground mt-6">User-Generated Content</h3>
                       <p>
-                        Our platform allows you to post, link, store, share, and otherwise make available certain information, 
-                        text, graphics, notes, or other material ("User Content"). You are responsible for the User Content 
+                        Our platform allows you to post, link, store, share, and otherwise make available certain information,
+                        text, graphics, notes, or other material ("User Content"). You are responsible for the User Content
                         that you post to the platform.
                       </p>
                       <p>
-                        By posting User Content, you grant us a worldwide, non-exclusive, royalty-free license to use, reproduce, 
+                        By posting User Content, you grant us a worldwide, non-exclusive, royalty-free license to use, reproduce,
                         modify, and display such content in connection with operating and providing the platform.
                       </p>
 
@@ -204,18 +206,18 @@ export default function Terms() {
                     <h2 className="text-2xl sm:text-3xl font-bold mb-4">Intellectual Property Rights</h2>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        The platform and its original content (excluding User Content), features, and functionality are and will 
-                        remain the exclusive property of Knowly and its licensors. The platform is protected by copyright, 
+                        The platform and its original content (excluding User Content), features, and functionality are and will
+                        remain the exclusive property of Knowly and its licensors. The platform is protected by copyright,
                         trademark, and other laws.
                       </p>
                       <p>
-                        Our trademarks and trade dress may not be used in connection with any product or service without our 
-                        prior written consent. All books, materials, and content available on the platform are protected by 
+                        Our trademarks and trade dress may not be used in connection with any product or service without our
+                        prior written consent. All books, materials, and content available on the platform are protected by
                         copyright and may not be reproduced without permission.
                       </p>
                       <h3 className="text-xl font-semibold text-foreground mt-6">Copyright Infringement</h3>
                       <p>
-                        We respect the intellectual property rights of others. If you believe that any content on our platform 
+                        We respect the intellectual property rights of others. If you believe that any content on our platform
                         infringes your copyright, please contact us with details of the alleged infringement.
                       </p>
                     </div>
@@ -257,13 +259,13 @@ export default function Terms() {
                     <h2 className="text-2xl sm:text-3xl font-bold mb-4">Limitation of Liability</h2>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        The platform is provided on an "AS IS" and "AS AVAILABLE" basis. We make no warranties, expressed or 
-                        implied, and hereby disclaim all warranties including, without limitation, implied warranties of 
+                        The platform is provided on an "AS IS" and "AS AVAILABLE" basis. We make no warranties, expressed or
+                        implied, and hereby disclaim all warranties including, without limitation, implied warranties of
                         merchantability, fitness for a particular purpose, or non-infringement.
                       </p>
                       <p>
-                        In no event shall Knowly, its directors, employees, or agents be liable for any indirect, incidental, 
-                        special, consequential, or punitive damages, including without limitation loss of profits, data, use, 
+                        In no event shall Knowly, its directors, employees, or agents be liable for any indirect, incidental,
+                        special, consequential, or punitive damages, including without limitation loss of profits, data, use,
                         or other intangible losses, resulting from:
                       </p>
                       <ul className="list-disc list-inside space-y-2 ml-4">
@@ -280,19 +282,19 @@ export default function Terms() {
                     <h2 className="text-2xl sm:text-3xl font-bold mb-4">Termination</h2>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        We may terminate or suspend your account and bar access to the platform immediately, without prior 
-                        notice or liability, under our sole discretion, for any reason whatsoever, including without limitation 
+                        We may terminate or suspend your account and bar access to the platform immediately, without prior
+                        notice or liability, under our sole discretion, for any reason whatsoever, including without limitation
                         if you breach the Terms.
                       </p>
                       <p>
-                        You may terminate your account at any time by contacting us or through your account settings. All 
-                        provisions of the Terms which by their nature should survive termination shall survive, including 
+                        You may terminate your account at any time by contacting us or through your account settings. All
+                        provisions of the Terms which by their nature should survive termination shall survive, including
                         ownership provisions, warranty disclaimers, and limitations of liability.
                       </p>
                       <h3 className="text-xl font-semibold text-foreground mt-6">Effect of Termination</h3>
                       <p>
-                        Upon termination, your right to use the platform will immediately cease. If you wish to terminate your 
-                        account, you may discontinue using the platform. We reserve the right to delete your User Content upon 
+                        Upon termination, your right to use the platform will immediately cease. If you wish to terminate your
+                        account, you may discontinue using the platform. We reserve the right to delete your User Content upon
                         termination of your account.
                       </p>
                     </div>
@@ -303,11 +305,11 @@ export default function Terms() {
                     <h2 className="text-2xl sm:text-3xl font-bold mb-4">Changes to Terms</h2>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a 
+                        We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a
                         revision is material, we will provide at least 30 days' notice prior to any new terms taking effect.
                       </p>
                       <p>
-                        What constitutes a material change will be determined at our sole discretion. By continuing to access 
+                        What constitutes a material change will be determined at our sole discretion. By continuing to access
                         or use our platform after any revisions become effective, you agree to be bound by the revised terms.
                       </p>
                     </div>
@@ -318,38 +320,38 @@ export default function Terms() {
                     <h2 className="text-2xl sm:text-3xl font-bold mb-4">Governing Law and Dispute Resolution</h2>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        These Terms shall be governed and construed in accordance with the laws of the jurisdiction in which 
+                        These Terms shall be governed and construed in accordance with the laws of the jurisdiction in which
                         Knowly operates, without regard to its conflict of law provisions.
                       </p>
                       <p>
-                        Any dispute arising from or relating to the subject matter of these Terms shall be finally settled by 
-                        arbitration, except that we may seek injunctive or other equitable relief in any court of competent 
+                        Any dispute arising from or relating to the subject matter of these Terms shall be finally settled by
+                        arbitration, except that we may seek injunctive or other equitable relief in any court of competent
                         jurisdiction.
                       </p>
                       <h3 className="text-xl font-semibold text-foreground mt-6">Severability</h3>
                       <p>
-                        If any provision of these Terms is held to be unenforceable or invalid, such provision will be changed 
-                        and interpreted to accomplish the objectives of such provision to the greatest extent possible, and the 
+                        If any provision of these Terms is held to be unenforceable or invalid, such provision will be changed
+                        and interpreted to accomplish the objectives of such provision to the greatest extent possible, and the
                         remaining provisions will continue in full force and effect.
                       </p>
                     </div>
                   </section>
 
                   {/* Contact */}
-                  <section id="contact" className="scroll-mt-24 pt-8 border-t">
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-4">Contact Us</h2>
-                    <div className="space-y-4 text-muted-foreground leading-relaxed">
+                  <section id="contact" className="scroll-mt-24 pt-8 border-t-4 border-black dark:border-white">
+                    <h2 className="text-2xl sm:text-3xl font-black mb-4 uppercase text-black dark:text-white">Contact Us</h2>
+                    <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
                       <p>
                         If you have any questions about these Terms of Service, please contact us:
                       </p>
-                      <div className="mt-6 p-6 bg-primary/5 border border-primary/20 rounded-lg">
+                      <div className="mt-6 p-6 bg-primary border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                         <div className="flex items-start gap-3">
-                          <Mail className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                          <Mail className="h-5 w-5 text-black mt-1 flex-shrink-0" />
                           <div>
-                            <p className="font-semibold text-foreground">Email</p>
-                            <a 
-                              href="mailto:legal@knowly.com" 
-                              className="text-primary hover:underline"
+                            <p className="font-black uppercase text-black">Email</p>
+                            <a
+                              href="mailto:legal@knowly.com"
+                              className="text-black font-bold hover:underline"
                             >
                               legal@knowly.com
                             </a>

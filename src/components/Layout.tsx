@@ -106,7 +106,7 @@ export function Layout({ children }: LayoutProps) {
                     to={item.path}
                     className={`flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase border-2 transition-all duration-200 ${isActivePath(item.path)
                       ? 'bg-primary border-black text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] -translate-y-1'
-                      : 'border-transparent text-gray-600 hover:border-black hover:text-black hover:bg-gray-100'
+                      : 'border-transparent text-gray-600 dark:text-gray-300 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-zinc-800'
                       }`}
                   >
                     <item.icon className="h-4 w-4" strokeWidth={2.5} />
@@ -151,7 +151,7 @@ export function Layout({ children }: LayoutProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-64 border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-0 mt-2">
-                      <DropdownMenuLabel className="p-4 bg-primary border-b-4 border-black">
+                      <DropdownMenuLabel className="p-4 bg-primary border-b-4 border-black text-black">
                         <div className="flex flex-col space-y-1">
                           <p className="text-sm font-black uppercase">
                             {user?.first_name} {user?.last_name}
@@ -161,7 +161,7 @@ export function Layout({ children }: LayoutProps) {
                           </p>
                         </div>
                       </DropdownMenuLabel>
-                      <div className="p-2 bg-white dark:bg-zinc-900">
+                      <div className="p-2 bg-white dark:bg-zinc-900 border-t-0">
                         <DropdownMenuItem onClick={() => navigate(isAdmin ? '/admin' : '/dashboard')} className="font-bold uppercase focus:bg-black focus:text-white rounded-none cursor-pointer py-3">
                           <LayoutDashboard className="mr-3 h-4 w-4" />
                           <span>{isAdmin ? 'Admin Panel' : 'Dashboard'}</span>
@@ -180,7 +180,7 @@ export function Layout({ children }: LayoutProps) {
                   <Link to="/login">
                     <Button
                       variant="ghost"
-                      className="h-12 px-6 font-bold uppercase border-2 border-transparent hover:border-black hover:bg-transparent rounded-none transition-all"
+                      className="h-12 px-6 font-bold uppercase rounded-none hover:bg-transparent transition-all"
                     >
                       Sign In
                     </Button>
@@ -293,10 +293,10 @@ export function Layout({ children }: LayoutProps) {
                     Knowly
                   </h3>
                 </div>
-                <p className="font-mono text-sm font-medium leading-relaxed max-w-xs">
+                <p className="font-mono text-sm font-medium leading-relaxed max-w-xs dark:text-gray-400">
                   Knowledge Sharing Platform for Academic Reading and Exercises. Built for the bold.
                 </p>
-                <div className="flex items-center gap-2 text-sm font-bold uppercase">
+                <div className="flex items-center gap-2 text-sm font-bold uppercase dark:text-gray-400">
                   <span>© 2025 Knowly.</span>
                   <span className="text-primary">⚡</span>
                   <span>All rights reserved.</span>
@@ -310,22 +310,22 @@ export function Layout({ children }: LayoutProps) {
                   <div className="flex items-start gap-3">
                     <span className="text-xl">📧</span>
                     <div>
-                      <p className="font-bold uppercase">Email</p>
-                      <p className="text-gray-600">support@knowly.com</p>
+                      <p className="font-bold uppercase dark:text-white">Email</p>
+                      <p className="text-gray-600 dark:text-gray-400">support@knowly.com</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-xl">📞</span>
                     <div>
-                      <p className="font-bold uppercase">Phone</p>
-                      <p className="text-gray-600">+84 (028) 1234-5678</p>
+                      <p className="font-bold uppercase dark:text-white">Phone</p>
+                      <p className="text-gray-600 dark:text-gray-400">+84 (028) 1234-5678</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
                     <span className="text-xl">📍</span>
                     <div>
-                      <p className="font-bold uppercase">Address</p>
-                      <p className="text-gray-600">123 Knowledge Street, Learning City</p>
+                      <p className="font-bold uppercase dark:text-white">Address</p>
+                      <p className="text-gray-600 dark:text-gray-400">123 Knowledge Street, Learning City</p>
                     </div>
                   </div>
                 </div>

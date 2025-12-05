@@ -210,11 +210,11 @@ export default function Dashboard() {
           >
             {/* Welcome Header Card */}
             <motion.div variants={fadeInUp}>
-              <Card className="border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-gradient-to-r from-primary via-yellow-300 to-primary rounded-none overflow-hidden">
+              <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-gradient-to-r from-primary via-yellow-300 to-primary rounded-none overflow-hidden">
                 <CardContent className="p-6 sm:p-8">
                   <div className="flex flex-col sm:flex-row items-center gap-6">
                     {/* Avatar */}
-                    <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-black rounded-none border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white">
+                    <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-black dark:ring-white rounded-none border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white">
                       <AvatarImage src={user?.email ? `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}` : undefined} />
                       <AvatarFallback className="text-3xl font-black bg-white text-black rounded-none">
                         {user?.first_name?.[0]}{user?.last_name?.[0]}
@@ -232,24 +232,23 @@ export default function Dashboard() {
                       </div>
                     </div>
 
-                    {/* Edit Profile Button */}
                     <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                       <DialogTrigger asChild>
                         <Button
                           variant="outline"
-                          className="h-12 px-4 bg-white border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-black hover:text-white transition-all font-bold uppercase"
+                          className="h-12 px-4 bg-white dark:bg-zinc-900 border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-black hover:text-white dark:text-white dark:hover:bg-white dark:hover:text-black transition-all font-bold uppercase"
                         >
                           <Edit3 className="h-5 w-5 mr-2" />
                           Edit Profile
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px] border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
-                        <DialogHeader className="border-b-4 border-black pb-4">
+                      <DialogContent className="sm:max-w-[425px] border-4 border-black dark:border-white rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
+                        <DialogHeader className="border-b-4 border-black dark:border-white pb-4">
                           <DialogTitle className="text-2xl font-black uppercase flex items-center gap-2">
                             <User className="h-6 w-6" />
                             Edit Profile
                           </DialogTitle>
-                          <DialogDescription className="font-mono text-gray-600">
+                          <DialogDescription className="font-mono text-gray-600 dark:text-gray-300">
                             Update your profile information below.
                           </DialogDescription>
                         </DialogHeader>
@@ -279,15 +278,15 @@ export default function Dashboard() {
                               type="email"
                               value={editForm.email}
                               onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
-                              className="border-2 border-black rounded-none h-12 font-mono"
+                              className="border-2 border-black dark:border-white rounded-none h-12 font-mono dark:bg-zinc-800"
                             />
                           </div>
                         </div>
-                        <DialogFooter className="border-t-4 border-black pt-4">
+                        <DialogFooter className="border-t-4 border-black dark:border-white pt-4">
                           <Button
                             onClick={handleUpdateProfile}
                             disabled={isUpdating}
-                            className="w-full bg-primary text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-black hover:text-white transition-all font-bold uppercase h-12"
+                            className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-black hover:text-white transition-all font-bold uppercase h-12"
                           >
                             {isUpdating ? (
                               <>
@@ -317,14 +316,14 @@ export default function Dashboard() {
                 { label: 'Notes Made', value: stats.notesCount, icon: StickyNote, bg: 'bg-yellow-400' }
               ].map((stat, index) => (
                 <motion.div key={index} variants={fadeInUp}>
-                  <Card className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 group">
+                  <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 group">
                     <CardContent className="p-6 flex items-center gap-4">
-                      <div className={`p-4 border-4 border-black ${stat.bg} text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] group-hover:rotate-6 transition-transform`}>
+                      <div className={`p-4 border-4 border-black dark:border-white ${stat.bg} text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] group-hover:rotate-6 transition-transform`}>
                         <stat.icon className="h-6 w-6" />
                       </div>
                       <div>
-                        <div className="text-3xl font-black text-black font-mono">{stat.value}</div>
-                        <p className="text-sm text-gray-600 font-bold uppercase tracking-wide">{stat.label}</p>
+                        <div className="text-3xl font-black text-black dark:text-white font-mono">{stat.value}</div>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase tracking-wide">{stat.label}</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -336,33 +335,33 @@ export default function Dashboard() {
             <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <Button
                 variant="outline"
-                className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-white border-4 border-black rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:bg-blue-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all group uppercase font-black"
+                className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-white dark:bg-zinc-800 border-4 border-black dark:border-white rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:bg-blue-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] transition-all group uppercase font-black"
                 onClick={() => navigate('/reading-history')}
               >
-                <div className="p-3 bg-blue-100 border-2 border-black group-hover:bg-white transition-colors">
+                <div className="p-3 bg-blue-100 border-2 border-black dark:border-white group-hover:bg-white transition-colors">
                   <BookOpen className="h-8 w-8 text-black" />
                 </div>
-                <span className="text-lg text-black">Continue Reading</span>
+                <span className="text-lg text-black dark:text-white group-hover:text-black">Continue Reading</span>
               </Button>
               <Button
                 variant="outline"
-                className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-white border-4 border-black rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:bg-red-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all group uppercase font-black"
+                className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-white dark:bg-zinc-800 border-4 border-black dark:border-white rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:bg-red-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] transition-all group uppercase font-black"
                 onClick={() => navigate('/favorites')}
               >
-                <div className="p-3 bg-red-100 border-2 border-black group-hover:bg-white transition-colors">
+                <div className="p-3 bg-red-100 border-2 border-black dark:border-white group-hover:bg-white transition-colors">
                   <Heart className="h-8 w-8 text-black" />
                 </div>
-                <span className="text-lg text-black">My Favorites</span>
+                <span className="text-lg text-black dark:text-white group-hover:text-black">My Favorites</span>
               </Button>
               <Button
                 variant="outline"
-                className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-white border-4 border-black rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:bg-green-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all group uppercase font-black"
+                className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-white dark:bg-zinc-800 border-4 border-black dark:border-white rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:bg-green-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] transition-all group uppercase font-black"
                 onClick={() => navigate('/chatbot')}
               >
-                <div className="p-3 bg-green-100 border-2 border-black group-hover:bg-white transition-colors">
+                <div className="p-3 bg-green-100 border-2 border-black dark:border-white group-hover:bg-white transition-colors">
                   <MessageCircle className="h-8 w-8 text-black" />
                 </div>
-                <span className="text-lg text-black">Chat with AI</span>
+                <span className="text-lg text-black dark:text-white group-hover:text-black">Chat with AI</span>
               </Button>
             </motion.div>
 
@@ -377,20 +376,20 @@ export default function Dashboard() {
                       Recommended for You
                     </span>
                   </h2>
-                  <Button variant="ghost" size="sm" className="text-gray-600 hover:text-black hover:bg-primary/20 font-bold uppercase border-2 border-transparent hover:border-black" onClick={() => navigate('/readnex')}>
+                  <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-300 hover:text-black hover:bg-primary/20 font-bold uppercase border-2 border-transparent hover:border-black" onClick={() => navigate('/readnex')}>
                     View All <ArrowRight className="ml-1 h-4 w-4" />
                   </Button>
                 </div>
 
                 <div className="space-y-4">
                   {recommendations.length === 0 ? (
-                    <Card className="bg-white border-4 border-dashed border-black rounded-none">
+                    <Card className="bg-white dark:bg-zinc-800 border-4 border-dashed border-black dark:border-white rounded-none">
                       <CardContent className="p-12 text-center">
-                        <div className="w-16 h-16 bg-gray-100 border-2 border-black flex items-center justify-center mx-auto mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                          <BookOpen className="h-8 w-8 text-black" />
+                        <div className="w-16 h-16 bg-gray-100 dark:bg-zinc-700 border-2 border-black dark:border-white flex items-center justify-center mx-auto mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                          <BookOpen className="h-8 w-8 text-black dark:text-white" />
                         </div>
-                        <p className="text-gray-600 font-bold uppercase">No recommendations available yet.</p>
-                        <p className="text-gray-500 font-mono text-sm mt-2">Start reading to get personalized suggestions!</p>
+                        <p className="text-gray-600 dark:text-gray-300 font-bold uppercase">No recommendations available yet.</p>
+                        <p className="text-gray-500 dark:text-gray-400 font-mono text-sm mt-2">Start reading to get personalized suggestions!</p>
                       </CardContent>
                     </Card>
                   ) : (
@@ -404,20 +403,20 @@ export default function Dashboard() {
               {/* Sidebar */}
               <motion.div variants={fadeInUp} className="space-y-6">
                 {/* Reading History */}
-                <Card className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
-                  <CardHeader className="pb-3 border-b-4 border-black bg-blue-100">
-                    <CardTitle className="text-lg font-black flex items-center gap-2 uppercase">
-                      <Clock className="h-5 w-5 text-black" />
+                <Card className="bg-white dark:bg-zinc-800 border-4 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
+                  <CardHeader className="pb-3 border-b-4 border-black dark:border-white bg-blue-100 dark:bg-blue-900">
+                    <CardTitle className="text-lg font-black flex items-center gap-2 uppercase dark:text-white">
+                      <Clock className="h-5 w-5 text-black dark:text-white" />
                       Continue Reading
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-4 space-y-4">
                     {readingHistory.length === 0 ? (
                       <div className="text-center py-6">
-                        <div className="w-12 h-12 bg-blue-100 border-2 border-black flex items-center justify-center mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                          <BookOpen className="h-6 w-6 text-black" />
+                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 border-2 border-black dark:border-white flex items-center justify-center mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                          <BookOpen className="h-6 w-6 text-black dark:text-white" />
                         </div>
-                        <p className="text-sm text-gray-600 font-bold">No reading history yet</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-bold">No reading history yet</p>
                       </div>
                     ) : (
                       readingHistory.map((book) => (
@@ -428,9 +427,9 @@ export default function Dashboard() {
                 </Card>
 
                 {/* Favorites */}
-                <Card className="bg-white border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
-                  <CardHeader className="pb-3 border-b-4 border-black bg-red-100">
-                    <CardTitle className="text-lg font-black flex items-center gap-2 uppercase">
+                <Card className="bg-white dark:bg-zinc-800 border-4 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
+                  <CardHeader className="pb-3 border-b-4 border-black dark:border-white bg-red-100 dark:bg-red-900">
+                    <CardTitle className="text-lg font-black flex items-center gap-2 uppercase dark:text-white">
                       <Heart className="h-5 w-5 text-red-500 fill-red-500" />
                       My Favorites
                     </CardTitle>
@@ -438,10 +437,10 @@ export default function Dashboard() {
                   <CardContent className="pt-4 space-y-4">
                     {favorites.length === 0 ? (
                       <div className="text-center py-6">
-                        <div className="w-12 h-12 bg-red-100 border-2 border-black flex items-center justify-center mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                        <div className="w-12 h-12 bg-red-100 dark:bg-red-900 border-2 border-black dark:border-white flex items-center justify-center mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                           <Heart className="h-6 w-6 text-red-500" />
                         </div>
-                        <p className="text-sm text-gray-600 font-bold">No favorites yet</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-bold">No favorites yet</p>
                       </div>
                     ) : (
                       favorites.map((book) => (

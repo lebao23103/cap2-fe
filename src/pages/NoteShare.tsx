@@ -494,11 +494,11 @@ export default function NoteShare() {
           className="mb-8 text-center"
         >
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="h-1 w-16 bg-black" />
-            <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight uppercase">
-              <span className="bg-primary text-black px-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">NoteShare</span>
+            <div className="h-1 w-16 bg-black dark:bg-white" />
+            <h1 className="font-display text-4xl md:text-5xl font-bold tracking-tight uppercase text-foreground">
+              <span className="bg-primary text-black px-2 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">NoteShare</span>
             </h1>
-            <div className="h-1 w-16 bg-black" />
+            <div className="h-1 w-16 bg-black dark:bg-white" />
           </div>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-mono">
             A community space for sharing book insights and discovering user-created content
@@ -513,57 +513,58 @@ export default function NoteShare() {
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
         >
           <motion.div variants={fadeInUp}>
-            <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
+            <Card className="border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all duration-300">
               <CardContent className="p-4 text-center">
-                <div className="p-3 border-2 border-black bg-amber-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <div className="p-3 border-2 border-black dark:border-white bg-amber-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                   <StickyNote className="h-6 w-6 text-black" />
                 </div>
-                <div className="text-2xl font-bold text-black font-display">
+                <div className="text-2xl font-bold text-black dark:text-white font-display">
                   {mockSharedNotes.length}
                 </div>
-                <div className="text-sm text-gray-600 font-bold uppercase">Shared Notes</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase">Shared Notes</div>
               </CardContent>
             </Card>
           </motion.div>
 
+
           <motion.div variants={fadeInUp}>
-            <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
+            <Card className="border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all duration-300">
               <CardContent className="p-4 text-center">
-                <div className="p-3 border-2 border-black bg-green-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <div className="p-3 border-2 border-black dark:border-white bg-green-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                   <Feather className="h-6 w-6 text-black" />
                 </div>
-                <div className="text-2xl font-bold text-black font-display">
+                <div className="text-2xl font-bold text-black dark:text-white font-display">
                   {mockUserBooks.length}
                 </div>
-                <div className="text-sm text-gray-600 font-bold uppercase">User Books</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase">User Books</div>
               </CardContent>
             </Card>
           </motion.div>
 
           <motion.div variants={fadeInUp}>
-            <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
+            <Card className="border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all duration-300">
               <CardContent className="p-4 text-center">
-                <div className="p-3 border-2 border-black bg-blue-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <div className="p-3 border-2 border-black dark:border-white bg-blue-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                   <Users className="h-6 w-6 text-black" />
                 </div>
-                <div className="text-2xl font-bold text-black font-display">
+                <div className="text-2xl font-bold text-black dark:text-white font-display">
                   {new Set([...mockSharedNotes.map(n => n.userName), ...mockUserBooks.map(b => b.author)]).size}
                 </div>
-                <div className="text-sm text-gray-600 font-bold uppercase">Contributors</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase">Contributors</div>
               </CardContent>
             </Card>
           </motion.div>
 
           <motion.div variants={fadeInUp}>
-            <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
+            <Card className="border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all duration-300">
               <CardContent className="p-4 text-center">
-                <div className="p-3 border-2 border-black bg-red-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                <div className="p-3 border-2 border-black dark:border-white bg-red-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                   <ThumbsUp className="h-6 w-6 text-black" />
                 </div>
-                <div className="text-2xl font-bold text-black font-display">
+                <div className="text-2xl font-bold text-black dark:text-white font-display">
                   {mockSharedNotes.reduce((sum, note) => sum + note.likes, 0)}
                 </div>
-                <div className="text-sm text-gray-600 font-bold uppercase">Total Likes</div>
+                <div className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase">Total Likes</div>
               </CardContent>
             </Card>
           </motion.div>
@@ -577,13 +578,13 @@ export default function NoteShare() {
           className="mb-8"
         >
           <div className="relative max-w-2xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-black" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-black dark:text-gray-400" />
             <input
               type="text"
               placeholder="Search notes, books, or users..."
               value={filters.searchTerm}
               onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-              className="w-full pl-12 pr-4 py-3 text-base border-2 border-black rounded-none bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] focus:translate-x-[-2px] focus:translate-y-[-2px] text-black placeholder:text-gray-500 transition-all duration-200 font-mono"
+              className="w-full pl-12 pr-4 py-3 text-base border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] focus:outline-none focus:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] focus:translate-x-[-2px] focus:translate-y-[-2px] text-black dark:text-white placeholder:text-gray-500 font-mono"
             />
           </div>
         </motion.div>
@@ -598,14 +599,14 @@ export default function NoteShare() {
             <TabsList className="grid w-full grid-cols-2 mb-8 h-14 bg-transparent gap-4 p-0">
               <TabsTrigger
                 value="notes"
-                className="border-2 border-black bg-white data-[state=active]:bg-black data-[state=active]:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all font-bold uppercase h-full"
+                className="border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-full text-black dark:text-gray-300"
               >
                 <Quote className="h-4 w-4 mr-2" />
                 Shared Notes ({filteredNotes.length})
               </TabsTrigger>
               <TabsTrigger
                 value="books"
-                className="border-2 border-black bg-white data-[state=active]:bg-black data-[state=active]:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all font-bold uppercase h-full"
+                className="border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-full text-black dark:text-gray-300"
               >
                 <BookOpen className="h-4 w-4 mr-2" />
                 User Books ({filteredBooks.length})
@@ -618,19 +619,19 @@ export default function NoteShare() {
               <div className="mb-6 flex flex-wrap gap-3 items-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="gap-2 bg-white border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all font-bold uppercase">
+                    <Button variant="outline" className="gap-2 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase text-black dark:text-white">
                       <Filter className="h-4 w-4" />
                       {filters.noteFilter}
                       <ChevronDown className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-48 border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                    <DropdownMenuLabel className="font-bold uppercase border-b-2 border-black">Filter Notes</DropdownMenuLabel>
+                  <DropdownMenuContent align="start" className="w-48 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                    <DropdownMenuLabel className="font-bold uppercase border-b-2 border-black dark:border-white dark:text-white">Filter Notes</DropdownMenuLabel>
                     {filterOptions.map((option) => (
                       <DropdownMenuItem
                         key={option}
                         onClick={() => handleFilterChange('noteFilter', option)}
-                        className="font-mono cursor-pointer hover:bg-primary hover:text-black focus:bg-primary focus:text-black rounded-none"
+                        className="font-mono cursor-pointer hover:bg-primary hover:text-black focus:bg-primary focus:text-black rounded-none dark:text-white dark:focus:text-black"
                       >
                         {option}
                       </DropdownMenuItem>
@@ -647,21 +648,21 @@ export default function NoteShare() {
               <motion.div variants={stagger} initial="initial" animate="animate" className="space-y-6">
                 {filteredNotes.map((note) => (
                   <motion.div key={note.id} variants={fadeInUp}>
-                    <Card className="border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 group">
+                    <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 group">
                       <CardContent className="p-6">
                         {/* Header: Book Info & Date */}
-                        <div className="flex items-start justify-between mb-4 pb-4 border-b-2 border-black">
+                        <div className="flex items-start justify-between mb-4 pb-4 border-b-2 border-black dark:border-white">
                           <div className="flex items-center gap-4">
                             <img
                               src={note.bookCover}
                               alt={note.bookTitle}
-                              className="w-16 h-24 object-cover border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                              className="w-16 h-24 object-cover border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
                             />
                             <div>
-                              <h3 className="text-lg font-bold text-black mb-1 uppercase font-display">
+                              <h3 className="text-lg font-bold text-black dark:text-white mb-1 uppercase font-display">
                                 {note.bookTitle}
                               </h3>
-                              <p className="text-sm text-gray-600 font-mono">
+                              <p className="text-sm text-gray-600 dark:text-gray-300 font-mono">
                                 by {note.bookAuthor} • Page {note.page}
                               </p>
                             </div>
@@ -680,7 +681,7 @@ export default function NoteShare() {
                         </div>
 
                         {/* User Note */}
-                        <p className="text-base text-gray-800 mb-6 leading-relaxed font-mono">
+                        <p className="text-base text-gray-800 dark:text-gray-200 mb-6 leading-relaxed font-mono">
                           {note.userNote}
                         </p>
 
@@ -690,9 +691,9 @@ export default function NoteShare() {
                             <img
                               src={note.userAvatar}
                               alt={note.userName}
-                              className="w-8 h-8 rounded-none border-2 border-black"
+                              className="w-8 h-8 rounded-none border-2 border-black dark:border-white"
                             />
-                            <span className="text-sm font-bold text-black uppercase">
+                            <span className="text-sm font-bold text-black dark:text-white uppercase">
                               {note.userName}
                             </span>
                           </div>

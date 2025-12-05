@@ -249,8 +249,8 @@ export default function BookDetail() {
           >
             <Star
               className={`h-5 w-5 transition-colors ${star <= (interactive ? hoveredRating || userRating : rating)
-                ? 'fill-black text-black'
-                : 'text-gray-300'
+                ? 'fill-black text-black dark:fill-white dark:text-white'
+                : 'text-gray-300 dark:text-gray-600'
                 }`}
             />
           </button>
@@ -285,7 +285,7 @@ export default function BookDetail() {
             <Button
               variant="outline"
               onClick={() => navigate('/readnex')}
-              className="border-2 border-black rounded-none hover:bg-black hover:text-white uppercase font-bold"
+              className="border-2 border-black dark:border-white rounded-none hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black dark:bg-zinc-900 dark:text-white uppercase font-bold"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Library
@@ -300,13 +300,14 @@ export default function BookDetail() {
   if (!book) {
     return (
       <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center font-mono">
-        <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         <div className="container mx-auto py-16 text-center relative z-10">
           <h1 className="text-3xl font-bold mb-4 text-foreground uppercase font-display">Book Not Found</h1>
           <p className="text-muted-foreground mb-8 font-mono">
             The book you're looking for doesn't exist or has been removed.
           </p>
-          <Button onClick={() => navigate('/readnex')} className="border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">Back to Library</Button>
+          <Button onClick={() => navigate('/readnex')} className="border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold">Back to Library</Button>
         </div>
       </div>
     );
@@ -315,7 +316,8 @@ export default function BookDetail() {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden font-mono">
       {/* Background Grid */}
-      <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       <div className="container mx-auto py-6 sm:py-8 md:py-12 max-w-6xl relative z-10 px-4">
         {/* Back Button */}
@@ -326,7 +328,7 @@ export default function BookDetail() {
         >
           <Button
             variant="ghost"
-            className="group hover:bg-transparent hover:text-primary transition-all font-bold uppercase"
+            className="group hover:bg-transparent hover:text-primary transition-all font-bold uppercase text-black dark:text-white"
             onClick={() => navigate('/readnex')}
           >
             <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
@@ -344,8 +346,8 @@ export default function BookDetail() {
           {/* Book Cover - Left Side */}
           <div className="lg:col-span-4 flex flex-col gap-6">
             <div className="relative group">
-              <div className="absolute -inset-1 bg-black translate-x-2 translate-y-2"></div>
-              <div className="relative aspect-[3/4] border-2 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              <div className="absolute -inset-1 bg-black dark:bg-white translate-x-2 translate-y-2"></div>
+              <div className="relative aspect-[3/4] border-2 border-black dark:border-white bg-white dark:bg-zinc-800 overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
                 <img
                   src={getCoverImageUrl(book.cover_image)}
                   alt={`${book.title} by ${book.author} - Book cover`}
@@ -358,7 +360,7 @@ export default function BookDetail() {
             <div className="flex flex-col gap-3">
               <Button
                 size="lg"
-                className="w-full bg-primary text-black border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all uppercase font-bold"
+                className="w-full bg-primary text-black border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all uppercase font-bold"
                 onClick={handleStartReading}
               >
                 <BookOpen className="h-5 w-5 mr-2" />
@@ -369,7 +371,7 @@ export default function BookDetail() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="flex-1 bg-white text-black border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-100 transition-all"
+                  className="flex-1 bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
                   onClick={handleToggleFavorite}
                   disabled={favoritingState === 'loading'}
                 >
@@ -384,7 +386,7 @@ export default function BookDetail() {
                       />
                     ) : (
                       <Heart
-                        className={`h-5 w-5 transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : 'text-black'}`}
+                        className={`h-5 w-5 transition-colors ${isFavorited ? 'fill-red-500 text-red-500' : 'text-black dark:text-white'}`}
                       />
                     )}
                   </AnimatePresence>
@@ -393,7 +395,7 @@ export default function BookDetail() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="flex-1 bg-white text-black border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-100 transition-all"
+                  className="flex-1 bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
                   onClick={handleShare}
                   disabled={sharingState === 'loading'}
                 >
@@ -407,14 +409,14 @@ export default function BookDetail() {
                         className="h-5 w-5 border-2 border-black border-t-transparent rounded-full animate-spin"
                       />
                     ) : (
-                      <Share2 className="h-5 w-5 text-black" />
+                      <Share2 className="h-5 w-5 text-black dark:text-white" />
                     )}
                   </AnimatePresence>
                 </Button>
               </div>
 
               <Button
-                className="w-full bg-white text-black border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-black hover:text-white transition-all font-bold uppercase"
+                className="w-full bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all font-bold uppercase"
                 onClick={handleTakeQuiz}
               >
                 Take Quiz
@@ -428,11 +430,11 @@ export default function BookDetail() {
             <div>
               <div className="flex flex-wrap gap-2 mb-4">
                 {book.subject && (
-                  <Badge variant="secondary" className="bg-white text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] px-3 py-1 uppercase font-bold">
+                  <Badge variant="secondary" className="bg-white dark:bg-zinc-800 text-black dark:text-white border-2 border-black dark:border-white rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] px-3 py-1 uppercase font-bold">
                     {book.subject}
                   </Badge>
                 )}
-                <Badge variant="outline" className="text-black border-2 border-black rounded-none bg-white uppercase font-bold">
+                <Badge variant="outline" className="text-black dark:text-white border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-800 uppercase font-bold">
                   {book.language || 'English'}
                 </Badge>
               </div>
@@ -442,25 +444,25 @@ export default function BookDetail() {
               </h1>
 
               <div className="flex items-center gap-2 text-lg text-muted-foreground mb-6 font-mono">
-                <User className="h-5 w-5 text-black" />
-                <span className="font-bold text-black uppercase">{book.author}</span>
+                <User className="h-5 w-5 text-black dark:text-white" />
+                <span className="font-bold text-black dark:text-white uppercase">{book.author}</span>
               </div>
 
               {/* Rating & Stats */}
-              <div className="flex flex-wrap items-center gap-6 p-4 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div className="flex flex-wrap items-center gap-6 p-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
-                    <Star className="h-5 w-5 fill-black text-black" />
-                    <span className="text-xl font-bold text-black font-mono">{(book.rating || 0).toFixed(1)}</span>
+                    <Star className="h-5 w-5 fill-black text-black dark:fill-white dark:text-white" />
+                    <span className="text-xl font-bold text-black dark:text-white font-mono">{(book.rating || 0).toFixed(1)}</span>
                   </div>
-                  <span className="text-sm text-gray-600 font-mono">
+                  <span className="text-sm text-gray-600 dark:text-gray-300 font-mono">
                     ({book.reviews_count?.toLocaleString() || 0} reviews)
                   </span>
                 </div>
 
-                <div className="w-px h-8 bg-black hidden sm:block" />
+                <div className="w-px h-8 bg-black dark:bg-white hidden sm:block" />
 
-                <div className="flex items-center gap-2 text-sm text-black font-bold font-mono">
+                <div className="flex items-center gap-2 text-sm text-black dark:text-white font-bold font-mono">
                   <Book className="h-4 w-4" />
                   <span>{book.pages || 'N/A'} Pages</span>
                 </div>
@@ -470,24 +472,24 @@ export default function BookDetail() {
             {/* Description */}
             <div className="space-y-4">
               <h2 className="text-2xl font-bold text-foreground flex items-center gap-2 uppercase font-display">
-                <BookOpen className="h-5 w-5 text-black" />
+                <BookOpen className="h-5 w-5 text-black dark:text-white" />
                 About this book
               </h2>
-              <p className="text-lg text-gray-800 leading-relaxed font-mono border-l-4 border-black pl-4">
+              <p className="text-lg text-gray-800 dark:text-gray-300 leading-relaxed font-mono border-l-4 border-black dark:border-white pl-4">
                 {book.description}
               </p>
             </div>
 
             {/* Additional Details Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Card className="bg-white border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <Card className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                 <CardContent className="p-4 flex items-start gap-3">
-                  <div className="p-2 border-2 border-black bg-blue-400 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                  <div className="p-2 border-2 border-black dark:border-white bg-blue-400 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                     <Globe className="h-5 w-5" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-gray-600 uppercase">Language</p>
-                    <p className="font-bold text-black font-mono">{book.language || 'English'}</p>
+                    <p className="text-sm font-bold text-gray-600 dark:text-gray-300 uppercase">Language</p>
+                    <p className="font-bold text-black dark:text-white font-mono">{book.language || 'English'}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -499,18 +501,18 @@ export default function BookDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column: Rating Distribution & Write Review */}
           <div className="lg:col-span-4 space-y-6">
-            <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none">
+            <Card className="border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none">
               <CardContent className="p-6">
-                <h3 className="text-lg font-bold mb-4 flex items-center gap-2 uppercase">
-                  <Star className="h-5 w-5 text-black fill-black" />
+                <h3 className="text-lg font-bold mb-4 flex items-center gap-2 uppercase text-black dark:text-white">
+                  <Star className="h-5 w-5 text-black dark:text-white fill-black dark:fill-white" />
                   Rating Distribution
                 </h3>
                 <div className="space-y-3">
                   {calculateRatingDistribution().map((dist) => (
                     <div key={dist.stars} className="flex items-center gap-3 font-mono">
-                      <span className="text-sm font-bold w-3">{dist.stars}</span>
-                      <Progress value={dist.percentage} className="h-2 bg-gray-200 border border-black rounded-none [&>div]:bg-black" />
-                      <span className="text-xs text-gray-600 w-10 text-right">
+                      <span className="text-sm font-bold w-3 text-black dark:text-white">{dist.stars}</span>
+                      <Progress value={dist.percentage} className="h-2 bg-gray-200 dark:bg-zinc-700 border border-black dark:border-white rounded-none [&>div]:bg-black dark:[&>div]:bg-white" />
+                      <span className="text-xs text-gray-600 dark:text-gray-300 w-10 text-right">
                         {dist.percentage}%
                       </span>
                     </div>
@@ -519,30 +521,30 @@ export default function BookDetail() {
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none">
+            <Card className="border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none">
               <CardContent className="p-6 space-y-4">
-                <h3 className="text-lg font-bold uppercase">Write a Review</h3>
+                <h3 className="text-lg font-bold uppercase text-black dark:text-white">Write a Review</h3>
                 <div>
-                  <label className="text-sm font-bold mb-2 block text-black uppercase">Your Rating</label>
-                  <div className="flex justify-center p-4 bg-gray-50 border-2 border-black">
+                  <label className="text-sm font-bold mb-2 block text-black dark:text-white uppercase">Your Rating</label>
+                  <div className="flex justify-center p-4 bg-gray-50 dark:bg-zinc-900 border-2 border-black dark:border-white">
                     {renderStarRating(userRating, true)}
                   </div>
                 </div>
                 <div>
-                  <label className="text-sm font-bold mb-2 block text-black uppercase">Your Review</label>
+                  <label className="text-sm font-bold mb-2 block text-black dark:text-white uppercase">Your Review</label>
                   <Textarea
                     placeholder="Share your thoughts..."
                     value={userReview}
                     onChange={(e) => setUserReview(e.target.value)}
                     rows={4}
-                    className="resize-none bg-white border-2 border-black rounded-none focus:ring-0 focus:border-black font-mono"
+                    className="resize-none bg-white dark:bg-zinc-900 border-2 border-black dark:border-white rounded-none focus:ring-0 focus:border-black dark:focus:border-white font-mono text-black dark:text-white"
                   />
-                  <p className="text-xs text-gray-600 mt-1.5 text-right font-mono">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1.5 text-right font-mono">
                     {userReview.length} / 50 min chars
                   </p>
                 </div>
                 <Button
-                  className="w-full bg-black hover:bg-primary hover:text-black text-white border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold transition-all"
+                  className="w-full bg-black dark:bg-white hover:bg-primary hover:text-black text-white dark:text-black border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold transition-all"
                   onClick={handleSubmitReview}
                   disabled={submittingReview || !userRating || userReview.length < 50}
                 >
@@ -555,17 +557,17 @@ export default function BookDetail() {
           {/* Right Column: Reviews List */}
           <div className="lg:col-span-8">
             <h3 className="text-2xl font-bold mb-6 text-foreground uppercase font-display">
-              Reviews <span className="text-gray-600 text-lg font-normal font-mono">({reviews.length})</span>
+              Reviews <span className="text-gray-600 dark:text-gray-400 text-lg font-normal font-mono">({reviews.length})</span>
             </h3>
 
             {reviews.length === 0 ? (
-              <Card className="border-2 border-dashed border-black bg-transparent rounded-none">
+              <Card className="border-2 border-dashed border-black dark:border-white bg-transparent rounded-none">
                 <CardContent className="p-12 text-center">
-                  <div className="w-16 h-16 bg-gray-100 border-2 border-black flex items-center justify-center mx-auto mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                    <Star className="h-8 w-8 text-black" />
+                  <div className="w-16 h-16 bg-gray-100 dark:bg-zinc-800 border-2 border-black dark:border-white flex items-center justify-center mx-auto mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                    <Star className="h-8 w-8 text-black dark:text-white" />
                   </div>
-                  <h4 className="text-lg font-bold text-black mb-2 uppercase">No reviews yet</h4>
-                  <p className="text-gray-600 font-mono">
+                  <h4 className="text-lg font-bold text-black dark:text-white mb-2 uppercase">No reviews yet</h4>
+                  <p className="text-gray-600 dark:text-gray-400 font-mono">
                     Be the first to share your thoughts on this book!
                   </p>
                 </CardContent>
@@ -579,20 +581,20 @@ export default function BookDetail() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <Card className="border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all">
+                    <Card className="border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all">
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
-                          <Avatar className="h-10 w-10 border-2 border-black rounded-none">
+                          <Avatar className="h-10 w-10 border-2 border-black dark:border-white rounded-none">
                             <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user.email}`} />
                             <AvatarFallback className="rounded-none bg-primary text-black font-bold">{review.user.first_name[0]}</AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex justify-between items-start mb-2">
                               <div>
-                                <h4 className="font-bold text-black uppercase">
+                                <h4 className="font-bold text-black dark:text-white uppercase">
                                   {review.user.first_name} {review.user.last_name}
                                 </h4>
-                                <p className="text-xs text-gray-600 font-mono">
+                                <p className="text-xs text-gray-600 dark:text-gray-400 font-mono">
                                   {new Date(review.created_at).toLocaleDateString(undefined, {
                                     year: 'numeric',
                                     month: 'long',
@@ -602,14 +604,14 @@ export default function BookDetail() {
                               </div>
                               <div className="flex">{renderStarRating(review.rating)}</div>
                             </div>
-                            <p className="text-gray-800 leading-relaxed mb-4 font-mono">
+                            <p className="text-gray-800 dark:text-gray-300 leading-relaxed mb-4 font-mono">
                               {review.comment}
                             </p>
                             <div className="flex gap-2">
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 text-xs text-gray-600 hover:text-black hover:bg-primary/20 border border-transparent hover:border-black rounded-none uppercase font-bold"
+                                className="h-8 text-xs text-gray-600 dark:text-gray-400 hover:text-black hover:bg-primary/20 hover:border-black dark:hover:text-white dark:hover:border-white border border-transparent rounded-none uppercase font-bold"
                                 onClick={() => handleMarkHelpful(review.id)}
                               >
                                 <ThumbsUp className="h-3 w-3 mr-1.5" />
@@ -618,7 +620,7 @@ export default function BookDetail() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="h-8 text-xs text-gray-600 hover:text-red-600 hover:bg-red-100 border border-transparent hover:border-black rounded-none uppercase font-bold"
+                                className="h-8 text-xs text-gray-600 dark:text-gray-400 hover:text-red-600 hover:bg-red-100 border border-transparent hover:border-black dark:hover:border-white rounded-none uppercase font-bold"
                                 onClick={() => handleReportReview(review.id)}
                               >
                                 <Flag className="h-3 w-3 mr-1.5" />

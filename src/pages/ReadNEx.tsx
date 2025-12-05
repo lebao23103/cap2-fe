@@ -262,7 +262,7 @@ export default function ReadNEx() {
             </h1>
             <div className="h-2 w-12 sm:w-20 bg-black dark:bg-white" />
           </div>
-          <p className="text-base sm:text-lg text-foreground font-bold max-w-2xl mx-auto leading-relaxed uppercase tracking-wider bg-white border-2 border-black p-2 inline-block shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <p className="text-base sm:text-lg text-foreground font-bold max-w-2xl mx-auto leading-relaxed uppercase tracking-wider bg-white dark:bg-zinc-900 border-2 border-black dark:border-white p-2 inline-block shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
             Your personal library for interactive learning
           </p>
         </motion.div>
@@ -304,15 +304,15 @@ export default function ReadNEx() {
               bg: 'bg-purple-400'
             }
           ].map((stat, index) => (
-            <Card key={index} className="border-2 border-black bg-white hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none">
+            <Card key={index} className="border-2 border-black dark:border-white bg-white dark:bg-zinc-800 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none">
               <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                <div className={`p-3 border-2 border-black ${stat.bg} mb-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]`}>
+                <div className={`p-3 border-2 border-black dark:border-white ${stat.bg} mb-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]`}>
                   <stat.icon className={`h-6 w-6 ${stat.color}`} />
                 </div>
-                <div className="text-3xl font-bold text-black mb-1 font-display">
+                <div className="text-3xl font-bold text-black dark:text-white mb-1 font-display">
                   {stat.value}
                 </div>
-                <div className="text-xs font-bold text-black uppercase tracking-wider">
+                <div className="text-xs font-bold text-black dark:text-gray-300 uppercase tracking-wider">
                   {stat.label}
                 </div>
               </CardContent>
@@ -327,18 +327,18 @@ export default function ReadNEx() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="mb-8 sticky top-20 z-30"
         >
-          <div className="bg-primary border-2 border-black p-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+          <div className="bg-primary border-2 border-black dark:border-white p-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
             <div className="flex flex-col md:flex-row gap-4">
 
               {/* Search Bar */}
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black dark:text-gray-400" />
                 <input
                   type="text"
                   placeholder="SEARCH BY TITLE, AUTHOR..."
                   value={filters.searchTerm}
                   onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-white border-2 border-black focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all text-sm placeholder:text-gray-500 font-bold uppercase"
+                  className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white dark:text-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all text-sm placeholder:text-gray-500 font-bold uppercase"
                 />
               </div>
 
@@ -349,7 +349,7 @@ export default function ReadNEx() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
-                      className="h-10 px-4 border-2 border-black bg-white hover:bg-gray-100 transition-all min-w-[140px] justify-between rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-black font-bold uppercase"
+                      className="h-10 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all min-w-[140px] justify-between rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] text-black dark:text-white font-bold uppercase"
                     >
                       <span className="flex items-center gap-2 text-sm">
                         <BookmarkCheck className="h-4 w-4" />
@@ -358,13 +358,13 @@ export default function ReadNEx() {
                       <ChevronDown className="h-3 w-3" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none" align="end">
-                    <DropdownMenuLabel className="uppercase font-bold border-b-2 border-black">Filter by Status</DropdownMenuLabel>
+                  <DropdownMenuContent className="w-56 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none" align="end">
+                    <DropdownMenuLabel className="uppercase font-bold border-b-2 border-black dark:border-white dark:text-white">Filter by Status</DropdownMenuLabel>
                     {statusFilters.map((status) => (
                       <DropdownMenuItem
                         key={status}
                         onClick={() => handleFilterChange('statusFilter', status)}
-                        className="cursor-pointer focus:bg-primary focus:text-black rounded-none my-0.5 font-mono uppercase font-bold hover:bg-primary"
+                        className="cursor-pointer focus:bg-primary focus:text-black rounded-none my-0.5 font-mono uppercase font-bold hover:bg-primary dark:text-white dark:focus:text-black"
                       >
                         {status}
                       </DropdownMenuItem>
@@ -372,17 +372,16 @@ export default function ReadNEx() {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                {/* View Mode Toggle */}
-                <div className="flex bg-white border-2 border-black p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <div className="flex bg-white dark:bg-zinc-900 border-2 border-black dark:border-white p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 transition-all border-2 ${viewMode === 'grid' ? 'bg-primary border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}
+                    className={`p-2 transition-all border-2 ${viewMode === 'grid' ? 'bg-primary border-black text-black' : 'border-transparent text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white'}`}
                   >
                     <Grid3x3 className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`p-2 transition-all border-2 ${viewMode === 'list' ? 'bg-primary border-black text-black' : 'border-transparent text-gray-500 hover:text-black'}`}
+                    className={`p-2 transition-all border-2 ${viewMode === 'list' ? 'bg-primary border-black text-black' : 'border-transparent text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white'}`}
                   >
                     <List className="h-4 w-4" />
                   </button>
@@ -428,7 +427,7 @@ export default function ReadNEx() {
                         }}
                         className="group relative"
                       >
-                        <Card className="h-full border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden rounded-none flex flex-col">
+                        <Card className="h-full border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 overflow-hidden rounded-none flex flex-col">
 
                           {/* Cover Image Area */}
                           <Link to={`/book/${book.id}`} className="relative aspect-[3/4] overflow-hidden block border-b-2 border-black">
@@ -512,17 +511,17 @@ export default function ReadNEx() {
                           </Link>
 
                           {/* Content Area */}
-                          <div className="p-4 flex flex-col flex-1 bg-white">
+                          <div className="p-4 flex flex-col flex-1 bg-white dark:bg-zinc-800">
                             <Link to={`/book/${book.id}`} className="block mb-1">
-                              <h3 className="font-bold text-lg leading-tight text-black uppercase line-clamp-1 group-hover:underline decoration-2 underline-offset-2">
+                              <h3 className="font-bold text-lg leading-tight text-black dark:text-white uppercase line-clamp-1 group-hover:underline decoration-2 underline-offset-2">
                                 {book.title}
                               </h3>
                             </Link>
-                            <p className="text-sm text-gray-600 font-mono mb-3 uppercase">
+                            <p className="text-sm text-gray-600 dark:text-gray-300 font-mono mb-3 uppercase">
                               {book.author}
                             </p>
 
-                            <div className="mt-auto flex items-center justify-between pt-3 border-t-2 border-black">
+                            <div className="mt-auto flex items-center justify-between pt-3 border-t-2 border-black dark:border-white">
                               {renderStars(book.rating)}
 
                               <div className="flex items-center gap-2">
@@ -548,9 +547,9 @@ export default function ReadNEx() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
                       >
-                        <Card className="group overflow-hidden border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 rounded-none">
+                        <Card className="group overflow-hidden border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 rounded-none">
                           <div className="flex flex-col sm:flex-row gap-4 p-4">
-                            <div className="relative w-full sm:w-24 md:w-32 aspect-[2/3] border-2 border-black overflow-hidden flex-shrink-0">
+                            <div className="relative w-full sm:w-24 md:w-32 aspect-[2/3] border-2 border-black dark:border-white overflow-hidden flex-shrink-0">
                               <img
                                 src={getCoverImageUrl(book.coverImage)}
                                 alt={book.title}
@@ -561,10 +560,10 @@ export default function ReadNEx() {
                               <div>
                                 <div className="flex justify-between items-start">
                                   <div>
-                                    <h3 className="font-bold text-xl text-black uppercase mb-1 group-hover:underline decoration-2 underline-offset-2">
+                                    <h3 className="font-bold text-xl text-black dark:text-white uppercase mb-1 group-hover:underline decoration-2 underline-offset-2">
                                       {book.title}
                                     </h3>
-                                    <p className="text-gray-600 font-mono mb-2 uppercase">{book.author}</p>
+                                    <p className="text-gray-600 dark:text-gray-300 font-mono mb-2 uppercase">{book.author}</p>
                                   </div>
                                   <div className="flex gap-2">
                                     {book.quizCompleted && (
@@ -577,7 +576,7 @@ export default function ReadNEx() {
                                 <p className="text-sm text-gray-600 line-clamp-2 mb-4 max-w-2xl font-mono">
                                   {book.description}
                                 </p>
-                                <div className="flex items-center gap-4 text-sm text-black font-bold">
+                                <div className="flex items-center gap-4 text-sm text-black dark:text-white font-bold">
                                   {renderStars(book.rating)}
                                   <span>•</span>
                                   <span className="flex items-center gap-1 uppercase">
@@ -596,11 +595,11 @@ export default function ReadNEx() {
                                 <Button size="sm" onClick={() => navigate(`/book/${book.id}/read`)} className="bg-black text-white hover:bg-primary hover:text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
                                   <Play className="h-3.5 w-3.5 mr-2" /> Read
                                 </Button>
-                                <Button size="sm" variant="outline" onClick={() => navigate(`/book/${book.id}`)} className="bg-white text-black border-2 border-black hover:bg-gray-100 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
+                                <Button size="sm" variant="outline" onClick={() => navigate(`/book/${book.id}`)} className="bg-white text-black border-2 border-black hover:bg-gray-100 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase font-bold dark:bg-zinc-900 dark:text-white dark:border-white dark:hover:bg-zinc-700">
                                   Details
                                 </Button>
-                                <Button size="icon" variant="ghost" onClick={() => toggleFavorite(book.id)} className="border-2 border-black rounded-none hover:bg-pink-400">
-                                  <Heart className={`h-4 w-4 ${book.isFavorite ? 'fill-black text-black' : ''}`} />
+                                <Button size="icon" variant="ghost" onClick={() => toggleFavorite(book.id)} className="border-2 border-black dark:border-white rounded-none hover:bg-pink-400">
+                                  <Heart className={`h-4 w-4 ${book.isFavorite ? 'fill-black text-black' : 'dark:text-white'}`} />
                                 </Button>
                               </div>
                             </div>

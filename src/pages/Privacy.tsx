@@ -11,8 +11,10 @@ export default function Privacy() {
   };
 
   return (
-    <div className="relative w-full min-h-screen pt-20 pb-12">
-      <div className="container mx-auto max-w-4xl">
+    <div className="min-h-screen bg-background font-mono relative selection:bg-primary selection:text-black">
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="container mx-auto max-w-4xl relative z-10 pt-20 pb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -21,14 +23,14 @@ export default function Privacy() {
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-4">
-              <div className="p-4 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl">
-                <Shield className="h-12 w-12 text-white" />
+              <div className="p-4 bg-white dark:bg-zinc-800 border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                <Shield className="h-12 w-12 text-black dark:text-white" />
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-4">
+            <h1 className="text-4xl sm:text-5xl font-black uppercase mb-4 text-black dark:text-white bg-white dark:bg-zinc-900 inline-block px-4 py-2 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
               Privacy Policy
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-lg font-bold">
               Last updated: {lastUpdated}
             </p>
           </div>
@@ -36,14 +38,14 @@ export default function Privacy() {
           <div className="grid lg:grid-cols-4 gap-8">
             {/* Table of Contents - Sticky Sidebar */}
             <nav className="lg:col-span-1 hidden lg:block" aria-label="Privacy policy navigation">
-              <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-white/20 sticky top-24">
+              <Card className="sticky top-24 rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
                 <CardContent className="p-6">
-                  <h2 className="font-semibold mb-4 text-lg">Contents</h2>
-                  <ul className="space-y-2 text-sm">
+                  <h2 className="font-black mb-4 text-lg uppercase text-black dark:text-white border-b-2 border-black dark:border-white pb-2">Contents</h2>
+                  <ul className="space-y-2 text-sm font-bold">
                     <li>
                       <button
                         onClick={() => scrollToSection('introduction')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Introduction
                       </button>
@@ -51,7 +53,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('data-collection')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Data Collection
                       </button>
@@ -59,7 +61,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('data-usage')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         How We Use Data
                       </button>
@@ -67,7 +69,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('data-sharing')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Data Sharing
                       </button>
@@ -75,7 +77,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('cookies')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Cookies
                       </button>
@@ -83,7 +85,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('security')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Data Security
                       </button>
@@ -91,7 +93,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('user-rights')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Your Rights
                       </button>
@@ -99,7 +101,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('children')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Children's Privacy
                       </button>
@@ -107,7 +109,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('changes')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Policy Changes
                       </button>
@@ -115,7 +117,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('contact')}
-                        className="text-muted-foreground hover:text-primary transition-colors text-left w-full"
+                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
                       >
                         Contact Us
                       </button>
@@ -127,19 +129,19 @@ export default function Privacy() {
 
             {/* Main Content */}
             <article className="lg:col-span-3">
-              <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-white/20">
-                <CardContent className="p-6 sm:p-8 lg:p-12 space-y-8">
+              <Card className="rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
+                <CardContent className="p-6 sm:p-8 lg:p-12 space-y-8 font-sans">
                   {/* Introduction */}
                   <section id="introduction" className="scroll-mt-24">
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-4">Introduction</h2>
-                    <div className="space-y-4 text-muted-foreground leading-relaxed">
+                    <h2 className="text-2xl sm:text-3xl font-black mb-4 uppercase text-black dark:text-white">Introduction</h2>
+                    <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
                       <p>
-                        Welcome to Knowly. We respect your privacy and are committed to protecting your personal data. 
-                        This privacy policy explains how we collect, use, disclose, and safeguard your information when 
+                        Welcome to Knowly. We respect your privacy and are committed to protecting your personal data.
+                        This privacy policy explains how we collect, use, disclose, and safeguard your information when
                         you use our platform.
                       </p>
                       <p>
-                        By using Knowly, you agree to the collection and use of information in accordance with this policy. 
+                        By using Knowly, you agree to the collection and use of information in accordance with this policy.
                         If you do not agree with our policies and practices, please do not use our services.
                       </p>
                     </div>
@@ -202,19 +204,19 @@ export default function Privacy() {
                       </p>
                       <ul className="list-disc list-inside space-y-2 ml-4">
                         <li>
-                          <strong className="text-foreground">With your consent:</strong> We may share your information 
+                          <strong className="text-foreground">With your consent:</strong> We may share your information
                           when you give us permission to do so
                         </li>
                         <li>
-                          <strong className="text-foreground">Service providers:</strong> We may share information with 
+                          <strong className="text-foreground">Service providers:</strong> We may share information with
                           third-party vendors who perform services on our behalf
                         </li>
                         <li>
-                          <strong className="text-foreground">Legal requirements:</strong> We may disclose information 
+                          <strong className="text-foreground">Legal requirements:</strong> We may disclose information
                           if required by law or to protect our rights
                         </li>
                         <li>
-                          <strong className="text-foreground">Business transfers:</strong> In connection with any merger, 
+                          <strong className="text-foreground">Business transfers:</strong> In connection with any merger,
                           sale of assets, or acquisition
                         </li>
                       </ul>
@@ -229,11 +231,11 @@ export default function Privacy() {
                     <h2 className="text-2xl sm:text-3xl font-bold mb-4">Cookies and Tracking Technologies</h2>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        We use cookies and similar tracking technologies to track activity on our platform and store certain information. 
+                        We use cookies and similar tracking technologies to track activity on our platform and store certain information.
                         Cookies are files with small amount of data that are sent to your browser from a website and stored on your device.
                       </p>
                       <p>
-                        You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However, 
+                        You can instruct your browser to refuse all cookies or to indicate when a cookie is being sent. However,
                         if you do not accept cookies, you may not be able to use some features of our service.
                       </p>
                       <h3 className="text-xl font-semibold text-foreground mt-6">Types of Cookies We Use</h3>
@@ -250,7 +252,7 @@ export default function Privacy() {
                     <h2 className="text-2xl sm:text-3xl font-bold mb-4">Data Security</h2>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        We take the security of your personal information seriously and use appropriate technical and organizational 
+                        We take the security of your personal information seriously and use appropriate technical and organizational
                         measures to protect it. However, no method of transmission over the Internet or electronic storage is 100% secure.
                       </p>
                       <p>
@@ -291,8 +293,8 @@ export default function Privacy() {
                     <h2 className="text-2xl sm:text-3xl font-bold mb-4">Children's Privacy</h2>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        Our service is not intended for children under the age of 13. We do not knowingly collect personal 
-                        information from children under 13. If you are a parent or guardian and believe your child has provided 
+                        Our service is not intended for children under the age of 13. We do not knowingly collect personal
+                        information from children under 13. If you are a parent or guardian and believe your child has provided
                         us with personal information, please contact us.
                       </p>
                     </div>
@@ -303,31 +305,31 @@ export default function Privacy() {
                     <h2 className="text-2xl sm:text-3xl font-bold mb-4">Changes to This Privacy Policy</h2>
                     <div className="space-y-4 text-muted-foreground leading-relaxed">
                       <p>
-                        We may update our Privacy Policy from time to time. We will notify you of any changes by posting 
+                        We may update our Privacy Policy from time to time. We will notify you of any changes by posting
                         the new Privacy Policy on this page and updating the "Last updated" date.
                       </p>
                       <p>
-                        We encourage you to review this Privacy Policy periodically for any changes. Changes to this Privacy 
+                        We encourage you to review this Privacy Policy periodically for any changes. Changes to this Privacy
                         Policy are effective when they are posted on this page.
                       </p>
                     </div>
                   </section>
 
                   {/* Contact */}
-                  <section id="contact" className="scroll-mt-24 pt-8 border-t">
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-4">Contact Us</h2>
-                    <div className="space-y-4 text-muted-foreground leading-relaxed">
+                  <section id="contact" className="scroll-mt-24 pt-8 border-t-4 border-black dark:border-white">
+                    <h2 className="text-2xl sm:text-3xl font-black mb-4 uppercase text-black dark:text-white">Contact Us</h2>
+                    <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
                       <p>
                         If you have any questions about this Privacy Policy or our data practices, please contact us:
                       </p>
-                      <div className="mt-6 p-6 bg-primary/5 border border-primary/20 rounded-lg">
+                      <div className="mt-6 p-6 bg-primary border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                         <div className="flex items-start gap-3">
-                          <Mail className="h-5 w-5 text-primary mt-1 flex-shrink-0" />
+                          <Mail className="h-5 w-5 text-black mt-1 flex-shrink-0" />
                           <div>
-                            <p className="font-semibold text-foreground">Email</p>
-                            <a 
-                              href="mailto:privacy@knowly.com" 
-                              className="text-primary hover:underline"
+                            <p className="font-black uppercase text-black">Email</p>
+                            <a
+                              href="mailto:privacy@knowly.com"
+                              className="text-black font-bold hover:underline"
                             >
                               privacy@knowly.com
                             </a>

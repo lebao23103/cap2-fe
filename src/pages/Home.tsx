@@ -117,7 +117,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="flex-1 text-center lg:text-left"
             >
-              <Badge variant="outline" className="mb-6 px-4 py-1.5 text-sm border-2 border-black bg-white text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
+              <Badge variant="outline" className="mb-6 px-4 py-1.5 text-sm border-2 border-black dark:border-white bg-white dark:bg-zinc-900 text-black dark:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold">
                 <Sparkles className="mr-2 h-3.5 w-3.5" />
                 Reimagining Academic Reading
               </Badge>
@@ -134,12 +134,12 @@ export default function Home() {
               </p>
 
               <div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
-                <Button size="lg" className="h-14 px-8 text-lg bg-black text-white hover:bg-primary hover:text-black border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
+                <Button size="lg" className="h-14 px-8 text-lg bg-black text-white hover:bg-primary hover:text-black border-2 border-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-primary rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold">
                   <Link to='/readnex' className='flex items-center'>
                     Start Reading <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-black bg-white text-black hover:bg-black hover:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
+                <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-black dark:border-white bg-white dark:bg-zinc-900 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold">
                   <Link to='/noteshare' className='flex items-center'>
                     <Sparkles className="mr-2 h-5 w-5" /> NoteShare
                   </Link>
@@ -147,17 +147,17 @@ export default function Home() {
               </div>
 
               {/* Trust Indicators */}
-              <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-black font-bold uppercase">
+              <div className="mt-12 flex items-center justify-center lg:justify-start gap-8 text-black dark:text-white font-bold uppercase">
                 <div className="flex items-center gap-2">
                   <Users className="h-5 w-5" />
                   <span>15k+ Users</span>
                 </div>
-                <div className="w-px h-6 bg-black" />
+                <div className="w-px h-6 bg-black dark:bg-white" />
                 <div className="flex items-center gap-2">
                   <BookOpen className="h-5 w-5" />
                   <span>25k+ Books</span>
                 </div>
-                <div className="w-px h-6 bg-black" />
+                <div className="w-px h-6 bg-black dark:bg-white" />
                 <div className="flex items-center gap-2">
                   <Star className="h-5 w-5" />
                   <span>4.9/5 Rating</span>
@@ -207,7 +207,7 @@ export default function Home() {
       </section>
 
       {/* Features Grid */}
-      <section className="relative w-full py-20 bg-primary border-y-4 border-black">
+      <section className="relative w-full py-20 bg-primary border-y-4 border-black dark:border-white">
         <div className="container mx-auto px-4">
           <motion.div {...fadeInUp} className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-4 uppercase font-display">
@@ -243,15 +243,15 @@ export default function Home() {
               }
             ].map((feature, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 rounded-none group">
+                <Card className="h-full border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 rounded-none group">
                   <CardHeader>
-                    <div className={`w-14 h-14 border-2 border-black ${feature.bg} ${feature.color} flex items-center justify-center mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
+                    <div className={`w-14 h-14 border-2 border-black dark:border-white ${feature.bg} ${feature.color} flex items-center justify-center mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}>
                       <feature.icon className="h-7 w-7" />
                     </div>
-                    <CardTitle className="text-xl font-bold uppercase">{feature.title}</CardTitle>
+                    <CardTitle className="text-xl font-bold uppercase dark:text-white">{feature.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-600 font-mono leading-relaxed">
+                    <p className="text-gray-600 dark:text-gray-300 font-mono leading-relaxed">
                       {feature.description}
                     </p>
                   </CardContent>
@@ -267,7 +267,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-end mb-12">
             <motion.div {...fadeInUp}>
-              <Badge variant="outline" className="mb-4 text-black border-2 border-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none uppercase font-bold">
+              <Badge variant="outline" className="mb-4 text-black dark:text-white border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none uppercase font-bold">
                 <TrendingUp className="mr-2 h-3 w-3" /> Trending
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground uppercase font-display">
@@ -297,8 +297,8 @@ export default function Home() {
             <motion.div {...stagger} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {featuredBooks.map((book) => (
                 <motion.div key={book.id} {...fadeInUp}>
-                  <Card className="h-full border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 group overflow-hidden rounded-none">
-                    <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-black">
+                  <Card className="h-full border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-500 group overflow-hidden rounded-none">
+                    <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-black dark:border-white">
                       <img
                         src={book.coverImage}
                         alt={book.title}
@@ -307,22 +307,22 @@ export default function Home() {
                           (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x400?text=No+Cover'
                         }}
                       />
-                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 border-2 border-black m-2">
-                        <Button className="w-full bg-white text-black hover:bg-black hover:text-white font-bold border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase" asChild>
+                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 border-2 border-black dark:border-white m-2">
+                        <Button className="w-full bg-white text-black hover:bg-black hover:text-white font-bold border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase" asChild>
                           <Link to={`/book/${book.id}`}>View Details</Link>
                         </Button>
                       </div>
-                      <div className="absolute top-3 right-3 bg-yellow-400 text-black border-2 border-black text-xs font-bold px-2.5 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-1">
+                      <div className="absolute top-3 right-3 bg-yellow-400 text-black border-2 border-black dark:border-white text-xs font-bold px-2.5 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] flex items-center gap-1">
                         <Star className="h-3 w-3 fill-black text-black" />
                         {book.rating.toFixed(1)}
                       </div>
                     </div>
                     <CardContent className="p-5">
-                      <h3 className="font-bold text-lg text-foreground line-clamp-1 mb-1 group-hover:underline decoration-2 underline-offset-2 uppercase">
+                      <h3 className="font-bold text-lg text-foreground line-clamp-1 mb-1 group-hover:underline decoration-2 underline-offset-2 uppercase dark:text-white">
                         {book.title}
                       </h3>
-                      <p className="text-sm text-gray-600 font-mono mb-3 uppercase">{book.author}</p>
-                      <p className="text-sm text-gray-600 line-clamp-2 font-mono">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 font-mono mb-3 uppercase">{book.author}</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 font-mono">
                         {book.description}
                       </p>
                     </CardContent>
@@ -341,7 +341,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className='relative w-full py-24 bg-secondary border-y-4 border-black'>
+      <section className='relative w-full py-24 bg-secondary border-y-4 border-black dark:border-white'>
         <div className='container mx-auto px-4'>
           <motion.div {...fadeInUp} className='text-center mb-16'>
             <h2 className='text-3xl md:text-4xl font-bold text-white mb-4 uppercase font-display'>
@@ -355,25 +355,25 @@ export default function Home() {
           <motion.div {...stagger} className='grid md:grid-cols-3 gap-8'>
             {testimonials.map((testimonial, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full p-8 border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none relative">
+                <Card className="h-full p-8 border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none relative">
                   <CardContent className="p-0">
                     <div className="flex items-center gap-4 mb-6">
                       <img
                         src={testimonial.avatar}
                         alt={testimonial.name}
-                        className="w-12 h-12 rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                        className="w-12 h-12 rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
                       />
                       <div>
-                        <p className="font-bold text-foreground uppercase">{testimonial.name}</p>
-                        <p className="text-sm text-gray-600 font-mono">{testimonial.role}</p>
+                        <p className="font-bold text-foreground uppercase dark:text-white">{testimonial.name}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 font-mono">{testimonial.role}</p>
                       </div>
                     </div>
                     <div className="flex gap-1 mb-4">
                       {[...Array(5)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-black text-black" />
+                        <Star key={i} className="h-4 w-4 fill-black text-black dark:text-white dark:fill-white" />
                       ))}
                     </div>
-                    <p className="text-gray-800 leading-relaxed italic font-mono border-l-4 border-black pl-4">
+                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed italic font-mono border-l-4 border-black dark:border-white pl-4">
                       "{testimonial.content}"
                     </p>
                   </CardContent>
@@ -385,10 +385,10 @@ export default function Home() {
       </section>
 
       {/* Tech Stack Marquee Section */}
-      <section className="relative w-full py-16 bg-white border-b-4 border-black overflow-hidden">
+      <section className="relative w-full py-16 bg-white dark:bg-zinc-900 border-b-4 border-black dark:border-white overflow-hidden">
         <div className="container mx-auto px-4 mb-10">
           <motion.div {...fadeInUp} className="text-center">
-            <Badge variant="outline" className="mb-4 text-black border-2 border-black bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none uppercase font-bold">
+            <Badge variant="outline" className="mb-4 text-black border-2 border-black dark:border-white bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none uppercase font-bold">
               <Sparkles className="mr-2 h-3 w-3" /> Tech Stack
             </Badge>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground uppercase font-display">
@@ -483,23 +483,23 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <div className="relative border-4 border-black bg-white shadow-[16px_16px_0px_0px_rgba(0,0,0,1)]">
+            <div className="relative border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] dark:shadow-[16px_16px_0px_0px_rgba(255,255,255,1)]">
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
 
-              <div className="relative z-10 p-12 md:p-20 text-center text-black">
+              <div className="relative z-10 p-12 md:p-20 text-center text-black dark:text-white">
                 <h2 className='font-display text-3xl md:text-5xl font-bold mb-6 uppercase'>
                   Ready to start your journey?
                 </h2>
-                <p className='text-lg md:text-xl text-gray-800 mb-10 max-w-2xl mx-auto font-mono'>
+                <p className='text-lg md:text-xl text-gray-800 dark:text-gray-300 mb-10 max-w-2xl mx-auto font-mono'>
                   Join thousands of learners today and experience the future of academic reading and collaboration.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" className="h-14 px-8 text-lg bg-black text-white hover:bg-primary hover:text-black font-bold rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-2 border-black uppercase transition-all hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]" asChild>
+                  <Button size="lg" className="h-14 px-8 text-lg bg-black text-white hover:bg-primary hover:text-black border-2 border-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-primary dark:hover:text-black font-bold rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] uppercase transition-all hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)]" asChild>
                     <Link to='/register'>
                       Get Started for Free
                     </Link>
                   </Button>
-                  <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-black text-black hover:bg-black hover:text-white rounded-none transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] uppercase font-bold" asChild>
+                  <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-none transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] uppercase font-bold" asChild>
                     <Link to='/about'>
                       Learn More
                     </Link>

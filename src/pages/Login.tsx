@@ -106,7 +106,8 @@ export default function Login() {
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-background overflow-hidden font-mono">
       {/* Background Grid */}
-      <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       <div className="container relative z-10 flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-24 px-4">
         {/* Left Side - Hero Content (Hidden on mobile) */}
@@ -117,7 +118,7 @@ export default function Login() {
           className="hidden lg:flex flex-col max-w-lg"
         >
           <div className="flex items-center gap-3 mb-8">
-            <div className="p-3 border-2 border-black bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <div className="p-3 border-2 border-black dark:border-white bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
               <BookOpen className="h-8 w-8 text-black" />
             </div>
             <h1 className="text-4xl font-bold text-foreground uppercase tracking-tight font-display">
@@ -127,7 +128,7 @@ export default function Login() {
 
           <h2 className="text-4xl font-bold text-foreground mb-6 leading-tight uppercase font-display">
             Welcome back to your <br />
-            <span className="bg-primary text-black px-2">Knowledge Hub</span>
+            <span className="bg-primary text-black px-2 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">Knowledge Hub</span>
           </h2>
 
           <p className="text-lg text-muted-foreground mb-8 leading-relaxed font-mono">
@@ -138,7 +139,7 @@ export default function Login() {
           <div className="flex items-center gap-4">
             <div className="flex -space-x-3">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="w-10 h-10 border-2 border-black bg-white overflow-hidden">
+                <div key={i} className="w-10 h-10 border-2 border-black dark:border-white bg-white overflow-hidden">
                   <img
                     src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i}`}
                     alt="User"
@@ -160,10 +161,10 @@ export default function Login() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="w-full max-w-md"
         >
-          <Card className="w-full border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none">
+          <Card className="w-full border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none">
             <CardHeader className="text-center pb-2 pt-8">
               <div className="lg:hidden flex justify-center mb-6">
-                <div className="p-3 border-2 border-black bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <div className="p-3 border-2 border-black dark:border-white bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                   <BookOpen className="h-6 w-6 text-black" />
                 </div>
               </div>
@@ -181,7 +182,7 @@ export default function Login() {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="p-3 bg-red-100 border-2 border-black text-red-600 font-bold font-mono"
+                    className="p-3 bg-red-100 dark:bg-red-900/30 border-2 border-black dark:border-red-400 text-red-600 dark:text-red-300 font-bold font-mono"
                     role="alert"
                   >
                     <p className="text-sm">{generalError}</p>
@@ -208,7 +209,7 @@ export default function Login() {
                   <div className="flex justify-between items-center mb-2">
                     <Link
                       to="/forgot-password"
-                      className="text-xs text-black hover:underline font-bold transition-colors ml-auto font-mono uppercase"
+                      className="text-xs text-black dark:text-white hover:underline font-bold transition-colors ml-auto font-mono uppercase"
                       tabIndex={isLoading || isSuccess ? -1 : 0}
                     >
                       Forgot password?
@@ -249,13 +250,13 @@ export default function Login() {
                 </div>
               </form>
 
-              <div className="mt-8 pt-6 border-t-2 border-black text-center">
+              <div className="mt-8 pt-6 border-t-2 border-black dark:border-white text-center">
                 <p className="text-sm text-muted-foreground mb-4 font-mono">
                   Don't have an account yet?
                 </p>
                 <Button
                   variant="outline"
-                  className="w-full border-2 border-black rounded-none hover:bg-black hover:text-white transition-all uppercase font-bold"
+                  className="w-full border-2 border-black dark:border-white rounded-none hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black dark:text-white transition-all uppercase font-bold"
                   asChild
                 >
                   <Link to="/register">

@@ -39,8 +39,10 @@ export default function NotFound() {
   ];
 
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto max-w-4xl pt-20 pb-12">
+    <div className="min-h-screen bg-background font-mono relative selection:bg-primary selection:text-black">
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="container mx-auto max-w-4xl pt-20 pb-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -55,25 +57,26 @@ export default function NotFound() {
             className="mb-8"
           >
             <div className="relative inline-block">
-              {/* 404 Text with gradient */}
-              <h1 className="text-9xl sm:text-[12rem] font-bold bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+              {/* 404 Text with outline effect */}
+              <h1 className="text-9xl sm:text-[12rem] font-black text-white dark:text-black mb-4 select-none drop-shadow-[8px_8px_0_rgba(0,0,0,1)] dark:drop-shadow-[8px_8px_0_rgba(255,255,255,1)]"
+                style={{ textShadow: '4px 4px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000' }}>
                 404
               </h1>
-              
+
               {/* Floating book icon */}
               <motion.div
-                animate={{ 
+                animate={{
                   y: [0, -20, 0],
                   rotate: [0, 5, -5, 0]
                 }}
-                transition={{ 
+                transition={{
                   duration: 4,
                   repeat: Infinity,
                   ease: "easeInOut"
                 }}
                 className="absolute -top-8 right-0"
               >
-                <BookOpen className="h-16 w-16 text-purple-600 opacity-50" />
+                <BookOpen className="h-16 w-16 text-black dark:text-white" strokeWidth={2.5} />
               </motion.div>
             </div>
           </motion.div>
@@ -85,11 +88,11 @@ export default function NotFound() {
             transition={{ delay: 0.4 }}
             className="mb-8"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
+            <h2 className="text-3xl sm:text-5xl font-black mb-4 uppercase bg-white dark:bg-zinc-800 text-black dark:text-white inline-block px-4 py-2 border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
               Page Not Found
             </h2>
-            <p className="text-lg text-muted-foreground max-w-md mx-auto">
-              Oops! It seems the page you're looking for has gone on an adventure. 
+            <p className="text-lg font-bold text-gray-800 dark:text-gray-300 max-w-md mx-auto bg-white/80 dark:bg-zinc-900/80 p-4 border-2 border-black dark:border-white mt-4">
+              Oops! It seems the page you're looking for has gone on an adventure.
               Let's help you find your way back.
             </p>
           </motion.div>
@@ -101,13 +104,13 @@ export default function NotFound() {
             transition={{ delay: 0.6 }}
             className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
           >
-            <Button asChild size="lg" className="gap-2">
+            <Button asChild size="lg" className="gap-2 h-14 px-8 text-lg font-black uppercase bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-primary transition-all">
               <Link to="/">
                 <Home className="h-5 w-5" />
                 Go to Home
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="gap-2">
+            <Button asChild variant="outline" size="lg" className="gap-2 h-14 px-8 text-lg font-black uppercase bg-white dark:bg-zinc-900 text-black dark:text-white border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-white dark:hover:bg-zinc-900 transition-all">
               <Link to="/dashboard">
                 <LayoutDashboard className="h-5 w-5" />
                 Go to Dashboard
@@ -122,18 +125,18 @@ export default function NotFound() {
             transition={{ delay: 0.8 }}
             className="mb-12"
           >
-            <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-white/20 max-w-md mx-auto">
+            <Card className="rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 max-w-md mx-auto">
               <CardContent className="p-6">
-                <h3 className="font-semibold mb-4 text-left">Search for content</h3>
+                <h3 className="font-black uppercase mb-4 text-left text-black dark:text-white">Search for content</h3>
                 <form onSubmit={handleSearch} className="flex gap-2">
                   <Input
                     type="text"
                     placeholder="Search books, authors..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1"
+                    className="flex-1 rounded-none border-2 border-black dark:border-white bg-white dark:bg-zinc-800 text-black dark:text-white focus-visible:ring-0 focus-visible:border-primary focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus-visible:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
                   />
-                  <Button type="submit" size="icon">
+                  <Button type="submit" size="icon" className="rounded-none border-2 border-black dark:border-white bg-black dark:bg-white text-white dark:text-black hover:bg-primary hover:text-black hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all">
                     <Search className="h-4 w-4" />
                     <span className="sr-only">Search</span>
                   </Button>
@@ -148,7 +151,7 @@ export default function NotFound() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1 }}
           >
-            <h3 className="text-2xl font-bold mb-6">Popular Books</h3>
+            <h3 className="text-2xl font-black uppercase mb-6 text-black dark:text-white">Popular Books</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {popularBooks.map((book, index) => (
                 <motion.div
@@ -158,19 +161,20 @@ export default function NotFound() {
                   transition={{ delay: 1.1 + index * 0.1 }}
                 >
                   <Link to={`/book/${book.id}`}>
-                    <Card className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-white/20 overflow-hidden group hover:shadow-lg transition-all duration-300">
-                      <div className="aspect-[2/3] overflow-hidden">
+                    <Card className="rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all bg-white dark:bg-zinc-900 overflow-hidden group">
+                      <div className="aspect-[2/3] overflow-hidden border-b-4 border-black dark:border-white relative">
                         <img
                           src={book.cover}
                           alt={`${book.title} cover`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
                         />
+                        <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 mix-blend-multiply"></div>
                       </div>
-                      <CardContent className="p-4">
-                        <h4 className="font-semibold text-sm mb-1 line-clamp-1">
+                      <CardContent className="p-4 bg-white dark:bg-zinc-900">
+                        <h4 className="font-bold text-base mb-1 line-clamp-1 uppercase text-black dark:text-white">
                           {book.title}
                         </h4>
-                        <p className="text-xs text-muted-foreground line-clamp-1">
+                        <p className="text-sm font-medium text-gray-600 dark:text-gray-400 line-clamp-1">
                           {book.author}
                         </p>
                       </CardContent>

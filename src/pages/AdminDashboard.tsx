@@ -206,26 +206,27 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden font-mono">
+    <div className="min-h-screen bg-background relative overflow-hidden font-mono selection:bg-primary selection:text-black">
       {/* Background Grid */}
-      <div className="fixed inset-0 pointer-events-none z-0 opacity-20" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       <main className="container mx-auto py-8 sm:py-12 relative z-10 px-4">
         {/* Header */}
         <motion.div {...fadeInUp} className="mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-primary border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div className="p-3 bg-primary border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                 <Shield className="h-8 w-8 text-black" />
               </div>
               <div>
-                <h1 className="text-3xl sm:text-4xl font-black uppercase">Admin Panel</h1>
-                <p className="text-gray-600 font-bold">Manage users, books, and content</p>
+                <h1 className="text-3xl sm:text-4xl font-black uppercase text-black dark:text-white">Admin Panel</h1>
+                <p className="text-gray-600 dark:text-gray-300 font-bold">Manage users, books, and content</p>
               </div>
             </div>
             <Button
               onClick={loadDashboardData}
-              className="bg-white text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-primary transition-all font-bold uppercase"
+              className="bg-white dark:bg-zinc-800 text-black dark:text-white border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-primary hover:text-black dark:hover:bg-primary dark:hover:text-black transition-all font-bold uppercase"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
@@ -241,14 +242,14 @@ export default function AdminDashboard() {
             { label: 'Total Reviews', value: stats?.total_reviews || 0, icon: Star, bg: 'bg-yellow-400' },
             { label: 'Pending Approvals', value: pendingBooks.length, icon: FileText, bg: 'bg-red-400' }
           ].map((stat, index) => (
-            <Card key={index} className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all">
+            <Card key={index} className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] transition-all">
               <CardContent className="p-6 flex items-center gap-4">
-                <div className={`p-4 border-4 border-black ${stat.bg} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]`}>
+                <div className={`p-4 border-4 border-black dark:border-white ${stat.bg} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}>
                   <stat.icon className="h-6 w-6 text-black" />
                 </div>
                 <div>
-                  <div className="text-3xl font-black text-black">{stat.value}</div>
-                  <p className="text-sm text-gray-600 font-bold uppercase">{stat.label}</p>
+                  <div className="text-3xl font-black text-black dark:text-white">{stat.value}</div>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase">{stat.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -267,7 +268,7 @@ export default function AdminDashboard() {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="flex items-center gap-2 py-3 px-4 border-4 border-black bg-white data-[state=active]:bg-primary data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-bold uppercase transition-all"
+                className="flex items-center gap-2 py-3 px-4 border-4 border-black dark:border-white bg-white dark:bg-zinc-900 text-black dark:text-white data-[state=active]:bg-primary data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] font-bold uppercase transition-all"
               >
                 <tab.icon className="h-4 w-4" />
                 <span className="hidden sm:inline">{tab.label}</span>
@@ -279,9 +280,9 @@ export default function AdminDashboard() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Rating Distribution */}
-              <Card className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
-                <CardHeader className="border-b-4 border-black bg-yellow-100">
-                  <CardTitle className="flex items-center gap-2 font-black uppercase">
+              <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
+                <CardHeader className="border-b-4 border-black dark:border-white bg-yellow-100 dark:bg-yellow-900/30">
+                  <CardTitle className="flex items-center gap-2 font-black uppercase text-black dark:text-white">
                     <Star className="h-5 w-5" />
                     Rating Distribution
                   </CardTitle>
@@ -291,19 +292,19 @@ export default function AdminDashboard() {
                     <div className="space-y-3">
                       {[5, 4, 3, 2, 1].map((rating) => (
                         <div key={rating} className="flex items-center gap-3">
-                          <span className="font-bold w-4">{rating}</span>
+                          <span className="font-bold w-4 text-black dark:text-white">{rating}</span>
                           <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                          <div className="flex-1 h-6 bg-gray-100 border-2 border-black">
+                          <div className="flex-1 h-6 bg-gray-100 dark:bg-zinc-800 border-2 border-black dark:border-white">
                             <div
                               className="h-full bg-yellow-400"
                               style={{ width: `${((ratingStats.rates[rating] || 0) / Math.max(...Object.values(ratingStats.rates), 1)) * 100}%` }}
                             />
                           </div>
-                          <span className="font-mono text-sm w-8">{ratingStats.rates[rating] || 0}</span>
+                          <span className="font-mono text-sm w-8 text-black dark:text-white">{ratingStats.rates[rating] || 0}</span>
                         </div>
                       ))}
-                      <div className="pt-4 border-t-2 border-black">
-                        <p className="font-bold">Average Rating: <span className="text-xl">{ratingStats.average_rating?.toFixed(1) || '0.0'}</span></p>
+                      <div className="pt-4 border-t-2 border-black dark:border-white">
+                        <p className="font-bold text-black dark:text-white">Average Rating: <span className="text-xl">{ratingStats.average_rating?.toFixed(1) || '0.0'}</span></p>
                       </div>
                     </div>
                   ) : (
@@ -313,35 +314,35 @@ export default function AdminDashboard() {
               </Card>
 
               {/* Most Read Book */}
-              <Card className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
-                <CardHeader className="border-b-4 border-black bg-green-100">
-                  <CardTitle className="flex items-center gap-2 font-black uppercase">
+              <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
+                <CardHeader className="border-b-4 border-black dark:border-white bg-green-100 dark:bg-green-900/30">
+                  <CardTitle className="flex items-center gap-2 font-black uppercase text-black dark:text-white">
                     <TrendingUp className="h-5 w-5" />
                     Top Stats
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 space-y-6">
                   {stats?.most_read_book ? (
-                    <div className="p-4 border-2 border-black bg-green-50">
-                      <p className="text-sm text-gray-600 font-bold uppercase mb-2">Most Read Book</p>
-                      <h3 className="font-black text-lg">{stats.most_read_book.title}</h3>
-                      <p className="text-gray-600">by {stats.most_read_book.author}</p>
+                    <div className="p-4 border-2 border-black dark:border-white bg-green-50 dark:bg-green-900/10">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase mb-2">Most Read Book</p>
+                      <h3 className="font-black text-lg text-black dark:text-white">{stats.most_read_book.title}</h3>
+                      <p className="text-gray-600 dark:text-gray-300">by {stats.most_read_book.author}</p>
                       <div className="mt-2 flex items-center gap-2">
-                        <Eye className="h-4 w-4" />
-                        <span className="font-bold">{stats.most_read_book.read_count} reads</span>
+                        <Eye className="h-4 w-4 text-black dark:text-white" />
+                        <span className="font-bold text-black dark:text-white">{stats.most_read_book.read_count} reads</span>
                       </div>
                     </div>
                   ) : (
                     <p className="text-gray-500">No reading data yet</p>
                   )}
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="p-4 border-2 border-black bg-blue-50">
-                      <p className="text-sm text-gray-600 font-bold uppercase">Total Reads</p>
-                      <p className="text-2xl font-black">{stats?.total_reads || 0}</p>
+                    <div className="p-4 border-2 border-black dark:border-white bg-blue-50 dark:bg-blue-900/10">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase">Total Reads</p>
+                      <p className="text-2xl font-black text-black dark:text-white">{stats?.total_reads || 0}</p>
                     </div>
-                    <div className="p-4 border-2 border-black bg-purple-50">
-                      <p className="text-sm text-gray-600 font-bold uppercase">Avg Rating</p>
-                      <p className="text-2xl font-black">{stats?.average_rating?.toFixed(1) || '0.0'}</p>
+                    <div className="p-4 border-2 border-black dark:border-white bg-purple-50 dark:bg-purple-900/10">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase">Avg Rating</p>
+                      <p className="text-2xl font-black text-black dark:text-white">{stats?.average_rating?.toFixed(1) || '0.0'}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -351,15 +352,15 @@ export default function AdminDashboard() {
 
           {/* Users Tab */}
           <TabsContent value="users" className="space-y-6">
-            <Card className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
-              <CardHeader className="border-b-4 border-black bg-blue-100 flex flex-row items-center justify-between">
+            <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
+              <CardHeader className="border-b-4 border-black dark:border-white bg-blue-100 dark:bg-blue-900/30 flex flex-row items-center justify-between">
                 <div>
-                  <CardTitle className="font-black uppercase">User Management</CardTitle>
-                  <CardDescription className="font-mono">Manage all registered users</CardDescription>
+                  <CardTitle className="font-black uppercase text-black dark:text-white">User Management</CardTitle>
+                  <CardDescription className="font-mono text-gray-600 dark:text-gray-300">Manage all registered users</CardDescription>
                 </div>
                 <Button
                   onClick={() => setIsCreateUserOpen(true)}
-                  className="bg-primary text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all font-bold uppercase"
+                  className="bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase"
                 >
                   <UserPlus className="h-4 w-4 mr-2" />
                   Add User
@@ -371,25 +372,25 @@ export default function AdminDashboard() {
                     <p className="text-center text-gray-500 py-8">No users found</p>
                   ) : (
                     users.map((user) => (
-                      <div key={user.id} className="flex items-center justify-between p-4 border-4 border-black bg-white hover:bg-gray-50 transition-colors">
+                      <div key={user.id} className="flex items-center justify-between p-4 border-4 border-black dark:border-white bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-blue-200 border-2 border-black flex items-center justify-center font-black text-xl">
+                          <div className="w-12 h-12 bg-blue-200 dark:bg-blue-900 border-2 border-black dark:border-white flex items-center justify-center font-black text-xl text-black dark:text-white">
                             {user.username[0]?.toUpperCase()}
                           </div>
                           <div>
-                            <h3 className="font-bold">{user.username}</h3>
-                            <p className="text-sm text-gray-600 font-mono">{user.email}</p>
+                            <h3 className="font-bold text-black dark:text-white">{user.username}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 font-mono">{user.email}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge className={`${user.is_staff ? 'bg-primary' : 'bg-gray-200'} text-black border-2 border-black rounded-none font-bold uppercase`}>
+                          <Badge className={`${user.is_staff ? 'bg-primary' : 'bg-gray-200 dark:bg-zinc-700'} text-black dark:text-white border-2 border-black dark:border-white rounded-none font-bold uppercase`}>
                             {user.is_staff ? 'Admin' : 'User'}
                           </Badge>
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => openEditUser(user)}
-                            className="border-2 border-black rounded-none"
+                            className="border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-800 text-black dark:text-white"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -398,7 +399,7 @@ export default function AdminDashboard() {
                             size="sm"
                             onClick={() => handleDeleteUser(user.id)}
                             disabled={actionLoading === `deleteUser-${user.id}`}
-                            className="border-2 border-black rounded-none hover:bg-red-100"
+                            className="border-2 border-black dark:border-white rounded-none hover:bg-red-100 dark:hover:bg-red-900/30 bg-white dark:bg-zinc-800 text-black dark:text-white"
                           >
                             {actionLoading === `deleteUser-${user.id}` ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -417,10 +418,10 @@ export default function AdminDashboard() {
 
           {/* Books Tab */}
           <TabsContent value="books" className="space-y-6">
-            <Card className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
-              <CardHeader className="border-b-4 border-black bg-green-100">
-                <CardTitle className="font-black uppercase">Book Management</CardTitle>
-                <CardDescription className="font-mono">Manage all published books</CardDescription>
+            <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
+              <CardHeader className="border-b-4 border-black dark:border-white bg-green-100 dark:bg-green-900/30">
+                <CardTitle className="font-black uppercase text-black dark:text-white">Book Management</CardTitle>
+                <CardDescription className="font-mono text-gray-600 dark:text-gray-300">Manage all published books</CardDescription>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
@@ -428,15 +429,15 @@ export default function AdminDashboard() {
                     <p className="text-center text-gray-500 py-8">No books found</p>
                   ) : (
                     books.map((book) => (
-                      <div key={book.id} className="flex items-center justify-between p-4 border-4 border-black bg-white hover:bg-gray-50 transition-colors">
+                      <div key={book.id} className="flex items-center justify-between p-4 border-4 border-black dark:border-white bg-white dark:bg-zinc-800 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors">
                         <div className="flex items-center gap-4">
-                          <div className="w-12 h-16 bg-green-200 border-2 border-black flex items-center justify-center">
-                            <BookOpen className="h-6 w-6" />
+                          <div className="w-12 h-16 bg-green-200 dark:bg-green-900 border-2 border-black dark:border-white flex items-center justify-center">
+                            <BookOpen className="h-6 w-6 text-black dark:text-white" />
                           </div>
                           <div>
-                            <h3 className="font-bold">{book.title}</h3>
-                            <p className="text-sm text-gray-600">by {book.author}</p>
-                            <p className="text-xs text-gray-500 font-mono">{book.pages || 'N/A'} pages</p>
+                            <h3 className="font-bold text-black dark:text-white">{book.title}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-300">by {book.author}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 font-mono">{book.pages || 'N/A'} pages</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -445,7 +446,7 @@ export default function AdminDashboard() {
                               variant="outline"
                               size="sm"
                               onClick={() => window.open(book.pdf_url!, '_blank')}
-                              className="border-2 border-black rounded-none"
+                              className="border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-800 text-black dark:text-white"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -455,7 +456,7 @@ export default function AdminDashboard() {
                             size="sm"
                             onClick={() => handleDeleteBook(book.id)}
                             disabled={actionLoading === `deleteBook-${book.id}`}
-                            className="border-2 border-black rounded-none hover:bg-red-100"
+                            className="border-2 border-black dark:border-white rounded-none hover:bg-red-100 dark:hover:bg-red-900/30 bg-white dark:bg-zinc-800 text-black dark:text-white"
                           >
                             {actionLoading === `deleteBook-${book.id}` ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -474,28 +475,28 @@ export default function AdminDashboard() {
 
           {/* Pending Approvals Tab */}
           <TabsContent value="pending" className="space-y-6">
-            <Card className="border-4 border-black bg-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-none">
-              <CardHeader className="border-b-4 border-black bg-red-100">
-                <CardTitle className="font-black uppercase flex items-center gap-2">
+            <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
+              <CardHeader className="border-b-4 border-black dark:border-white bg-red-100 dark:bg-red-900/30">
+                <CardTitle className="font-black uppercase flex items-center gap-2 text-black dark:text-white">
                   <Activity className="h-5 w-5" />
                   Pending Book Approvals ({pendingBooks.length})
                 </CardTitle>
-                <CardDescription className="font-mono">Review and approve user-submitted books</CardDescription>
+                <CardDescription className="font-mono text-gray-600 dark:text-gray-300">Review and approve user-submitted books</CardDescription>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
                   {pendingBooks.length === 0 ? (
                     <div className="text-center py-12">
                       <CheckCircle className="h-16 w-16 mx-auto text-green-500 mb-4" />
-                      <p className="text-gray-600 font-bold">No pending approvals!</p>
+                      <p className="text-gray-600 dark:text-gray-300 font-bold">No pending approvals!</p>
                       <p className="text-sm text-gray-500">All submissions have been reviewed.</p>
                     </div>
                   ) : (
                     pendingBooks.map((book) => (
-                      <div key={book.id} className="p-4 border-4 border-black bg-white">
+                      <div key={book.id} className="p-4 border-4 border-black dark:border-white bg-white dark:bg-zinc-800">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex gap-4">
-                            <div className="w-16 h-20 bg-gray-200 border-2 border-black flex items-center justify-center shrink-0">
+                            <div className="w-16 h-20 bg-gray-200 dark:bg-gray-700 border-2 border-black dark:border-white flex items-center justify-center shrink-0">
                               {book.cover_image ? (
                                 <img src={book.cover_image} alt={book.title} className="w-full h-full object-cover" />
                               ) : (
@@ -503,9 +504,9 @@ export default function AdminDashboard() {
                               )}
                             </div>
                             <div className="flex-1">
-                              <h3 className="font-bold text-lg">{book.title}</h3>
-                              <p className="text-gray-600">by {book.author}</p>
-                              <p className="text-sm text-gray-500 mt-1 line-clamp-2">{book.description}</p>
+                              <h3 className="font-bold text-lg text-black dark:text-white">{book.title}</h3>
+                              <p className="text-gray-600 dark:text-gray-300">by {book.author}</p>
+                              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{book.description}</p>
                               <div className="mt-2 text-xs text-gray-500 font-mono">
                                 Submitted by: {book.user?.email || 'Unknown'}
                               </div>
@@ -515,7 +516,7 @@ export default function AdminDashboard() {
                             <Button
                               onClick={() => handleApproveBook(book.id)}
                               disabled={actionLoading === `approveBook-${book.id}`}
-                              className="bg-green-400 text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-green-500 transition-all font-bold uppercase"
+                              className="bg-green-400 text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-green-500 transition-all font-bold uppercase"
                             >
                               {actionLoading === `approveBook-${book.id}` ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -530,7 +531,7 @@ export default function AdminDashboard() {
                               variant="outline"
                               onClick={() => handleRejectBook(book.id)}
                               disabled={actionLoading === `rejectBook-${book.id}`}
-                              className="border-4 border-black rounded-none hover:bg-red-100 font-bold uppercase"
+                              className="border-4 border-black dark:border-white bg-white dark:bg-zinc-800 text-black dark:text-white rounded-none hover:bg-red-100 dark:hover:bg-red-900/30 font-bold uppercase transition-all"
                             >
                               {actionLoading === `rejectBook-${book.id}` ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -555,50 +556,50 @@ export default function AdminDashboard() {
 
       {/* Create User Dialog */}
       <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
-        <DialogContent className="border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
-          <DialogHeader className="border-b-4 border-black pb-4">
+        <DialogContent className="border-4 border-black dark:border-white rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
+          <DialogHeader className="border-b-4 border-black dark:border-white pb-4">
             <DialogTitle className="font-black uppercase flex items-center gap-2">
               <UserPlus className="h-5 w-5" />
               Create New User
             </DialogTitle>
-            <DialogDescription className="font-mono">Add a new user to the system</DialogDescription>
+            <DialogDescription className="font-mono text-gray-600 dark:text-gray-300">Add a new user to the system</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="username" className="font-bold uppercase">Username</Label>
+              <Label htmlFor="username" className="font-bold uppercase text-black dark:text-white">Username</Label>
               <Input
                 id="username"
                 value={newUserForm.username}
                 onChange={(e) => setNewUserForm(prev => ({ ...prev, username: e.target.value }))}
-                className="border-2 border-black rounded-none h-12"
+                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email" className="font-bold uppercase">Email</Label>
+              <Label htmlFor="email" className="font-bold uppercase text-black dark:text-white">Email</Label>
               <Input
                 id="email"
                 type="email"
                 value={newUserForm.email}
                 onChange={(e) => setNewUserForm(prev => ({ ...prev, email: e.target.value }))}
-                className="border-2 border-black rounded-none h-12"
+                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="password" className="font-bold uppercase">Password</Label>
+              <Label htmlFor="password" className="font-bold uppercase text-black dark:text-white">Password</Label>
               <Input
                 id="password"
                 type="password"
                 value={newUserForm.password}
                 onChange={(e) => setNewUserForm(prev => ({ ...prev, password: e.target.value }))}
-                className="border-2 border-black rounded-none h-12"
+                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
               />
             </div>
           </div>
-          <DialogFooter className="border-t-4 border-black pt-4">
+          <DialogFooter className="border-t-4 border-black dark:border-white pt-4">
             <Button
               onClick={handleCreateUser}
               disabled={actionLoading === 'createUser'}
-              className="w-full bg-primary text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-bold uppercase h-12"
+              className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
             >
               {actionLoading === 'createUser' ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
@@ -612,51 +613,51 @@ export default function AdminDashboard() {
 
       {/* Edit User Dialog */}
       <Dialog open={isEditUserOpen} onOpenChange={setIsEditUserOpen}>
-        <DialogContent className="border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white">
-          <DialogHeader className="border-b-4 border-black pb-4">
+        <DialogContent className="border-4 border-black dark:border-white rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
+          <DialogHeader className="border-b-4 border-black dark:border-white pb-4">
             <DialogTitle className="font-black uppercase flex items-center gap-2">
               <Edit className="h-5 w-5" />
               Edit User
             </DialogTitle>
-            <DialogDescription className="font-mono">Update user information</DialogDescription>
+            <DialogDescription className="font-mono text-gray-600 dark:text-gray-300">Update user information</DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="edit-username" className="font-bold uppercase">Username</Label>
+              <Label htmlFor="edit-username" className="font-bold uppercase text-black dark:text-white">Username</Label>
               <Input
                 id="edit-username"
                 value={editUserForm.username}
                 onChange={(e) => setEditUserForm(prev => ({ ...prev, username: e.target.value }))}
-                className="border-2 border-black rounded-none h-12"
+                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="edit-email" className="font-bold uppercase">Email</Label>
+              <Label htmlFor="edit-email" className="font-bold uppercase text-black dark:text-white">Email</Label>
               <Input
                 id="edit-email"
                 type="email"
                 value={editUserForm.email}
                 onChange={(e) => setEditUserForm(prev => ({ ...prev, email: e.target.value }))}
-                className="border-2 border-black rounded-none h-12"
+                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="edit-password" className="font-bold uppercase">New Password (leave empty to keep)</Label>
+              <Label htmlFor="edit-password" className="font-bold uppercase text-black dark:text-white">New Password (leave empty to keep)</Label>
               <Input
                 id="edit-password"
                 type="password"
                 value={editUserForm.password}
                 onChange={(e) => setEditUserForm(prev => ({ ...prev, password: e.target.value }))}
-                className="border-2 border-black rounded-none h-12"
+                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
                 placeholder="••••••••"
               />
             </div>
           </div>
-          <DialogFooter className="border-t-4 border-black pt-4">
+          <DialogFooter className="border-t-4 border-black dark:border-white pt-4">
             <Button
               onClick={handleUpdateUser}
               disabled={actionLoading === 'updateUser'}
-              className="w-full bg-primary text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-bold uppercase h-12"
+              className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
             >
               {actionLoading === 'updateUser' ? (
                 <Loader2 className="h-5 w-5 animate-spin" />

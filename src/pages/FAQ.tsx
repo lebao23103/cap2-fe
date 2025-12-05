@@ -111,13 +111,15 @@ export default function FAQ() {
   ]
 
   return (
-    <div className="min-h-screen bg-background font-mono selection:bg-primary selection:text-black">
+    <div className="min-h-screen bg-background font-mono relative selection:bg-primary selection:text-black">
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       {/* Hero Section */}
-      <section className="relative w-full pt-32 pb-20 border-b-4 border-black bg-white dark:bg-zinc-900">
+      <section className="relative w-full pt-32 pb-20 border-b-4 border-black dark:border-white bg-white dark:bg-zinc-800 z-10">
         <div className="container mx-auto max-w-4xl text-center px-4">
           <motion.div {...fadeInUp}>
-            <Badge variant="outline" className="mb-6 px-4 py-2 text-sm font-bold uppercase border-2 border-black rounded-none bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <Badge variant="outline" className="mb-6 px-4 py-2 text-sm font-bold uppercase border-2 border-black dark:border-white rounded-none bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
               ❓ Frequently Asked Questions
             </Badge>
             <h1 className="text-5xl md:text-7xl font-black text-black dark:text-white mb-6 uppercase tracking-tighter">
@@ -135,14 +137,14 @@ export default function FAQ() {
       </section>
 
       {/* FAQ Categories */}
-      <section className="relative w-full py-20 bg-dots-pattern">
+      <section className="relative w-full py-20 z-10">
         <div className="container mx-auto max-w-4xl px-4">
           <motion.div {...stagger} className="space-y-12">
             {faqCategories.map((category, categoryIndex) => (
               <motion.div key={categoryIndex} {...fadeInUp}>
-                <Card className="overflow-hidden rounded-none border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white dark:bg-zinc-900">
-                  <CardHeader className="bg-black text-white border-b-4 border-black p-6">
-                    <CardTitle className="text-2xl font-black uppercase flex items-center gap-3">
+                <Card className="overflow-hidden rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
+                  <CardHeader className="bg-black dark:bg-zinc-800 text-white border-b-4 border-black dark:border-white p-6">
+                    <CardTitle className="text-2xl font-black uppercase flex items-center gap-3 text-white">
                       <div className="p-2 bg-white text-black border-2 border-white">
                         <category.icon className="h-6 w-6" strokeWidth={2.5} />
                       </div>
@@ -152,13 +154,13 @@ export default function FAQ() {
                   <CardContent className="p-0">
                     <Accordion type="single" collapsible className="w-full">
                       {category.questions.map((faq, faqIndex) => (
-                        <AccordionItem key={faqIndex} value={`${categoryIndex}-${faqIndex}`} className="border-b-2 border-black last:border-0">
+                        <AccordionItem key={faqIndex} value={`${categoryIndex}-${faqIndex}`} className="border-b-2 border-black dark:border-white last:border-0">
                           <AccordionTrigger className="px-6 py-5 text-left hover:bg-primary/20 hover:no-underline data-[state=open]:bg-primary data-[state=open]:text-black transition-all">
-                            <span className="font-bold text-lg uppercase">
+                            <span className="font-bold text-lg uppercase text-black dark:text-white">
                               {faq.question}
                             </span>
                           </AccordionTrigger>
-                          <AccordionContent className="px-6 py-4 text-base font-medium text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-zinc-800/50 border-t-2 border-black">
+                          <AccordionContent className="px-6 py-4 text-base font-medium text-gray-800 dark:text-gray-300 bg-gray-50 dark:bg-zinc-800/50 border-t-2 border-black dark:border-white">
                             {faq.answer}
                           </AccordionContent>
                         </AccordionItem>
@@ -173,11 +175,11 @@ export default function FAQ() {
       </section>
 
       {/* Still Need Help Section */}
-      <section className="relative w-full py-20 border-t-4 border-black bg-primary">
+      <section className="relative w-full py-20 border-t-4 border-black dark:border-white bg-primary z-10">
         <div className="container mx-auto max-w-4xl text-center px-4">
           <motion.div {...fadeInUp}>
-            <div className="mx-auto mb-8 p-6 bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-24 h-24 flex items-center justify-center">
-              <HelpCircle className="h-12 w-12 text-black" strokeWidth={2.5} />
+            <div className="mx-auto mb-8 p-6 bg-white dark:bg-zinc-900 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] w-24 h-24 flex items-center justify-center">
+              <HelpCircle className="h-12 w-12 text-black dark:text-white" strokeWidth={2.5} />
             </div>
             <h2 className="text-4xl md:text-6xl font-black text-black mb-6 uppercase">
               Still Need Help?
@@ -186,13 +188,13 @@ export default function FAQ() {
               Can't find the answer you're looking for? Our friendly support team is here to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Button size="lg" className="h-16 px-8 text-lg font-black uppercase bg-black text-white border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all" asChild>
+              <Button size="lg" className="h-16 px-8 text-lg font-black uppercase bg-black text-white dark:bg-white dark:text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-black dark:hover:bg-gray-200 transition-all" asChild>
                 <Link to="/contact">
                   <MessageSquare className="h-6 w-6 mr-3" />
                   Contact Support
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="h-16 px-8 text-lg font-black uppercase bg-white text-black border-4 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:bg-white transition-all" asChild>
+              <Button size="lg" variant="outline" className="h-16 px-8 text-lg font-black uppercase bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-white dark:hover:bg-zinc-900 transition-all" asChild>
                 <Link to="/">
                   Browse Help Center
                 </Link>
@@ -203,7 +205,7 @@ export default function FAQ() {
       </section>
 
       {/* Quick Tips Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-zinc-900 border-t-4 border-black">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-zinc-900 border-t-4 border-black dark:border-white z-10">
         <div className="max-w-7xl mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-black dark:text-white mb-6 uppercase">
@@ -248,12 +250,12 @@ export default function FAQ() {
               }
             ].map((tip, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full rounded-none border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all bg-white dark:bg-zinc-900">
-                  <CardHeader className="text-center border-b-4 border-black bg-gray-50 dark:bg-zinc-800">
-                    <div className="mx-auto mb-4 p-4 bg-white border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] w-20 h-20 flex items-center justify-center">
-                      <tip.icon className="h-8 w-8 text-black" strokeWidth={2.5} />
+                <Card className="h-full rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all bg-white dark:bg-zinc-900">
+                  <CardHeader className="text-center border-b-4 border-black dark:border-white bg-gray-50 dark:bg-zinc-800">
+                    <div className="mx-auto mb-4 p-4 bg-white dark:bg-zinc-900 border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] w-20 h-20 flex items-center justify-center">
+                      <tip.icon className="h-8 w-8 text-black dark:text-white" strokeWidth={2.5} />
                     </div>
-                    <CardTitle className="text-xl font-black uppercase">{tip.title}</CardTitle>
+                    <CardTitle className="text-xl font-black uppercase text-black dark:text-white">{tip.title}</CardTitle>
                   </CardHeader>
                   <CardContent className="p-6">
                     <CardDescription className="text-center text-base font-medium text-black dark:text-gray-300">
@@ -268,13 +270,13 @@ export default function FAQ() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black text-white border-t-4 border-black">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-black dark:bg-zinc-900 text-white border-t-4 border-black dark:border-white z-10">
         <div className="max-w-4xl mx-auto text-center">
-          <motion.div {...fadeInUp} className="border-4 border-white p-12 shadow-[12px_12px_0px_0px_rgba(255,255,255,0.2)]">
+          <motion.div {...fadeInUp} className="border-4 border-white dark:border-white p-12 shadow-[12px_12px_0px_0px_rgba(255,255,255,0.2)]">
             <h2 className="text-4xl md:text-5xl font-black mb-6 uppercase">
               Ready to Transform Your Learning Experience?
             </h2>
-            <p className="text-xl mb-10 font-bold opacity-90">
+            <p className="text-xl mb-10 font-bold opacity-90 text-white dark:text-white">
               Join thousands of students and educators who have revolutionized their academic reading with Knowly.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">

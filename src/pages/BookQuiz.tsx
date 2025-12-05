@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { 
-  Target, 
-  ArrowLeft, 
-  CheckCircle, 
-  XCircle, 
+import {
+  Target,
+  ArrowLeft,
+  CheckCircle,
+  XCircle,
   Clock,
   Award,
   RotateCcw,
@@ -157,7 +157,7 @@ export default function BookQuiz() {
   const [timeLeft, setTimeLeft] = useState(quizData.timeLimit * 60) // Convert to seconds
   const [quizStarted, setQuizStarted] = useState(false)
   const [score, setScore] = useState(0)
-  const [showExplanation, setShowExplanation] = useState<{[key: string]: boolean}>({})
+  const [showExplanation, setShowExplanation] = useState<{ [key: string]: boolean }>({})
 
   // Timer effect
   useEffect(() => {
@@ -172,7 +172,7 @@ export default function BookQuiz() {
           return prev - 1
         })
       }, 1000)
-      
+
       return () => clearInterval(timer)
     }
   }, [quizStarted, showResults, timeLeft])
@@ -194,7 +194,7 @@ export default function BookQuiz() {
       const newAnswers = [...selectedAnswers]
       newAnswers[currentQuestion] = answerIndex
       setSelectedAnswers(newAnswers)
-      
+
       // Show explanation immediately after selecting an answer
       setShowExplanation(prev => ({
         ...prev,
@@ -262,79 +262,81 @@ export default function BookQuiz() {
     return 'text-red-600'
   }
 
-  const getScoreBadge = (score: number) => {
-    if (score >= 90) return { text: 'Excellent!', color: 'bg-green-600' }
-    if (score >= quizData.passingScore) return { text: 'Passed', color: 'bg-blue-600' }
-    return { text: 'Try Again', color: 'bg-red-600' }
-  }
+
 
   if (!quizStarted) {
     return (
-      <div className="min-h-screen bg-parchment-50 dark:bg-ink-950 py-8">
-        <div className="container mx-auto max-w-4xl">
+      <div className="min-h-screen bg-background relative overflow-hidden font-mono">
+        <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        <div className="container mx-auto max-w-4xl relative z-10 py-8">
           <div className="mb-6">
-            <Button variant="ghost" onClick={() => navigate('/readnex')}>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/readnex')}
+              className="border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-900 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold transition-all"
+            >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Library
             </Button>
           </div>
-          
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader className="text-center">
+            <Card className="max-w-2xl mx-auto border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+              <CardHeader className="text-center border-b-4 border-black dark:border-white pb-6 bg-secondary">
                 <div className="flex justify-center mb-4">
-                  <div className="bg-purple-100 dark:bg-purple-900 p-4 rounded-full">
-                    <Target className="h-12 w-12 text-purple-600" />
+                  <div className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                    <Target className="h-12 w-12 text-black dark:text-white" />
                   </div>
                 </div>
-                <CardTitle className="text-3xl font-bold">
+                <CardTitle className="text-3xl font-black uppercase text-black dark:text-white font-display">
                   Comprehension Quiz
                 </CardTitle>
-                <p className="text-xl text-gray-600 dark:text-gray-400">
+                <p className="text-xl font-bold font-mono text-black dark:text-white">
                   {quizData.bookTitle}
                 </p>
-                <p className="text-lg text-gray-500">
+                <p className="text-lg font-mono text-gray-600 dark:text-gray-300">
                   by {quizData.bookAuthor}
                 </p>
               </CardHeader>
-              
+
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">
+                  <div className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                    <div className="text-2xl font-black text-black dark:text-white">
                       {quizData.questions.length}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-sm font-bold uppercase text-gray-600 dark:text-gray-400">
                       Questions
                     </div>
                   </div>
-                  
-                  <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">
+
+                  <div className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                    <div className="text-2xl font-black text-black dark:text-white">
                       {quizData.timeLimit}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-sm font-bold uppercase text-gray-600 dark:text-gray-400">
                       Minutes
                     </div>
                   </div>
-                  
-                  <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg">
-                    <div className="text-2xl font-bold text-amber-600">
+
+                  <div className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                    <div className="text-2xl font-black text-black dark:text-white">
                       {quizData.passingScore}%
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <div className="text-sm font-bold uppercase text-gray-600 dark:text-gray-400">
                       To Pass
                     </div>
                   </div>
                 </div>
-                
-                <div className="text-left bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                  <h3 className="font-semibold mb-2">Quiz Instructions:</h3>
-                  <ul className="text-sm space-y-1 text-gray-600 dark:text-gray-400">
+
+                <div className="text-left bg-gray-100 dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                  <h3 className="font-bold uppercase mb-2 text-black dark:text-white">Quiz Instructions:</h3>
+                  <ul className="text-sm space-y-1 font-mono text-gray-800 dark:text-gray-300">
                     <li>• Read each question carefully</li>
                     <li>• You can navigate between questions</li>
                     <li>• Timer starts when you begin</li>
@@ -342,10 +344,10 @@ export default function BookQuiz() {
                     <li>• Review your answers before submitting</li>
                   </ul>
                 </div>
-                
-                <Button 
-                  size="lg" 
-                  className="w-full bg-purple-600 hover:bg-purple-700"
+
+                <Button
+                  size="lg"
+                  className="w-full bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-primary hover:text-black dark:hover:bg-primary dark:hover:text-black hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all uppercase font-bold"
                   onClick={startQuiz}
                 >
                   <Play className="h-5 w-5 mr-2" />
@@ -360,32 +362,35 @@ export default function BookQuiz() {
   }
 
   if (showResults) {
-    const scoreBadge = getScoreBadge(score)
     const correctAnswers = quizData.questions.filter((q, i) => selectedAnswers[i] === q.correctAnswer).length
-    
+
     return (
-      <div className="min-h-screen bg-parchment-50 dark:bg-ink-950 py-8">
-        <div className="container mx-auto max-w-4xl">
+      <div className="min-h-screen bg-background relative overflow-hidden font-mono">
+        <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        <div className="container mx-auto max-w-4xl relative z-10 py-8">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
-            <Card className="max-w-2xl mx-auto">
-              <CardHeader className="text-center">
+            <Card className="max-w-2xl mx-auto border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+              <CardHeader className="text-center border-b-4 border-black dark:border-white pb-6 bg-secondary">
                 <div className="flex justify-center mb-4">
-                  <div className={`${scoreBadge.color} p-4 rounded-full`}>
-                    <Award className="h-12 w-12 text-white" />
+                  <div className={`bg-white dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}>
+                    <Award className={`h-12 w-12 ${score >= quizData.passingScore ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                      }`} />
                   </div>
                 </div>
-                <CardTitle className="text-3xl font-bold">
+                <CardTitle className="text-3xl font-black uppercase text-black dark:text-white font-display">
                   Quiz Complete!
                 </CardTitle>
-                <Badge className={`${scoreBadge.color} text-white text-lg px-4 py-2`}>
-                  {scoreBadge.text}
+                <Badge className={`mx-auto rounded-none border-2 border-black dark:border-white px-4 py-2 text-lg font-bold uppercase text-black dark:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] ${score >= quizData.passingScore ? 'bg-green-400' : 'bg-red-400'
+                  }`}>
+                  {score >= quizData.passingScore ? 'Passed' : 'Try Again'}
                 </Badge>
               </CardHeader>
-              
+
               <CardContent className="space-y-6">
                 <div className="text-center">
                   <div className={`text-6xl font-bold ${getScoreColor(score)}`}>
@@ -395,7 +400,7 @@ export default function BookQuiz() {
                     {correctAnswers} out of {quizData.questions.length} correct
                   </p>
                 </div>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                     <div className="text-lg font-bold text-blue-600">
@@ -405,7 +410,7 @@ export default function BookQuiz() {
                       Time Taken
                     </div>
                   </div>
-                  
+
                   <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
                     <div className="text-lg font-bold text-green-600">
                       {score >= quizData.passingScore ? 'Passed' : 'Failed'}
@@ -415,18 +420,18 @@ export default function BookQuiz() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-3">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="flex-1"
                     onClick={() => navigate(`/book/${id}/read`)}
                   >
                     <BookOpen className="h-4 w-4 mr-2" />
                     Continue Reading
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="flex-1"
                     onClick={restartQuiz}
                   >
@@ -434,9 +439,9 @@ export default function BookQuiz() {
                     Retake Quiz
                   </Button>
                 </div>
-                
-                <Button 
-                  variant="ghost" 
+
+                <Button
+                  variant="ghost"
                   className="w-full"
                   onClick={() => navigate('/readnex')}
                 >
@@ -455,15 +460,17 @@ export default function BookQuiz() {
   const progress = ((currentQuestion + 1) / quizData.questions.length) * 100
 
   return (
-    <div className="min-h-screen bg-parchment-50 dark:bg-ink-950 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen bg-background relative overflow-hidden font-mono">
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+      <div className="max-w-4xl mx-auto px-4 relative z-10 py-8">
         {/* Header */}
         <div className="mb-6 flex justify-between items-center">
           <Button variant="ghost" onClick={() => navigate('/readnex')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Exit Quiz
           </Button>
-          
+
           <div className="flex items-center gap-4">
             <Badge variant="outline" className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
@@ -474,12 +481,12 @@ export default function BookQuiz() {
             </Badge>
           </div>
         </div>
-        
+
         {/* Progress */}
         <div className="mb-6">
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-4 border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-800 [&>div]:bg-primary" />
         </div>
-        
+
         {/* Question Card */}
         <motion.div
           key={currentQuestion}
@@ -487,24 +494,23 @@ export default function BookQuiz() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Card>
-            <CardHeader>
+          <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+            <CardHeader className="border-b-4 border-black dark:border-white pb-4 bg-secondary">
               <div className="flex items-center gap-2 mb-2">
-                <Badge className={
-                  question.difficulty === 'easy' ? 'bg-green-600' :
-                  question.difficulty === 'medium' ? 'bg-yellow-600' : 'bg-red-600'
-                }>
+                <Badge className={`rounded-none border-2 border-black dark:border-white font-bold uppercase text-black dark:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] ${question.difficulty === 'easy' ? 'bg-green-400' :
+                  question.difficulty === 'medium' ? 'bg-yellow-400' : 'bg-red-400'
+                  }`}>
                   {question.difficulty}
                 </Badge>
-                <Badge variant="outline">
+                <Badge variant="outline" className="rounded-none border-2 border-black dark:border-white bg-white dark:bg-zinc-800 text-black dark:text-white font-bold uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                   {question.type.replace('-', ' ')}
                 </Badge>
               </div>
-              <CardTitle className="text-xl">
+              <CardTitle className="text-xl font-bold font-mono leading-relaxed text-black dark:text-white">
                 {question.question}
               </CardTitle>
             </CardHeader>
-            
+
             <CardContent className="space-y-4">
               {question.options && (
                 <div className="space-y-3">
@@ -512,24 +518,26 @@ export default function BookQuiz() {
                     <div key={index} className="space-y-2">
                       <Button
                         variant={
-                          selectedAnswers[currentQuestion] === index 
-                            ? "default" 
+                          selectedAnswers[currentQuestion] === index
+                            ? "default"
                             : selectedAnswers[currentQuestion] !== null
                               ? "secondary"
                               : "outline"
                         }
-                        className="w-full text-left justify-start h-auto p-4 hover:bg-primary/10"
+                        className={`w-full text-left justify-start h-auto p-4 transition-all rounded-none border-2 border-black dark:border-white font-mono font-bold ${selectedAnswers[currentQuestion] === index
+                          ? 'bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] translate-x-[-2px] translate-y-[-2px]'
+                          : 'bg-white dark:bg-zinc-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'
+                          }`}
                         onClick={() => handleAnswerSelect(index)}
                         disabled={selectedAnswers[currentQuestion] !== null}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                            selectedAnswers[currentQuestion] === index 
-                              ? 'bg-primary border-primary text-primary-foreground' 
-                              : selectedAnswers[currentQuestion] !== null
-                                ? 'bg-gray-200 border-gray-300'
-                                : 'border-gray-300'
-                          }`}>
+                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedAnswers[currentQuestion] === index
+                            ? 'bg-primary border-primary text-primary-foreground'
+                            : selectedAnswers[currentQuestion] !== null
+                              ? 'bg-gray-200 border-gray-300'
+                              : 'border-gray-300'
+                            }`}>
                             {selectedAnswers[currentQuestion] === index && (
                               <CheckCircle className="h-4 w-4" />
                             )}
@@ -540,17 +548,16 @@ export default function BookQuiz() {
                           <span>{option}</span>
                         </div>
                       </Button>
-                      
+
                       {/* Explanation for selected answer */}
                       {showExplanation[currentQuestion] && selectedAnswers[currentQuestion] === index && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
-                          className={`p-3 rounded-lg text-sm ${
-                            index === question.correctAnswer 
-                              ? 'bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800' 
-                              : 'bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800'
-                          }`}
+                          className={`p-3 rounded-lg text-sm ${index === question.correctAnswer
+                            ? 'bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
+                            : 'bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800'
+                            }`}
                         >
                           <div className="flex items-start gap-2">
                             {index === question.correctAnswer ? (
@@ -579,7 +586,7 @@ export default function BookQuiz() {
                       )}
                     </div>
                   ))}
-                  
+
                   {/* Show correct answer if question is answered but explanation is not shown */}
                   {selectedAnswers[currentQuestion] !== null && !showExplanation[currentQuestion] && (
                     <Button
@@ -597,23 +604,23 @@ export default function BookQuiz() {
                   )}
                 </div>
               )}
-              
+
               {/* Navigation */}
               <div className="flex justify-between items-center pt-6">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={prevQuestion}
                   disabled={currentQuestion === 0}
                 >
                   Previous
                 </Button>
-                
+
                 <div className="text-sm text-gray-500">
                   {selectedAnswers.filter(a => a !== null).length} of {quizData.questions.length} answered
                 </div>
-                
+
                 {currentQuestion === quizData.questions.length - 1 ? (
-                  <Button 
+                  <Button
                     onClick={finishQuiz}
                     disabled={selectedAnswers[currentQuestion] === null}
                     className="bg-green-600 hover:bg-green-700"
@@ -621,7 +628,7 @@ export default function BookQuiz() {
                     Finish Quiz
                   </Button>
                 ) : (
-                  <Button 
+                  <Button
                     onClick={nextQuestion}
                     disabled={selectedAnswers[currentQuestion] === null}
                   >
