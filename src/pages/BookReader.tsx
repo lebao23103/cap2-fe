@@ -26,7 +26,6 @@ import {
   ArrowLeft,
   Palette,
   Heart,
-  FileText,
   Eye,
   EyeOff
 } from 'lucide-react'
@@ -799,49 +798,50 @@ export default function BookReader() {
             <div className={`relative border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 ${themeStyles.cardBg}`}>
               {/* PDF Viewer with react-pdf */}
               {pdfUrl ? (
-                <div className="min-h-[80vh] flex flex-col relative">
-                  <AnimatePresence mode="wait" initial={false}>
-                    <motion.div
-                      key={currentPage}
-                      initial={{ opacity: 0, x: pageDirection === 'forward' ? 20 : -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: pageDirection === 'forward' ? -20 : 20 }}
-                      transition={{ duration: 0.2, ease: "easeOut" }}
-                      className="flex-1 flex justify-center p-4 md:p-8 overflow-auto"
-                      style={{
-                        backgroundColor: theme === 'sepia' ? '#F4ECD8' : theme === 'dark' ? '#0f172a' : '#F1F5F9'
-                      }}
-                    >
-                      <Document
-                        file={pdfUrl}
-                        onLoadSuccess={({ numPages }) => {
-                          setNumPages(numPages)
-                          if (bookData) {
-                            setBookData({ ...bookData, totalPages: numPages })
-                          }
+                <div className={`flex flex-col relative transition-all duration-300 ${showNavbar ? 'h-[calc(100vh-8rem)]' : 'h-[calc(100vh-3rem)]'}`}>
+                  <Document
+                    file={pdfUrl}
+                    onLoadSuccess={({ numPages }) => {
+                      setNumPages(numPages)
+                      if (bookData) {
+                        setBookData({ ...bookData, totalPages: numPages })
+                      }
+                    }}
+                    onLoadError={(error) => {
+                      console.error('PDF load error:', error)
+                      toast({
+                        title: 'PDF Loading Error',
+                        description: 'Failed to load PDF. Please try again.',
+                        variant: 'destructive'
+                      })
+                    }}
+                    loading={
+                      <div className="flex items-center justify-center h-full min-h-[600px]">
+                        <div className="animate-pulse flex flex-col items-center gap-4">
+                          <div className="h-12 w-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+                          <div className="h-4 w-32 bg-gray-200 border border-black"></div>
+                        </div>
+                      </div>
+                    }
+                    options={pdfOptions}
+                    className="flex-1 flex flex-col min-h-0"
+                  >
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.div
+                        key={currentPage}
+                        initial={{ opacity: 0, x: pageDirection === 'forward' ? 20 : -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: pageDirection === 'forward' ? -20 : 20 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="flex-1 flex justify-center items-start p-4 md:p-8 overflow-auto"
+                        style={{
+                          backgroundColor: theme === 'sepia' ? '#F4ECD8' : theme === 'dark' ? '#0f172a' : '#F1F5F9'
                         }}
-                        onLoadError={(error) => {
-                          console.error('PDF load error:', error)
-                          toast({
-                            title: 'PDF Loading Error',
-                            description: 'Failed to load PDF. Please try again.',
-                            variant: 'destructive'
-                          })
-                        }}
-                        loading={
-                          <div className="flex items-center justify-center h-full min-h-[600px]">
-                            <div className="animate-pulse flex flex-col items-center gap-4">
-                              <div className="h-12 w-12 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
-                              <div className="h-4 w-32 bg-gray-200 border border-black"></div>
-                            </div>
-                          </div>
-                        }
-                        options={pdfOptions}
                       >
                         {/* Wrap Page with relative positioning for overlays */}
                         <div
                           ref={pageContainerRef}
-                          className="relative inline-block shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-2 border-black overflow-hidden"
+                          className="relative inline-block shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-2 border-black overflow-hidden mb-36"
                         >
                           <Page
                             pageNumber={currentPage}
@@ -884,9 +884,9 @@ export default function BookReader() {
                             }}
                           />
                         </div>
-                      </Document>
-                    </motion.div>
-                  </AnimatePresence>
+                      </motion.div>
+                    </AnimatePresence>
+                  </Document>
 
                   {/* Navigation Bar */}
                   <div className={`px-6 py-4 border-t-2 ${themeStyles.border} flex items-center justify-between ${themeStyles.navBg} absolute bottom-0 left-0 right-0 z-20`}>
@@ -942,17 +942,46 @@ export default function BookReader() {
                   </div>
                 </div>
               ) : (
-                <div className="min-h-[60vh] flex items-center justify-center p-8">
-                  <div className="text-center max-w-md">
-                    <div className="h-20 w-20 bg-gray-100 border-2 border-black flex items-center justify-center mx-auto mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                      <FileText className="h-10 w-10 text-black" />
+                <div className="min-h-[80vh] relative flex items-center justify-center overflow-hidden bg-[#F0F0F0]">
+                  {/* Background Collage */}
+                  <div
+                    className="absolute inset-0 z-0 opacity-40 grayscale contrast-125"
+                    style={{
+                      backgroundImage: 'url(/book_collage_bg.png)',
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }}
+                  />
+
+                  {/* Quirky Card */}
+                  <div className="relative z-10 max-w-lg w-full p-8 bg-white border-4 border-black shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] transform -rotate-1 transition-transform hover:rotate-0 duration-300">
+                    <div className="absolute -top-6 -right-6 bg-yellow-400 border-4 border-black p-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-12">
+                      <span className="font-black text-xl uppercase px-2">404 Error</span>
                     </div>
-                    <h3 className="text-xl font-bold mb-2 uppercase">PDF Not Available</h3>
-                    <p className="text-gray-600 mb-6 font-mono">
-                      The PDF file for "{bookData?.title}" has not been uploaded yet.
-                    </p>
-                    <Button onClick={() => navigate('/readnex')} className="rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
-                      Back to Library
+
+                    <div className="border-b-4 border-black pb-4 mb-6">
+                      <h3 className="text-4xl font-black uppercase leading-none tracking-tighter">
+                        Ghost <br /> Writer?
+                      </h3>
+                    </div>
+
+                    <div className="space-y-4 mb-8 font-mono font-bold text-lg">
+                      <p>
+                        The pages you seek have defied existence.
+                      </p>
+                      <p className="text-sm bg-black text-white inline-block px-2 py-1 transform -rotate-1">
+                        STATUS: NOT_UPLOADED
+                      </p>
+                      <p className="text-gray-600 text-base">
+                        "{bookData?.title}" is basically a concept art right now.
+                      </p>
+                    </div>
+
+                    <Button
+                      onClick={() => navigate('/readnex')}
+                      className="w-full h-14 text-lg rounded-none bg-white text-black border-4 border-black hover:bg-black hover:text-white hover:translate-x-[2px] hover:translate-y-[2px] transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none uppercase font-black tracking-widest"
+                    >
+                      Escape to Library
                     </Button>
                   </div>
                 </div>
