@@ -26,7 +26,9 @@ import {
   ArrowLeft,
   Palette,
   Heart,
-  FileText
+  FileText,
+  Eye,
+  EyeOff
 } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -125,6 +127,7 @@ export default function BookReader() {
   const [theme, setTheme] = useState<'light' | 'dark' | 'sepia'>('light')
   const [pageDirection, setPageDirection] = useState<'forward' | 'backward'>('forward')
   const [isFavorite, setIsFavorite] = useState(false)
+  const [showNavbar, setShowNavbar] = useState(true)
 
   // New state for highlight overlay and popover
   const [selectedNote, setSelectedNote] = useState<BookNote | null>(null)
@@ -173,7 +176,7 @@ export default function BookReader() {
         readingProgress: 0,
         notes: [],
         bookmarks: [],
-        isFavorite: favorites.some((fav: any) => fav.book.id === Number(id)),
+        isFavorite: favorites.some((fav: any) => fav?.book?.id === Number(id)),
         hasQuiz: true,
         readingTime: '4h 30m',
         rating: bookDetails.rating || 0
@@ -204,7 +207,7 @@ export default function BookReader() {
         color: note.color === '#FFEB3B' ? 'yellow' : note.color === '#2196F3' ? 'blue' : note.color === '#4CAF50' ? 'green' : 'pink',
         isPublic: note.is_public
       })))
-      setIsFavorite(favorites.some((fav: any) => fav.book.id === Number(id)))
+      setIsFavorite(favorites.some((fav: any) => fav?.book?.id === Number(id)))
 
       // Track reading history
       await fetch(`http://127.0.0.1:8000/api/reading-history/add/`, {
@@ -625,11 +628,31 @@ export default function BookReader() {
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${themeStyles.bg} ${theme === 'dark' ? 'dark' : ''} font-mono`}>
+      {/* Floating Restore Button (when navbar is hidden) */}
+      <AnimatePresence>
+        {!showNavbar && (
+          <motion.div
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -50, opacity: 0 }}
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-auto"
+          >
+            <Button
+              onClick={() => setShowNavbar(true)}
+              className="rounded-full shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-background text-foreground border-2 border-black hover:bg-accent transition-all h-10 w-10 p-0 flex items-center justify-center"
+              title="Show Menu"
+            >
+              <Eye className="h-5 w-5" />
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header - Minimalist & Floating */}
       <motion.div
         initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        className="sticky top-0 z-50 px-4 py-3 pointer-events-none"
+        animate={{ y: showNavbar ? 0 : -200 }}
+        className="fixed top-0 left-0 right-0 z-50 px-4 py-3 pointer-events-none"
       >
         <div className={`max-w-6xl mx-auto flex items-center justify-between pointer-events-auto ${themeStyles.navBg} border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] px-6 py-2`}>
           <div className="flex items-center gap-4">
@@ -732,11 +755,21 @@ export default function BookReader() {
                 </div>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowNavbar(false)}
+              className={`rounded-none border border-transparent transition-all ${themeStyles.text} hover:opacity-70`}
+              title="Hide Navbar"
+            >
+              <EyeOff className="h-4 w-4" />
+            </Button>
           </div>
         </div>
       </motion.div>
 
-      <div className="container mx-auto max-w-7xl px-4 pb-8">
+      <div className={`w-full max-w-[98vw] mx-auto px-4 pb-8 transition-all duration-300 ${showNavbar ? 'pt-24' : 'pt-4'}`}>
         <div className={`grid grid-cols-1 gap-6 lg:gap-8 transition-all duration-500 ${sidebarOpen ? "xl:grid-cols-12" : "xl:grid-cols-1"}`}>
           {/* Main Content - Reading Area */}
           <div className={`transition-all duration-500 ${sidebarOpen ? "xl:col-span-8" : "xl:col-span-12"}`}>
@@ -747,7 +780,7 @@ export default function BookReader() {
                   initial={{ opacity: 0, scale: 0.8, x: 20 }}
                   animate={{ opacity: 1, scale: 1, x: 0 }}
                   exit={{ opacity: 0, scale: 0.8, x: 20 }}
-                  className="fixed right-8 top-24 z-40"
+                  className={`fixed right-8 z-40 transition-all duration-300 ${showNavbar ? 'top-24' : 'top-4'}`}
                 >
                   <Button
                     onClick={() => setSidebarOpen(true)}
@@ -817,11 +850,12 @@ export default function BookReader() {
                             className="pdf-page-content"
                             width={undefined}
                             height={undefined}
-                            scale={1.0}
+                            scale={fontSize / 16}
                           />
 
                           {/* Highlight Overlay on top of PDF */}
                           <NoteHighlightOverlay
+                            key={`${currentPage}-${fontSize}`}
                             notes={notes.filter(n => n.page === currentPage)}
                             currentPage={currentPage}
                             containerRef={pageContainerRef}
@@ -934,7 +968,7 @@ export default function BookReader() {
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: 50, opacity: 0 }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="xl:col-span-4 space-y-6 h-fit sticky top-24"
+                className={`xl:col-span-4 space-y-6 h-fit sticky transition-all duration-300 ${showNavbar ? 'top-24' : 'top-4'}`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <h2 className={`text-lg font-bold uppercase pb-1 ${themeStyles.text} border-b-2 ${themeStyles.border}`}>Reading Companion</h2>
