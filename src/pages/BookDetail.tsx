@@ -345,11 +345,11 @@ export default function BookDetail() {
           <div className="lg:col-span-4 flex flex-col gap-6">
             <div className="relative group">
               <div className="absolute -inset-1 bg-black translate-x-2 translate-y-2"></div>
-              <div className="relative aspect-[2/3] border-2 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+              <div className="relative aspect-[3/4] border-2 border-black bg-white overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
                 <img
                   src={getCoverImageUrl(book.cover_image)}
                   alt={`${book.title} by ${book.author} - Book cover`}
-                  className="w-full h-full object-cover transition-all duration-500"
+                  className="w-full h-full object-cover"
                   loading="lazy"
                 />
               </div>

@@ -1,9 +1,12 @@
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { fadeInUp, stagger } from '@/lib/animations'
+import booksService from '@/lib/api/books'
+import { getCoverImageUrl } from '@/lib/utils/mediaUtils'
 import {
   BookOpen,
   Feather,
@@ -14,46 +17,64 @@ import {
   TrendingUp,
   Sparkles,
   ChevronRight,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from 'lucide-react'
 
-export default function Home() {
+interface FeaturedBook {
+  id: string
+  title: string
+  author: string
+  coverImage: string
+  rating: number
+  description: string
+}
 
-  // Sample book data for featured books
-  const featuredBooks = [
-    {
-      id: "1",
-      title: "The Midnight Library",
-      author: "Matt Haig",
-      coverImage: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800",
-      rating: 4.5,
-      description: "Between life and death there is a library, and within that library, the shelves go on forever."
-    },
-    {
-      id: "2",
-      title: "Project Hail Mary",
-      author: "Andy Weir",
-      coverImage: "https://images.unsplash.com/photo-1614544048536-0d28caf77f41?auto=format&fit=crop&q=80&w=800",
-      rating: 4.8,
-      description: "A lone astronaut must save humanity from an extinction-level threat."
-    },
-    {
-      id: "3",
-      title: "Klara and the Sun",
-      author: "Kazuo Ishiguro",
-      coverImage: "https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&q=80&w=800",
-      rating: 4.2,
-      description: "A thrilling coming-of-age story about an Artificial Friend and her quest to save the family she loves."
-    },
-    {
-      id: "4",
-      title: "The Seven Husbands",
-      author: "Taylor Jenkins Reid",
-      coverImage: "https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&q=80&w=800",
-      rating: 4.7,
-      description: "Aging Hollywood icon finally tells her story of fame, fortune, and scandalous relationships."
+// Tech stack data - only technologies actually used in this project
+const techStack = [
+  { name: 'React', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg', bg: 'bg-sky-100' },
+  { name: 'TypeScript', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg', bg: 'bg-blue-100' },
+  { name: 'Vite', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vitejs/vitejs-original.svg', bg: 'bg-purple-100' },
+  { name: 'Tailwind CSS', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg', bg: 'bg-cyan-100' },
+  { name: 'Framer Motion', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/framermotion/framermotion-original.svg', bg: 'bg-pink-100' },
+  { name: 'Django', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/django/django-plain.svg', bg: 'bg-green-100' },
+  { name: 'Python', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', bg: 'bg-yellow-100' },
+  { name: 'MySQL', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg', bg: 'bg-orange-100' },
+]
+
+export default function Home() {
+  const [featuredBooks, setFeaturedBooks] = useState<FeaturedBook[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    loadFeaturedBooks()
+  }, [])
+
+  const loadFeaturedBooks = async () => {
+    try {
+      setIsLoading(true)
+      const booksData = await booksService.getApprovedBooks()
+
+      const transformed: FeaturedBook[] = booksData
+        .filter((book: any) => book && book.id && book.title)
+        .slice(0, 4)
+        .map((book: any) => ({
+          id: book.id.toString(),
+          title: book.title,
+          author: book.author || 'Unknown Author',
+          coverImage: getCoverImageUrl(book.cover_image),
+          rating: book.rating || 0,
+          description: book.description || 'Discover this amazing book in our collection.'
+        }))
+
+      setFeaturedBooks(transformed)
+    } catch (error) {
+      console.error('Error loading featured books:', error)
+      setFeaturedBooks([])
+    } finally {
+      setIsLoading(false)
     }
-  ]
+  }
 
   const testimonials = [
     {
@@ -260,39 +281,56 @@ export default function Home() {
             </Button>
           </div>
 
-          <motion.div {...stagger} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {featuredBooks.map((book) => (
-              <motion.div key={book.id} {...fadeInUp}>
-                <Card className="h-full border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 group overflow-hidden rounded-none">
-                  <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-black">
-                    <img
-                      src={book.coverImage}
-                      alt={book.title}
-                      className="w-full h-full object-cover transition-all duration-500"
-                    />
-                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 border-2 border-black m-2">
-                      <Button className="w-full bg-white text-black hover:bg-black hover:text-white font-bold border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase" asChild>
-                        <Link to={`/book/${book.id}`}>View Details</Link>
-                      </Button>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            </div>
+          ) : featuredBooks.length === 0 ? (
+            <Card className="bg-white border-4 border-dashed border-black rounded-none">
+              <CardContent className="p-12 text-center">
+                <div className="text-6xl mb-4">📚</div>
+                <p className="text-gray-600 font-bold uppercase">No books available yet.</p>
+                <p className="text-gray-500 font-mono text-sm mt-2">Check back soon for new additions!</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <motion.div {...stagger} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {featuredBooks.map((book) => (
+                <motion.div key={book.id} {...fadeInUp}>
+                  <Card className="h-full border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 group overflow-hidden rounded-none">
+                    <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-black">
+                      <img
+                        src={book.coverImage}
+                        alt={book.title}
+                        className="w-full h-full object-cover transition-all duration-500"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x400?text=No+Cover'
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 border-2 border-black m-2">
+                        <Button className="w-full bg-white text-black hover:bg-black hover:text-white font-bold border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase" asChild>
+                          <Link to={`/book/${book.id}`}>View Details</Link>
+                        </Button>
+                      </div>
+                      <div className="absolute top-3 right-3 bg-yellow-400 text-black border-2 border-black text-xs font-bold px-2.5 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-1">
+                        <Star className="h-3 w-3 fill-black text-black" />
+                        {book.rating.toFixed(1)}
+                      </div>
                     </div>
-                    <div className="absolute top-3 right-3 bg-yellow-400 text-black border-2 border-black text-xs font-bold px-2.5 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-1">
-                      <Star className="h-3 w-3 fill-black text-black" />
-                      {book.rating}
-                    </div>
-                  </div>
-                  <CardContent className="p-5">
-                    <h3 className="font-bold text-lg text-foreground line-clamp-1 mb-1 group-hover:underline decoration-2 underline-offset-2 uppercase">
-                      {book.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 font-mono mb-3 uppercase">{book.author}</p>
-                    <p className="text-sm text-gray-600 line-clamp-2 font-mono">
-                      {book.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </motion.div>
+                    <CardContent className="p-5">
+                      <h3 className="font-bold text-lg text-foreground line-clamp-1 mb-1 group-hover:underline decoration-2 underline-offset-2 uppercase">
+                        {book.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 font-mono mb-3 uppercase">{book.author}</p>
+                      <p className="text-sm text-gray-600 line-clamp-2 font-mono">
+                        {book.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </motion.div>
+          )}
 
           <div className="mt-8 text-center sm:hidden">
             <Button variant="outline" className="w-full border-2 border-black rounded-none uppercase font-bold" asChild>
@@ -344,6 +382,96 @@ export default function Home() {
             ))}
           </motion.div>
         </div>
+      </section>
+
+      {/* Tech Stack Marquee Section */}
+      <section className="relative w-full py-16 bg-white border-b-4 border-black overflow-hidden">
+        <div className="container mx-auto px-4 mb-10">
+          <motion.div {...fadeInUp} className="text-center">
+            <Badge variant="outline" className="mb-4 text-black border-2 border-black bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] rounded-none uppercase font-bold">
+              <Sparkles className="mr-2 h-3 w-3" /> Tech Stack
+            </Badge>
+            <h2 className="text-2xl md:text-3xl font-bold text-foreground uppercase font-display">
+              Built With Modern Technologies
+            </h2>
+          </motion.div>
+        </div>
+
+        {/* Marquee Container */}
+        <div className="relative py-8">
+          {/* Gradient Overlays - lower z-index so hovered cards appear above */}
+          <div className="absolute left-0 top-0 bottom-0 w-16 md:w-28 bg-gradient-to-r from-white to-transparent z-[5] pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-16 md:w-28 bg-gradient-to-l from-white to-transparent z-[5] pointer-events-none" />
+
+          {/* Scrolling Track */}
+          <div className="marquee-wrapper flex">
+            <div className="marquee-track flex shrink-0 items-center py-3">
+              {techStack.map((tech, index) => (
+                <div
+                  key={index}
+                  className={`tech-card flex items-center gap-3 mx-4 px-6 py-4 ${tech.bg} border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer group`}
+                >
+                  <img
+                    src={tech.logo}
+                    alt={tech.name}
+                    className="h-10 w-10 transition-transform duration-200 group-hover:rotate-6"
+                  />
+                  <span className="font-bold text-black uppercase whitespace-nowrap tracking-wide">{tech.name}</span>
+                </div>
+              ))}
+            </div>
+            {/* Duplicate for seamless loop */}
+            <div className="marquee-track flex shrink-0 items-center py-3" aria-hidden="true">
+              {techStack.map((tech, index) => (
+                <div
+                  key={`dup-${index}`}
+                  className={`tech-card flex items-center gap-3 mx-4 px-6 py-4 ${tech.bg} border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer group`}
+                >
+                  <img
+                    src={tech.logo}
+                    alt={tech.name}
+                    className="h-10 w-10 transition-transform duration-200 group-hover:rotate-6"
+                  />
+                  <span className="font-bold text-black uppercase whitespace-nowrap tracking-wide">{tech.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Improved CSS Animation */}
+        <style>{`
+          .marquee-wrapper {
+            overflow: hidden;
+            width: 100%;
+          }
+          
+          .marquee-track {
+            animation: scroll 40s linear infinite;
+            will-change: transform;
+          }
+          
+          @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+          }
+          
+          .marquee-wrapper:hover .marquee-track {
+            animation-play-state: paused;
+          }
+          
+          .tech-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            z-index: 10;
+          }
+          
+          .tech-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+            z-index: 30;
+          }
+        `}</style>
       </section>
 
       {/* CTA Section */}

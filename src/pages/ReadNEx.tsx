@@ -431,11 +431,11 @@ export default function ReadNEx() {
                         <Card className="h-full border-2 border-black bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 overflow-hidden rounded-none flex flex-col">
 
                           {/* Cover Image Area */}
-                          <Link to={`/book/${book.id}`} className="relative aspect-[2/3] overflow-hidden block border-b-2 border-black">
+                          <Link to={`/book/${book.id}`} className="relative aspect-[3/4] overflow-hidden block border-b-2 border-black">
                             <img
                               src={getCoverImageUrl(book.coverImage)}
                               alt={book.title}
-                              className="w-full h-full object-cover transition-all duration-500"
+                              className="w-full h-full object-cover"
                             />
 
                             {/* Top Badges */}

@@ -28,8 +28,6 @@ import {
   Menu,
   BookOpen,
   ChevronDown,
-  User,
-  Settings,
   LogOut,
 } from 'lucide-react';
 
@@ -153,14 +151,6 @@ export function Layout({ children }: LayoutProps) {
                           <LayoutDashboard className="mr-3 h-4 w-4" />
                           <span>Dashboard</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => navigate('/profile')} className="font-bold uppercase focus:bg-black focus:text-white rounded-none cursor-pointer py-3">
-                          <User className="mr-3 h-4 w-4" />
-                          <span>Profile</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => navigate('/settings')} className="font-bold uppercase focus:bg-black focus:text-white rounded-none cursor-pointer py-3">
-                          <Settings className="mr-3 h-4 w-4" />
-                          <span>Settings</span>
-                        </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-black h-0.5 my-2" />
                         <DropdownMenuItem onClick={handleLogout} className="font-bold uppercase text-red-600 focus:bg-red-600 focus:text-white rounded-none cursor-pointer py-3">
                           <LogOut className="mr-3 h-4 w-4" />
@@ -235,22 +225,6 @@ export function Layout({ children }: LayoutProps) {
                       </Link>
                     ))}
                     <div className="h-1 bg-black my-2" />
-                    <Link
-                      to="/profile"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-base font-bold uppercase border-2 border-transparent hover:border-black hover:bg-gray-100"
-                    >
-                      <User className="h-5 w-5" />
-                      Profile
-                    </Link>
-                    <Link
-                      to="/settings"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-base font-bold uppercase border-2 border-transparent hover:border-black hover:bg-gray-100"
-                    >
-                      <Settings className="h-5 w-5" />
-                      Settings
-                    </Link>
                     <button
                       onClick={handleLogout}
                       className="flex items-center gap-3 px-4 py-3 text-base font-bold uppercase text-red-600 border-2 border-transparent hover:border-black hover:bg-red-50 w-full text-left"
