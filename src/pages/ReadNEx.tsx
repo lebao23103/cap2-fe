@@ -117,7 +117,11 @@ export default function ReadNEx() {
         hasQuiz: true // Assume all books have quizzes for now
       }))
 
-      const favoriteIds = new Set(favoritesData.map((fav: any) => fav.book.id))
+      const favoriteIds = new Set(
+        favoritesData
+          .filter((fav: any) => fav?.book?.id)
+          .map((fav: any) => fav.book.id)
+      )
 
       // Mark favorites
       transformedBooks.forEach(book => {
