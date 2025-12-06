@@ -401,7 +401,7 @@ export default function Dashboard() {
             </div>
 
             {/* Quick Actions */}
-            <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Button
                 variant="outline"
                 className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-white dark:bg-zinc-800 border-4 border-black dark:border-white rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:bg-blue-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] transition-all group uppercase font-black"
@@ -421,6 +421,16 @@ export default function Dashboard() {
                   <Heart className="h-8 w-8 text-black" />
                 </div>
                 <span className="text-lg text-black dark:text-white group-hover:text-black">My Favorites</span>
+              </Button>
+              <Button
+                variant="outline"
+                className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-white dark:bg-zinc-800 border-4 border-black dark:border-white rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:bg-yellow-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] transition-all group uppercase font-black"
+                onClick={() => navigate('/my-notes')}
+              >
+                <div className="p-3 bg-yellow-100 border-2 border-black dark:border-white group-hover:bg-white transition-colors">
+                  <StickyNote className="h-8 w-8 text-black" />
+                </div>
+                <span className="text-lg text-black dark:text-white group-hover:text-black">My Notes</span>
               </Button>
               <Button
                 variant="outline"

@@ -29,6 +29,7 @@ import {
   BookOpen,
   ChevronDown,
   LogOut,
+  StickyNote,
 } from 'lucide-react';
 
 interface LayoutProps {
@@ -55,6 +56,7 @@ export function Layout({ children }: LayoutProps) {
     { path: '/chatbot', label: 'AI Assistant', icon: MessageCircle },
     { path: '/favorites', label: 'Favorites', icon: Heart },
     { path: '/reading-history', label: 'History', icon: Clock },
+    { path: '/my-notes', label: 'My Notes', icon: StickyNote },
     ...(isAdmin ? [{ path: '/admin', label: 'Admin', icon: Shield }] : [])
   ] : [];
 
