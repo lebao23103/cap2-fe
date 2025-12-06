@@ -37,6 +37,20 @@ interface Message {
   bookRecommendations?: Book[]
 }
 
+interface Conversation {
+  id: string
+  title: string
+  updated_at: string
+}
+
+interface Message {
+  id: number | string
+  type: 'user' | 'bot'
+  content: string
+  timestamp: Date
+  bookRecommendations?: Book[]
+}
+
 interface Book {
   id: string
   title: string
@@ -60,6 +74,7 @@ export default function Chatbot() {
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [conversationId, setConversationId] = useState<string | undefined>(undefined)
+  const [conversations, setConversations] = useState<Conversation[]>([])
   const [selectedRole, setSelectedRole] = useState<'book advisor' | 'literary expert' | 'book enthusiast'>('book advisor')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -71,6 +86,59 @@ export default function Chatbot() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  useEffect(() => {
+    loadConversations()
+  }, [])
+
+  const loadConversations = async () => {
+    try {
+      const data = await aiService.getConversations()
+      setConversations(data)
+    } catch (error) {
+      console.error("Failed to load conversations", error)
+    }
+  }
+
+  const handleNewChat = () => {
+    setConversationId(undefined)
+    setMessages([{
+      id: 'welcome',
+      type: 'bot',
+      content: 'Hello! I\'m your Knowly AI assistant. I can help you discover amazing books, provide recommendations, and answer questions about literature. What would you like to know?',
+      timestamp: new Date()
+    }])
+    setSidebarOpen(false)
+  }
+
+  const handleLoadConversation = async (id: string) => {
+    try {
+      setIsLoading(true)
+      const msgs = await aiService.getConversationMessages(id)
+
+      // Transform backend messages to frontend format
+      const formattedMessages: Message[] = msgs.map(m => ({
+        id: m.id,
+        type: m.is_user ? 'user' : 'bot',
+        content: m.content,
+        timestamp: new Date(m.created_at)
+      }))
+
+      setConversationId(id)
+      setMessages(formattedMessages)
+      setSidebarOpen(false)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to load conversation history.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return
@@ -91,9 +159,10 @@ export default function Chatbot() {
       // Call real AI API
       const response = await aiService.sendMessage(userInput, conversationId, selectedRole)
 
-      // Save conversation ID for future messages
+      // Save conversation ID for future messages, and refresh list if it's new
       if (!conversationId && response.conversation_id) {
         setConversationId(response.conversation_id)
+        loadConversations() // Refresh list to show new chat title
       }
 
       const botResponse: Message = {
@@ -339,32 +408,41 @@ export default function Chatbot() {
             <div className="absolute inset-0 bg-black/50 lg:hidden" onClick={() => setSidebarOpen(false)} />
             <div className="absolute right-0 top-0 bottom-0 w-80 bg-background lg:static lg:w-auto lg:h-full flex flex-col gap-6 p-4 lg:p-0 overflow-y-auto">
 
-              {/* Quick Suggestions */}
-              <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-secondary dark:bg-zinc-800">
+              {/* History / New Chat */}
+              <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-secondary dark:bg-zinc-800 flex flex-col h-[60vh] lg:h-auto">
                 <CardHeader className="border-b-4 border-black dark:border-white py-3">
-                  <CardTitle className="text-sm font-black uppercase flex items-center gap-2 text-black dark:text-white">
+                  <div onClick={handleNewChat} className="cursor-pointer bg-black text-white p-3 flex items-center justify-center gap-2 hover:bg-primary hover:text-black transition-all border-2 border-transparent hover:border-black shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)]">
                     <Zap className="h-4 w-4" />
-                    Quick Actions
-                  </CardTitle>
+                    <span className="font-bold uppercase text-sm">New Chat</span>
+                  </div>
                 </CardHeader>
-                <CardContent className="p-3 space-y-2">
-                  {[
-                    "Suggest a mystery thriller",
-                    "Explain magic realism",
-                    "Analyze The Great Gatsby",
-                    "Books like 'Dune'"
-                  ].map((suggestion, i) => (
-                    <button
-                      key={i}
-                      onClick={() => {
-                        setInputMessage(suggestion)
-                        setSidebarOpen(false)
-                      }}
-                      className="w-full text-left p-3 text-xs font-bold uppercase border-2 border-black dark:border-white bg-white dark:bg-zinc-900 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] transition-all"
-                    >
-                      {suggestion}
-                    </button>
-                  ))}
+                <CardContent className="p-0 flex-1 overflow-y-auto">
+                  <div className="p-3">
+                    <p className="text-xs font-black uppercase text-muted-foreground mb-2 px-1">History</p>
+                    <div className="space-y-2">
+                      {conversations.length === 0 ? (
+                        <p className="text-xs text-center py-4 text-muted-foreground italic">No history yet.</p>
+                      ) : (
+                        conversations.map((conv) => (
+                          <div
+                            key={conv.id}
+                            onClick={() => handleLoadConversation(conv.id)}
+                            className={`group flex items-center justify-between p-3 text-xs font-bold border-2 border-black dark:border-white cursor-pointer transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] ${conversationId === conv.id ? 'bg-primary text-black' : 'bg-white dark:bg-zinc-900 text-black dark:text-white'}`}
+                          >
+                            <div className="truncate flex-1 mr-2">
+                              <div className="truncate uppercase">{conv.title || "Untitled Chat"}</div>
+                              <div className="text-[10px] font-normal opacity-70 mt-0.5">
+                                {new Date(conv.updated_at).toLocaleDateString()}
+                              </div>
+                            </div>
+                            {/* <button onClick={(e) => handleDeleteConversation(e, conv.id)} className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity">
+                                        <X className="h-3 w-3" />
+                                    </button> */}
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
 

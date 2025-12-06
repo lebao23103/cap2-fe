@@ -52,6 +52,11 @@ class UserService {
     return response.data;
   }
 
+  // Change Password
+  async changePassword(passwords: any): Promise<void> {
+    await apiClient.post('/change-password/', passwords);
+  }
+
   // Favorites management
   async getFavorites(): Promise<Favorite[]> {
     const response = await apiClient.get('/api/favorites/');

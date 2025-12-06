@@ -53,6 +53,8 @@ interface SharedNote {
 }
 
 // User Created Book interface (Keeping as is, or can be fetched if API exists)
+// We will adapt the backend 'Book' type to this or just use 'Book' type primarily if possible, 
+// but for now let's map it to keep UI consistent.
 interface UserBook {
   id: string
   title: string
@@ -77,32 +79,16 @@ interface FilterState {
   searchTerm: string
 }
 
-// Mock user created books data (Backend doesn't have a clean "User Books" API yet that matches this exactly, so keeping mock for this tab to avoid breaking it, focusing on Notes tab)
-const mockUserBooks: UserBook[] = [
-  {
-    id: "13",
-    title: "My Digital Adventure",
-    author: "Tech User",
-    coverImage: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800",
-    description: "A user-created story about digital adventures.",
-    genre: "Tech Fiction",
-    year: 2024,
-    downloads: 125,
-    rating: 4.0,
-    reviewCount: 23,
-    createdDate: "2024-09-25",
-    tags: ["Technology"]
-  },
-  // Add more mocks if needed or fetch real approved user books if API exists (ListApprovedBooksView exists at /api/list-approved-books/)
-  // ideally we would fetch that too.
-]
+// Mock data removed. We will fetch real data.
 
 export default function NoteShare() {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('notes')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
   const [sharedNotes, setSharedNotes] = useState<SharedNote[]>([])
+  const [userBooks, setUserBooks] = useState<UserBook[]>([])
   const [loading, setLoading] = useState(true)
+  const [booksLoading, setBooksLoading] = useState(false)
 
   const [copiedQuote, setCopiedQuote] = useState(false)
 
@@ -188,8 +174,41 @@ export default function NoteShare() {
   useEffect(() => {
     if (activeTab === 'notes') {
       fetchNotes()
+    } else if (activeTab === 'books') {
+      fetchUserBooks()
     }
   }, [activeTab])
+
+  // Fetch approved user books
+  const fetchUserBooks = async () => {
+    try {
+      setBooksLoading(true)
+      const books = await booksService.getApprovedUserBooks()
+
+      // Map backend Book to frontend UserBook interface
+      const mappedBooks: UserBook[] = books.map(b => ({
+        id: b.id.toString(),
+        title: b.title,
+        author: b.author,
+        coverImage: b.cover_image
+          ? (b.cover_image.startsWith('http') ? b.cover_image : `http://127.0.0.1:8000${b.cover_image}`)
+          : "/placeholder.svg",
+        description: b.description || "",
+        genre: b.subject || "Fiction",
+        year: b.created_at ? new Date(b.created_at).getFullYear() : new Date().getFullYear(),
+        downloads: 0,
+        rating: b.rating || 0,
+        reviewCount: b.reviews_count || 0,
+        createdDate: b.created_at || new Date().toISOString(),
+        tags: []
+      }))
+      setUserBooks(mappedBooks)
+    } catch (error) {
+      console.error("Failed to fetch user books", error)
+    } finally {
+      setBooksLoading(false)
+    }
+  }
 
 
   // Filter and sort data
@@ -212,15 +231,23 @@ export default function NoteShare() {
     })
   }, [filters, sharedNotes])
 
-  // Mock for books (unchanged logic)
+  // Filter books
   const filteredBooks = useMemo(() => {
-    const filtered = mockUserBooks.filter(book =>
+    let filtered = userBooks.filter(book =>
       book.title.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       book.author.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       book.description.toLowerCase().includes(filters.searchTerm.toLowerCase())
     )
+
+    // Sort
+    if (filters.bookSort === "Latest") {
+      filtered.sort((a, b) => new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime())
+    } else if (filters.bookSort === "Highest Rated") {
+      filtered.sort((a, b) => b.rating - a.rating)
+    }
+
     return filtered
-  }, [filters])
+  }, [filters, userBooks])
 
   const handleFilterChange = (filterType: keyof FilterState, value: string) => {
     setFilters(prev => ({ ...prev, [filterType]: value }))
@@ -289,7 +316,7 @@ export default function NoteShare() {
                   <Feather className="h-6 w-6 text-black" />
                 </div>
                 <div className="text-2xl font-bold text-black dark:text-white font-display">
-                  {mockUserBooks.length}
+                  {userBooks.length}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase">User Books</div>
               </CardContent>
@@ -385,7 +412,7 @@ export default function NoteShare() {
                 </Badge>
               </div>
 
-              {loading ? (
+              {loading || booksLoading ? (
                 <div className="flex items-center justify-center py-20">
                   <div className="animate-spin h-12 w-12 border-4 border-black border-t-transparent"></div>
                 </div>

@@ -24,6 +24,7 @@ import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { validateImageFile, validateBookFile, formatFileSize } from '@/lib/fileValidation'
 
+
 // Book creation interface
 interface BookData {
   title: string
@@ -142,16 +143,13 @@ export default function Create() {
 
       setUploadProgress(30)
 
-      // Get access token
       const token = localStorage.getItem('access_token')
-      if (!token) {
-        throw new Error('Please login to publish a book')
-      }
+      if (!token) throw new Error("No access token found")
 
       setUploadProgress(50)
 
       // Send to backend
-      const response = await fetch('http://localhost:8000/api/create-user-book/', {
+      const response = await fetch('http://127.0.0.1:8000/api/create-user-book/', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

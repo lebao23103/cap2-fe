@@ -16,6 +16,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
+import MyNotes from './pages/MyNotes'
 import Chatbot from './pages/Chatbot'
 import Favorites from './pages/Favorites'
 import ReadingHistory from './pages/ReadingHistory'
@@ -95,6 +96,11 @@ function App() {
                     <Route path="/reading-history" element={
                       <ProtectedRoute>
                         <ReadingHistory />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/my-notes" element={
+                      <ProtectedRoute>
+                        <MyNotes />
                       </ProtectedRoute>
                     } />
                     {/* Redirect /profile to /dashboard since Profile is now merged */}

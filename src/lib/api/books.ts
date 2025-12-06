@@ -128,6 +128,12 @@ class BooksService {
     const response = await apiClient.get(`/api/books/${bookId}/content/`);
     return response.data;
   }
+
+  // Get approved user books
+  async getApprovedUserBooks(): Promise<Book[]> {
+    const response = await apiClient.get('/api/list-approved-books/');
+    return response.data;
+  }
 }
 
 export default new BooksService();

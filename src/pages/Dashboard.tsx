@@ -28,6 +28,7 @@ import {
   Edit3,
   Save,
   User,
+  Lock
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -64,6 +65,15 @@ export default function Dashboard() {
     last_name: '',
     email: ''
   })
+
+  // Password Change State
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false)
+  const [passwordForm, setPasswordForm] = useState({
+    old_password: '',
+    new_password: '',
+    confirm_password: ''
+  })
+  const [isChangingPassword, setIsChangingPassword] = useState(false)
 
   // Initialize edit form when user changes
   useEffect(() => {
@@ -191,6 +201,24 @@ export default function Dashboard() {
     }
   }
 
+  const handleChangePassword = async () => {
+    if (passwordForm.new_password !== passwordForm.confirm_password) {
+      toast({ title: "Error", description: "Passwords do not match", variant: "destructive" })
+      return
+    }
+    try {
+      setIsChangingPassword(true)
+      await userService.changePassword(passwordForm)
+      toast({ title: "Success", description: "Password changed successfully." })
+      setIsPasswordDialogOpen(false)
+      setPasswordForm({ old_password: '', new_password: '', confirm_password: '' })
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to change password. Check your current password.", variant: "destructive" })
+    } finally {
+      setIsChangingPassword(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden font-mono">
       {/* Background Grid */}
@@ -300,6 +328,46 @@ export default function Dashboard() {
                                 Save Changes
                               </>
                             )}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+
+                    {/* Change Password Dialog */}
+                    <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className="h-12 px-4 bg-white dark:bg-zinc-900 border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-black hover:text-white dark:text-white dark:hover:bg-white dark:hover:text-black transition-all font-bold uppercase"
+                        >
+                          <Lock className="h-5 w-5 mr-2" />
+                          Security
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px] border-4 border-black dark:border-white rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
+                        <DialogHeader className="border-b-4 border-black dark:border-white pb-4">
+                          <DialogTitle className="text-2xl font-black uppercase flex items-center gap-2">
+                            <Lock className="h-6 w-6" />
+                            Change Password
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid gap-2">
+                            <Label htmlFor="old_pass" className="font-bold uppercase">Current Password</Label>
+                            <Input type="password" id="old_pass" value={passwordForm.old_password} onChange={e => setPasswordForm(p => ({ ...p, old_password: e.target.value }))} className="border-2 border-black rounded-none h-12 font-mono" />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="new_pass" className="font-bold uppercase">New Password</Label>
+                            <Input type="password" id="new_pass" value={passwordForm.new_password} onChange={e => setPasswordForm(p => ({ ...p, new_password: e.target.value }))} className="border-2 border-black rounded-none h-12 font-mono" />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="confirm_pass" className="font-bold uppercase">Confirm Password</Label>
+                            <Input type="password" id="confirm_pass" value={passwordForm.confirm_password} onChange={e => setPasswordForm(p => ({ ...p, confirm_password: e.target.value }))} className="border-2 border-black rounded-none h-12 font-mono" />
+                          </div>
+                        </div>
+                        <DialogFooter className="border-t-4 border-black dark:border-white pt-4">
+                          <Button onClick={handleChangePassword} disabled={isChangingPassword} className="w-full bg-black text-white dark:bg-white dark:text-black border-4 border-transparent hover:border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,0)] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all font-bold uppercase h-12">
+                            {isChangingPassword ? "Updating..." : "Update Password"}
                           </Button>
                         </DialogFooter>
                       </DialogContent>
