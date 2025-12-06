@@ -187,7 +187,7 @@ export default function Register() {
                   <FormInput
                     label="First Name"
                     type="text"
-                    placeholder="John"
+                    placeholder="Your first name"
                     {...register('firstName')}
                     error={touchedFields.firstName ? errors.firstName?.message : ''}
                     success={touchedFields.firstName && !errors.firstName}
@@ -198,7 +198,7 @@ export default function Register() {
                   <FormInput
                     label="Last Name"
                     type="text"
-                    placeholder="Doe"
+                    placeholder="Your last name"
                     {...register('lastName')}
                     error={touchedFields.lastName ? errors.lastName?.message : ''}
                     success={touchedFields.lastName && !errors.lastName}
@@ -212,7 +212,7 @@ export default function Register() {
                 <FormInput
                   label="Email Address"
                   type="email"
-                  placeholder="john.doe@example.com"
+                  placeholder="yourmail@example.com"
                   {...register('email')}
                   error={touchedFields.email ? errors.email?.message : ''}
                   success={touchedFields.email && !errors.email}

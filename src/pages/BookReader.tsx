@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Document, Page, pdfjs } from 'react-pdf'
 import '@/styles/pdf-viewer.css'
@@ -99,6 +99,7 @@ interface BookData {
 export default function BookReader() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { toast } = useToast()
   const pageContainerRef = useRef<HTMLDivElement>(null)
 
@@ -110,7 +111,10 @@ export default function BookReader() {
   const [numPages, setNumPages] = useState<number | null>(null)
 
   // UI state
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(location.state?.page || 1)
+  const isReadOnly = location.state?.previewMode || false
+  const previewNote = location.state?.previewNote || null
+
   const [showNoteDialog, setShowNoteDialog] = useState(false)
   const [selectedText, setSelectedText] = useState("")
   const [newNote, setNewNote] = useState("")
@@ -156,6 +160,9 @@ export default function BookReader() {
       const [bookDetails, pdfContent, bookNotes, favorites] = await Promise.all([
         booksService.getBookById(Number(id)),
         booksService.getBookContent(Number(id)),
+        // Only fetch my notes if NOT in read-only mode, or if we want to show them alongside preview note?
+        // User requested "just view" the shared note. So maybe don't fetch my notes?
+        // But context implies just viewing. Let's fetch my notes but disable editing them.
         fetch(`http://127.0.0.1:8000/api/books/${id}/notes/`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -171,7 +178,7 @@ export default function BookReader() {
         author: bookDetails.author,
         content: [], // Will use PDF instead
         totalPages: numPages || 10, // Will be updated when PDF loads
-        currentPage: 1,
+        currentPage: location.state?.page || 1, // Ensure page is set correctly from state
         readingProgress: 0,
         notes: [],
         bookmarks: [],
@@ -197,7 +204,7 @@ export default function BookReader() {
         })
       }
 
-      setNotes(bookNotes.map((note: any) => ({
+      let allNotes = bookNotes.map((note: any) => ({
         id: note.id.toString(),
         text: note.selected_text,
         note: note.note_content,
@@ -205,7 +212,24 @@ export default function BookReader() {
         timestamp: note.created_at,
         color: note.color === '#FFEB3B' ? 'yellow' : note.color === '#2196F3' ? 'blue' : note.color === '#4CAF50' ? 'green' : 'pink',
         isPublic: note.is_public
-      })))
+      }))
+
+      // Inject preview note if exists
+      if (previewNote) {
+        const mappedPreviewNote: BookNote = {
+          id: previewNote.id,
+          text: previewNote.text || previewNote.noteText, // Handle different property names
+          note: previewNote.note || previewNote.userNote,
+          page: previewNote.page,
+          timestamp: previewNote.timestamp || previewNote.sharedDate,
+          color: previewNote.color === '#FFEB3B' ? 'yellow' : previewNote.color === '#2196F3' ? 'blue' : previewNote.color === '#4CAF50' ? 'green' : 'pink', // Simple mapping, could be robust
+          isPublic: true
+        }
+        // Add to beginning of list so it renders on top? or end?
+        allNotes = [...allNotes, mappedPreviewNote]
+      }
+
+      setNotes(allNotes)
       setIsFavorite(favorites.some((fav: any) => fav?.book?.id === Number(id)))
 
       // Track reading history
@@ -300,7 +324,7 @@ export default function BookReader() {
       }
     } else if (direction === 'prev' && currentPage > 1) {
       setPageDirection('backward')
-      setCurrentPage(prev => prev - 1)
+      setCurrentPage((prev: number) => prev - 1)
     }
   }
 
@@ -316,6 +340,8 @@ export default function BookReader() {
   }
 
   const handleTextSelection = () => {
+    if (isReadOnly) return // Disable selection in read-only mode
+
     const selection = window.getSelection()
     if (!selection || !selection.toString().trim()) return
 
@@ -370,7 +396,7 @@ export default function BookReader() {
         if (editingNote) {
           // Update existing note
           const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/notes/${editingNote.id}/update/`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
               'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -422,6 +448,7 @@ export default function BookReader() {
   }
 
   const deleteNote = async (noteId: string) => {
+    if (isReadOnly) return
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/notes/${noteId}/delete/`, {
         method: 'DELETE',
@@ -440,6 +467,7 @@ export default function BookReader() {
   }
 
   const editNote = (note: BookNote) => {
+    if (isReadOnly) return
     setEditingNote(note)
     setSelectedText(note.text)
     setNewNote(note.note)
@@ -453,7 +481,7 @@ export default function BookReader() {
       if (!note) return
 
       const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/notes/${noteId}/update/`, {
-        method: 'PUT',
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -1187,6 +1215,7 @@ export default function BookReader() {
         onShare={(id) => {
           shareNote(id)
         }}
+        readOnly={isReadOnly}
       />
 
       {/* Note Dialog */}

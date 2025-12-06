@@ -1,26 +1,23 @@
-import { useState, useMemo } from 'react'
+
+import { useState, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   BookOpen,
-  Star,
   Filter,
   Search,
   Grid3x3,
   List,
   StickyNote,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   Users,
-  MessageCircle,
-  ThumbsUp,
   Calendar,
   Feather,
   Quote,
-  Eye,
-  X,
   Copy,
-  Check
+  Check,
+  Star,
+  Eye
 } from 'lucide-react'
 
 import { Card, CardContent } from '@/components/ui/card'
@@ -32,23 +29,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
-import { fadeInUp, stagger } from '@/lib/animations'
 
-// Shared Note interface
+import { fadeInUp, stagger } from '@/lib/animations'
+import booksService from '@/lib/api/books'
+import { useToast } from '@/components/ui/use-toast'
+
+// Updated Shared Note interface based on actual BE data
 interface SharedNote {
   id: string
   bookTitle: string
@@ -57,16 +45,14 @@ interface SharedNote {
   noteText: string
   userNote: string
   userName: string
-  userAvatar: string
+  userAvatar: string // Generated helper
   sharedDate: string
-  likes: number
-  comments: number
   bookId: string
   page: number
-  isLiked: boolean
+  color: string
 }
 
-// User Created Book interface
+// User Created Book interface (Keeping as is, or can be fetched if API exists)
 interface UserBook {
   id: string
   title: string
@@ -82,120 +68,8 @@ interface UserBook {
   tags: string[]
 }
 
-// Mock shared notes data
-const mockSharedNotes: SharedNote[] = [
-  {
-    id: "1",
-    bookTitle: "The Midnight Library",
-    bookAuthor: "Matt Haig",
-    bookCover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&q=80&w=800",
-    noteText: "Between life and death there is a library, and within that library, the shelves go on forever.",
-    userNote: "This quote really resonated with me. It makes me think about all the different paths our lives could take and how every choice creates a new story.",
-    userName: "Sarah Chen",
-    userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah",
-    sharedDate: "2024-10-02",
-    likes: 24,
-    comments: 8,
-    bookId: "1",
-    page: 15,
-    isLiked: false
-  },
-  {
-    id: "2",
-    bookTitle: "Atomic Habits",
-    bookAuthor: "James Clear",
-    bookCover: "https://images.unsplash.com/photo-1589829085413-56de8ae18c73?auto=format&fit=crop&q=80&w=800",
-    noteText: "You do not rise to the level of your goals. You fall to the level of your systems.",
-    userNote: "This completely changed how I think about goal setting. It's not about motivation, it's about building systems that work even when you don't feel motivated.",
-    userName: "Alex Rivera",
-    userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Alex",
-    sharedDate: "2024-10-01",
-    likes: 42,
-    comments: 15,
-    bookId: "5",
-    page: 23,
-    isLiked: true
-  },
-  {
-    id: "3",
-    bookTitle: "Project Hail Mary",
-    bookAuthor: "Andy Weir",
-    bookCover: "https://images.unsplash.com/photo-1614544048536-0d28caf77f41?auto=format&fit=crop&q=80&w=800",
-    noteText: "I'm pretty sure I'm screwed. That's my considered opinion. Screwed.",
-    userNote: "Andy Weir's humor in the face of impossible odds is what makes this book so engaging. Even in the darkest moments, there's hope and humor.",
-    userName: "Emily Watson",
-    userAvatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=Emily",
-    sharedDate: "2024-09-30",
-    likes: 18,
-    comments: 6,
-    bookId: "2",
-    page: 1,
-    isLiked: false
-  }
-]
-
-// Mock user created books data
-const mockUserBooks: UserBook[] = [
-  {
-    id: "13",
-    title: "My Digital Adventure",
-    author: "Tech User",
-    coverImage: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800",
-    description: "A user-created story about digital adventures and coding journeys in the modern world.",
-    genre: "Tech Fiction",
-    year: 2024,
-    downloads: 125,
-    rating: 4.0,
-    reviewCount: 23,
-    createdDate: "2024-09-25",
-    tags: ["Technology", "Adventure", "Programming"]
-  },
-  {
-    id: "14",
-    title: "Cooking Adventures",
-    author: "Home Chef",
-    coverImage: "https://images.unsplash.com/photo-1556910103-1c02745a30bf?auto=format&fit=crop&q=80&w=800",
-    description: "A personal collection of cooking experiments and family recipes passed down through generations.",
-    genre: "Culinary Memoir",
-    year: 2024,
-    downloads: 89,
-    rating: 4.2,
-    reviewCount: 18,
-    createdDate: "2024-09-20",
-    tags: ["Cooking", "Family", "Memoir"]
-  },
-  {
-    id: "15",
-    title: "Community Stories Collection",
-    author: "Book Club Members",
-    coverImage: "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&q=80&w=800",
-    description: "A collaborative collection of short stories written by community members exploring various themes.",
-    genre: "Member Create",
-    year: 2024,
-    downloads: 156,
-    rating: 4.1,
-    reviewCount: 31,
-    createdDate: "2024-09-15",
-    tags: ["Community", "Collaboration", "Short Stories"]
-  },
-  {
-    id: "16",
-    title: "Poetry from the Heart",
-    author: "Local Poet",
-    coverImage: "https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&q=80&w=800",
-    description: "An inspiring collection of poems about love, loss, hope, and the beauty of everyday moments.",
-    genre: "Poetry",
-    year: 2024,
-    downloads: 67,
-    rating: 4.4,
-    reviewCount: 12,
-    createdDate: "2024-09-10",
-    tags: ["Poetry", "Emotions", "Life"]
-  }
-]
-
-const filterOptions = ["All", "Most Liked", "Recent", "My Notes"]
-const sortOptions = ["Latest", "Most Popular", "Highest Rated", "Most Downloaded"]
+const filterOptions = ["All", "Recent"]
+const sortOptions = ["Latest", "Most Popular", "Highest Rated", "Most Downloaded"] // Keep for books
 
 interface FilterState {
   noteFilter: string
@@ -203,72 +77,153 @@ interface FilterState {
   searchTerm: string
 }
 
+// Mock user created books data (Backend doesn't have a clean "User Books" API yet that matches this exactly, so keeping mock for this tab to avoid breaking it, focusing on Notes tab)
+const mockUserBooks: UserBook[] = [
+  {
+    id: "13",
+    title: "My Digital Adventure",
+    author: "Tech User",
+    coverImage: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=800",
+    description: "A user-created story about digital adventures.",
+    genre: "Tech Fiction",
+    year: 2024,
+    downloads: 125,
+    rating: 4.0,
+    reviewCount: 23,
+    createdDate: "2024-09-25",
+    tags: ["Technology"]
+  },
+  // Add more mocks if needed or fetch real approved user books if API exists (ListApprovedBooksView exists at /api/list-approved-books/)
+  // ideally we would fetch that too.
+]
+
 export default function NoteShare() {
+  const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('notes')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list')
-  const [selectedNote, setSelectedNote] = useState<SharedNote | null>(null)
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false)
-  const [previewPage, setPreviewPage] = useState(1)
+  const [sharedNotes, setSharedNotes] = useState<SharedNote[]>([])
+  const [loading, setLoading] = useState(true)
+
   const [copiedQuote, setCopiedQuote] = useState(false)
-  const [showNotePopover, setShowNotePopover] = useState(false)
+
   const [filters, setFilters] = useState<FilterState>({
     noteFilter: "All",
     bookSort: "Latest",
     searchTerm: ""
   })
+  const { toast } = useToast()
+
+  const fetchNotes = async () => {
+    try {
+      setLoading(true)
+      console.log("Fetching books...")
+      // 1. Get all approved books
+      const books = await booksService.getApprovedBooks()
+      console.log("Books fetched:", books.length)
+
+      // 2. For each book, fetch its public notes
+      const allNotesProms = books.map(async (book) => {
+        try {
+          // We need to use the endpoint /api/books/<id>/notes/public/
+          const res = await fetch(`http://127.0.0.1:8000/api/books/${book.id}/notes/public/`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+          })
+
+          if (!res.ok) {
+            console.warn(`Failed to fetch notes for book ${book.id}: ${res.status}`)
+            return []
+          }
+
+          const data = await res.json()
+          if (!data || !Array.isArray(data.public_notes)) {
+            console.warn(`Invalid notes format for book ${book.id}`, data)
+            return []
+          }
+
+          // data.public_notes is the array
+          return data.public_notes.map((n: any): SharedNote => ({
+            id: n.id ? n.id.toString() : Math.random().toString(),
+            bookTitle: book.title || "Unknown Book",
+            bookAuthor: book.author || "Unknown Author",
+            bookCover: book.cover_image
+              ? (book.cover_image.startsWith('http') ? book.cover_image : `http://127.0.0.1:8000${book.cover_image}`)
+              : "/placeholder.svg",
+            noteText: n.selected_text || "",
+            userNote: n.note_content || "",
+            userName: n.user_name || "Anonymous",
+            userAvatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${n.user_name || 'user'}`,
+            sharedDate: n.created_at || new Date().toISOString(),
+            bookId: book.id.toString(),
+            page: n.page_number || 1,
+            color: n.color || '#FFEB3B'
+          }))
+        } catch (e) {
+          console.error(`Failed to fetch notes for book ${book.id}`, e)
+          return []
+        }
+      })
+
+      const results = await Promise.all(allNotesProms)
+      const flatNotes = results.flat()
+      console.log("Total shared notes fetched:", flatNotes.length)
+
+      // Sort by date desc initially
+      flatNotes.sort((a, b) => new Date(b.sharedDate).getTime() - new Date(a.sharedDate).getTime())
+
+      setSharedNotes(flatNotes)
+    } catch (error) {
+      console.error("Error fetching shared notes:", error)
+      toast({
+        title: "Error",
+        description: "Failed to load community notes. Please ensure you are logged in.",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (activeTab === 'notes') {
+      fetchNotes()
+    }
+  }, [activeTab])
+
 
   // Filter and sort data
   const filteredNotes = useMemo(() => {
-    let filtered = mockSharedNotes.filter(note =>
+    let filtered = sharedNotes.filter(note =>
       note.bookTitle.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       note.userName.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       note.userNote.toLowerCase().includes(filters.searchTerm.toLowerCase())
     )
 
-    if (filters.noteFilter === "Most Liked") {
-      filtered = filtered.filter(note => note.likes >= 20)
-    } else if (filters.noteFilter === "Recent") {
+    if (filters.noteFilter === "Recent") {
       filtered = filtered.filter(note =>
         new Date(note.sharedDate) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
       )
     }
 
     return filtered.sort((a, b) => {
-      if (filters.noteFilter === "Most Liked") {
-        return b.likes - a.likes
-      }
+      // Only date sort available now
       return new Date(b.sharedDate).getTime() - new Date(a.sharedDate).getTime()
     })
-  }, [filters])
+  }, [filters, sharedNotes])
 
+  // Mock for books (unchanged logic)
   const filteredBooks = useMemo(() => {
     const filtered = mockUserBooks.filter(book =>
       book.title.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       book.author.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       book.description.toLowerCase().includes(filters.searchTerm.toLowerCase())
     )
-
-    return filtered.sort((a, b) => {
-      switch (filters.bookSort) {
-        case "Most Popular":
-          return b.downloads - a.downloads
-        case "Highest Rated":
-          return b.rating - a.rating
-        case "Most Downloaded":
-          return b.downloads - a.downloads
-        default:
-          return new Date(b.createdDate).getTime() - new Date(a.createdDate).getTime()
-      }
-    })
+    return filtered
   }, [filters])
 
   const handleFilterChange = (filterType: keyof FilterState, value: string) => {
     setFilters(prev => ({ ...prev, [filterType]: value }))
-  }
-
-  const toggleLike = (noteId: string) => {
-    // In a real app, this would update the database
-    console.log(`Toggle like for note ${noteId}`)
   }
 
   const copyQuoteToClipboard = (text: string) => {
@@ -278,210 +233,8 @@ export default function NoteShare() {
     })
   }
 
-  // Mock book content - In production, fetch from API
-  const mockBookContent: { [key: string]: string[] } = {
-    "1": [
-      "Between life and death there is a library, and within that library, the shelves go on forever. Every book provides a chance to try another life you could have lived. To see how things would be different if you had made other choices. Would you have done anything different, if you had the chance to undo your regrets?",
-      "Nora Seed finds herself faced with this decision. Faced with the possibility of changing her life for a new one, following a different career, undoing old breakups, realizing her dreams of becoming a glaciologist; she must search within herself as she travels through the Midnight Library to decide what is truly fulfilling in life, and what makes it worth living in the first place.",
-      "The Midnight Library is a thought-provoking novel about all the choices that go into a life well lived, from the internationally bestselling author of Reasons to Stay Alive and How To Stop Time."
-    ],
-    "5": [
-      "Habits are the compound interest of self-improvement. The same way that money multiplies through compound interest, the effects of your habits multiply as you repeat them.",
-      "You do not rise to the level of your goals. You fall to the level of your systems. Your goal is your desired outcome. Your system is the collection of daily habits that will get you there.",
-      "Every action you take is a vote for the type of person you wish to become. No single instance will transform your beliefs, but as the votes build up, so does the evidence of your new identity."
-    ],
-    "2": [
-      "I'm pretty sure I'm screwed. That's my considered opinion. Screwed. The scientific term for my situation is: completely and utterly screwed.",
-      "My name is Ryland Grace. I'm a... teacher? No, wait. I'm something else now. An astronaut? Memory is a funny thing. It comes back in pieces, fragments, and sometimes not at all.",
-      "So here I am, alone in space, with spotty memories and a problem to solve. The good news? I'm a scientist. The bad news? This problem might be unsolvable."
-    ]
-  }
-
-  const handleNoteClick = (note: SharedNote) => {
-    setSelectedNote(note)
-    setPreviewPage(note.page)
-    setIsPreviewOpen(true)
-  }
-
-  const handlePreviewPageChange = (direction: 'next' | 'prev') => {
-    if (!selectedNote) return
-    const bookContent = mockBookContent[selectedNote.bookId] || []
-    const maxPage = Math.ceil(bookContent.length / 1) // Simplified: 1 page per content block
-
-    if (direction === 'next' && previewPage < maxPage) {
-      setPreviewPage(prev => prev + 1)
-    } else if (direction === 'prev' && previewPage > 1) {
-      setPreviewPage(prev => prev - 1)
-    }
-  }
-
-  const renderHighlightedText = (text: string, note: SharedNote | null) => {
-    if (!note) return <span>{text}</span>
-
-    // Only highlight on the page where the note was created
-    const pageIndex = previewPage - 1
-    const notePageIndex = Math.ceil(note.page / 5) - 1 // Map actual page to content index
-
-    if (pageIndex !== notePageIndex && pageIndex !== 0) {
-      return <span>{text}</span>
-    }
-
-
-    const noteTextIndex = text.indexOf(note.noteText)
-    if (noteTextIndex === -1) {
-      return <span>{text}</span>
-    }
-
-    return (
-      <>
-        <span>{text.substring(0, noteTextIndex)}</span>
-        <Popover open={showNotePopover} onOpenChange={setShowNotePopover}>
-          <PopoverTrigger asChild>
-            <mark className="bg-amber-200/40 hover:bg-amber-300/50 px-1 py-0.5 rounded-none cursor-pointer transition-all duration-200">
-              {note.noteText}
-            </mark>
-          </PopoverTrigger>
-          <PopoverContent className="w-96 p-0 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-none" align="start">
-            {/* Arrow pointing to highlight */}
-            <div className="absolute -top-2 left-4 w-4 h-4 rotate-45 bg-white border-l-2 border-t-2 border-black" />
-
-            <Card className="border-0 shadow-none bg-white rounded-none">
-              <div className="border-l-4 border-l-black">
-                <CardContent className="p-0">
-                  {/* Header with color dot icon and close button */}
-                  <div className="flex items-start justify-between p-4 pb-3 border-b-2 border-black">
-                    <div className="flex items-center gap-2 flex-1">
-                      {/* Color indicator icon */}
-                      <div className="p-1.5 border-2 border-black bg-amber-100">
-                        <div className="w-2 h-2 bg-black" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-bold text-black uppercase">
-                          Page {note.page}
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-6 w-6 p-0 -mt-1 -mr-1 hover:bg-black hover:text-white transition-colors rounded-none"
-                      onClick={() => setShowNotePopover(false)}
-                    >
-                      <X className="h-3.5 w-3.5" />
-                    </Button>
-                  </div>
-
-                  {/* Highlighted Text Section */}
-                  <div className="px-4 pt-3 pb-2">
-                    <p className="text-xs font-bold text-black uppercase mb-1">Highlighted Text</p>
-                    <p className="text-sm font-bold text-black leading-snug font-serif italic">
-                      "{note.noteText}"
-                    </p>
-                  </div>
-
-                  {/* Note Content Section */}
-                  {note.userNote && (
-                    <div className="px-4 pb-3">
-                      <p className="text-xs font-bold text-black uppercase mb-1">Note</p>
-                      <p className="text-sm text-black leading-relaxed font-mono">
-                        {note.userNote}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Engagement Actions */}
-                  <div className="flex items-center gap-1 px-3 py-2 bg-gray-50 border-t-2 border-black">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        toggleLike(note.id)
-                      }}
-                      className={`h-7 text-xs transition-colors rounded-none border-2 border-transparent hover:border-black ${note.isLiked
-                        ? 'text-black bg-red-100 border-black'
-                        : 'text-gray-600 hover:bg-white'
-                        }`}
-                    >
-                      <ThumbsUp className={`h-3 w-3 mr-1 ${note.isLiked ? 'fill-current' : ''}`} />
-                      {note.likes}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 text-xs hover:bg-white text-gray-600 hover:text-black transition-colors rounded-none border-2 border-transparent hover:border-black"
-                    >
-                      <MessageCircle className="h-3 w-3 mr-1" />
-                      {note.comments}
-                    </Button>
-                    <div className="flex-1" />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        copyQuoteToClipboard(note.noteText)
-                      }}
-                      className="h-7 text-xs hover:bg-white hover:text-black rounded-none border-2 border-transparent hover:border-black transition-colors"
-                    >
-                      {copiedQuote ? (
-                        <>
-                          <Check className="h-3 w-3 mr-1 text-green-600" />
-                          Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3 w-3 mr-1" />
-                          Copy
-                        </>
-                      )}
-                    </Button>
-                  </div>
-
-                  {/* Timestamp footer */}
-                  <div className="px-4 py-1.5 bg-gray-100 border-t-2 border-black">
-                    <p className="text-[10px] text-gray-600 font-mono uppercase">
-                      {new Date(note.sharedDate).toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
-                    </p>
-                  </div>
-                </CardContent>
-              </div>
-            </Card>
-          </PopoverContent>
-        </Popover>
-        <span>{text.substring(noteTextIndex + note.noteText.length)}</span>
-      </>
-    )
-  }
-
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex items-center gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`h-3 w-3 ${star <= rating
-              ? 'fill-black text-black'
-              : 'text-gray-300'
-              }`}
-          />
-        ))}
-        <span className="ml-1 text-xs text-black font-bold">
-          {rating.toFixed(1)}
-        </span>
-      </div>
-    )
-  }
-
   return (
     <div className="relative w-full min-h-screen bg-background overflow-hidden font-mono">
-      {/* Background Grid */}
       {/* Background Grid */}
       <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-0" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
       <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
@@ -512,7 +265,7 @@ export default function NoteShare() {
           variants={stagger}
           initial="initial"
           animate="animate"
-          className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8"
         >
           <motion.div variants={fadeInUp}>
             <Card className="border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all duration-300">
@@ -521,7 +274,7 @@ export default function NoteShare() {
                   <StickyNote className="h-6 w-6 text-black" />
                 </div>
                 <div className="text-2xl font-bold text-black dark:text-white font-display">
-                  {mockSharedNotes.length}
+                  {sharedNotes.length}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase">Shared Notes</div>
               </CardContent>
@@ -550,23 +303,9 @@ export default function NoteShare() {
                   <Users className="h-6 w-6 text-black" />
                 </div>
                 <div className="text-2xl font-bold text-black dark:text-white font-display">
-                  {new Set([...mockSharedNotes.map(n => n.userName), ...mockUserBooks.map(b => b.author)]).size}
+                  {new Set([...sharedNotes.map(n => n.userName)]).size}
                 </div>
                 <div className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase">Contributors</div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          <motion.div variants={fadeInUp}>
-            <Card className="border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all duration-300">
-              <CardContent className="p-4 text-center">
-                <div className="p-3 border-2 border-black dark:border-white bg-red-400 w-fit mx-auto mb-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-                  <ThumbsUp className="h-6 w-6 text-black" />
-                </div>
-                <div className="text-2xl font-bold text-black dark:text-white font-display">
-                  {mockSharedNotes.reduce((sum, note) => sum + note.likes, 0)}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase">Total Likes</div>
               </CardContent>
             </Card>
           </motion.div>
@@ -641,119 +380,140 @@ export default function NoteShare() {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <Badge variant="secondary" className="bg-primary text-black border-2 border-black rounded-none font-bold uppercase px-3 py-1.5">
+                <Badge variant="secondary" className="bg-primary text-black border-2 border-black dark:border-white rounded-none font-bold uppercase px-3 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                   {filteredNotes.length} notes found
                 </Badge>
               </div>
 
-              {/* Notes List */}
-              <motion.div variants={stagger} initial="initial" animate="animate" className="space-y-6">
-                {filteredNotes.map((note) => (
-                  <motion.div key={note.id} variants={fadeInUp}>
-                    <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 group">
-                      <CardContent className="p-6">
-                        {/* Header: Book Info & Date */}
-                        <div className="flex items-start justify-between mb-4 pb-4 border-b-2 border-black dark:border-white">
-                          <div className="flex items-center gap-4">
-                            <img
-                              src={note.bookCover}
-                              alt={note.bookTitle}
-                              className="w-16 h-24 object-cover border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
-                            />
-                            <div>
-                              <h3 className="text-lg font-bold text-black dark:text-white mb-1 uppercase font-display">
-                                {note.bookTitle}
-                              </h3>
-                              <p className="text-sm text-gray-600 dark:text-gray-300 font-mono">
-                                by {note.bookAuthor} • Page {note.page}
-                              </p>
+              {loading ? (
+                <div className="flex items-center justify-center py-20">
+                  <div className="animate-spin h-12 w-12 border-4 border-black border-t-transparent"></div>
+                </div>
+              ) : (
+                <motion.div variants={stagger} initial="initial" animate="animate" className="space-y-6">
+                  {filteredNotes.map((note) => (
+                    <motion.div key={note.id} variants={fadeInUp}>
+                      <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 group">
+                        <CardContent className="p-6">
+                          {/* Header: Book Info & Date */}
+                          <div className="flex items-start justify-between mb-4 pb-4 border-b-2 border-black dark:border-white">
+                            <div className="flex items-center gap-4">
+                              <img
+                                src={note.bookCover}
+                                alt={note.bookTitle}
+                                className="w-16 h-24 object-cover border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+                                onError={(e) => {
+                                  (e.target as HTMLImageElement).src = 'https://placehold.co/400x600?text=Cover'
+                                }}
+                              />
+                              <div>
+                                <h3 className="text-lg font-bold text-black dark:text-white mb-1 uppercase font-display">
+                                  {note.bookTitle}
+                                </h3>
+                                <p className="text-sm text-gray-600 dark:text-gray-300 font-mono">
+                                  by {note.bookAuthor} • Page {note.page}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-xs text-black font-bold uppercase bg-gray-100 border-2 border-black px-2 py-1">
+                              <Calendar className="h-3.5 w-3.5" />
+                              <span>{new Date(note.sharedDate).toLocaleDateString()}</span>
                             </div>
                           </div>
-                          <div className="flex items-center gap-1.5 text-xs text-black font-bold uppercase bg-gray-100 border-2 border-black px-2 py-1">
-                            <Calendar className="h-3.5 w-3.5" />
-                            <span>{new Date(note.sharedDate).toLocaleDateString()}</span>
-                          </div>
-                        </div>
 
-                        {/* Quoted Text */}
-                        <div className="bg-amber-100 border-l-4 border-black p-4 mb-4">
-                          <p className="text-base text-black italic leading-relaxed font-serif">
-                            "{note.noteText}"
+                          {/* Quoted Text */}
+                          <div className="bg-amber-100 dark:bg-amber-900/30 border-l-4 border-black dark:border-white p-4 mb-4">
+                            <p className="text-base text-black dark:text-gray-100 italic leading-relaxed font-serif">
+                              "{note.noteText}"
+                            </p>
+                          </div>
+
+                          {/* User Note */}
+                          <p className="text-base text-gray-800 dark:text-gray-200 mb-6 leading-relaxed font-mono">
+                            {note.userNote}
                           </p>
-                        </div>
 
-                        {/* User Note */}
-                        <p className="text-base text-gray-800 dark:text-gray-200 mb-6 leading-relaxed font-mono">
-                          {note.userNote}
-                        </p>
+                          {/* Footer: User Info and Actions */}
+                          {/* Footer: User Info and Actions */}
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t-2 border-black">
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={note.userAvatar}
+                                alt={note.userName}
+                                className="w-8 h-8 rounded-none border-2 border-black dark:border-white"
+                              />
+                              <span className="text-sm font-bold text-black dark:text-white uppercase">
+                                {note.userName}
+                              </span>
+                            </div>
 
-                        {/* Footer: User Info and Actions */}
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 pt-4 border-t-2 border-black">
-                          <div className="flex items-center gap-3">
-                            <img
-                              src={note.userAvatar}
-                              alt={note.userName}
-                              className="w-8 h-8 rounded-none border-2 border-black dark:border-white"
-                            />
-                            <span className="text-sm font-bold text-black dark:text-white uppercase">
-                              {note.userName}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => navigate(`/book/${note.bookId}/read`, {
+                                  state: {
+                                    page: note.page,
+                                    previewMode: true,
+                                    previewNote: note
+                                  }
+                                })}
+                                className="h-9 px-3 text-xs border-2 border-black hover:bg-black hover:text-white rounded-none transition-colors hidden sm:flex"
+                              >
+                                <Eye className="h-3.5 w-3.5 mr-2" />
+                                Preview
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  copyQuoteToClipboard(note.noteText)
+                                }}
+                                className="h-9 px-3 text-xs hover:bg-white hover:text-black rounded-none border-2 border-transparent hover:border-black transition-colors"
+                              >
+                                {copiedQuote ? (
+                                  <>
+                                    <Check className="h-3 w-3 mr-1 text-green-600" />
+                                    Copied
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="h-3 w-3 mr-1" />
+                                    Copy Quote
+                                  </>
+                                )}
+                              </Button>
+                            </div>
                           </div>
-
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                toggleLike(note.id)
-                              }}
-                              className={`h-9 px-3 border-2 border-transparent hover:border-black rounded-none ${note.isLiked ? "text-red-500 bg-red-50 border-black" : "text-gray-600 hover:bg-white"}`}
-                            >
-                              <ThumbsUp className={`h-4 w-4 mr-1.5 ${note.isLiked ? 'fill-current' : ''}`} />
-                              <span>{note.likes}</span>
-                            </Button>
-                            <Button variant="ghost" size="sm" className="h-9 px-3 border-2 border-transparent hover:border-black rounded-none text-gray-600 hover:bg-white">
-                              <MessageCircle className="h-4 w-4 mr-1.5" />
-                              <span>{note.comments}</span>
-                            </Button>
-                            <Button
-                              size="sm"
-                              onClick={() => handleNoteClick(note)}
-                              className="h-9 bg-black text-white hover:bg-primary hover:text-black border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold transition-all"
-                            >
-                              <Eye className="h-4 w-4 mr-1.5" />
-                              Preview
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                ))}
-              </motion.div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+                </motion.div>
+              )}
             </TabsContent>
 
-            {/* User Books Tab */}
+            {/* User Books Tab (Keeping mostly as placeholder for now with mock data) */}
             <TabsContent value="books">
               {/* Sort Controls */}
               <div className="mb-6 flex flex-wrap gap-3 items-center justify-between">
                 <div className="flex items-center gap-3">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="gap-2 bg-white border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all font-bold uppercase">
+                      <Button variant="outline" className="gap-2 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase text-black dark:text-white">
                         <Filter className="h-4 w-4" />
                         Sort: {filters.bookSort}
                         <ChevronDown className="h-4 w-4" />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="start" className="w-48 border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                      <DropdownMenuLabel className="font-bold uppercase border-b-2 border-black">Sort Books</DropdownMenuLabel>
+                    <DropdownMenuContent align="start" className="w-48 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                      <DropdownMenuLabel className="font-bold uppercase border-b-2 border-black dark:border-white dark:text-white">Sort Books</DropdownMenuLabel>
                       {sortOptions.map((option) => (
                         <DropdownMenuItem
                           key={option}
                           onClick={() => handleFilterChange('bookSort', option)}
-                          className="font-mono cursor-pointer hover:bg-primary hover:text-black focus:bg-primary focus:text-black rounded-none"
+                          className="font-mono cursor-pointer hover:bg-primary hover:text-black focus:bg-primary focus:text-black rounded-none dark:text-white dark:focus:text-black"
                         >
                           {option}
                         </DropdownMenuItem>
@@ -761,26 +521,26 @@ export default function NoteShare() {
                     </DropdownMenuContent>
                   </DropdownMenu>
 
-                  <Badge variant="secondary" className="bg-primary text-black border-2 border-black rounded-none font-bold uppercase px-3 py-1.5">
+                  <Badge variant="secondary" className="bg-primary text-black border-2 border-black dark:border-white rounded-none font-bold uppercase px-3 py-1.5 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                     {filteredBooks.length} books found
                   </Badge>
                 </div>
 
-                <div className="flex border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white">
+                <div className="flex border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800">
                   <Button
                     variant={viewMode === 'grid' ? 'secondary' : 'ghost'}
                     size="sm"
                     onClick={() => setViewMode('grid')}
-                    className={`rounded-none px-3 h-9 ${viewMode === 'grid' ? 'bg-black text-white' : 'hover:bg-gray-100'}`}
+                    className={`rounded-none px-3 h-9 ${viewMode === 'grid' ? 'bg-black text-white dark:bg-white dark:text-black' : 'hover:bg-gray-100 dark:hover:bg-zinc-700 dark:text-white'}`}
                   >
                     <Grid3x3 className="h-4 w-4" />
                   </Button>
-                  <div className="w-0.5 bg-black"></div>
+                  <div className="w-0.5 bg-black dark:bg-white"></div>
                   <Button
                     variant={viewMode === 'list' ? 'secondary' : 'ghost'}
                     size="sm"
                     onClick={() => setViewMode('list')}
-                    className={`rounded-none px-3 h-9 ${viewMode === 'list' ? 'bg-black text-white' : 'hover:bg-gray-100'}`}
+                    className={`rounded-none px-3 h-9 ${viewMode === 'list' ? 'bg-black text-white dark:bg-white dark:text-black' : 'hover:bg-gray-100 dark:hover:bg-zinc-700 dark:text-white'}`}
                   >
                     <List className="h-4 w-4" />
                   </Button>
@@ -792,34 +552,27 @@ export default function NoteShare() {
                 <motion.div variants={stagger} initial="initial" animate="animate" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {filteredBooks.map((book) => (
                     <motion.div key={book.id} variants={fadeInUp}>
-                      <Card className="h-full border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-300 group overflow-hidden">
-                        <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-black">
+                      <Card className="h-full border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 group overflow-hidden">
+                        <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-black dark:border-white">
                           <img
                             src={book.coverImage}
                             alt={book.title}
-                            className="w-full h-full object-cover transition-transform duration-700"
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                           />
-                          <div className="absolute top-3 left-3">
-                            <Badge className="bg-black text-white border-2 border-white rounded-none font-bold uppercase text-xs shadow-md">
-                              User Created
-                            </Badge>
-                          </div>
-                          <div className="absolute inset-0 bg-primary/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 border-2 border-black m-2">
-                            <Button className="w-full bg-white text-black hover:bg-black hover:text-white font-bold border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase">
-                              View Details
-                            </Button>
-                          </div>
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                          <Badge className="absolute top-2 right-2 bg-white text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-bold uppercase text-[10px]">
+                            {book.genre}
+                          </Badge>
                         </div>
                         <CardContent className="p-4">
-                          <h3 className="font-bold text-lg text-black line-clamp-1 mb-1 uppercase font-display">
-                            {book.title}
-                          </h3>
-                          <p className="text-sm text-gray-600 font-mono mb-2 uppercase">{book.author}</p>
-                          <div className="flex justify-between items-center mt-3 pt-3 border-t-2 border-black">
-                            {renderStars(book.rating)}
-                            <span className="text-xs font-bold bg-gray-100 px-2 py-1 border-2 border-black">
-                              {book.downloads} DLs
-                            </span>
+                          <h3 className="font-bold text-lg leading-tight mb-1 line-clamp-1 uppercase font-display text-black dark:text-white">{book.title}</h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-300 font-mono mb-3">{book.author}</p>
+                          <div className="flex items-center justify-between text-xs font-bold">
+                            <div className="flex items-center gap-1 text-black dark:text-white">
+                              <Star className="w-3 h-3 fill-black text-black dark:fill-white dark:text-white" />
+                              {book.rating.toFixed(1)}
+                            </div>
+                            <span className="text-gray-500 dark:text-gray-400">{book.downloads} DLs</span>
                           </div>
                         </CardContent>
                       </Card>
@@ -830,44 +583,30 @@ export default function NoteShare() {
                 <motion.div variants={stagger} initial="initial" animate="animate" className="space-y-4">
                   {filteredBooks.map((book) => (
                     <motion.div key={book.id} variants={fadeInUp}>
-                      <Card className="border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-white rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all duration-300">
-                        <div className="flex flex-col sm:flex-row">
-                          <div className="w-full sm:w-32 h-48 sm:h-auto relative border-b-2 sm:border-b-0 sm:border-r-2 border-black">
-                            <img
-                              src={book.coverImage}
-                              alt={book.title}
-                              className="w-full h-full object-cover"
-                            />
+                      <Card className="border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all duration-300">
+                        <div className="flex p-4 gap-6">
+                          <div className="w-24 shrink-0 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                            <img src={book.coverImage} alt={book.title} className="w-full h-full object-cover aspect-[2/3]" />
                           </div>
-                          <CardContent className="flex-1 p-6">
-                            <div className="flex flex-col h-full justify-between">
-                              <div>
-                                <div className="flex justify-between items-start mb-2">
-                                  <h3 className="text-xl font-bold text-black uppercase font-display">{book.title}</h3>
-                                  <Badge className="bg-black text-white border-2 border-black rounded-none font-bold uppercase text-xs">
-                                    {book.genre}
-                                  </Badge>
+                          <div className="flex-1 flex flex-col justify-between py-1">
+                            <div>
+                              <div className="flex justify-between items-start mb-2">
+                                <div>
+                                  <h3 className="font-bold text-xl uppercase font-display text-black dark:text-white">{book.title}</h3>
+                                  <p className="text-muted-foreground font-mono">{book.author}</p>
                                 </div>
-                                <p className="text-gray-600 font-mono mb-3 uppercase">by {book.author}</p>
-                                <p className="text-gray-800 line-clamp-2 mb-4 font-mono">{book.description}</p>
+                                <Badge className="bg-primary text-black hover:bg-primary border-2 border-black dark:border-white rounded-none font-bold uppercase">{book.genre}</Badge>
                               </div>
-
-                              <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t-2 border-black">
-                                <div className="flex items-center gap-4">
-                                  {renderStars(book.rating)}
-                                  <span className="text-sm font-bold text-gray-600">({book.reviewCount} reviews)</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                  <span className="text-sm font-bold bg-gray-100 px-2 py-1 border-2 border-black">
-                                    {book.downloads} Downloads
-                                  </span>
-                                  <Button size="sm" className="bg-black text-white hover:bg-primary hover:text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
-                                    Details
-                                  </Button>
-                                </div>
+                              <p className="text-sm line-clamp-2 md:line-clamp-3 mb-4 font-mono text-gray-600 dark:text-gray-300">{book.description}</p>
+                            </div>
+                            <div className="flex justify-between items-center text-sm font-bold border-t-2 border-black dark:border-white pt-3 text-black dark:text-white">
+                              <span>{book.year}</span>
+                              <div className="flex gap-4">
+                                <span className="flex items-center gap-1"><Star className="h-4 w-4 fill-black text-black dark:fill-white dark:text-white" /> {book.rating}</span>
+                                <span className="flex items-center gap-1"><Users className="h-4 w-4" /> {book.downloads}</span>
                               </div>
                             </div>
-                          </CardContent>
+                          </div>
                         </div>
                       </Card>
                     </motion.div>

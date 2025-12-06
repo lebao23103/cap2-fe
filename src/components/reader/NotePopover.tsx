@@ -19,6 +19,7 @@ interface NotePopoverProps {
     onEdit: (note: BookNote) => void
     onDelete: (id: string) => void
     onShare: (id: string) => void
+    readOnly?: boolean
 }
 
 const COLOR_STYLES = {
@@ -62,6 +63,7 @@ export default function NotePopover({
     onEdit,
     onDelete,
     onShare,
+    readOnly = false,
 }: NotePopoverProps) {
     if (!note || !position) return null
 
@@ -132,40 +134,42 @@ export default function NotePopover({
                         </p>
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-1 px-3 py-2 bg-background/30 border-t border-border/30">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 text-xs hover:bg-blue-50 dark:hover:bg-blue-950/30 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-                            onClick={() => onEdit(note)}
-                        >
-                            <Edit className="h-3 w-3 mr-1" />
-                            Edit
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className={`h-7 text-xs transition-colors ${note.isPublic
-                                ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-muted-foreground hover:text-gray-700 dark:hover:text-gray-300'
-                                : 'hover:bg-green-50 dark:hover:bg-green-950/30 text-muted-foreground hover:text-green-600 dark:hover:text-green-400'
-                                }`}
-                            onClick={() => onShare(note.id)}
-                        >
-                            <Share2 className="h-3 w-3 mr-1" />
-                            {note.isPublic ? 'Private' : 'Share'}
-                        </Button>
-                        <div className="flex-1" />
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-7 text-xs hover:bg-red-100 dark:hover:bg-red-950/50 hover:text-red-600"
-                            onClick={() => onDelete(note.id)}
-                        >
-                            <Trash2 className="h-3 w-3 mr-1" />
-                            Delete
-                        </Button>
-                    </div>
+                    {/* Actions - Only show if not readOnly */}
+                    {!readOnly && (
+                        <div className="flex items-center gap-1 px-3 py-2 bg-background/30 border-t border-border/30">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 text-xs hover:bg-blue-50 dark:hover:bg-blue-950/30 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                onClick={() => onEdit(note)}
+                            >
+                                <Edit className="h-3 w-3 mr-1" />
+                                Edit
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className={`h-7 text-xs transition-colors ${note.isPublic
+                                    ? 'hover:bg-gray-100 dark:hover:bg-gray-800 text-muted-foreground hover:text-gray-700 dark:hover:text-gray-300'
+                                    : 'hover:bg-green-50 dark:hover:bg-green-950/30 text-muted-foreground hover:text-green-600 dark:hover:text-green-400'
+                                    }`}
+                                onClick={() => onShare(note.id)}
+                            >
+                                <Share2 className="h-3 w-3 mr-1" />
+                                {note.isPublic ? 'Private' : 'Share'}
+                            </Button>
+                            <div className="flex-1" />
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                className="h-7 text-xs hover:bg-red-100 dark:hover:bg-red-950/50 hover:text-red-600"
+                                onClick={() => onDelete(note.id)}
+                            >
+                                <Trash2 className="h-3 w-3 mr-1" />
+                                Delete
+                            </Button>
+                        </div>
+                    )}
 
                     {/* Timestamp footer */}
                     <div className="px-4 py-1.5 bg-background/20 border-t border-border/20">
