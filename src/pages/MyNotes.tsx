@@ -85,7 +85,7 @@ export default function MyNotes() {
 
     const filteredNotes = useMemo(() => {
         return notes.filter(note =>
-            note.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            note.note_content.toLowerCase().includes(searchTerm.toLowerCase()) ||
             note.bookTitle?.toLowerCase().includes(searchTerm.toLowerCase())
         )
     }, [notes, searchTerm])
@@ -135,6 +135,14 @@ export default function MyNotes() {
             <main className="container mx-auto py-8 px-4 relative z-10">
                 <motion.div {...fadeInUp} className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => navigate('/dashboard')}
+                            className="mb-2 -ml-2 text-gray-500 hover:text-black hover:bg-transparent font-bold"
+                        >
+                            ← BACK TO DASHBOARD
+                        </Button>
                         <h1 className="text-4xl font-black uppercase text-foreground flex items-center gap-3">
                             <span className="bg-yellow-400 text-black px-2 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                                 My Notes
@@ -210,7 +218,7 @@ export default function MyNotes() {
                                     <CardContent className="p-4 flex-1 flex flex-col gap-4">
                                         {/* Highlighted Text Context */}
                                         <div className="pl-3 border-l-4 border-primary bg-yellow-50 dark:bg-yellow-900/10 p-2 italic text-sm text-gray-700 dark:text-gray-300 font-serif line-clamp-3">
-                                            "{note.content}"
+                                            "{note.note_content}"
                                         </div>
 
                                         {/* Actions */}

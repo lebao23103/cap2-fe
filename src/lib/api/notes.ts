@@ -4,7 +4,7 @@ export interface BookNote {
   id: number;
   book: number;
   user: number;
-  content: string;
+  note_content: string;
   page_number?: number;
   chapter?: string;
   is_public: boolean;
@@ -88,7 +88,7 @@ class NotesService {
   // Get all user's notes across all books
   async getAllUserNotes(): Promise<BookNote[]> {
     const response = await apiClient.get('/api/my-notes/');
-    return response.data;
+    return response.data.notes;
   }
 
   // Get user's notes statistics

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { BookCard, type BookData } from '../components/ui/book-card'
+import BookCard, { type BookData } from '../components/ui/book-card'
 import { useToast } from '../components/ui/use-toast'
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
 import { Input } from '../components/ui/input'
@@ -128,17 +128,26 @@ export default function Dashboard() {
           genre: fav.book.subject ? [fav.book.subject] : ['General']
         }))
 
-      // Transform reading history (with null checks)
-      const transformedHistory: BookData[] = historyData
-        .filter((item: any) => item && item.book && item.book.id)
-        .slice(0, 2)
+      // Transform reading history (flat structure from serializer)
+      // Deduplicate history by book_id to handle potential legacy duplicates
+      const uniqueHistory = new Map();
+      historyData.forEach((item: any) => {
+        if (item && item.book_id && !uniqueHistory.has(item.book_id)) {
+          uniqueHistory.set(item.book_id, item);
+        }
+      });
+
+      const transformedHistory: BookData[] = Array.from(uniqueHistory.values())
+        .slice(0, 3)
         .map((item: any) => ({
-          id: item.book.id.toString(),
-          title: item.book.title,
-          author: item.book.author || 'Unknown Author',
-          cover: getCoverImageUrl(item.book.cover_image),
-          rating: item.book.rating || 0,
-          genre: item.book.subject ? [item.book.subject] : ['General']
+          id: item.book_id.toString(),
+          title: item.book_title,
+          author: item.book_author || 'Unknown Author',
+          cover: getCoverImageUrl(item.book_cover),
+          rating: 0, // Not in flat history
+          genre: ['General'],
+          readingProgress: item.page_number ? Math.round((item.page_number / (item.book_pages || 100)) * 100) : 0,
+          page_number: item.page_number
         }))
 
       // Calculate stats from actual data

@@ -47,7 +47,7 @@ const sizeVariants = {
   }
 }
 
-export function BookCard({ book, size = 'md', className, onClick }: BookCardProps) {
+export default function BookCard({ book, size = 'md', className, onClick }: BookCardProps) {
   const variant = sizeVariants[size]
 
   const Content = (
