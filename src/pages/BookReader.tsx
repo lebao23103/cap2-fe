@@ -32,6 +32,7 @@ import {
   Lock,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
@@ -653,6 +654,87 @@ export default function BookReader() {
     )
   }
 
+  // Helper to render note list
+  const renderNotesList = (notesList: BookNote[]) => {
+    if (notesList.length === 0) {
+      return (
+        <div className="p-8 text-center text-gray-500">
+          <StickyNote className="h-10 w-10 mx-auto mb-3 opacity-20" />
+          <p className="text-sm font-mono">No notes found</p>
+        </div>
+      )
+    }
+
+    return (
+      <div className="divide-y-2 divide-black">
+        {notesList.map((note) => {
+          const colorStyles = {
+            yellow: theme === 'dark' ? 'border-l-yellow-500 bg-yellow-900/20' : theme === 'sepia' ? 'border-l-amber-600 bg-amber-100' : 'border-l-amber-400 bg-amber-50',
+            blue: theme === 'dark' ? 'border-l-blue-500 bg-blue-900/20' : theme === 'sepia' ? 'border-l-blue-400 bg-blue-100' : 'border-l-blue-400 bg-blue-50',
+            green: theme === 'dark' ? 'border-l-green-500 bg-green-900/20' : theme === 'sepia' ? 'border-l-green-600 bg-green-100' : 'border-l-green-400 bg-green-50',
+            pink: theme === 'dark' ? 'border-l-pink-500 bg-pink-900/20' : theme === 'sepia' ? 'border-l-pink-400 bg-pink-100' : 'border-l-pink-400 bg-pink-50',
+          }
+          const style = colorStyles[note.color || 'yellow']
+
+          return (
+            <div
+              key={note.id}
+              className={`p-3 transition-colors cursor-pointer border-l-[6px] group relative ${style} ${theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
+              onClick={() => setCurrentPage(note.page)}
+            >
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-2">
+                  <span className={`text-xs font-bold px-1.5 py-0.5 border-2 rounded-none uppercase ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : theme === 'sepia' ? 'bg-[#fdf5e6] text-[#5c4033] border-[#8b7355]' : 'bg-white text-black border-black'}`}>
+                    Page {note.page}
+                  </span>
+                  <Badge variant="outline" className={`text-[10px] h-5 px-1 rounded-none border-2 bg-transparent ${note.isPublic ? 'border-blue-500 text-blue-600' : 'border-gray-400 text-gray-500'}`}>
+                    {note.isPublic ? 'SHARED' : 'PRIVATE'}
+                  </Badge>
+                </div>
+
+                <div className={`flex gap-1 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity absolute right-2 top-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] border-2 ${themeStyles.border} p-0.5 ${theme === 'dark' ? 'bg-gray-800' : theme === 'sepia' ? 'bg-[#fdf5e6]' : 'bg-white'}`}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`h-6 w-6 rounded-none ${themeStyles.text} hover:bg-primary hover:text-black`}
+                    title="Edit"
+                    onClick={(e) => { e.stopPropagation(); editNote(note) }}
+                  >
+                    <Edit className="h-3 w-3" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`h-6 w-6 hover:bg-blue-400 hover:text-black rounded-none ${themeStyles.text}`}
+                    title={note.isPublic ? "Make Private" : "Make Public"}
+                    onClick={(e) => { e.stopPropagation(); shareNote(note.id) }}
+                  >
+                    {note.isPublic ? (
+                      <Globe className="h-3 w-3" />
+                    ) : (
+                      <Lock className="h-3 w-3" />
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={`h-6 w-6 hover:bg-red-400 hover:text-black rounded-none ${themeStyles.text}`}
+                    title="Delete"
+                    onClick={(e) => { e.stopPropagation(); deleteNote(note.id) }}
+                  >
+                    <Trash2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              </div>
+              <p className={`text-sm font-bold line-clamp-2 mb-1 font-mono ${themeStyles.text}`}>"{note.text}"</p>
+              <p className={`text-xs line-clamp-3 font-mono ${theme === 'dark' ? 'text-gray-400' : theme === 'sepia' ? 'text-[#5c4033]/80' : 'text-gray-600'}`}>{note.note}</p>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
   // Loading state
   if (loading) {
     return (
@@ -1101,7 +1183,7 @@ export default function BookReader() {
 
                 {/* Notes */}
                 <Card className={`border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] flex flex-col max-h-[calc(100vh-300px)] rounded-none ${themeStyles.cardBg}`}>
-                  <CardHeader className={`pb-3 border-b-2 ${themeStyles.border} ${themeStyles.navBg}`}>
+                  <CardHeader className={`p-2 border-b-2 ${themeStyles.border} ${themeStyles.navBg}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <StickyNote className={`h-4 w-4 ${themeStyles.text}`} />
@@ -1111,7 +1193,7 @@ export default function BookReader() {
                       <Button
                         size="sm"
                         variant="ghost"
-                        className={`h-8 text-xs rounded-none border border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
+                        className={`h-7 text-xs rounded-none border border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
                         onClick={() => {
                           setSelectedText("Add a note...")
                           setShowNoteDialog(true)
@@ -1122,75 +1204,70 @@ export default function BookReader() {
                       </Button>
                     </div>
                   </CardHeader>
-                  <CardContent className="p-0 overflow-y-auto custom-scrollbar flex-1">
-                    {notes.length > 0 ? (
-                      <div className="divide-y-2 divide-black">
-                        {notes.map((note) => {
-                          const colorStyles = {
-                            yellow: theme === 'dark' ? 'border-l-yellow-500 bg-yellow-900/20' : theme === 'sepia' ? 'border-l-amber-600 bg-amber-100' : 'border-l-amber-400 bg-amber-50',
-                            blue: theme === 'dark' ? 'border-l-blue-500 bg-blue-900/20' : theme === 'sepia' ? 'border-l-blue-400 bg-blue-100' : 'border-l-blue-400 bg-blue-50',
-                            green: theme === 'dark' ? 'border-l-green-500 bg-green-900/20' : theme === 'sepia' ? 'border-l-green-600 bg-green-100' : 'border-l-green-400 bg-green-50',
-                            pink: theme === 'dark' ? 'border-l-pink-500 bg-pink-900/20' : theme === 'sepia' ? 'border-l-pink-400 bg-pink-100' : 'border-l-pink-400 bg-pink-50',
-                          }
-                          const style = colorStyles[note.color || 'yellow']
+                  <CardContent className="p-0 overflow-hidden flex-1 flex flex-col min-h-0">
+                    <Tabs defaultValue="all" className="flex-1 flex flex-col min-h-0">
+                      <div className={`p-2 border-b-2 ${themeStyles.border} ${themeStyles.navBg} flex-shrink-0`}>
+                        <TabsList className={`w-full grid grid-cols-3 gap-1 h-auto bg-transparent p-0`}>
+                          <TabsTrigger
+                            value="all"
+                            className={`
+                              rounded-none border-2 font-bold uppercase text-[10px] md:text-xs py-1 transition-all
+                              data-[state=active]:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                              ${theme === 'dark'
+                                ? 'border-gray-600 data-[state=active]:bg-white data-[state=active]:text-black text-gray-400 hover:text-white'
+                                : theme === 'sepia'
+                                  ? 'border-[#8b7355] data-[state=active]:bg-[#5c4033] data-[state=active]:text-[#fdf5e6] text-[#8b7355] hover:bg-[#8b7355]/10'
+                                  : 'border-black data-[state=active]:bg-black data-[state=active]:text-white text-gray-600 hover:bg-black/5'
+                              }
+                            `}
+                          >
+                            All
+                          </TabsTrigger>
+                          <TabsTrigger
+                            value="private"
+                            className={`
+                              rounded-none border-2 font-bold uppercase text-[10px] md:text-xs py-1 transition-all
+                              data-[state=active]:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                              ${theme === 'dark'
+                                ? 'border-gray-600 data-[state=active]:bg-white data-[state=active]:text-black text-gray-400 hover:text-white'
+                                : theme === 'sepia'
+                                  ? 'border-[#8b7355] data-[state=active]:bg-[#5c4033] data-[state=active]:text-[#fdf5e6] text-[#8b7355] hover:bg-[#8b7355]/10'
+                                  : 'border-black data-[state=active]:bg-black data-[state=active]:text-white text-gray-600 hover:bg-black/5'
+                              }
+                            `}
+                          >
+                            Private
+                          </TabsTrigger>
+                          <TabsTrigger
+                            value="shared"
+                            className={`
+                              rounded-none border-2 font-bold uppercase text-[10px] md:text-xs py-1 transition-all
+                              data-[state=active]:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
+                              ${theme === 'dark'
+                                ? 'border-gray-600 data-[state=active]:bg-white data-[state=active]:text-black text-gray-400 hover:text-white'
+                                : theme === 'sepia'
+                                  ? 'border-[#8b7355] data-[state=active]:bg-[#5c4033] data-[state=active]:text-[#fdf5e6] text-[#8b7355] hover:bg-[#8b7355]/10'
+                                  : 'border-black data-[state=active]:bg-black data-[state=active]:text-white text-gray-600 hover:bg-black/5'
+                              }
+                            `}
+                          >
+                            Shared
+                          </TabsTrigger>
+                        </TabsList>
+                      </div>
 
-                          return (
-                            <div
-                              key={note.id}
-                              className={`p-4 transition-colors cursor-pointer border-l-[6px] group relative ${style} ${theme === 'dark' ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
-                              onClick={() => setCurrentPage(note.page)}
-                            >
-                              <div className="flex justify-between items-start mb-2">
-                                <span className={`text-xs font-bold px-1.5 py-0.5 border-2 rounded-none uppercase ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : theme === 'sepia' ? 'bg-[#fdf5e6] text-[#5c4033] border-[#8b7355]' : 'bg-white text-black border-black'}`}>
-                                  Page {note.page}
-                                </span>
-                                <div className={`flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity absolute right-2 top-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] border-2 ${themeStyles.border} p-0.5 ${theme === 'dark' ? 'bg-gray-800' : theme === 'sepia' ? 'bg-[#fdf5e6]' : 'bg-white'}`}>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className={`h-6 w-6 rounded-none ${themeStyles.text} hover:bg-primary hover:text-black`}
-                                    title="Edit"
-                                    onClick={(e) => { e.stopPropagation(); editNote(note) }}
-                                  >
-                                    <Edit className="h-3 w-3" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className={`h-6 w-6 hover:bg-blue-400 hover:text-black rounded-none ${themeStyles.text}`}
-                                    title={note.isPublic ? "Make Private" : "Make Public"}
-                                    onClick={(e) => { e.stopPropagation(); shareNote(note.id) }}
-                                  >
-                                    {note.isPublic ? (
-                                      <Globe className="h-3 w-3" />
-                                    ) : (
-                                      <Lock className="h-3 w-3" />
-                                    )}
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className={`h-6 w-6 hover:bg-red-400 hover:text-black rounded-none ${themeStyles.text}`}
-                                    title="Delete"
-                                    onClick={(e) => { e.stopPropagation(); deleteNote(note.id) }}
-                                  >
-                                    <Trash2 className="h-3 w-3" />
-                                  </Button>
-                                </div>
-                              </div>
-                              <p className={`text-sm font-bold line-clamp-2 mb-1 font-mono ${themeStyles.text}`}>"{note.text}"</p>
-                              <p className={`text-xs line-clamp-3 font-mono ${theme === 'dark' ? 'text-gray-400' : theme === 'sepia' ? 'text-[#5c4033]/80' : 'text-gray-600'}`}>{note.note}</p>
-                            </div>
-                          )
-                        })}
+                      <div className="flex-1 min-h-0 bg-transparent flex flex-col">
+                        <TabsContent value="all" className="flex-1 overflow-y-auto custom-scrollbar m-0 py-2">
+                          {renderNotesList(notes)}
+                        </TabsContent>
+                        <TabsContent value="private" className="flex-1 overflow-y-auto custom-scrollbar m-0 py-2">
+                          {renderNotesList(notes.filter(n => !n.isPublic))}
+                        </TabsContent>
+                        <TabsContent value="shared" className="flex-1 overflow-y-auto custom-scrollbar m-0 py-2">
+                          {renderNotesList(notes.filter(n => n.isPublic))}
+                        </TabsContent>
                       </div>
-                    ) : (
-                      <div className="p-8 text-center text-gray-500">
-                        <StickyNote className="h-10 w-10 mx-auto mb-3 opacity-20" />
-                        <p className="text-sm font-mono">No notes yet</p>
-                        <p className="text-xs mt-1 font-mono">Select text to add a note</p>
-                      </div>
-                    )}
+                    </Tabs>
                   </CardContent>
                 </Card>
 
@@ -1228,16 +1305,17 @@ export default function BookReader() {
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </div >
 
       {/* Note Popover */}
-      <NotePopover
+      < NotePopover
         note={selectedNote}
         position={popoverPosition}
         onClose={() => {
           setSelectedNote(null)
           setPopoverPosition(null)
-        }}
+        }
+        }
         onEdit={(note) => {
           editNote(note)
           setSelectedNote(null)
@@ -1255,7 +1333,7 @@ export default function BookReader() {
       />
 
       {/* Note Dialog */}
-      <Dialog open={showNoteDialog} onOpenChange={(open) => {
+      < Dialog open={showNoteDialog} onOpenChange={(open) => {
         setShowNoteDialog(open)
         if (!open) {
           setSelectedText("")
@@ -1313,10 +1391,10 @@ export default function BookReader() {
             <Button onClick={saveNote} disabled={!newNote.trim()} className="rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all uppercase font-bold bg-primary text-black hover:bg-primary/90">Save Note</Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
+      </Dialog >
 
       {/* Review Dialog */}
-      <Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog}>
+      < Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog} >
         <DialogContent className="sm:max-w-[500px] rounded-none border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <DialogHeader>
             <DialogTitle className="text-center text-2xl uppercase font-bold">Finished!</DialogTitle>
@@ -1353,7 +1431,7 @@ export default function BookReader() {
             </Button>
           </DialogFooter>
         </DialogContent>
-      </Dialog>
-    </div>
+      </Dialog >
+    </div >
   )
 }
