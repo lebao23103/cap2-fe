@@ -26,7 +26,7 @@ interface NoteHighlightOverlayProps {
     notes: BookNote[]
     currentPage: number
     onHighlightClick?: (note: BookNote, position: { x: number, y: number, rect?: DOMRect }) => void
-    containerRef?: React.RefObject<HTMLDivElement>
+    containerRef?: React.RefObject<HTMLDivElement | null>
 }
 
 // Color mapping from note color to hex with opacity

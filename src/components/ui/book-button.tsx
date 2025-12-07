@@ -71,7 +71,7 @@ const bookButtonVariants = cva(
 
 interface BookButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof bookButtonVariants> {
+  VariantProps<typeof bookButtonVariants> {
   asChild?: boolean
   withBookmark?: boolean
 }
@@ -81,11 +81,11 @@ const BookButton = React.forwardRef<HTMLButtonElement, BookButtonProps>(
 
     // If children is a Link or similar element, don't wrap in button
     const isLinkChild = React.isValidElement(children) && (
-      children.type === Link || 
-      children.type === 'a' || 
+      children.type === Link ||
+      children.type === 'a' ||
       (typeof children.type === 'function' && children.type.name === 'Link')
     )
-    
+
     const content = (
       <>
         {withBookmark && (
@@ -98,10 +98,10 @@ const BookButton = React.forwardRef<HTMLButtonElement, BookButtonProps>(
           </svg>
         )}
         {isLinkChild ? (
-          React.cloneElement(children as React.ReactElement, {
+          React.cloneElement(children as React.ReactElement<React.HTMLAttributes<HTMLElement>>, {
             className: cn(
               bookButtonVariants({ variant, size, ornate }),
-              (children as React.ReactElement).props.className
+              (children as React.ReactElement<React.HTMLAttributes<HTMLElement>>).props.className
             )
           })
         ) : (

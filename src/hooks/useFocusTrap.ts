@@ -233,7 +233,7 @@ export function useFocusTrap<T extends HTMLElement = HTMLElement>(
     }
   }, [enabled, handleKeyDown])
 
-  return containerRef
+  return containerRef as React.RefObject<T>
 }
 
 /**
