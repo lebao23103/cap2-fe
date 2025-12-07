@@ -115,17 +115,17 @@ export default function Dashboard() {
           genre: book.subject ? [book.subject] : ['General']
         }))
 
-      // Transform favorites (with null checks)
+      // Transform favorites (flat structure from view: list of Books)
       const transformedFavorites: BookData[] = favoritesData
-        .filter((fav: any) => fav && fav.book && fav.book.id)
+        .filter((book: any) => book && book.id)
         .slice(0, 2)
-        .map((fav: any) => ({
-          id: fav.book.id.toString(),
-          title: fav.book.title,
-          author: fav.book.author || 'Unknown Author',
-          cover: getCoverImageUrl(fav.book.cover_image),
-          rating: fav.book.rating || 0,
-          genre: fav.book.subject ? [fav.book.subject] : ['General']
+        .map((book: any) => ({
+          id: book.id.toString(),
+          title: book.title,
+          author: book.author || 'Unknown Author',
+          cover: getCoverImageUrl(book.cover_image),
+          rating: book.average_rating || 0,
+          genre: book.subject ? [book.subject] : ['General']
         }))
 
       // Transform reading history (flat structure from serializer)
