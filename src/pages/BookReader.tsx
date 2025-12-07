@@ -158,8 +158,8 @@ export default function BookReader() {
     try {
       setLoading(true)
 
-      // Fetch book details, PDF URL, notes, and favorite status
-      const [bookDetails, pdfContent, bookNotes, favorites] = await Promise.all([
+      // Fetch book details, PDF URL, notes, favorite status, AND history
+      const [bookDetails, pdfContent, bookNotes, favorites, history] = await Promise.all([
         booksService.getBookById(Number(id)),
         booksService.getBookContent(Number(id)),
         // Only fetch my notes if NOT in read-only mode, or if we want to show them alongside preview note?
@@ -170,7 +170,10 @@ export default function BookReader() {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
           }
         }).then(res => res.json()).catch(() => []),
-        userService.getFavorites().catch(() => [])
+        userService.getFavorites().catch(() => []),
+        fetch(`http://127.0.0.1:8000/api/reading-history/`, {
+          headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
+        }).then(res => res.json()).catch(() => [])
       ])
 
       // Transform to BookData format
@@ -180,7 +183,7 @@ export default function BookReader() {
         author: bookDetails.author,
         content: [], // Will use PDF instead
         totalPages: numPages || 10, // Will be updated when PDF loads
-        currentPage: location.state?.page || 1, // Ensure page is set correctly from state
+        currentPage: location.state?.page || (history.find((h: any) => h.book_id === Number(id))?.page_number) || 1, // Prioritize state -> history -> 1
         readingProgress: 0,
         notes: [],
         bookmarks: [],
@@ -330,15 +333,31 @@ export default function BookReader() {
     }
   }
 
-  const updateReadingProgress = (page: number) => {
-    if (!bookData) return // Guard clause
+  const updateReadingProgress = async (page: number) => {
+    if (!bookData) return
 
     const progress = Math.round((page / bookData.totalPages) * 100)
+
+    // Update local state
     setBookData(prev => prev ? {
       ...prev,
       currentPage: page,
       readingProgress: progress
     } : null)
+
+    // Update backend
+    try {
+      await fetch(`http://127.0.0.1:8000/api/reading-history/${id}/update/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        },
+        body: JSON.stringify({ page_number: page })
+      })
+    } catch (error) {
+      console.error('Failed to save progress', error)
+    }
   }
 
   const handleTextSelection = () => {

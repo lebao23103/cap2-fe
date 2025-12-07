@@ -15,16 +15,13 @@ import {
   List,
   ChevronDown,
   Play,
-  Clock,
   CheckCircle,
-  Award,
   BookmarkCheck,
-  Target
+  Check
 } from 'lucide-react'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { BookCardsLoadingSkeleton, BooksEmptyState, BooksErrorState } from '@/components/books'
 import {
   DropdownMenu,
@@ -53,10 +50,8 @@ interface Book {
   isFavorite?: boolean
   lastReadDate?: string
   notes?: number
-  hasQuiz?: boolean
-  quizCompleted?: boolean
-  readingTime?: string
-  subject?: string
+  // subject?: string // Not in BE
+  hasReadingHistory?: boolean
 }
 
 // Filter options
@@ -65,9 +60,7 @@ const statusFilters = [
   "Currently Reading",
   "Completed",
   "Not Started",
-  "Favorites",
-  "Has Quiz Available",
-  "Quiz Completed"
+  "Favorites"
 ]
 
 interface FilterState {
@@ -97,25 +90,44 @@ export default function ReadNEx() {
       setIsLoading(true)
       setError(null)
 
-      const [booksData, favoritesData] = await Promise.all([
+      const [booksData, favoritesData, historyData] = await Promise.all([
         booksService.getApprovedBooks(),
-        userService.getFavorites().catch(() => [])
+        userService.getFavorites().catch(() => []),
+        userService.getReadingHistory().catch(() => [])
       ])
 
       // Transform API books to component format
-      const transformedBooks: Book[] = booksData.map((book: any) => ({
-        id: book.id,
-        title: book.title,
-        author: book.author,
-        coverImage: book.cover_image || '/api/placeholder/300/400',
-        rating: book.rating || 0,
-        description: book.description || '',
-        language: book.language,
-        subject: book.subject,
-        readingProgress: 0, // Would need to be fetched from reading history
-        isFavorite: false, // Will be updated below
-        hasQuiz: true // Assume all books have quizzes for now
-      }))
+      const transformedBooks: Book[] = booksData.map((book: any) => {
+        // Find reading history for this book
+        const historyItem = historyData.find((h: any) => h.book_id === book.id)
+
+        // Calculate progress
+        let progress = 0
+        if (historyItem && book.pages && book.pages > 0) {
+          progress = Math.min(Math.round((historyItem.page_number / book.pages) * 100), 100)
+        } else if (historyItem) {
+          // If pages not available but history exists, assume some progress or completed?
+          // Strict mapping: if no pages info, we can't calc percentage. Default 0 or arbitrary?
+          // Let's stick to 0 if pages missing, or maybe passed from history if we added it?
+          // Since history has page_number, and book has pages.
+          progress = 0
+        }
+
+        return {
+          id: book.id,
+          title: book.title,
+          author: book.author,
+          coverImage: book.cover_image || '/api/placeholder/300/400',
+          rating: book.average_rating || 0, // Fix: Use average_rating
+          description: '', // BE Book model has no description
+          language: undefined, // BE has no language
+          readingProgress: progress,
+          isFavorite: false, // Will be updated below
+          // Additional mappings if available
+          pages: book.pages,
+          hasReadingHistory: !!historyItem
+        }
+      })
 
       const favoriteIds = new Set(
         favoritesData
@@ -159,17 +171,13 @@ export default function ReadNEx() {
     return books.filter(book => {
       let matchesStatus = true
       if (filters.statusFilter === "Currently Reading") {
-        matchesStatus = book.readingProgress! > 0 && book.readingProgress! < 100
+        matchesStatus = !!book.hasReadingHistory && (book.readingProgress! < 100)
       } else if (filters.statusFilter === "Completed") {
         matchesStatus = book.readingProgress === 100
       } else if (filters.statusFilter === "Not Started") {
-        matchesStatus = book.readingProgress === 0
+        matchesStatus = !book.hasReadingHistory
       } else if (filters.statusFilter === "Favorites") {
         matchesStatus = book.isFavorite === true
-      } else if (filters.statusFilter === "Has Quiz Available") {
-        matchesStatus = book.hasQuiz === true
-      } else if (filters.statusFilter === "Quiz Completed") {
-        matchesStatus = book.quizCompleted === true
       }
 
       const matchesSearch = filters.searchTerm === "" ||
@@ -370,9 +378,12 @@ export default function ReadNEx() {
                       <DropdownMenuItem
                         key={status}
                         onClick={() => handleFilterChange('statusFilter', status)}
-                        className="cursor-pointer focus:bg-primary focus:text-black rounded-none my-0.5 font-mono uppercase font-bold hover:bg-primary dark:text-white dark:focus:text-black"
+                        className={`cursor-pointer focus:bg-primary focus:text-black rounded-none my-0.5 font-mono uppercase font-bold hover:bg-primary dark:text-white dark:focus:text-black flex items-center justify-between ${filters.statusFilter === status ? 'bg-primary text-black' : ''}`}
                       >
-                        {status}
+                        <span className="flex items-center">
+                          {status}
+                        </span>
+                        {filters.statusFilter === status && <Check className="h-4 w-4 ml-2" />}
                       </DropdownMenuItem>
                     ))}
                   </DropdownMenuContent>
@@ -445,11 +456,6 @@ export default function ReadNEx() {
 
                             {/* Top Badges */}
                             <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
-                              {book.quizCompleted && (
-                                <Badge className="bg-green-400 text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                                  <Award className="h-3 w-3 mr-1" /> DONE
-                                </Badge>
-                              )}
                               {book.isFavorite && (
                                 <div className="p-1.5 bg-pink-400 text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
                                   <Heart className="h-3.5 w-3.5 fill-current" />
@@ -458,13 +464,13 @@ export default function ReadNEx() {
                             </div>
 
                             {/* Reading Progress Bar (Overlay) */}
-                            {book.readingProgress! > 0 && (
+                            {book.hasReadingHistory && (
                               <div className="absolute bottom-0 left-0 right-0 p-3 bg-white border-t-2 border-black">
                                 <div className="flex justify-between text-[10px] font-bold text-black mb-1.5 uppercase tracking-wider">
                                   <span>Progress</span>
                                   <span>{book.readingProgress}%</span>
                                 </div>
-                                {renderProgressBar(book.readingProgress!)}
+                                {renderProgressBar(book.readingProgress || 0)}
                               </div>
                             )}
 
@@ -480,25 +486,10 @@ export default function ReadNEx() {
                                 }}
                               >
                                 <Play className="h-4 w-4 mr-2 fill-current" />
-                                {book.readingProgress! > 0 ? 'RESUME' : 'READ'}
+                                {book.hasReadingHistory ? 'RESUME' : 'READ'}
                               </Button>
 
                               <div className="flex gap-2">
-                                {book.hasQuiz && (
-                                  <Button
-                                    size="icon"
-                                    variant="secondary"
-                                    className="h-10 w-10 bg-white text-black border-2 border-black hover:bg-black hover:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                                    onClick={(e) => {
-                                      e.preventDefault()
-                                      e.stopPropagation()
-                                      navigate(`/book/${book.id}/quiz`)
-                                    }}
-                                    title="Take Quiz"
-                                  >
-                                    <Target className="h-5 w-5" />
-                                  </Button>
-                                )}
                                 <Button
                                   size="icon"
                                   variant="secondary"
@@ -531,11 +522,7 @@ export default function ReadNEx() {
                               {renderStars(book.rating)}
 
                               <div className="flex items-center gap-2">
-                                {book.subject && (
-                                  <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-yellow-300 text-black border-2 border-black rounded-none uppercase font-bold">
-                                    {book.subject}
-                                  </Badge>
-                                )}
+                                {/* Subject removed - not in BE */}
                               </div>
                             </div>
                           </div>
@@ -572,26 +559,21 @@ export default function ReadNEx() {
                                     <p className="text-gray-600 dark:text-gray-300 font-mono mb-2 uppercase">{book.author}</p>
                                   </div>
                                   <div className="flex gap-2">
-                                    {book.quizCompleted && (
-                                      <Badge variant="outline" className="border-2 border-black bg-green-400 text-black rounded-none font-bold uppercase">
-                                        Quiz Done
-                                      </Badge>
-                                    )}
                                   </div>
                                 </div>
-                                <p className="text-sm text-gray-600 line-clamp-2 mb-4 max-w-2xl font-mono">
-                                  {book.description}
-                                </p>
+                                {book.description && (
+                                  <p className="text-sm text-gray-600 line-clamp-2 mb-4 max-w-2xl font-mono">
+                                    {book.description}
+                                  </p>
+                                )}
                                 <div className="flex items-center gap-4 text-sm text-black dark:text-white font-bold">
                                   {renderStars(book.rating)}
-                                  <span>•</span>
-                                  <span className="flex items-center gap-1 uppercase">
-                                    <Clock className="h-3.5 w-3.5" /> {book.readingTime || '2h 15m'}
-                                  </span>
-                                  {book.subject && (
+                                  {book.pages && (
                                     <>
                                       <span>•</span>
-                                      <Badge variant="secondary" className="text-xs bg-yellow-300 border-2 border-black rounded-none">{book.subject}</Badge>
+                                      <span className="flex items-center gap-1 uppercase">
+                                        <BookOpen className="h-3.5 w-3.5" /> {book.pages} PAGES
+                                      </span>
                                     </>
                                   )}
                                 </div>
@@ -599,7 +581,7 @@ export default function ReadNEx() {
 
                               <div className="flex items-center gap-3 mt-4 sm:mt-0">
                                 <Button size="sm" onClick={() => navigate(`/book/${book.id}/read`)} className="bg-black text-white hover:bg-primary hover:text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
-                                  <Play className="h-3.5 w-3.5 mr-2" /> Read
+                                  <Play className="h-3.5 w-3.5 mr-2" /> {book.hasReadingHistory ? 'Resume' : 'Read'}
                                 </Button>
                                 <Button size="sm" variant="outline" onClick={() => navigate(`/book/${book.id}`)} className="bg-white text-black border-2 border-black hover:bg-gray-100 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase font-bold dark:bg-zinc-900 dark:text-white dark:border-white dark:hover:bg-zinc-700">
                                   Details

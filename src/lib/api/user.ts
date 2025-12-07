@@ -30,13 +30,13 @@ export interface Favorite {
 
 export interface ReadingHistoryItem {
   id: number;
-  user: number;
-  book: Book;
-  started_at: string;
-  last_read_at?: string;
-  progress?: number;
-  status: 'reading' | 'completed' | 'paused';
-  notes?: string;
+  book_id: number;
+  book_title: string;
+  book_author: string;
+  book_cover: string;
+  read_at: string;
+  updated_at: string;
+  page_number: number;
 }
 
 class UserService {
@@ -112,7 +112,7 @@ class UserService {
   async isBookInReadingHistory(bookId: number): Promise<boolean> {
     try {
       const history = await this.getReadingHistory();
-      return history.some(item => item.book.id === bookId);
+      return history.some(item => item.book_id === bookId);
     } catch {
       return false;
     }
