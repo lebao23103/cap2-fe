@@ -27,7 +27,10 @@ const sizeVariants = {
     title: 'text-sm',
     author: 'text-xs',
     rating: 'w-3 h-3',
-    badge: 'text-[10px] px-1.5 py-0'
+    badge: 'text-[10px] px-1.5 py-0',
+    cardShadow: 'shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]',
+    hoverShadow: 'hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]',
+    imageOffset: 'translate-y-0.5 translate-x-0.5'
   },
   md: {
     container: 'p-4',
@@ -35,7 +38,10 @@ const sizeVariants = {
     title: 'text-base',
     author: 'text-sm',
     rating: 'w-3.5 h-3.5',
-    badge: 'text-xs'
+    badge: 'text-xs',
+    cardShadow: 'shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]',
+    hoverShadow: 'hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]',
+    imageOffset: 'translate-y-1 translate-x-1'
   },
   lg: {
     container: 'p-6',
@@ -43,7 +49,10 @@ const sizeVariants = {
     title: 'text-lg',
     author: 'text-base',
     rating: 'w-4 h-4',
-    badge: 'text-sm'
+    badge: 'text-sm',
+    cardShadow: 'shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]',
+    hoverShadow: 'hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)]',
+    imageOffset: 'translate-y-1.5 translate-x-1.5'
   }
 }
 
@@ -55,17 +64,19 @@ export default function BookCard({ book, size = 'md', className, onClick }: Book
       className={cn(
         "group transition-all duration-300 cursor-pointer overflow-hidden border-2 border-black",
         "bg-white hover:bg-white",
-        "hover:-translate-y-1 hover:-translate-x-1 hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]",
-        "active:translate-y-0 active:translate-x-0 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
+        "hover:-translate-y-1 hover:-translate-x-1",
+        variant.cardShadow,
+        variant.hoverShadow,
+        "active:translate-y-0 active:translate-x-0 active:shadow-none",
         "rounded-none",
         className
       )}
       onClick={onClick}
     >
       <CardContent className={cn(variant.container, "relative z-10")}>
-        <div className="flex gap-4">
+        <div className="flex gap-4 items-start">
           <div className="flex-shrink-0 relative group-hover:scale-105 transition-transform duration-500">
-            <div className="absolute inset-0 bg-black translate-y-1 translate-x-1" />
+            <div className={cn("absolute inset-0 bg-black", variant.imageOffset)} />
             <img
               src={book.cover}
               alt={book.title}
