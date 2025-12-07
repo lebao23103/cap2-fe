@@ -14,7 +14,7 @@ import {
   ChevronRight,
   Settings,
   Bookmark,
-  Share2,
+
   Sun,
   Moon,
   Clock,
@@ -27,7 +27,9 @@ import {
   Palette,
   Heart,
   Eye,
-  EyeOff
+  EyeOff,
+  Globe,
+  Lock,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -492,10 +494,21 @@ export default function BookReader() {
       })
 
       if (response.ok) {
+        const updatedIsPublic = !note.isPublic
+
         setNotes(prev => prev.map(n =>
-          n.id === noteId ? { ...n, isPublic: !n.isPublic } : n
+          n.id === noteId ? { ...n, isPublic: updatedIsPublic } : n
         ))
-        toast({ title: note.isPublic ? 'Note made private' : 'Note shared publicly' })
+
+        // Update selectedNote if it's the one being modified
+        setSelectedNote(prev => {
+          if (prev && prev.id === noteId) {
+            return { ...prev, isPublic: updatedIsPublic }
+          }
+          return prev
+        })
+
+        toast({ title: !updatedIsPublic ? 'Note made private' : 'Note shared publicly' })
       }
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to update note', variant: 'destructive' })
@@ -1126,10 +1139,14 @@ export default function BookReader() {
                                     variant="ghost"
                                     size="icon"
                                     className={`h-6 w-6 hover:bg-blue-400 hover:text-black rounded-none ${themeStyles.text}`}
-                                    title="Share"
+                                    title={note.isPublic ? "Make Private" : "Make Public"}
                                     onClick={(e) => { e.stopPropagation(); shareNote(note.id) }}
                                   >
-                                    <Share2 className="h-3 w-3" />
+                                    {note.isPublic ? (
+                                      <Globe className="h-3 w-3" />
+                                    ) : (
+                                      <Lock className="h-3 w-3" />
+                                    )}
                                   </Button>
                                   <Button
                                     variant="ghost"

@@ -1,4 +1,4 @@
-import { X, Edit, Trash2, Share2 } from 'lucide-react'
+import { X, Edit, Trash2, Globe, Lock } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 
@@ -101,7 +101,7 @@ export default function NotePopover({
                                     Page {note.page}
                                     {note.isPublic && (
                                         <span className="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded text-[10px]">
-                                            <Share2 className="h-2.5 w-2.5" />
+                                            <Globe className="h-2.5 w-2.5" />
                                             Public
                                         </span>
                                     )}
@@ -155,8 +155,17 @@ export default function NotePopover({
                                     }`}
                                 onClick={() => onShare(note.id)}
                             >
-                                <Share2 className="h-3 w-3 mr-1" />
-                                {note.isPublic ? 'Private' : 'Share'}
+                                {note.isPublic ? (
+                                    <>
+                                        <Globe className="h-3 w-3 mr-1" />
+                                        Private
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock className="h-3 w-3 mr-1" />
+                                        Public
+                                    </>
+                                )}
                             </Button>
                             <div className="flex-1" />
                             <Button

@@ -102,7 +102,7 @@ export default function NoteHighlightOverlay({
                 const cleanIndexMap: { spanIndex: number, offset: number }[] = []
                 let fullCleanText = ''
 
-                textSpans.forEach((span, spanIndex) => {
+                textSpans.forEach((span) => {
                     const rect = span.getBoundingClientRect()
                     // Skip invisible spans
                     if (rect.width === 0 || rect.height === 0) return
