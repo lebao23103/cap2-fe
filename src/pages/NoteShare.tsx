@@ -34,6 +34,7 @@ import {
 
 import { fadeInUp, stagger } from '@/lib/animations'
 import booksService from '@/lib/api/books'
+import notesService from '@/lib/api/notes'
 import { useToast } from '@/components/ui/use-toast'
 
 // Updated Shared Note interface based on actual BE data
@@ -110,26 +111,16 @@ export default function NoteShare() {
       // 2. For each book, fetch its public notes
       const allNotesProms = books.map(async (book) => {
         try {
-          // We need to use the endpoint /api/books/<id>/notes/public/
-          const res = await fetch(`http://127.0.0.1:8000/api/books/${book.id}/notes/public/`, {
-            headers: {
-              'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-            }
-          })
+          // Use notesService to fetch public notes
+          const data = await notesService.getPublicNotes(book.id)
 
-          if (!res.ok) {
-            console.warn(`Failed to fetch notes for book ${book.id}: ${res.status}`)
-            return []
-          }
-
-          const data = await res.json()
           if (!data || !Array.isArray(data.public_notes)) {
             console.warn(`Invalid notes format for book ${book.id}`, data)
             return []
           }
 
           // data.public_notes is the array
-          return data.public_notes.map((n: any): SharedNote => ({
+          return data.public_notes.map((n) => ({
             id: n.id ? n.id.toString() : Math.random().toString(),
             bookTitle: book.title || "Unknown Book",
             bookAuthor: book.author || "Unknown Author",

@@ -32,6 +32,17 @@ export interface PersonalizedContent {
   user_notes: BookNote[];
 }
 
+export interface PublicBookNote {
+  id: number;
+  user_name: string;
+  selected_text: string;
+  note_content: string;
+  page_number: number;
+  color: string;
+  is_public: boolean;
+  created_at: string;
+}
+
 class NotesService {
   // Get user's notes for a specific book
   async getUserBookNotes(bookId: number): Promise<BookNote[]> {
@@ -69,7 +80,7 @@ class NotesService {
   }
 
   // Get public notes for a book
-  async getPublicNotes(bookId: number): Promise<BookNote[]> {
+  async getPublicNotes(bookId: number): Promise<{ book_id: number; book_title: string; public_notes: PublicBookNote[] }> {
     const response = await apiClient.get(`/api/books/${bookId}/notes/public/`);
     return response.data;
   }

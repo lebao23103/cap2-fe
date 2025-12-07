@@ -40,6 +40,7 @@ import adminService, {
   type AdminBook,
   type PendingUserBook
 } from '../lib/api/admin'
+import booksService from '../lib/api/books'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -65,6 +66,15 @@ export default function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
   const [newUserForm, setNewUserForm] = useState({ username: '', email: '', password: '' })
   const [editUserForm, setEditUserForm] = useState({ username: '', email: '', password: '' })
+
+  // Edit Book state
+  const [isEditBookOpen, setIsEditBookOpen] = useState(false)
+  const [selectedBook, setSelectedBook] = useState<AdminBook | null>(null)
+  const [editBookForm, setEditBookForm] = useState({
+    title: '',
+    author: '',
+    pages: 0
+  })
 
   // Action loading states
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -149,6 +159,34 @@ export default function AdminDashboard() {
   }
 
   // Book actions
+  const handleUpdateBook = async () => {
+    if (!selectedBook) return
+    try {
+      setActionLoading('updateBook')
+      // Note: AdminBook interface has id, title, author, pages, pdf_url.
+      // We pass partial update.
+      await booksService.editBook(selectedBook.id, editBookForm)
+      toast({ title: 'Success', description: 'Book updated successfully!' })
+      setIsEditBookOpen(false)
+      setSelectedBook(null)
+      loadDashboardData()
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to update book', variant: 'destructive' })
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const openEditBook = (book: AdminBook) => {
+    setSelectedBook(book)
+    setEditBookForm({
+      title: book.title,
+      author: book.author,
+      pages: book.pages || 0
+    })
+    setIsEditBookOpen(true)
+  }
+
   const handleDeleteBook = async (bookId: number) => {
     if (!confirm('Are you sure you want to delete this book?')) return
     try {
@@ -454,6 +492,14 @@ export default function AdminDashboard() {
                           <Button
                             variant="outline"
                             size="sm"
+                            onClick={() => openEditBook(book)}
+                            className="border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-800 text-black dark:text-white"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => handleDeleteBook(book.id)}
                             disabled={actionLoading === `deleteBook-${book.id}`}
                             className="border-2 border-black dark:border-white rounded-none hover:bg-red-100 dark:hover:bg-red-900/30 bg-white dark:bg-zinc-800 text-black dark:text-white"
@@ -660,6 +706,62 @@ export default function AdminDashboard() {
               className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
             >
               {actionLoading === 'updateUser' ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Book Dialog */}
+      <Dialog open={isEditBookOpen} onOpenChange={setIsEditBookOpen}>
+        <DialogContent className="border-4 border-black dark:border-white rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
+          <DialogHeader className="border-b-4 border-black dark:border-white pb-4">
+            <DialogTitle className="font-black uppercase flex items-center gap-2">
+              <Edit className="h-5 w-5" />
+              Edit Book
+            </DialogTitle>
+            <DialogDescription className="font-mono text-gray-600 dark:text-gray-300">Update book details</DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid gap-2">
+              <Label htmlFor="edit-book-title" className="font-bold uppercase text-black dark:text-white">Title</Label>
+              <Input
+                id="edit-book-title"
+                value={editBookForm.title}
+                onChange={(e) => setEditBookForm(prev => ({ ...prev, title: e.target.value }))}
+                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-book-author" className="font-bold uppercase text-black dark:text-white">Author</Label>
+              <Input
+                id="edit-book-author"
+                value={editBookForm.author}
+                onChange={(e) => setEditBookForm(prev => ({ ...prev, author: e.target.value }))}
+                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-book-pages" className="font-bold uppercase text-black dark:text-white">Pages</Label>
+              <Input
+                id="edit-book-pages"
+                type="number"
+                value={editBookForm.pages}
+                onChange={(e) => setEditBookForm(prev => ({ ...prev, pages: parseInt(e.target.value) || 0 }))}
+                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+              />
+            </div>
+          </div>
+          <DialogFooter className="border-t-4 border-black dark:border-white pt-4">
+            <Button
+              onClick={handleUpdateBook}
+              disabled={actionLoading === 'updateBook'}
+              className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
+            >
+              {actionLoading === 'updateBook' ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
                 'Save Changes'
