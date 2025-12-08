@@ -21,12 +21,7 @@ export interface UpdateProfileData {
   email?: string;
 }
 
-export interface Favorite {
-  id: number;
-  user: number;
-  book: Book;
-  added_at: string;
-}
+
 
 export interface ReadingHistoryItem {
   id: number;
@@ -58,7 +53,7 @@ class UserService {
   }
 
   // Favorites management
-  async getFavorites(): Promise<Favorite[]> {
+  async getFavorites(): Promise<Book[]> {
     const response = await apiClient.get('/api/favorites/');
     return response.data;
   }
@@ -102,7 +97,7 @@ class UserService {
   async isBookFavorited(bookId: number): Promise<boolean> {
     try {
       const favorites = await this.getFavorites();
-      return favorites.some(fav => fav.book.id === bookId);
+      return favorites.some(fav => fav.id === bookId);
     } catch {
       return false;
     }

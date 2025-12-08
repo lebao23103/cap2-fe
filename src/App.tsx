@@ -41,7 +41,7 @@ const PageLoader = () => (
 function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="knowly-theme">
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
           <Layout>
             <div className="min-h-screen font-sans antialiased">

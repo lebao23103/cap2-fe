@@ -1,0 +1,158 @@
+import { useRef, memo } from 'react'
+import { motion, useInView } from 'framer-motion'
+import { Link, useNavigate } from 'react-router-dom'
+import { Heart, Play, Star } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { getCoverImageUrl } from '@/lib/utils/mediaUtils'
+
+export interface BookCardProps {
+    book: {
+        id: number
+        title: string
+        author: string
+        coverImage: string
+        rating: number
+        readCount?: number
+        description: string
+        pages?: number
+        readingProgress?: number
+        isFavorite?: boolean
+        hasReadingHistory?: boolean
+    }
+    onToggleFavorite: (id: number) => void
+    index: number
+}
+
+const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => {
+    const navigate = useNavigate()
+
+    // Optimization: Only animate when in view
+    const ref = useRef(null)
+    const isInView = useInView(ref, { once: true, margin: "100px" })
+
+    const renderStars = (rating: number) => (
+        <div className="flex items-center gap-1">
+            {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                    key={star}
+                    className={`h-4 w-4 ${star <= rating
+                        ? 'fill-primary text-primary'
+                        : 'text-muted-foreground'
+                        }`}
+                />
+            ))}
+            <span className="ml-1 text-xs font-bold text-foreground">
+                {rating.toFixed(1)}
+            </span>
+        </div>
+    )
+
+    const renderProgressBar = (progress: number) => (
+        <div className="w-full bg-white border-2 border-black h-4 overflow-hidden">
+            <div
+                className="bg-primary h-full transition-all duration-500 ease-out border-r-2 border-black"
+                style={{ width: `${progress}%` }}
+            />
+        </div>
+    )
+
+    return (
+        <motion.div
+            ref={ref}
+            initial={{ opacity: 0, y: 20 }}
+            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+            transition={{
+                duration: 0.4,
+                delay: Math.min(index * 0.05, 0.5), // Cap delay to avoid long waits
+                ease: [0.25, 0.1, 0.25, 1]
+            }}
+            className="group relative"
+        >
+            <Card className="h-full border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 overflow-hidden rounded-none flex flex-col">
+
+                {/* Cover Image Area */}
+                <Link to={`/book/${book.id}`} className="relative aspect-[3/4] overflow-hidden block border-b-2 border-black">
+                    <img
+                        src={getCoverImageUrl(book.coverImage)}
+                        alt={book.title}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                    />
+
+                    {/* Top Badges */}
+                    <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
+                        {book.isFavorite && (
+                            <div className="p-1.5 bg-pink-400 text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                <Heart className="h-3.5 w-3.5 fill-current" />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Reading Progress Bar (Overlay) */}
+                    {book.hasReadingHistory && (
+                        <div className="absolute bottom-0 left-0 right-0 p-3 bg-white border-t-2 border-black">
+                            <div className="flex justify-between text-[10px] font-bold text-black mb-1.5 uppercase tracking-wider">
+                                <span>Progress</span>
+                                <span>{book.readingProgress}%</span>
+                            </div>
+                            {renderProgressBar(book.readingProgress || 0)}
+                        </div>
+                    )}
+
+                    {/* Hover Actions Overlay */}
+                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4 border-2 border-black m-2">
+                        <Button
+                            size="lg"
+                            className="w-full max-w-[160px] bg-white text-black hover:bg-black hover:text-white font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black rounded-none uppercase"
+                            onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                navigate(`/book/${book.id}/read`)
+                            }}
+                        >
+                            <Play className="h-4 w-4 mr-2 fill-current" />
+                            {book.hasReadingHistory ? 'RESUME' : 'READ'}
+                        </Button>
+
+                        <div className="flex gap-2">
+                            <Button
+                                size="icon"
+                                variant="secondary"
+                                className="h-10 w-10 bg-white text-black border-2 border-black hover:bg-black hover:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                                onClick={(e) => {
+                                    e.preventDefault()
+                                    e.stopPropagation()
+                                    onToggleFavorite(book.id)
+                                }}
+                                title={book.isFavorite ? "Remove from Favorites" : "Add to Favorites"}
+                            >
+                                <Heart className={`h-5 w-5 ${book.isFavorite ? 'fill-black text-black' : ''}`} />
+                            </Button>
+                        </div>
+                    </div>
+                </Link>
+
+                {/* Content Area */}
+                <div className="p-4 flex flex-col flex-1 bg-white dark:bg-zinc-800">
+                    <Link to={`/book/${book.id}`} className="block mb-1">
+                        <h3 className="font-bold text-lg leading-tight text-black dark:text-white uppercase line-clamp-1 group-hover:underline decoration-2 underline-offset-2">
+                            {book.title}
+                        </h3>
+                    </Link>
+                    <p className="text-sm text-gray-600 dark:text-gray-300 font-mono mb-3 uppercase">
+                        {book.author}
+                    </p>
+
+                    <div className="mt-auto flex items-center justify-between pt-3 border-t-2 border-black dark:border-white">
+                        {renderStars(book.rating)}
+                    </div>
+                </div>
+            </Card>
+        </motion.div>
+    )
+})
+
+BookGridCard.displayName = 'BookGridCard'
+
+export default BookGridCard

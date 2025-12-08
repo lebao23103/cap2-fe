@@ -1,39 +1,42 @@
 import { useState, useMemo, useEffect } from 'react'
-import { motion } from 'framer-motion'
-import { Link, useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { fadeInUp } from '@/lib/animations'
 import { useToast } from '@/components/ui/use-toast'
 import booksService from '@/lib/api/books'
 import userService from '@/lib/api/user'
-import { getCoverImageUrl } from '@/lib/utils/mediaUtils'
 import {
   BookOpen,
   Heart,
-  Star,
   Search,
   Grid3x3,
   List,
   ChevronDown,
-  Play,
   CheckCircle,
   BookmarkCheck,
-  Check
+  Check,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { BookCardsLoadingSkeleton, BooksEmptyState, BooksErrorState } from '@/components/books'
+import {
+  BookCardsLoadingSkeleton,
+  BooksEmptyState,
+  BooksErrorState,
+  BookGridCard,
+  BookListCard
+} from '@/components/books'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 
 // Book interface with reading features
-interface Book {
+export interface Book {
   id: number
   title: string
   author: string
@@ -50,7 +53,6 @@ interface Book {
   isFavorite?: boolean
   lastReadDate?: string
   notes?: number
-  // subject?: string // Not in BE
   hasReadingHistory?: boolean
 }
 
@@ -68,9 +70,10 @@ interface FilterState {
   searchTerm: string
 }
 
+const ITEMS_PER_PAGE = 8
+
 export default function ReadNEx() {
   const { toast } = useToast()
-  const navigate = useNavigate()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [filters, setFilters] = useState<FilterState>({
     statusFilter: "All",
@@ -81,9 +84,17 @@ export default function ReadNEx() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1)
+
   useEffect(() => {
     loadBooks()
   }, [])
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filters])
 
   const loadBooks = async () => {
     try {
@@ -96,20 +107,27 @@ export default function ReadNEx() {
         userService.getReadingHistory().catch(() => [])
       ])
 
+      // Create lookup map for reading history
+      const historyMap = new Map(
+        historyData.map((h: any) => [h.book_id, h])
+      )
+
+      const favoriteIds = new Set(
+        favoritesData
+          .filter((fav: any) => fav?.id)
+          .map((fav: any) => fav.id)
+      )
+
       // Transform API books to component format
       const transformedBooks: Book[] = booksData.map((book: any) => {
         // Find reading history for this book
-        const historyItem = historyData.find((h: any) => h.book_id === book.id)
+        const historyItem = historyMap.get(book.id)
 
         // Calculate progress
         let progress = 0
         if (historyItem && book.pages && book.pages > 0) {
           progress = Math.min(Math.round((historyItem.page_number / book.pages) * 100), 100)
         } else if (historyItem) {
-          // If pages not available but history exists, assume some progress or completed?
-          // Strict mapping: if no pages info, we can't calc percentage. Default 0 or arbitrary?
-          // Let's stick to 0 if pages missing, or maybe passed from history if we added it?
-          // Since history has page_number, and book has pages.
           progress = 0
         }
 
@@ -118,26 +136,14 @@ export default function ReadNEx() {
           title: book.title,
           author: book.author,
           coverImage: book.cover_image || '/api/placeholder/300/400',
-          rating: book.average_rating || 0, // Fix: Use average_rating
-          description: '', // BE Book model has no description
-          language: undefined, // BE has no language
+          rating: book.average_rating || 0,
+          description: '',
+          language: undefined,
           readingProgress: progress,
-          isFavorite: false, // Will be updated below
-          // Additional mappings if available
+          isFavorite: favoriteIds.has(book.id),
           pages: book.pages,
           hasReadingHistory: !!historyItem
         }
-      })
-
-      const favoriteIds = new Set(
-        favoritesData
-          .filter((fav: any) => fav?.book?.id)
-          .map((fav: any) => fav.book.id)
-      )
-
-      // Mark favorites
-      transformedBooks.forEach(book => {
-        book.isFavorite = favoriteIds.has(book.id)
       })
 
       setBooks(transformedBooks)
@@ -188,6 +194,21 @@ export default function ReadNEx() {
     })
   }, [filters, books])
 
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredBooks.length / ITEMS_PER_PAGE)
+  const paginatedBooks = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    return filteredBooks.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  }, [filteredBooks, currentPage])
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage)
+      // Scroll to top of list
+      window.scrollTo({ top: 300, behavior: 'smooth' })
+    }
+  }
+
   const handleFilterChange = (filterType: keyof FilterState, value: string) => {
     setFilters(prev => ({ ...prev, [filterType]: value }))
   }
@@ -227,39 +248,8 @@ export default function ReadNEx() {
     }
   }
 
-  const renderStars = (rating: number) => {
-    return (
-      <div className="flex items-center gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <Star
-            key={star}
-            className={`h-4 w-4 ${star <= rating
-              ? 'fill-primary text-primary'
-              : 'text-muted-foreground'
-              }`}
-          />
-        ))}
-        <span className="ml-1 text-xs font-bold text-foreground">
-          {rating.toFixed(1)}
-        </span>
-      </div>
-    )
-  }
-
-  const renderProgressBar = (progress: number) => {
-    return (
-      <div className="w-full bg-white border-2 border-black h-4 overflow-hidden">
-        <div
-          className="bg-primary h-full transition-all duration-500 ease-out border-r-2 border-black"
-          style={{ width: `${progress}%` }}
-        />
-      </div>
-    )
-  }
-
   return (
     <div className="relative w-full min-h-screen bg-background py-8 sm:py-12 overflow-hidden font-mono">
-      {/* Background Grid */}
       {/* Background Grid */}
       <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-0" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
       <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
@@ -349,6 +339,8 @@ export default function ReadNEx() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black dark:text-gray-400" />
                 <input
                   type="text"
+                  id="search-books"
+                  name="search"
                   placeholder="SEARCH BY TITLE, AUTHOR..."
                   value={filters.searchTerm}
                   onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
@@ -409,195 +401,83 @@ export default function ReadNEx() {
         </motion.div>
 
         {/* Books Grid/List */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-        >
-          {/* Error State */}
+        <AnimatePresence mode="wait">
           {error ? (
-            <BooksErrorState error={error} onRetry={handleRetry} />
-          ) : /* Loading State */
-            isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                <BookCardsLoadingSkeleton count={8} />
-              </div>
-            ) : /* Empty State */
-              filteredBooks.length === 0 ? (
-                <BooksEmptyState
-                  type="no-results"
-                  searchTerm={filters.searchTerm}
-                  onClearFilters={handleClearFilters}
-                />
-              ) : /* Books Grid/List */
-                viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {filteredBooks.map((book, index) => (
-                      <motion.div
-                        key={book.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{
-                          duration: 0.4,
-                          delay: index * 0.05,
-                          ease: [0.25, 0.1, 0.25, 1]
-                        }}
-                        className="group relative"
-                      >
-                        <Card className="h-full border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 overflow-hidden rounded-none flex flex-col">
+            <BooksErrorState key="error" error={error} onRetry={handleRetry} />
+          ) : isLoading ? (
+            <div key="loading" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              <BookCardsLoadingSkeleton count={8} />
+            </div>
+          ) : filteredBooks.length === 0 ? (
+            <BooksEmptyState
+              key="empty"
+              type="no-results"
+              searchTerm={filters.searchTerm}
+              onClearFilters={handleClearFilters}
+            />
+          ) : (
+            <motion.div
+              key="content"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {viewMode === 'grid' ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {paginatedBooks.map((book, index) => (
+                    <BookGridCard
+                      key={book.id}
+                      book={book}
+                      onToggleFavorite={toggleFavorite}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {paginatedBooks.map((book, index) => (
+                    <BookListCard
+                      key={book.id}
+                      book={book}
+                      onToggleFavorite={toggleFavorite}
+                      index={index}
+                    />
+                  ))}
+                </div>
+              )}
 
-                          {/* Cover Image Area */}
-                          <Link to={`/book/${book.id}`} className="relative aspect-[3/4] overflow-hidden block border-b-2 border-black">
-                            <img
-                              src={getCoverImageUrl(book.coverImage)}
-                              alt={book.title}
-                              className="w-full h-full object-cover"
-                            />
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center mt-12 gap-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="border-2 border-black dark:border-white rounded-none font-bold uppercase disabled:opacity-50"
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-2" />
+                    Prev
+                  </Button>
 
-                            {/* Top Badges */}
-                            <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
-                              {book.isFavorite && (
-                                <div className="p-1.5 bg-pink-400 text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                                  <Heart className="h-3.5 w-3.5 fill-current" />
-                                </div>
-                              )}
-                            </div>
+                  <span className="text-sm font-bold uppercase tracking-wider bg-primary px-3 py-1 border-2 border-black dark:bg-white dark:text-black">
+                    Page {currentPage} of {totalPages}
+                  </span>
 
-                            {/* Reading Progress Bar (Overlay) */}
-                            {book.hasReadingHistory && (
-                              <div className="absolute bottom-0 left-0 right-0 p-3 bg-white border-t-2 border-black">
-                                <div className="flex justify-between text-[10px] font-bold text-black mb-1.5 uppercase tracking-wider">
-                                  <span>Progress</span>
-                                  <span>{book.readingProgress}%</span>
-                                </div>
-                                {renderProgressBar(book.readingProgress || 0)}
-                              </div>
-                            )}
-
-                            {/* Hover Actions Overlay */}
-                            <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4 border-2 border-black m-2">
-                              <Button
-                                size="lg"
-                                className="w-full max-w-[160px] bg-white text-black hover:bg-black hover:text-white font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black rounded-none uppercase"
-                                onClick={(e) => {
-                                  e.preventDefault()
-                                  e.stopPropagation()
-                                  navigate(`/book/${book.id}/read`)
-                                }}
-                              >
-                                <Play className="h-4 w-4 mr-2 fill-current" />
-                                {book.hasReadingHistory ? 'RESUME' : 'READ'}
-                              </Button>
-
-                              <div className="flex gap-2">
-                                <Button
-                                  size="icon"
-                                  variant="secondary"
-                                  className="h-10 w-10 bg-white text-black border-2 border-black hover:bg-black hover:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-                                  onClick={(e) => {
-                                    e.preventDefault()
-                                    e.stopPropagation()
-                                    toggleFavorite(book.id)
-                                  }}
-                                  title={book.isFavorite ? "Remove from Favorites" : "Add to Favorites"}
-                                >
-                                  <Heart className={`h-5 w-5 ${book.isFavorite ? 'fill-black text-black' : ''}`} />
-                                </Button>
-                              </div>
-                            </div>
-                          </Link>
-
-                          {/* Content Area */}
-                          <div className="p-4 flex flex-col flex-1 bg-white dark:bg-zinc-800">
-                            <Link to={`/book/${book.id}`} className="block mb-1">
-                              <h3 className="font-bold text-lg leading-tight text-black dark:text-white uppercase line-clamp-1 group-hover:underline decoration-2 underline-offset-2">
-                                {book.title}
-                              </h3>
-                            </Link>
-                            <p className="text-sm text-gray-600 dark:text-gray-300 font-mono mb-3 uppercase">
-                              {book.author}
-                            </p>
-
-                            <div className="mt-auto flex items-center justify-between pt-3 border-t-2 border-black dark:border-white">
-                              {renderStars(book.rating)}
-
-                              <div className="flex items-center gap-2">
-                                {/* Subject removed - not in BE */}
-                              </div>
-                            </div>
-                          </div>
-                        </Card>
-                      </motion.div>
-                    ))}
-                  </div>
-                ) : (
-                  // List view implementation
-                  <div className="space-y-4">
-                    {filteredBooks.map((book, index) => (
-                      <motion.div
-                        key={book.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                      >
-                        <Card className="group overflow-hidden border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 rounded-none">
-                          <div className="flex flex-col sm:flex-row gap-4 p-4">
-                            <div className="relative w-full sm:w-24 md:w-32 aspect-[2/3] border-2 border-black dark:border-white overflow-hidden flex-shrink-0">
-                              <img
-                                src={getCoverImageUrl(book.coverImage)}
-                                alt={book.title}
-                                className="w-full h-full object-cover transition-all duration-500"
-                              />
-                            </div>
-                            <div className="flex-1 flex flex-col justify-between py-1">
-                              <div>
-                                <div className="flex justify-between items-start">
-                                  <div>
-                                    <h3 className="font-bold text-xl text-black dark:text-white uppercase mb-1 group-hover:underline decoration-2 underline-offset-2">
-                                      {book.title}
-                                    </h3>
-                                    <p className="text-gray-600 dark:text-gray-300 font-mono mb-2 uppercase">{book.author}</p>
-                                  </div>
-                                  <div className="flex gap-2">
-                                  </div>
-                                </div>
-                                {book.description && (
-                                  <p className="text-sm text-gray-600 line-clamp-2 mb-4 max-w-2xl font-mono">
-                                    {book.description}
-                                  </p>
-                                )}
-                                <div className="flex items-center gap-4 text-sm text-black dark:text-white font-bold">
-                                  {renderStars(book.rating)}
-                                  {book.pages && (
-                                    <>
-                                      <span>•</span>
-                                      <span className="flex items-center gap-1 uppercase">
-                                        <BookOpen className="h-3.5 w-3.5" /> {book.pages} PAGES
-                                      </span>
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="flex items-center gap-3 mt-4 sm:mt-0">
-                                <Button size="sm" onClick={() => navigate(`/book/${book.id}/read`)} className="bg-black text-white hover:bg-primary hover:text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase font-bold">
-                                  <Play className="h-3.5 w-3.5 mr-2" /> {book.hasReadingHistory ? 'Resume' : 'Read'}
-                                </Button>
-                                <Button size="sm" variant="outline" onClick={() => navigate(`/book/${book.id}`)} className="bg-white text-black border-2 border-black hover:bg-gray-100 rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase font-bold dark:bg-zinc-900 dark:text-white dark:border-white dark:hover:bg-zinc-700">
-                                  Details
-                                </Button>
-                                <Button size="icon" variant="ghost" onClick={() => toggleFavorite(book.id)} className="border-2 border-black dark:border-white rounded-none hover:bg-pink-400">
-                                  <Heart className={`h-4 w-4 ${book.isFavorite ? 'fill-black text-black' : 'dark:text-white'}`} />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        </Card>
-                      </motion.div>
-                    ))}
-                  </div>
-                )}
-        </motion.div>
+                  <Button
+                    variant="outline"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="border-2 border-black dark:border-white rounded-none font-bold uppercase disabled:opacity-50"
+                  >
+                    Next
+                    <ChevronRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   )

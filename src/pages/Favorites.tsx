@@ -14,7 +14,7 @@ import {
   Filter,
   Loader2
 } from 'lucide-react'
-import userService, { type Favorite } from '../lib/api/user'
+import userService from '../lib/api/user'
 
 interface Book {
   id: number
@@ -46,15 +46,16 @@ export default function Favorites() {
       const favoritesData = await userService.getFavorites()
 
       // Transform API data to match component interface
-      const transformedFavorites: Book[] = favoritesData.map((fav: Favorite) => ({
-        id: fav.book.id,
-        title: fav.book.title,
-        author: fav.book.author,
-        cover: fav.book.cover_image || 'https://via.placeholder.com/150x200',
-        rating: fav.book.rating,
-        genre: fav.book.subject ? [fav.book.subject] : ['General'],
-        dateAdded: fav.added_at,
-        description: fav.book.description || ''
+      // Transform API data to match component interface
+      const transformedFavorites: Book[] = favoritesData.map((fav: any) => ({
+        id: fav.id,
+        title: fav.title,
+        author: fav.author,
+        cover: fav.cover_image || 'https://via.placeholder.com/150x200',
+        rating: fav.rating,
+        genre: fav.subject ? [fav.subject] : ['General'], // Assuming subject might be present or not
+        dateAdded: new Date().toISOString(), // Backend doesn't return added_at for Book list
+        description: fav.description || ''
       }))
 
       setFavorites(transformedFavorites)

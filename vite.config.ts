@@ -38,4 +38,9 @@ export default defineConfig({
       "@": path.resolve(process.cwd(), "./src"),
     },
   },
+  server: {
+    headers: {
+      "Content-Security-Policy": "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';"
+    }
+  },
 })
