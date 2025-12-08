@@ -41,6 +41,7 @@ import adminService, {
   type PendingUserBook
 } from '../lib/api/admin'
 import booksService from '../lib/api/books'
+import { getCoverImageUrl } from '../lib/utils/mediaUtils'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -65,7 +66,7 @@ export default function AdminDashboard() {
   const [isEditUserOpen, setIsEditUserOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
   const [newUserForm, setNewUserForm] = useState({ username: '', email: '', password: '' })
-  const [editUserForm, setEditUserForm] = useState({ username: '', email: '', password: '' })
+  const [editUserForm, setEditUserForm] = useState({ username: '', email: '', password: '', is_staff: false })
 
   // Edit Book state
   const [isEditBookOpen, setIsEditBookOpen] = useState(false)
@@ -231,7 +232,7 @@ export default function AdminDashboard() {
 
   const openEditUser = (user: AdminUser) => {
     setSelectedUser(user)
-    setEditUserForm({ username: user.username, email: user.email, password: '' })
+    setEditUserForm({ username: user.username, email: user.email, password: '', is_staff: user.is_staff })
     setIsEditUserOpen(true)
   }
 
@@ -544,7 +545,7 @@ export default function AdminDashboard() {
                           <div className="flex gap-4">
                             <div className="w-16 h-20 bg-gray-200 dark:bg-gray-700 border-2 border-black dark:border-white flex items-center justify-center shrink-0">
                               {book.cover_image ? (
-                                <img src={book.cover_image} alt={book.title} className="w-full h-full object-cover" />
+                                <img src={getCoverImageUrl(book.cover_image)} alt={book.title} className="w-full h-full object-cover" />
                               ) : (
                                 <BookOpen className="h-8 w-8 text-gray-400" />
                               )}
@@ -697,6 +698,18 @@ export default function AdminDashboard() {
                 className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
                 placeholder="••••••••"
               />
+            </div>
+            <div className="flex items-center space-x-2 pt-2">
+              <input
+                type="checkbox"
+                id="is_staff"
+                checked={editUserForm.is_staff}
+                onChange={(e) => setEditUserForm(prev => ({ ...prev, is_staff: e.target.checked }))}
+                className="h-5 w-5 border-2 border-black rounded-none"
+              />
+              <Label htmlFor="is_staff" className="font-bold uppercase text-black dark:text-white cursor-pointer">
+                Grant Admin Access
+              </Label>
             </div>
           </div>
           <DialogFooter className="border-t-4 border-black dark:border-white pt-4">

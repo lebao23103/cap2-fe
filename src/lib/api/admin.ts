@@ -84,7 +84,7 @@ class AdminService {
         return response.data;
     }
 
-    async updateUser(userId: number, data: { username?: string; email?: string; password?: string }): Promise<AdminUser> {
+    async updateUser(userId: number, data: { username?: string; email?: string; password?: string; is_staff?: boolean }): Promise<AdminUser> {
         const response = await apiClient.put(`/api/admin/users/${userId}/update/`, data);
         return response.data;
     }
