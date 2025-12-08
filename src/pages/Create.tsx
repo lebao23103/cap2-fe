@@ -17,7 +17,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { ModernButton } from '@/components/ui/modern'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Input } from '@/components/ui/input'
@@ -28,7 +27,6 @@ import { validateImageFile, validateBookFile, formatFileSize } from '@/lib/fileV
 // Book creation interface
 interface BookData {
   title: string
-  description: string
   author: string
   content: string
   coverImage: File | null
@@ -40,7 +38,6 @@ interface BookData {
 export default function Create() {
   const [bookData, setBookData] = useState<BookData>({
     title: '',
-    description: '',
     author: '',
     content: '',
     coverImage: null,
@@ -95,11 +92,6 @@ export default function Create() {
     if (!bookData.author.trim()) {
       errors.author = 'Author name is required'
     }
-    if (!bookData.description.trim()) {
-      errors.description = 'Description is required'
-    } else if (bookData.description.length < 50) {
-      errors.description = 'Description must be at least 50 characters'
-    }
 
     setValidationErrors(errors)
     return Object.keys(errors).length === 0
@@ -134,7 +126,6 @@ export default function Create() {
       // Create FormData for file upload
       const formData = new FormData()
       formData.append('title', bookData.title)
-      formData.append('description', bookData.description)
       formData.append('pdf_file', bookData.bookFile)
 
       if (bookData.coverImage) {
@@ -174,7 +165,6 @@ export default function Create() {
       // Reset form after successful submission
       setBookData({
         title: '',
-        description: '',
         author: '',
         content: '',
         coverImage: null,
@@ -319,39 +309,6 @@ export default function Create() {
                       </div>
                     </div>
 
-                  </div>
-
-                  {/* Description */}
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="description" className="text-sm font-bold text-black dark:text-white flex items-center gap-2 uppercase">
-                      Book Description <span className="text-red-500">*</span>
-                    </Label>
-                    <Textarea
-                      id="description"
-                      placeholder="Write a compelling description of your book (minimum 50 characters)..."
-                      value={bookData.description}
-                      onChange={(e) => {
-                        handleInputChange('description', e.target.value)
-                        setValidationErrors(prev => ({ ...prev, description: '' }))
-                      }}
-                      className={`min-h-[140px] border-2 border-black dark:border-white rounded-none resize-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all dark:bg-zinc-900 dark:text-white text-black ${validationErrors.description ? 'border-red-500' : ''}`}
-                      rows={6}
-                    />
-                    <div className="flex justify-between items-center min-h-[20px]">
-                      {validationErrors.description ? (
-                        <p className="text-xs text-red-500 flex items-center gap-1 font-bold">
-                          <AlertCircle className="h-3 w-3" />
-                          {validationErrors.description}
-                        </p>
-                      ) : (
-                        <p className="text-xs text-gray-500 font-mono">
-                          {bookData.description.length < 50 ? `${50 - bookData.description.length} more characters needed` : 'Looks good!'}
-                        </p>
-                      )}
-                      <p className="text-xs text-black font-bold font-mono">
-                        {bookData.description.length} / 50
-                      </p>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -551,7 +508,7 @@ export default function Create() {
                             </Badge>
                           </div>
                           <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 font-mono leading-relaxed">
-                            {bookData.description || 'Book description will appear here...'}
+                            No description available.
                           </p>
                         </div>
                       </div>
@@ -600,7 +557,7 @@ export default function Create() {
                 >
                   Continue to Upload Files
                 </ModernButton>
-                {(!bookData.title || !bookData.author || !bookData.description || bookData.description.length < 50) && (
+                {(!bookData.title || !bookData.author) && (
                   <p className="text-xs text-red-500 flex items-center gap-1.5 font-bold uppercase">
                     <AlertCircle className="h-3.5 w-3.5" />
                     Complete all required (*) fields to continue
@@ -641,7 +598,7 @@ export default function Create() {
                   variant="primary"
                   icon={isUploading ? AlertCircle : Check}
                   onClick={handlePublish}
-                  disabled={!bookData.title || !bookData.author || !bookData.description || isUploading}
+                  disabled={!bookData.title || !bookData.author || isUploading}
                 >
                   {isUploading ? 'Publishing...' : 'Publish Book'}
                 </ModernButton>
