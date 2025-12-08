@@ -139,6 +139,7 @@ export default function BookReader() {
   const [selectedNote, setSelectedNote] = useState<BookNote | null>(null)
   const [popoverPosition, setPopoverPosition] = useState<{ x: number; y: number } | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [highlightStyle, setHighlightStyle] = useState<'classic' | 'box' | 'glow'>('classic')
 
 
   // Memoize options to prevent re-renders
@@ -884,6 +885,32 @@ export default function BookReader() {
                 </div>
 
                 <DropdownMenuSeparator className={`h-0.5 my-2 ${theme === 'dark' ? 'bg-gray-600' : theme === 'sepia' ? 'bg-[#8b7355]' : 'bg-black'}`} />
+                <DropdownMenuLabel className={`text-xs uppercase tracking-wider font-bold ${themeStyles.text}`}>Highlight Style</DropdownMenuLabel>
+                <div className="p-2 grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => setHighlightStyle('classic')}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${highlightStyle === 'classic' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
+                  >
+                    <div className="h-4 w-4 bg-yellow-400/50 border border-current" />
+                    <span className="text-[10px] font-bold uppercase">Classic</span>
+                  </button>
+                  <button
+                    onClick={() => setHighlightStyle('box')}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${highlightStyle === 'box' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
+                  >
+                    <div className="h-4 w-4 border-2 border-dashed border-current" />
+                    <span className="text-[10px] font-bold uppercase">Box</span>
+                  </button>
+                  <button
+                    onClick={() => setHighlightStyle('glow')}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${highlightStyle === 'glow' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
+                  >
+                    <div className="h-4 w-4 bg-yellow-400/50 shadow-[0_0_10px_rgba(250,204,21,0.8)]" />
+                    <span className="text-[10px] font-bold uppercase">Glow</span>
+                  </button>
+                </div>
+
+                <DropdownMenuSeparator className={`h-0.5 my-2 ${theme === 'dark' ? 'bg-gray-600' : theme === 'sepia' ? 'bg-[#8b7355]' : 'bg-black'}`} />
                 <DropdownMenuLabel className={`text-xs uppercase tracking-wider font-bold ${themeStyles.text}`}>Font Size</DropdownMenuLabel>
                 <div className="px-2 pb-2 flex items-center justify-between">
                   <Button variant="outline" size="icon" className={`h-8 w-8 rounded-none border-2 ${themeStyles.border} ${themeStyles.text} hover:bg-primary hover:text-black bg-transparent`} onClick={() => setFontSize(Math.max(12, fontSize - 2))}>
@@ -998,6 +1025,7 @@ export default function BookReader() {
                           {/* Highlight Overlay on top of PDF */}
                           <NoteHighlightOverlay
                             key={`${currentPage}-${fontSize}`}
+                            highlightStyle={highlightStyle}
                             notes={notes.filter(n => n.page === currentPage)}
                             currentPage={currentPage}
                             containerRef={pageContainerRef}
