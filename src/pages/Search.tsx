@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { BookCard } from '@/components/ui/book-card'
+import BookCard from '@/components/ui/book-card'
 import { BookCardsLoadingSkeleton, BooksEmptyState } from '@/components/books'
 import {
   Search as SearchIcon,
@@ -291,8 +291,8 @@ export default function Search() {
                 key={genre}
                 variant={selectedGenres.includes(genre) ? 'default' : 'outline'}
                 className={`cursor-pointer transition-all rounded-none border-2 border-black dark:border-white px-3 py-1 text-sm font-bold uppercase ${selectedGenres.includes(genre)
-                    ? 'bg-primary text-black hover:bg-primary/90 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]'
-                    : 'bg-white dark:bg-zinc-800 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'
+                  ? 'bg-primary text-black hover:bg-primary/90 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]'
+                  : 'bg-white dark:bg-zinc-800 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'
                   }`}
                 onClick={() => toggleGenre(genre)}
               >
@@ -372,8 +372,8 @@ export default function Search() {
                           variant={currentPage === page ? 'default' : 'outline'}
                           onClick={() => setCurrentPage(page)}
                           className={`w-10 h-10 border-2 border-black dark:border-white rounded-none font-bold transition-all ${currentPage === page
-                              ? 'bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]'
-                              : 'bg-white dark:bg-zinc-800 text-black dark:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-1px]'
+                            ? 'bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]'
+                            : 'bg-white dark:bg-zinc-800 text-black dark:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-1px]'
                             }`}
                         >
                           {page}

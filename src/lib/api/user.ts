@@ -25,11 +25,14 @@ export interface UpdateProfileData {
 
 export interface ReadingHistoryItem {
   id: number;
+  // Flattened structure from backend serializer
   book_id: number;
   book_title: string;
   book_author: string;
   book_cover: string;
+  book_pages?: number;
   read_at: string;
+  created_at?: string;
   updated_at: string;
   page_number: number;
 }

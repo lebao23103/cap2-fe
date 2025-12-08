@@ -45,18 +45,23 @@ export default function ReadingHistory() {
       const historyData = await userService.getReadingHistory()
 
       // Transform API data to match component interface
-      const transformedHistory: ReadingSession[] = historyData.map((item: ReadingHistoryItem) => ({
-        id: item.id,
-        bookId: item.book.id,
-        bookTitle: item.book.title,
-        author: item.book.author,
-        cover: item.book.cover_image || 'https://via.placeholder.com/120x160',
-        startDate: item.started_at,
-        lastReadDate: item.last_read_at || item.started_at,
-        progress: item.progress || 0,
-        status: item.status,
-        notes: item.notes
-      }))
+      const transformedHistory: ReadingSession[] = historyData.map((item: ReadingHistoryItem) => {
+        const totalPages = item.book_pages || 100; // Default to 100 if missing to avoid division by zero
+        const progress = Math.min(Math.round((item.page_number / totalPages) * 100), 100);
+
+        return {
+          id: item.id,
+          bookId: item.book_id,
+          bookTitle: item.book_title,
+          author: item.book_author,
+          cover: item.book_cover || 'https://via.placeholder.com/120x160',
+          startDate: item.created_at || item.updated_at, // Use created_at if available, else updated_at
+          lastReadDate: item.updated_at || item.read_at,
+          progress: progress,
+          status: progress === 100 ? 'completed' : 'reading', // Infer status
+          notes: '' // Notes not in history item yet
+        };
+      })
 
       setReadingHistory(transformedHistory)
     } catch (error) {
@@ -237,8 +242,8 @@ export default function ReadingHistory() {
                   variant={filter === key ? 'default' : 'outline'}
                   onClick={() => setFilter(key as 'all' | 'reading' | 'completed' | 'paused')}
                   className={`flex items-center gap-2 border-2 border-black dark:border-white rounded-none font-bold uppercase transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-1px] active:translate-y-0 active:shadow-none ${filter === key
-                      ? 'bg-black text-white dark:bg-white dark:text-black'
-                      : 'bg-white text-black dark:bg-zinc-800 dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black'
+                    ? 'bg-black text-white dark:bg-white dark:text-black'
+                    : 'bg-white text-black dark:bg-zinc-800 dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black'
                     }`}
                 >
                   {label}
