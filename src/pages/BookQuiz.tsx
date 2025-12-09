@@ -11,7 +11,8 @@ import {
   BookOpen,
   ChevronRight,
   Play,
-  Loader2
+  Loader2,
+  Lightbulb
 } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -39,6 +40,7 @@ export default function BookQuiz() {
   const [timeLeft, setTimeLeft] = useState(20 * 60) // Default 20 mins if not specified
   const [score, setScore] = useState(0)
   const [showExplanation, setShowExplanation] = useState<{ [key: number]: boolean }>({})
+  const [answerResults, setAnswerResults] = useState<{ [key: number]: boolean }>({})
 
   // Fetch initial data (just to show start screen info if needed, or wait for start)
   // Actually, we need to "Start Quiz" to get questions.
@@ -100,7 +102,13 @@ export default function BookQuiz() {
       // Submit answer to backend immediately
       try {
         const question = questions[currentQuestionIndex];
-        await quizService.submitAnswer(session.id, question.id, selectedChar);
+        const result = await quizService.submitAnswer(session.id, question.id, selectedChar);
+
+        // Store result correctness
+        setAnswerResults(prev => ({
+          ...prev,
+          [currentQuestionIndex]: result.is_correct
+        }))
 
         // Show explanation immediately
         setShowExplanation(prev => ({
@@ -161,6 +169,8 @@ export default function BookQuiz() {
     setQuestions([])
     setCurrentQuestionIndex(0)
     setSelectedAnswers([])
+    setSelectedAnswers([])
+    setAnswerResults({})
     setShowExplanation({})
     setTimeLeft(20 * 60)
   }
@@ -379,24 +389,49 @@ export default function BookQuiz() {
                 {options.map((optionText, index) => {
                   const label = optionLabels[index];
                   const isSelected = selectedAnswers[currentQuestionIndex] === label;
+                  // If answered, check if this specific option is the selected one OR the correct one (if we want to show correct one)
+                  // For now, let's stick to coloring the selected one.
+                  // If isSelected is true:
+                  //    - If answerResults[currentQuestionIndex] is true (correct): Green
+                  //    - If answerResults[currentQuestionIndex] is false (wrong): Red
+
+                  const isCorrect = answerResults[currentQuestionIndex];
+                  const hasAnswered = selectedAnswers[currentQuestionIndex] !== null;
+
+                  let variantStyle = "bg-white dark:bg-zinc-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]";
+                  let circleStyle = "bg-gray-200 border-gray-300 text-black";
+
+                  if (isSelected) {
+                    if (isCorrect) {
+                      variantStyle = "bg-green-400 text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] translate-x-[-2px] translate-y-[-2px] border-green-600";
+                      circleStyle = "bg-green-500 border-green-600 text-black";
+                    } else {
+                      variantStyle = "bg-red-400 text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] translate-x-[-2px] translate-y-[-2px] border-red-600";
+                      circleStyle = "bg-red-500 border-red-600 text-white";
+                    }
+                  } else if (hasAnswered && !isCorrect && label === currentQuestion.correct_answer) {
+                    // Optional: Highlight the correct answer if user got it wrong?
+                    // User said "dap an nao chon cung hien thi dung" (any selected answer shows correct).
+                    // They didn't explicitly ask to show correct answer if wrong, but it's good UX.
+                    // Let's at least fix the selected one first. 
+                    // Actually, let's show the correct answer as Green if user was wrong.
+                    variantStyle = "bg-green-100 dark:bg-green-900/30 text-black dark:text-white border-green-600 border-dashed";
+                    circleStyle = "bg-green-200 border-green-600 text-black";
+                  }
 
                   return (
                     <div key={index} className="space-y-2">
                       <Button
-                        variant={isSelected ? "default" : "outline"}
-                        className={`w-full text-left justify-start h-auto p-4 transition-all rounded-none border-2 border-black dark:border-white font-mono font-bold ${isSelected
-                          ? 'bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] translate-x-[-2px] translate-y-[-2px]'
-                          : 'bg-white dark:bg-zinc-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'
-                          }`}
+                        variant="outline"
+                        className={`w-full text-left justify-start h-auto p-4 transition-all rounded-none border-2 border-black dark:border-white font-mono font-bold disabled:opacity-100 ${variantStyle}`}
                         onClick={() => handleAnswerSelect(index)}
-                        disabled={selectedAnswers[currentQuestionIndex] !== null}
+                        disabled={hasAnswered}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected
-                            ? 'bg-primary border-primary text-primary-foreground'
-                            : 'bg-gray-200 border-gray-300 text-black'
-                            }`}>
-                            {isSelected ? <CheckCircle className="h-5 w-5" /> : <span className="font-bold">{label}</span>}
+                          <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${circleStyle}`}>
+                            {isSelected && isCorrect && <CheckCircle className="h-5 w-5" />}
+                            {isSelected && !isCorrect && <span className="font-bold text-lg">✕</span>}
+                            {!isSelected && <span className="font-bold">{label}</span>}
                           </div>
                           <span className="whitespace-normal break-words">{optionText}</span>
                         </div>
@@ -405,23 +440,20 @@ export default function BookQuiz() {
                       {/* Explanation for selected answer */}
                       {showExplanation[currentQuestionIndex] && selectedAnswers[currentQuestionIndex] === label && (
                         <motion.div
-                          initial={{ opacity: 0, height: 0 }}
-                          animate={{ opacity: 1, height: 'auto' }}
-                          className={`p-3 rounded-lg text-sm mt-2 ${
-                            // We might not know if it is correct if we don't have correct_answer from backend. 
-                            // But for now let's assume we can't easily check correctness locally unless we store the result from submitAnswer.
-                            // However, we didn't store the is_correct from submitAnswer in state.
-                            // Let's just use neutral or based on what we have. 
-                            'bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700'
-                            }`}
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ duration: 0.3, ease: "easeOut" }}
+                          className="mt-4 p-4 border-2 border-black dark:border-white bg-blue-50 dark:bg-blue-900/20 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none"
                         >
-                          <div className="flex items-start gap-2">
-                            {/* Ideally we would show X or Check here but we need to know if it was correct. */}
+                          <div className="flex gap-4">
+                            <div className="bg-blue-200 dark:bg-blue-800 border-2 border-black dark:border-white p-2 h-10 w-10 flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                              <Lightbulb className="h-5 w-5 text-black dark:text-white" />
+                            </div>
                             <div className="flex-1">
-                              <p className="font-medium mb-1">
+                              <h4 className="font-black uppercase mb-1 text-black dark:text-white text-sm">
                                 Explanation
-                              </p>
-                              <p className="text-gray-700 dark:text-gray-300">
+                              </h4>
+                              <p className="font-mono text-sm text-gray-800 dark:text-gray-200 leading-relaxed">
                                 {currentQuestion.explanation || "No explanation available."}
                               </p>
                             </div>
