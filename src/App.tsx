@@ -38,10 +38,13 @@ const PageLoader = () => (
   </div>
 )
 
+import ScrollToTop from './components/ScrollToTop'
+
 function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="knowly-theme">
       <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <ScrollToTop />
         <AuthProvider>
           <Layout>
             <div className="min-h-screen font-sans antialiased">
