@@ -42,6 +42,7 @@ import adminService, {
 } from '../lib/api/admin'
 import booksService from '../lib/api/books'
 import { getCoverImageUrl } from '../lib/utils/mediaUtils'
+import QuizManagerDialog from '@/components/QuizManagerDialog'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -76,6 +77,10 @@ export default function AdminDashboard() {
     author: '',
     pages: 0
   })
+
+  // Quiz Manager state
+  const [isQuizManagerOpen, setIsQuizManagerOpen] = useState(false)
+  const [quizBook, setQuizBook] = useState<{ id: number; title: string } | null>(null)
 
   // Action loading states
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -186,6 +191,11 @@ export default function AdminDashboard() {
       pages: book.pages || 0
     })
     setIsEditBookOpen(true)
+  }
+
+  const openQuizManager = (book: AdminBook) => {
+    setQuizBook({ id: book.id, title: book.title })
+    setIsQuizManagerOpen(true)
   }
 
   const handleDeleteBook = async (bookId: number) => {
@@ -493,6 +503,15 @@ export default function AdminDashboard() {
                           <Button
                             variant="outline"
                             size="sm"
+                            onClick={() => openQuizManager(book)}
+                            className="border-2 border-black dark:border-white rounded-none bg-blue-100 dark:bg-blue-900/30 text-black dark:text-white hover:bg-blue-200"
+                            title="Manage Quiz"
+                          >
+                            <CheckCircle className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
                             onClick={() => openEditBook(book)}
                             className="border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-800 text-black dark:text-white"
                           >
@@ -783,6 +802,13 @@ export default function AdminDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Quiz Manager Dialog */}
+      <QuizManagerDialog
+        bookId={quizBook?.id || null}
+        bookTitle={quizBook?.title || ''}
+        open={isQuizManagerOpen}
+        onOpenChange={setIsQuizManagerOpen}
+      />
     </div>
   )
 }

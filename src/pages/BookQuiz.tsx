@@ -5,159 +5,45 @@ import {
   Target,
   ArrowLeft,
   CheckCircle,
-  XCircle,
   Clock,
   Award,
   RotateCcw,
   BookOpen,
   ChevronRight,
-  // Star,
-  Play
+  Play,
+  Loader2
 } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-
-interface QuizQuestion {
-  id: string
-  type: 'multiple-choice' | 'true-false' | 'short-answer'
-  question: string
-  options?: string[]
-  correctAnswer: string | number
-  explanation: string
-  difficulty: 'easy' | 'medium' | 'hard'
-}
-
-interface QuizData {
-  bookId: string
-  bookTitle: string
-  bookAuthor: string
-  questions: QuizQuestion[]
-  timeLimit: number // in minutes
-  passingScore: number // percentage
-}
-
-// Mock quiz data
-const mockQuizData: QuizData = {
-  bookId: "1",
-  bookTitle: "The Midnight Library",
-  bookAuthor: "Matt Haig",
-  timeLimit: 30,
-  passingScore: 70,
-  questions: [
-    {
-      id: "1",
-      type: "multiple-choice",
-      question: "What is the main setting of 'The Midnight Library'?",
-      options: [
-        "A regular public library",
-        "A magical library between life and death",
-        "A university library",
-        "An online digital library"
-      ],
-      correctAnswer: 1,
-      explanation: "The Midnight Library exists between life and death, where each book represents a different life path that Nora could have taken.",
-      difficulty: "easy"
-    },
-    {
-      id: "2",
-      type: "multiple-choice",
-      question: "Who is the main protagonist of the story?",
-      options: [
-        "Matt Haig",
-        "Mrs. Elm",
-        "Nora Seed",
-        "Joe"
-      ],
-      correctAnswer: 2,
-      explanation: "Nora Seed is the main character who finds herself in the Midnight Library and explores different versions of her life.",
-      difficulty: "easy"
-    },
-    {
-      id: "3",
-      type: "true-false",
-      question: "Each book in the Midnight Library represents a different career path only.",
-      options: ["True", "False"],
-      correctAnswer: 1,
-      explanation: "False. Each book represents a different life path, which includes not just careers but all the different choices and directions Nora's life could have taken.",
-      difficulty: "medium"
-    },
-    {
-      id: "4",
-      type: "multiple-choice",
-      question: "What is the central theme of 'The Midnight Library'?",
-      options: [
-        "Time travel and science fiction",
-        "Romance and relationships",
-        "Regret, choices, and the meaning of life",
-        "Adventure and exploration"
-      ],
-      correctAnswer: 2,
-      explanation: "The book explores themes of regret, the impact of our choices, and finding meaning and purpose in the life we choose to live.",
-      difficulty: "medium"
-    },
-    {
-      id: "5",
-      type: "multiple-choice",
-      question: "What does Nora learn by the end of her journey through the library?",
-      options: [
-        "That she should have made different choices",
-        "That no life is perfect, but every life has value",
-        "That she wants to live someone else's life",
-        "That books are better than real life"
-      ],
-      correctAnswer: 1,
-      explanation: "Nora learns that happiness isn't about living the perfect life, but about finding meaning and connection in the life you choose to live.",
-      difficulty: "hard"
-    },
-    {
-      id: "6",
-      type: "true-false",
-      question: "The library is managed by Mrs. Elm, Nora's former school librarian.",
-      options: ["True", "False"],
-      correctAnswer: 0,
-      explanation: "True. Mrs. Elm, who was Nora's school librarian and later becomes the librarian of the Midnight Library, guides Nora through her journey.",
-      difficulty: "medium"
-    },
-    {
-      id: "7",
-      type: "multiple-choice",
-      question: "What philosophical concept does the book primarily explore?",
-      options: [
-        "The multiverse and parallel lives",
-        "The nature of time",
-        "The power of friendship",
-        "The importance of education"
-      ],
-      correctAnswer: 0,
-      explanation: "The book explores the concept of the multiverse - the idea that there are infinite versions of our lives based on different choices we could have made.",
-      difficulty: "hard"
-    },
-    {
-      id: "8",
-      type: "true-false",
-      question: "The book suggests that there is only one 'correct' way to live life.",
-      options: ["True", "False"],
-      correctAnswer: 1,
-      explanation: "False. The book suggests that there are many different ways to live a meaningful life, and that happiness comes from accepting and making the most of the life you choose.",
-      difficulty: "medium"
-    }
-  ]
-}
+import { useToast } from '@/components/ui/use-toast'
+import quizService, { type QuizQuestion, type QuizSession } from '@/lib/api/quiz'
 
 export default function BookQuiz() {
-  const { id } = useParams()
+  const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const [quizData] = useState<QuizData>(mockQuizData)
-  const [currentQuestion, setCurrentQuestion] = useState(0)
-  const [selectedAnswers, setSelectedAnswers] = useState<(number | string)[]>([])
-  const [showResults, setShowResults] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(quizData.timeLimit * 60) // Convert to seconds
+  const { toast } = useToast()
+
+  // State
+  const [isLoading, setIsLoading] = useState(false)
+  const [questions, setQuestions] = useState<QuizQuestion[]>([])
+  const [session, setSession] = useState<QuizSession | null>(null)
+
+  // Quiz State
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [selectedAnswers, setSelectedAnswers] = useState<(string | null)[]>([])
   const [quizStarted, setQuizStarted] = useState(false)
+  const [showResults, setShowResults] = useState(false)
+  const [timeLeft, setTimeLeft] = useState(20 * 60) // Default 20 mins if not specified
   const [score, setScore] = useState(0)
-  const [showExplanation, setShowExplanation] = useState<{ [key: string]: boolean }>({})
+  const [showExplanation, setShowExplanation] = useState<{ [key: number]: boolean }>({})
+
+  // Fetch initial data (just to show start screen info if needed, or wait for start)
+  // Actually, we need to "Start Quiz" to get questions.
+  // So initial screen might just show generic info or previous session info (if checking history).
+  // For now, let's assume "Start Quiz" button triggers the API call to start a new session.
 
   // Timer effect
   useEffect(() => {
@@ -165,14 +51,12 @@ export default function BookQuiz() {
       const timer = setInterval(() => {
         setTimeLeft(prev => {
           if (prev <= 1) {
-            setShowResults(true)
-            calculateScore()
+            handleFinishQuiz()
             return 0
           }
           return prev - 1
         })
       }, 1000)
-
       return () => clearInterval(timer)
     }
   }, [quizStarted, showResults, timeLeft])
@@ -183,86 +67,120 @@ export default function BookQuiz() {
     return `${mins}:${secs.toString().padStart(2, '0')}`
   }
 
-  const startQuiz = () => {
-    setQuizStarted(true)
-    setSelectedAnswers(new Array(quizData.questions.length).fill(null))
+  const handleStartQuiz = async () => {
+    if (!id) return
+    try {
+      setIsLoading(true)
+      const data = await quizService.startQuiz(Number(id))
+      setSession(data.session)
+      setQuestions(data.questions)
+      setSelectedAnswers(new Array(data.questions.length).fill(null))
+      setQuizStarted(true)
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to start quiz. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsLoading(false)
+    }
   }
 
-  const handleAnswerSelect = (answerIndex: number | string) => {
-    // Only allow answer selection if not already answered
-    if (selectedAnswers[currentQuestion] === null) {
+  const handleAnswerSelect = async (optionIndex: number) => {
+    // Standardize answer to 'A', 'B', 'C', 'D'
+    const options = ['A', 'B', 'C', 'D'];
+    const selectedChar = options[optionIndex];
+
+    if (selectedAnswers[currentQuestionIndex] === null && session) {
       const newAnswers = [...selectedAnswers]
-      newAnswers[currentQuestion] = answerIndex
+      newAnswers[currentQuestionIndex] = selectedChar
       setSelectedAnswers(newAnswers)
 
-      // Show explanation immediately after selecting an answer
-      setShowExplanation(prev => ({
-        ...prev,
-        [currentQuestion]: true
-      }))
+      // Submit answer to backend immediately
+      try {
+        const question = questions[currentQuestionIndex];
+        await quizService.submitAnswer(session.id, question.id, selectedChar);
+
+        // Show explanation immediately
+        setShowExplanation(prev => ({
+          ...prev,
+          [currentQuestionIndex]: true
+        }))
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "Failed to submit answer.",
+          variant: "destructive"
+        })
+      }
+    }
+  }
+
+  const handleFinishQuiz = async () => {
+    if (!session) return;
+    try {
+      const updatedSession = await quizService.completeQuiz(session.id);
+      setSession(updatedSession);
+
+      // Calculate score for display (or use backend score)
+      // Backend score is number of correct answers.
+      const correctCount = updatedSession.score || 0;
+      const total = updatedSession.total_questions || questions.length;
+      const percentage = total > 0 ? Math.round((correctCount / total) * 100) : 0;
+
+      setScore(percentage);
+      setShowResults(true);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to complete quiz.",
+        variant: "destructive"
+      })
     }
   }
 
   const nextQuestion = () => {
-    if (currentQuestion < quizData.questions.length - 1) {
-      setCurrentQuestion(prev => prev + 1)
-      // Keep explanation visible if answer was already selected
-      if (selectedAnswers[currentQuestion + 1] !== null) {
-        setShowExplanation(prev => ({
-          ...prev,
-          [currentQuestion + 1]: true
-        }))
-      }
+    if (currentQuestionIndex < questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1)
     } else {
-      finishQuiz()
+      handleFinishQuiz()
     }
   }
 
   const prevQuestion = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1)
-      // Keep explanation visible if answer was already selected
-      if (selectedAnswers[currentQuestion - 1] !== null) {
-        setShowExplanation(prev => ({
-          ...prev,
-          [currentQuestion - 1]: true
-        }))
-      }
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1)
     }
   }
 
-  const calculateScore = () => {
-    let correct = 0
-    quizData.questions.forEach((question, index) => {
-      if (selectedAnswers[index] === question.correctAnswer) {
-        correct++
-      }
-    })
-    setScore(Math.round((correct / quizData.questions.length) * 100))
-    return correct
-  }
-
-  const finishQuiz = () => {
-    calculateScore()
-    setShowResults(true)
-  }
-
   const restartQuiz = () => {
-    setCurrentQuestion(0)
-    setSelectedAnswers(new Array(quizData.questions.length).fill(null))
-    setShowResults(false)
-    setTimeLeft(quizData.timeLimit * 60)
     setQuizStarted(false)
-    setScore(0)
+    setShowResults(false)
+    setSession(null)
+    setQuestions([])
+    setCurrentQuestionIndex(0)
+    setSelectedAnswers([])
+    setShowExplanation({})
+    setTimeLeft(20 * 60)
   }
 
   const getScoreColor = (score: number) => {
     if (score >= 90) return 'text-green-600'
-    if (score >= quizData.passingScore) return 'text-blue-600'
+    if (score >= 70) return 'text-blue-600' // Assuming 70 passed
     return 'text-red-600'
   }
 
+  const currentQuestion = questions[currentQuestionIndex]
+  const progress = questions.length > 0 ? ((currentQuestionIndex + 1) / questions.length) * 100 : 0
 
+  if (isLoading && !quizStarted) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   if (!quizStarted) {
     return (
@@ -294,64 +212,36 @@ export default function BookQuiz() {
                   </div>
                 </div>
                 <CardTitle className="text-3xl font-black uppercase text-black dark:text-white font-display">
-                  Comprehension Quiz
+                  Book Quiz
                 </CardTitle>
-                <p className="text-xl font-bold font-mono text-black dark:text-white">
-                  {quizData.bookTitle}
-                </p>
                 <p className="text-lg font-mono text-gray-600 dark:text-gray-300">
-                  by {quizData.bookAuthor}
+                  Test your knowledge
                 </p>
               </CardHeader>
 
               <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                  <div className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                    <div className="text-2xl font-black text-black dark:text-white">
-                      {quizData.questions.length}
-                    </div>
-                    <div className="text-sm font-bold uppercase text-gray-600 dark:text-gray-400">
-                      Questions
-                    </div>
-                  </div>
-
-                  <div className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                    <div className="text-2xl font-black text-black dark:text-white">
-                      {quizData.timeLimit}
-                    </div>
-                    <div className="text-sm font-bold uppercase text-gray-600 dark:text-gray-400">
-                      Minutes
-                    </div>
-                  </div>
-
-                  <div className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                    <div className="text-2xl font-black text-black dark:text-white">
-                      {quizData.passingScore}%
-                    </div>
-                    <div className="text-sm font-bold uppercase text-gray-600 dark:text-gray-400">
-                      To Pass
-                    </div>
-                  </div>
-                </div>
-
                 <div className="text-left bg-gray-100 dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                   <h3 className="font-bold uppercase mb-2 text-black dark:text-white">Quiz Instructions:</h3>
                   <ul className="text-sm space-y-1 font-mono text-gray-800 dark:text-gray-300">
                     <li>• Read each question carefully</li>
-                    <li>• You can navigate between questions</li>
-                    <li>• Timer starts when you begin</li>
-                    <li>• You need {quizData.passingScore}% to pass</li>
-                    <li>• Review your answers before submitting</li>
+                    <li>• Select the best answer for each question</li>
+                    <li>• You must complete the quiz to see your score</li>
+                    <li>• Good luck!</li>
                   </ul>
                 </div>
 
                 <Button
                   size="lg"
                   className="w-full bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-primary hover:text-black dark:hover:bg-primary dark:hover:text-black hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all uppercase font-bold"
-                  onClick={startQuiz}
+                  onClick={handleStartQuiz}
+                  disabled={isLoading}
                 >
-                  <Play className="h-5 w-5 mr-2" />
-                  Start Quiz
+                  {isLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : (
+                    <>
+                      <Play className="h-5 w-5 mr-2" />
+                      Start Quiz
+                    </>
+                  )}
                 </Button>
               </CardContent>
             </Card>
@@ -362,12 +252,13 @@ export default function BookQuiz() {
   }
 
   if (showResults) {
-    const correctAnswers = quizData.questions.filter((q, i) => selectedAnswers[i] === q.correctAnswer).length
+    // Determine passed status (e.g., 70%)
+    const isPassed = score >= 70; // Using 70 as passing score
+    const correctAnswers = session?.score || 0;
 
     return (
       <div className="min-h-screen bg-background relative overflow-hidden font-mono">
         <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-        <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         <div className="container mx-auto max-w-4xl relative z-10 py-8">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -378,16 +269,14 @@ export default function BookQuiz() {
               <CardHeader className="text-center border-b-4 border-black dark:border-white pb-6 bg-secondary">
                 <div className="flex justify-center mb-4">
                   <div className={`bg-white dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}>
-                    <Award className={`h-12 w-12 ${score >= quizData.passingScore ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
-                      }`} />
+                    <Award className={`h-12 w-12 ${isPassed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`} />
                   </div>
                 </div>
                 <CardTitle className="text-3xl font-black uppercase text-black dark:text-white font-display">
                   Quiz Complete!
                 </CardTitle>
-                <Badge className={`mx-auto rounded-none border-2 border-black dark:border-white px-4 py-2 text-lg font-bold uppercase text-black dark:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] ${score >= quizData.passingScore ? 'bg-green-400' : 'bg-red-400'
-                  }`}>
-                  {score >= quizData.passingScore ? 'Passed' : 'Try Again'}
+                <Badge className={`mx-auto rounded-none border-2 border-black dark:border-white px-4 py-2 text-lg font-bold uppercase text-black dark:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] ${isPassed ? 'bg-green-400' : 'bg-red-400'}`}>
+                  {isPassed ? 'Passed' : 'Try Again'}
                 </Badge>
               </CardHeader>
 
@@ -397,28 +286,8 @@ export default function BookQuiz() {
                     {score}%
                   </div>
                   <p className="text-gray-600 dark:text-gray-400">
-                    {correctAnswers} out of {quizData.questions.length} correct
+                    {correctAnswers} out of {questions.length} correct
                   </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
-                    <div className="text-lg font-bold text-blue-600">
-                      {Math.floor((quizData.timeLimit * 60 - timeLeft) / 60)}:{((quizData.timeLimit * 60 - timeLeft) % 60).toString().padStart(2, '0')}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Time Taken
-                    </div>
-                  </div>
-
-                  <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg">
-                    <div className="text-lg font-bold text-green-600">
-                      {score >= quizData.passingScore ? 'Passed' : 'Failed'}
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Status
-                    </div>
-                  </div>
                 </div>
 
                 <div className="flex gap-3">
@@ -456,28 +325,28 @@ export default function BookQuiz() {
     )
   }
 
-  const question = quizData.questions[currentQuestion]
-  const progress = ((currentQuestion + 1) / quizData.questions.length) * 100
+  // Quiz Interface
+  const options = [currentQuestion.choice_a, currentQuestion.choice_b, currentQuestion.choice_c, currentQuestion.choice_d];
+  const optionLabels = ['A', 'B', 'C', 'D'];
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden font-mono">
       <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-      <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
       <div className="max-w-4xl mx-auto px-4 relative z-10 py-8">
+
         {/* Header */}
         <div className="mb-6 flex justify-between items-center">
           <Button variant="ghost" onClick={() => navigate('/readnex')}>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Exit Quiz
           </Button>
-
           <div className="flex items-center gap-4">
             <Badge variant="outline" className="flex items-center gap-2">
               <Clock className="h-4 w-4" />
               {formatTime(timeLeft)}
             </Badge>
             <Badge variant="outline">
-              Question {currentQuestion + 1} of {quizData.questions.length}
+              Question {currentQuestionIndex + 1} of {questions.length}
             </Badge>
           </div>
         </div>
@@ -489,7 +358,7 @@ export default function BookQuiz() {
 
         {/* Question Card */}
         <motion.div
-          key={currentQuestion}
+          key={currentQuestionIndex}
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
@@ -497,140 +366,99 @@ export default function BookQuiz() {
           <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
             <CardHeader className="border-b-4 border-black dark:border-white pb-4 bg-secondary">
               <div className="flex items-center gap-2 mb-2">
-                <Badge className={`rounded-none border-2 border-black dark:border-white font-bold uppercase text-black dark:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] ${question.difficulty === 'easy' ? 'bg-green-400' :
-                  question.difficulty === 'medium' ? 'bg-yellow-400' : 'bg-red-400'
-                  }`}>
-                  {question.difficulty}
-                </Badge>
-                <Badge variant="outline" className="rounded-none border-2 border-black dark:border-white bg-white dark:bg-zinc-800 text-black dark:text-white font-bold uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-                  {question.type.replace('-', ' ')}
+                <Badge className="rounded-none border-2 border-black dark:border-white font-bold uppercase text-black dark:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] bg-yellow-400">
+                  Multiple Choice
                 </Badge>
               </div>
               <CardTitle className="text-xl font-bold font-mono leading-relaxed text-black dark:text-white">
-                {question.question}
+                {currentQuestion.question_text}
               </CardTitle>
             </CardHeader>
+            <CardContent className="space-y-4 pt-6">
+              <div className="space-y-3">
+                {options.map((optionText, index) => {
+                  const label = optionLabels[index];
+                  const isSelected = selectedAnswers[currentQuestionIndex] === label;
 
-            <CardContent className="space-y-4">
-              {question.options && (
-                <div className="space-y-3">
-                  {question.options.map((option, index) => (
+                  return (
                     <div key={index} className="space-y-2">
                       <Button
-                        variant={
-                          selectedAnswers[currentQuestion] === index
-                            ? "default"
-                            : selectedAnswers[currentQuestion] !== null
-                              ? "secondary"
-                              : "outline"
-                        }
-                        className={`w-full text-left justify-start h-auto p-4 transition-all rounded-none border-2 border-black dark:border-white font-mono font-bold ${selectedAnswers[currentQuestion] === index
+                        variant={isSelected ? "default" : "outline"}
+                        className={`w-full text-left justify-start h-auto p-4 transition-all rounded-none border-2 border-black dark:border-white font-mono font-bold ${isSelected
                           ? 'bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] translate-x-[-2px] translate-y-[-2px]'
                           : 'bg-white dark:bg-zinc-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]'
                           }`}
                         onClick={() => handleAnswerSelect(index)}
-                        disabled={selectedAnswers[currentQuestion] !== null}
+                        disabled={selectedAnswers[currentQuestionIndex] !== null}
                       >
                         <div className="flex items-center gap-3">
-                          <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${selectedAnswers[currentQuestion] === index
+                          <div className={`w-8 h-8 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected
                             ? 'bg-primary border-primary text-primary-foreground'
-                            : selectedAnswers[currentQuestion] !== null
-                              ? 'bg-gray-200 border-gray-300'
-                              : 'border-gray-300'
+                            : 'bg-gray-200 border-gray-300 text-black'
                             }`}>
-                            {selectedAnswers[currentQuestion] === index && (
-                              <CheckCircle className="h-4 w-4" />
-                            )}
-                            {selectedAnswers[currentQuestion] !== null && index === question.correctAnswer && selectedAnswers[currentQuestion] !== index && (
-                              <span className="text-xs font-bold">✓</span>
-                            )}
+                            {isSelected ? <CheckCircle className="h-5 w-5" /> : <span className="font-bold">{label}</span>}
                           </div>
-                          <span>{option}</span>
+                          <span className="whitespace-normal break-words">{optionText}</span>
                         </div>
                       </Button>
 
                       {/* Explanation for selected answer */}
-                      {showExplanation[currentQuestion] && selectedAnswers[currentQuestion] === index && (
+                      {showExplanation[currentQuestionIndex] && selectedAnswers[currentQuestionIndex] === label && (
                         <motion.div
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: 'auto' }}
-                          className={`p-3 rounded-lg text-sm ${index === question.correctAnswer
-                            ? 'bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800'
-                            : 'bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-800'
+                          className={`p-3 rounded-lg text-sm mt-2 ${
+                            // We might not know if it is correct if we don't have correct_answer from backend. 
+                            // But for now let's assume we can't easily check correctness locally unless we store the result from submitAnswer.
+                            // However, we didn't store the is_correct from submitAnswer in state.
+                            // Let's just use neutral or based on what we have. 
+                            'bg-gray-100 dark:bg-zinc-800 border border-gray-200 dark:border-zinc-700'
                             }`}
                         >
                           <div className="flex items-start gap-2">
-                            {index === question.correctAnswer ? (
-                              <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400 mt-0.5 flex-shrink-0" />
-                            ) : (
-                              <XCircle className="h-4 w-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
-                            )}
-                            <div>
+                            {/* Ideally we would show X or Check here but we need to know if it was correct. */}
+                            <div className="flex-1">
                               <p className="font-medium mb-1">
-                                {index === question.correctAnswer ? 'Correct!' : 'Incorrect'}
+                                Explanation
                               </p>
                               <p className="text-gray-700 dark:text-gray-300">
-                                {question.explanation}
-                              </p>
-                              {index !== question.correctAnswer && (
-                                <p className="text-sm text-green-700 dark:text-green-300 mt-2 font-medium">
-                                  Correct answer: {question.options?.[Number(question.correctAnswer)]}
-                                </p>
-                              )}
-                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">
-                                This concept is explored throughout the book, particularly in chapters discussing life choices and regret.
+                                {currentQuestion.explanation || "No explanation available."}
                               </p>
                             </div>
                           </div>
                         </motion.div>
                       )}
                     </div>
-                  ))}
-
-                  {/* Show correct answer if question is answered but explanation is not shown */}
-                  {selectedAnswers[currentQuestion] !== null && !showExplanation[currentQuestion] && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="w-full text-left justify-start text-blue-600 dark:text-blue-400"
-                      onClick={() => setShowExplanation(prev => ({
-                        ...prev,
-                        [currentQuestion]: true
-                      }))}
-                    >
-                      <BookOpen className="h-4 w-4 mr-2" />
-                      Show explanation and correct answer
-                    </Button>
-                  )}
-                </div>
-              )}
+                  );
+                })}
+              </div>
 
               {/* Navigation */}
               <div className="flex justify-between items-center pt-6">
                 <Button
                   variant="outline"
                   onClick={prevQuestion}
-                  disabled={currentQuestion === 0}
+                  disabled={currentQuestionIndex === 0}
                 >
                   Previous
                 </Button>
 
                 <div className="text-sm text-gray-500">
-                  {selectedAnswers.filter(a => a !== null).length} of {quizData.questions.length} answered
+                  {selectedAnswers.filter(a => a !== null).length} of {questions.length} answered
                 </div>
 
-                {currentQuestion === quizData.questions.length - 1 ? (
+                {currentQuestionIndex === questions.length - 1 ? (
                   <Button
-                    onClick={finishQuiz}
-                    disabled={selectedAnswers[currentQuestion] === null}
-                    className="bg-green-600 hover:bg-green-700"
+                    onClick={handleFinishQuiz}
+                    disabled={selectedAnswers[currentQuestionIndex] === null}
+                    className="bg-green-600 hover:bg-green-700 text-white"
                   >
                     Finish Quiz
                   </Button>
                 ) : (
                   <Button
                     onClick={nextQuestion}
-                    disabled={selectedAnswers[currentQuestion] === null}
+                    disabled={selectedAnswers[currentQuestionIndex] === null}
                   >
                     Next
                     <ChevronRight className="h-4 w-4 ml-2" />
@@ -640,10 +468,8 @@ export default function BookQuiz() {
             </CardContent>
           </Card>
         </motion.div>
+
       </div>
     </div>
   )
 }
-
-
-

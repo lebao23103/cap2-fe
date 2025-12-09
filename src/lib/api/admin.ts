@@ -1,4 +1,5 @@
 import apiClient from './config';
+import { API_ENDPOINTS } from './endpoints';
 
 // Types
 export interface ReportStatistics {
@@ -54,6 +55,30 @@ export interface PendingUserBook {
         username: string;
         email: string;
     };
+}
+
+export interface AdminQuestion {
+    id: number;
+    book: number;
+    question_text: string;
+    choice_a: string;
+    choice_b: string;
+    choice_c: string;
+    choice_d: string;
+    correct_answer: string;
+    explanation?: string;
+    order_num: number;
+}
+
+export interface CreateQuestionData {
+    question_text: string;
+    choice_a: string;
+    choice_b: string;
+    choice_c: string;
+    choice_d: string;
+    correct_answer: string;
+    explanation?: string;
+    order_num?: number;
 }
 
 class AdminService {
@@ -115,6 +140,32 @@ class AdminService {
 
     async rejectUserBook(bookId: number): Promise<void> {
         await apiClient.delete(`/api/reject-delete-book/${bookId}/`);
+    }
+
+    // Quiz Management
+    async getBookQuestions(bookId: number): Promise<AdminQuestion[]> {
+        // We use the general endpoint but it might need admin permissions or we use a specific admin endpoint if strictly separated.
+        // Backend `get_questions_by_book` seems public/authenticated. 
+        // Let's assume admins use the same or we might need to check if there is an admin specific one.
+        // Actually, looking at `urls.py`, `api/books/<int:book_id>/questions/` is the list endpoint.
+        const response = await apiClient.get(API_ENDPOINTS.ADMIN_QUIZ.QUESTIONS(bookId));
+        return response.data;
+    }
+
+    async createQuestion(bookId: number, data: CreateQuestionData): Promise<AdminQuestion> {
+        // Backend expects 'book' ID in the payload for creation
+        const payload = { ...data, book: bookId };
+        const response = await apiClient.post(API_ENDPOINTS.ADMIN_QUIZ.CREATE_QUESTION(), payload);
+        return response.data;
+    }
+
+    async updateQuestion(questionId: number, data: Partial<CreateQuestionData>): Promise<AdminQuestion> {
+        const response = await apiClient.put(API_ENDPOINTS.ADMIN_QUIZ.UPDATE_QUESTION(questionId), data);
+        return response.data;
+    }
+
+    async deleteQuestion(questionId: number): Promise<void> {
+        await apiClient.delete(API_ENDPOINTS.ADMIN_QUIZ.DELETE_QUESTION(questionId));
     }
 }
 

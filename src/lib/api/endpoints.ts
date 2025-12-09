@@ -76,6 +76,22 @@ export const API_ENDPOINTS = {
     END: (conversationId: string) => `/chat/conversations/${conversationId}/end`,
   },
 
+  // Quiz
+  QUIZ: {
+    START: (bookId: number | string) => `/api/quiz/start/${bookId}/`,
+    SESSION: (sessionId: number | string) => `/api/quiz/session/${sessionId}/`,
+    SUBMIT_ANSWER: (sessionId: number | string) => `/api/quiz/session/${sessionId}/submit-answer/`,
+    COMPLETE: (sessionId: number | string) => `/api/quiz/session/${sessionId}/complete/`,
+  },
+
+  // Admin Quiz Management
+  ADMIN_QUIZ: {
+    QUESTIONS: (bookId: number | string) => `/api/books/${bookId}/questions/`,
+    CREATE_QUESTION: () => `/api/questions/create/`,
+    UPDATE_QUESTION: (questionId: number | string) => `/api/questions/${questionId}/update/`,
+    DELETE_QUESTION: (questionId: number | string) => `/api/questions/${questionId}/delete/`,
+  },
+
   // Book Notes
   NOTES: {
     GET_USER_NOTES: (bookId: number) => `/api/books/${bookId}/notes/`,
