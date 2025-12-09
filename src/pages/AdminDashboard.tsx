@@ -630,50 +630,55 @@ export default function AdminDashboard() {
             </DialogTitle>
             <DialogDescription className="font-mono text-gray-600 dark:text-gray-300">Add a new user to the system</DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="username" className="font-bold uppercase text-black dark:text-white">Username</Label>
-              <Input
-                id="username"
-                value={newUserForm.username}
-                onChange={(e) => setNewUserForm(prev => ({ ...prev, username: e.target.value }))}
-                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
-              />
+          <form onSubmit={(e) => { e.preventDefault(); handleCreateUser(); }}>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="username" className="font-bold uppercase text-black dark:text-white">Username</Label>
+                <Input
+                  id="username"
+                  value={newUserForm.username}
+                  onChange={(e) => setNewUserForm(prev => ({ ...prev, username: e.target.value }))}
+                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="email" className="font-bold uppercase text-black dark:text-white">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={newUserForm.email}
+                  onChange={(e) => setNewUserForm(prev => ({ ...prev, email: e.target.value }))}
+                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="password" className="font-bold uppercase text-black dark:text-white">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={newUserForm.password}
+                  onChange={(e) => setNewUserForm(prev => ({ ...prev, password: e.target.value }))}
+                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  autoComplete="new-password"
+                />
+              </div>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="email" className="font-bold uppercase text-black dark:text-white">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={newUserForm.email}
-                onChange={(e) => setNewUserForm(prev => ({ ...prev, email: e.target.value }))}
-                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="password" className="font-bold uppercase text-black dark:text-white">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={newUserForm.password}
-                onChange={(e) => setNewUserForm(prev => ({ ...prev, password: e.target.value }))}
-                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
-              />
-            </div>
-          </div>
-          <DialogFooter className="border-t-4 border-black dark:border-white pt-4">
-            <Button
-              onClick={handleCreateUser}
-              disabled={actionLoading === 'createUser'}
-              className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
-            >
-              {actionLoading === 'createUser' ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                'Create User'
-              )}
-            </Button>
-          </DialogFooter>
+            <DialogFooter className="border-t-4 border-black dark:border-white pt-4">
+              <Button
+                type="submit"
+                disabled={actionLoading === 'createUser'}
+                className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
+              >
+                {actionLoading === 'createUser' ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  'Create User'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
@@ -687,63 +692,68 @@ export default function AdminDashboard() {
             </DialogTitle>
             <DialogDescription className="font-mono text-gray-600 dark:text-gray-300">Update user information</DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="edit-username" className="font-bold uppercase text-black dark:text-white">Username</Label>
-              <Input
-                id="edit-username"
-                value={editUserForm.username}
-                onChange={(e) => setEditUserForm(prev => ({ ...prev, username: e.target.value }))}
-                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
-              />
+          <form onSubmit={(e) => { e.preventDefault(); handleUpdateUser(); }}>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="edit-username" className="font-bold uppercase text-black dark:text-white">Username</Label>
+                <Input
+                  id="edit-username"
+                  value={editUserForm.username}
+                  onChange={(e) => setEditUserForm(prev => ({ ...prev, username: e.target.value }))}
+                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-email" className="font-bold uppercase text-black dark:text-white">Email</Label>
+                <Input
+                  id="edit-email"
+                  type="email"
+                  value={editUserForm.email}
+                  onChange={(e) => setEditUserForm(prev => ({ ...prev, email: e.target.value }))}
+                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  autoComplete="off"
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="edit-password" className="font-bold uppercase text-black dark:text-white">New Password (leave empty to keep)</Label>
+                <Input
+                  id="edit-password"
+                  type="password"
+                  value={editUserForm.password}
+                  onChange={(e) => setEditUserForm(prev => ({ ...prev, password: e.target.value }))}
+                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                />
+              </div>
+              <div className="flex items-center space-x-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="is_staff"
+                  checked={editUserForm.is_staff}
+                  onChange={(e) => setEditUserForm(prev => ({ ...prev, is_staff: e.target.checked }))}
+                  className="h-5 w-5 border-2 border-black rounded-none"
+                />
+                <Label htmlFor="is_staff" className="font-bold uppercase text-black dark:text-white cursor-pointer">
+                  Grant Admin Access
+                </Label>
+              </div>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="edit-email" className="font-bold uppercase text-black dark:text-white">Email</Label>
-              <Input
-                id="edit-email"
-                type="email"
-                value={editUserForm.email}
-                onChange={(e) => setEditUserForm(prev => ({ ...prev, email: e.target.value }))}
-                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="edit-password" className="font-bold uppercase text-black dark:text-white">New Password (leave empty to keep)</Label>
-              <Input
-                id="edit-password"
-                type="password"
-                value={editUserForm.password}
-                onChange={(e) => setEditUserForm(prev => ({ ...prev, password: e.target.value }))}
-                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
-                placeholder="••••••••"
-              />
-            </div>
-            <div className="flex items-center space-x-2 pt-2">
-              <input
-                type="checkbox"
-                id="is_staff"
-                checked={editUserForm.is_staff}
-                onChange={(e) => setEditUserForm(prev => ({ ...prev, is_staff: e.target.checked }))}
-                className="h-5 w-5 border-2 border-black rounded-none"
-              />
-              <Label htmlFor="is_staff" className="font-bold uppercase text-black dark:text-white cursor-pointer">
-                Grant Admin Access
-              </Label>
-            </div>
-          </div>
-          <DialogFooter className="border-t-4 border-black dark:border-white pt-4">
-            <Button
-              onClick={handleUpdateUser}
-              disabled={actionLoading === 'updateUser'}
-              className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
-            >
-              {actionLoading === 'updateUser' ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                'Save Changes'
-              )}
-            </Button>
-          </DialogFooter>
+            <DialogFooter className="border-t-4 border-black dark:border-white pt-4">
+              <Button
+                type="submit"
+                disabled={actionLoading === 'updateUser'}
+                className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
+              >
+                {actionLoading === 'updateUser' ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  'Save Changes'
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
         </DialogContent>
       </Dialog>
 
