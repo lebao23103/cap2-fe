@@ -91,9 +91,9 @@ export default function NoteInteractionDemo() {
             case 10: return { x: 150, y: 12 }
             case 11: return { x: 150, y: 12 }
             case 12: return { x: 150, y: 80 }
-            case 13: return { x: 320, y: 310 }
-            case 14: return { x: 320, y: 310 }
-            case 15: return { x: 320, y: 310 }
+            case 13: return { x: 360, y: 320 }
+            case 14: return { x: 360, y: 320 }
+            case 15: return { x: 360, y: 320 }
             default: return { x: 200, y: 20 }
         }
     }
