@@ -23,11 +23,11 @@ export default function Terms() {
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-4">
-              <div className="p-4 bg-white dark:bg-zinc-800 border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                <FileText className="h-12 w-12 text-black dark:text-white" />
+              <div className="p-4 bg-card border-4 border-border shadow-neo">
+                <FileText className="h-12 w-12 text-foreground" />
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-black uppercase mb-4 text-black dark:text-white bg-white dark:bg-zinc-900 inline-block px-4 py-2 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+            <h1 className="text-4xl sm:text-5xl font-black uppercase mb-4 text-foreground bg-background inline-block px-4 py-2 border-4 border-border shadow-neo-lg">
               Terms of Service
             </h1>
             <p className="text-muted-foreground text-lg font-bold">
@@ -38,14 +38,14 @@ export default function Terms() {
           <div className="grid lg:grid-cols-4 gap-8">
             {/* Table of Contents - Sticky Sidebar */}
             <nav className="lg:col-span-1 hidden lg:block" aria-label="Terms of service navigation">
-              <Card className="sticky top-24 rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
+              <Card className="sticky top-24 rounded-none border-4 border-border shadow-neo-lg bg-card">
                 <CardContent className="p-6">
-                  <h2 className="font-black mb-4 text-lg uppercase text-black dark:text-white border-b-2 border-black dark:border-white pb-2">Contents</h2>
+                  <h2 className="font-black mb-4 text-lg uppercase text-foreground border-b-2 border-border pb-2">Contents</h2>
                   <ul className="space-y-2 text-sm font-bold">
                     <li>
                       <button
                         onClick={() => scrollToSection('acceptance')}
-                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
+                        className="text-muted-foreground hover:text-foreground hover:underline transition-all text-left w-full uppercase"
                       >
                         Acceptance
                       </button>
@@ -129,12 +129,12 @@ export default function Terms() {
 
             {/* Main Content */}
             <article className="lg:col-span-3">
-              <Card className="rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
+              <Card className="rounded-none border-4 border-border shadow-neo-lg bg-card">
                 <CardContent className="p-6 sm:p-8 lg:p-12 space-y-8 font-sans">
                   {/* Acceptance */}
                   <section id="acceptance" className="scroll-mt-24">
-                    <h2 className="text-2xl sm:text-3xl font-black mb-4 uppercase text-black dark:text-white">Acceptance of Terms</h2>
-                    <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
+                    <h2 className="text-2xl sm:text-3xl font-black mb-4 uppercase text-foreground">Acceptance of Terms</h2>
+                    <div className="space-y-4 text-muted-foreground leading-relaxed font-medium">
                       <p>
                         Welcome to Knowly. By accessing or using our platform, you agree to be bound by these Terms of Service
                         and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited
@@ -338,20 +338,20 @@ export default function Terms() {
                   </section>
 
                   {/* Contact */}
-                  <section id="contact" className="scroll-mt-24 pt-8 border-t-4 border-black dark:border-white">
-                    <h2 className="text-2xl sm:text-3xl font-black mb-4 uppercase text-black dark:text-white">Contact Us</h2>
-                    <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
+                  <section id="contact" className="scroll-mt-24 pt-8 border-t-4 border-border">
+                    <h2 className="text-2xl sm:text-3xl font-black mb-4 uppercase text-foreground">Contact Us</h2>
+                    <div className="space-y-4 text-muted-foreground leading-relaxed font-medium">
                       <p>
                         If you have any questions about these Terms of Service, please contact us:
                       </p>
-                      <div className="mt-6 p-6 bg-primary border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                      <div className="mt-6 p-6 bg-primary border-4 border-border shadow-neo">
                         <div className="flex items-start gap-3">
-                          <Mail className="h-5 w-5 text-black mt-1 flex-shrink-0" />
+                          <Mail className="h-5 w-5 text-primary-foreground mt-1 flex-shrink-0" />
                           <div>
-                            <p className="font-black uppercase text-black">Email</p>
+                            <p className="font-black uppercase text-primary-foreground">Email</p>
                             <a
                               href="mailto:legal@knowly.com"
-                              className="text-black font-bold hover:underline"
+                              className="text-primary-foreground font-bold hover:underline"
                             >
                               legal@knowly.com
                             </a>

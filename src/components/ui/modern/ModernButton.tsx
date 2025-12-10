@@ -39,11 +39,11 @@ export const ModernButton = forwardRef<HTMLButtonElement, ModernButtonProps>(
     const baseStyles = "group relative overflow-hidden rounded-none border-2 transition-all duration-300 font-bold inline-flex items-center justify-center gap-2 uppercase tracking-wide"
 
     const variantStyles = {
-      primary: "border-black bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      secondary: "border-black bg-white text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-gray-100 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-[0px] active:translate-y-[0px] active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]",
-      ghost: "border-transparent hover:bg-primary/20 text-black",
-      danger: "border-black bg-red-500 text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-red-600 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]",
-      success: "border-black bg-green-500 text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-green-600 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+      primary: "border-border bg-primary text-primary-foreground shadow-neo hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover active:translate-x-[0px] active:translate-y-[0px] active:shadow-neo",
+      secondary: "border-border bg-card text-card-foreground shadow-neo hover:bg-muted hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover active:translate-x-[0px] active:translate-y-[0px] active:shadow-neo",
+      ghost: "border-transparent hover:bg-primary/20 text-foreground",
+      danger: "border-border bg-destructive text-destructive-foreground shadow-neo hover:bg-destructive/90 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover",
+      success: "border-border bg-green-500 text-black shadow-neo hover:bg-green-600 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover"
     }
 
     // Override variant to success when isSuccess is true
@@ -55,7 +55,7 @@ export const ModernButton = forwardRef<HTMLButtonElement, ModernButtonProps>(
       lg: "px-8 py-4 text-base border-2"
     }
 
-    const disabledStyles = "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+    const disabledStyles = "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-neo"
 
     // Display text based on state
     const displayText = isSuccess && successText ? successText : (isLoading && loadingText ? loadingText : children)
@@ -74,7 +74,7 @@ export const ModernButton = forwardRef<HTMLButtonElement, ModernButtonProps>(
         {...props}
       >
         {isLoading && (
-          <div className="h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin mr-2" />
+          <div className="h-4 w-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
         )}
         {isSuccess && (
           <Check className="h-5 w-5 animate-scale-in mr-2" />

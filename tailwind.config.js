@@ -62,14 +62,17 @@ export default {
         DEFAULT: "0px",
       },
       fontFamily: {
-        sans: ['Archivo', 'Inter', 'sans-serif'],
+        sans: ['Inter', 'Archivo', 'sans-serif'],
+        heading: ['Archivo', 'sans-serif'],
         mono: ['"Space Mono"', 'monospace'],
         display: ['Archivo Black', 'sans-serif'],
       },
       boxShadow: {
-        'neo': '4px 4px 0px 0px rgba(204, 255, 0, 1)',
-        'neo-hover': '6px 6px 0px 0px rgba(204, 255, 0, 1)',
-        'neo-white': '4px 4px 0px 0px rgba(255, 255, 255, 1)',
+        'neo-sm': 'var(--shadow-neo-sm)',
+        'neo': 'var(--shadow-neo)',
+        'neo-lg': 'var(--shadow-neo-lg)',
+        'neo-hover': 'var(--shadow-neo-hover)',
+        'neo-white': '4px 4px 0px 0px rgba(255, 255, 255, 1)', // Keep legacy for specific overrides if needed
         'neo-pink': '4px 4px 0px 0px rgba(255, 0, 255, 1)',
         'neo-cyan': '4px 4px 0px 0px rgba(0, 255, 255, 1)',
       },

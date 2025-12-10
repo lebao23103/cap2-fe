@@ -34,51 +34,58 @@
     --accent-foreground: 0 0% 0%;
 
     --destructive: 0 100% 50%;
-    /* Red */
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 0%;
-    /* Black Border */
     --input: 0 0% 0%;
     --ring: 75 100% 50%;
 
     --radius: 0px;
+
+    /* Custom Neo-Brutalist Shadows */
+    --shadow-neo-sm: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+    --shadow-neo: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+    --shadow-neo-lg: 8px 8px 0px 0px rgba(0, 0, 0, 1);
+    --shadow-neo-hover: 6px 6px 0px 0px rgba(0, 0, 0, 1);
   }
 
   .dark {
     /* Neo-Brutalist Theme - Dark Mode */
-    --background: 0 0% 2%;
-    /* #050505 */
-    --foreground: 0 0% 100%;
-    /* White */
+    --background: 240 10% 3.9%;
+    /* Zinc 950 #09090b */
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 100%;
+    --card: 240 10% 3.9%;
+    /* Match background for seamless look, or slightly lighter */
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
 
     --primary: 75 100% 50%;
-    /* Acid Green */
     --primary-foreground: 0 0% 0%;
 
     --secondary: 300 100% 50%;
-    /* Hot Pink */
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
 
     --accent: 180 100% 50%;
-    /* Cyan */
     --accent-foreground: 0 0% 0%;
 
-    --destructive: 0 100% 50%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 20%;
-    --input: 0 0% 20%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
     --ring: 75 100% 50%;
+
+    /* Custom Neo-Brutalist Shadows - White/Gray for Visibility */
+    --shadow-neo-sm: 2px 2px 0px 0px rgba(255, 255, 255, 1);
+    --shadow-neo: 4px 4px 0px 0px rgba(255, 255, 255, 1);
+    --shadow-neo-lg: 8px 8px 0px 0px rgba(255, 255, 255, 1);
+    --shadow-neo-hover: 6px 6px 0px 0px rgba(255, 255, 255, 1);
   }
 }
 
@@ -107,15 +114,15 @@
 
 @layer components {
   .neo-box {
-    @apply border-2 border-black dark:border-white bg-card text-card-foreground shadow-[4px_4px_0px_0px_rgba(0, 0, 0, 1)] dark:shadow-[4px_4px_0px_0px_rgba(255, 255, 255, 1)];
+    @apply border-2 border-border bg-card text-card-foreground shadow-neo;
   }
 
   .neo-button {
-    @apply border-2 border-black dark:border-white font-bold uppercase tracking-wider transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
+    @apply border-2 border-border font-bold uppercase tracking-wider transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
   }
 
   .neo-input {
-    @apply border-2 border-black dark:border-white bg-transparent font-mono rounded-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+    @apply border-2 border-border bg-transparent font-mono rounded-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
 
   .glitch-text {

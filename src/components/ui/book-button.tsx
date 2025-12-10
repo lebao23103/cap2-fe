@@ -6,58 +6,48 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 
 const bookButtonVariants = cva(
-  'relative inline-flex items-center justify-center whitespace-nowrap rounded-sm font-serif transition-all duration-300 disabled:pointer-events-none disabled:opacity-50',
+  'relative inline-flex items-center justify-center whitespace-nowrap rounded-none font-sans font-bold transition-all duration-300 disabled:pointer-events-none disabled:opacity-50 uppercase tracking-wide',
   {
     variants: {
       variant: {
         primary: cn(
-          'bg-burgundy-700 text-parchment-50',
-          'hover:bg-burgundy-800 hover:shadow-lg',
-          'dark:bg-burgundy-600 dark:hover:bg-burgundy-700',
-          'border-2 border-burgundy-900 dark:border-burgundy-800'
+          'bg-primary text-primary-foreground',
+          'hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover shadow-neo',
+          'border-2 border-border'
         ),
         secondary: cn(
-          'bg-forest-600 text-parchment-50',
-          'hover:bg-forest-700 hover:shadow-lg',
-          'dark:bg-forest-700 dark:hover:bg-forest-800',
-          'border-2 border-forest-800 dark:border-forest-900'
+          'bg-secondary text-secondary-foreground',
+          'hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover shadow-neo',
+          'border-2 border-border'
         ),
         vintage: cn(
-          'bg-gradient-to-b from-parchment-200 to-parchment-300',
-          'text-ink-900 font-bold',
-          'hover:from-parchment-300 hover:to-parchment-400',
-          'dark:from-ink-700 dark:to-ink-800 dark:text-parchment-100',
-          'dark:hover:from-ink-600 dark:hover:to-ink-700',
-          'border border-parchment-400 dark:border-ink-600',
-          'shadow-md hover:shadow-lg'
+          'bg-accent text-accent-foreground',
+          'hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover shadow-neo',
+          'border-2 border-border'
         ),
         leather: cn(
-          'bg-gradient-to-br from-amber-800 to-amber-900',
-          'text-parchment-50 font-bold',
-          'hover:from-amber-900 hover:to-amber-950',
-          'border-2 border-amber-950',
-          'shadow-inner hover:shadow-lg'
+          'bg-card text-card-foreground',
+          'hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover shadow-neo',
+          'border-2 border-border'
         ),
         ghost: cn(
-          'text-ink-700 dark:text-parchment-200',
-          'hover:bg-parchment-200 dark:hover:bg-ink-800',
-          'hover:text-ink-900 dark:hover:text-parchment-100'
+          'text-foreground hover:bg-muted',
+          'border-2 border-transparent hover:border-border'
         ),
         outline: cn(
-          'border-2 border-ink-400 dark:border-parchment-400',
-          'text-ink-700 dark:text-parchment-200',
-          'hover:bg-ink-100 dark:hover:bg-ink-800',
-          'hover:border-ink-600 dark:hover:border-parchment-300'
+          'border-2 border-border',
+          'text-foreground',
+          'hover:bg-muted'
         )
       },
       size: {
-        sm: 'h-8 px-3 text-sm',
-        md: 'h-10 px-4 text-base',
-        lg: 'h-12 px-6 text-lg',
-        xl: 'h-14 px-8 text-xl'
+        sm: 'h-8 px-3 text-xs',
+        md: 'h-10 px-4 text-sm',
+        lg: 'h-12 px-6 text-base',
+        xl: 'h-14 px-8 text-lg'
       },
       ornate: {
-        true: 'tracking-wider uppercase',
+        true: 'tracking-widest',
         false: ''
       }
     },
@@ -90,7 +80,7 @@ const BookButton = React.forwardRef<HTMLButtonElement, BookButtonProps>(
       <>
         {withBookmark && (
           <svg
-            className='absolute -top-2 right-4 w-6 h-8 text-burgundy-600 dark:text-burgundy-500 z-20'
+            className='absolute -top-2 right-4 w-6 h-8 text-secondary z-20'
             fill='currentColor'
             viewBox='0 0 24 32'
           >

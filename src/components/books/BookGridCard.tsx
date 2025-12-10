@@ -49,9 +49,9 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
     )
 
     const renderProgressBar = (progress: number) => (
-        <div className="w-full bg-white border-2 border-black h-4 overflow-hidden">
+        <div className="w-full bg-background border-2 border-border h-4 overflow-hidden">
             <div
-                className="bg-primary h-full transition-all duration-500 ease-out border-r-2 border-black"
+                className="bg-primary h-full transition-all duration-500 ease-out border-r-2 border-border"
                 style={{ width: `${progress}%` }}
             />
         </div>
@@ -69,10 +69,10 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
             }}
             className="group relative"
         >
-            <Card className="h-full border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 overflow-hidden rounded-none flex flex-col">
+            <Card className="h-full border-2 border-border bg-card shadow-neo hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-hover transition-all duration-300 overflow-hidden rounded-none flex flex-col">
 
                 {/* Cover Image Area */}
-                <Link to={`/book/${book.id}`} className="relative aspect-[3/4] overflow-hidden block border-b-2 border-black">
+                <Link to={`/book/${book.id}`} className="relative aspect-[3/4] overflow-hidden block border-b-2 border-border">
                     <img
                         src={getCoverImageUrl(book.coverImage)}
                         alt={book.title}
@@ -83,7 +83,7 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
                     {/* Top Badges */}
                     <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
                         {book.isFavorite && (
-                            <div className="p-1.5 bg-pink-400 text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                            <div className="p-1.5 bg-pink-400 text-black border-2 border-border shadow-neo-sm">
                                 <Heart className="h-3.5 w-3.5 fill-current" />
                             </div>
                         )}
@@ -91,8 +91,8 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
 
                     {/* Reading Progress Bar (Overlay) */}
                     {book.hasReadingHistory && (
-                        <div className="absolute bottom-0 left-0 right-0 p-3 bg-white border-t-2 border-black">
-                            <div className="flex justify-between text-[10px] font-bold text-black mb-1.5 uppercase tracking-wider">
+                        <div className="absolute bottom-0 left-0 right-0 p-3 bg-background border-t-2 border-border">
+                            <div className="flex justify-between text-[10px] font-bold text-foreground mb-1.5 uppercase tracking-wider">
                                 <span>Progress</span>
                                 <span>{book.readingProgress}%</span>
                             </div>
@@ -101,10 +101,10 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
                     )}
 
                     {/* Hover Actions Overlay */}
-                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4 border-2 border-black m-2">
+                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4 border-2 border-border m-2">
                         <Button
                             size="lg"
-                            className="w-full max-w-[160px] bg-white text-black hover:bg-black hover:text-white font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] border-2 border-black rounded-none uppercase"
+                            className="w-full max-w-[160px] bg-background text-foreground hover:bg-foreground hover:text-background font-bold shadow-neo border-2 border-border rounded-none uppercase"
                             onClick={(e) => {
                                 e.preventDefault()
                                 e.stopPropagation()
@@ -119,7 +119,7 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
                             <Button
                                 size="icon"
                                 variant="secondary"
-                                className="h-10 w-10 bg-white text-black border-2 border-black hover:bg-black hover:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                                className="h-10 w-10 bg-background text-foreground border-2 border-border hover:bg-foreground hover:text-background rounded-none shadow-neo"
                                 onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()
@@ -127,24 +127,24 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
                                 }}
                                 title={book.isFavorite ? "Remove from Favorites" : "Add to Favorites"}
                             >
-                                <Heart className={`h-5 w-5 ${book.isFavorite ? 'fill-black text-black' : ''}`} />
+                                <Heart className={`h-5 w-5 ${book.isFavorite ? 'fill-foreground text-foreground' : ''}`} />
                             </Button>
                         </div>
                     </div>
                 </Link>
 
                 {/* Content Area */}
-                <div className="p-4 flex flex-col flex-1 bg-white dark:bg-zinc-800">
+                <div className="p-4 flex flex-col flex-1 bg-card">
                     <Link to={`/book/${book.id}`} className="block mb-1">
-                        <h3 className="font-bold text-lg leading-tight text-black dark:text-white uppercase line-clamp-1 group-hover:underline decoration-2 underline-offset-2">
+                        <h3 className="font-bold text-lg leading-tight text-foreground uppercase line-clamp-1 group-hover:underline decoration-2 underline-offset-2">
                             {book.title}
                         </h3>
                     </Link>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 font-mono mb-3 uppercase">
+                    <p className="text-sm text-muted-foreground font-mono mb-3 uppercase">
                         {book.author}
                     </p>
 
-                    <div className="mt-auto flex items-center justify-between pt-3 border-t-2 border-black dark:border-white">
+                    <div className="mt-auto flex items-center justify-between pt-3 border-t-2 border-border">
                         {renderStars(book.rating)}
                     </div>
                 </div>

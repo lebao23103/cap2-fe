@@ -257,18 +257,24 @@ export default function ReadNEx() {
       <div className="container mx-auto relative z-10 px-4 sm:px-6">
 
         {/* Header with Distinctive Design */}
-        <motion.div {...fadeInUp} className="mb-10 sm:mb-12 text-center">
-          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4">
-            <div className="h-2 w-12 sm:w-20 bg-black dark:bg-white" />
-            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight uppercase">
+        {/* Header with Distinctive Design */}
+        <motion.div {...fadeInUp} className="mb-12 text-center relative z-20">
+          <div className="flex items-center justify-center gap-4 sm:gap-6 mb-6">
+            <div className="h-1.5 sm:h-2 w-16 sm:w-32 bg-foreground" />
+            <h1 className="font-display text-5xl sm:text-7xl md:text-8xl font-black tracking-tighter uppercase flex items-center gap-1">
               <span className="text-foreground">Read</span>
-              <span className="text-primary bg-black px-2">NEx</span>
+              <div className="bg-foreground text-primary px-3 pt-1 pb-2 transform -rotate-1 shadow-neo-sm">
+                NEx
+              </div>
             </h1>
-            <div className="h-2 w-12 sm:w-20 bg-black dark:bg-white" />
+            <div className="h-1.5 sm:h-2 w-16 sm:w-32 bg-foreground" />
           </div>
-          <p className="text-base sm:text-lg text-foreground font-bold max-w-2xl mx-auto leading-relaxed uppercase tracking-wider bg-white dark:bg-zinc-900 border-2 border-black dark:border-white p-2 inline-block shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-            Your personal library for interactive learning
-          </p>
+          <div className="inline-block relative group">
+            <div className="absolute inset-0 bg-foreground translate-x-2 translate-y-2" />
+            <p className="relative text-sm sm:text-lg text-background font-bold px-6 py-2 uppercase tracking-[0.2em] bg-foreground border-2 border-background">
+              Your personal library for interactive learning
+            </p>
+          </div>
         </motion.div>
 
         {/* Reading Stats */}
@@ -283,40 +289,40 @@ export default function ReadNEx() {
               icon: BookOpen,
               label: 'Reading',
               value: books.filter(b => b.readingProgress! > 0 && b.readingProgress! < 100).length,
-              color: 'text-black',
+              color: 'text-foreground',
               bg: 'bg-blue-400'
             },
             {
               icon: CheckCircle,
               label: 'Completed',
               value: books.filter(b => b.readingProgress === 100).length,
-              color: 'text-black',
+              color: 'text-foreground',
               bg: 'bg-green-400'
             },
             {
               icon: Heart,
               label: 'Favorites',
               value: books.filter(b => b.isFavorite).length,
-              color: 'text-black',
+              color: 'text-foreground',
               bg: 'bg-pink-400'
             },
             {
               icon: Grid3x3,
               label: 'Total Books',
               value: books.length,
-              color: 'text-black',
+              color: 'text-foreground',
               bg: 'bg-purple-400'
             }
           ].map((stat, index) => (
-            <Card key={index} className="border-2 border-black dark:border-white bg-white dark:bg-zinc-800 hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none">
+            <Card key={index} className="border-2 border-border bg-card hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-hover transition-all duration-300 shadow-neo rounded-none">
               <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                <div className={`p-3 border-2 border-black dark:border-white ${stat.bg} mb-3 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]`}>
+                <div className={`p-3 border-2 border-border ${stat.bg} mb-3 shadow-neo-sm`}>
                   <stat.icon className={`h-6 w-6 ${stat.color}`} />
                 </div>
-                <div className="text-3xl font-bold text-black dark:text-white mb-1 font-display">
+                <div className="text-3xl font-bold text-foreground mb-1 font-display">
                   {stat.value}
                 </div>
-                <div className="text-xs font-bold text-black dark:text-gray-300 uppercase tracking-wider">
+                <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                   {stat.label}
                 </div>
               </CardContent>
@@ -331,12 +337,12 @@ export default function ReadNEx() {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="mb-8 sticky top-20 z-30"
         >
-          <div className="bg-primary border-2 border-black dark:border-white p-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+          <div className="bg-primary border-2 border-border p-4 shadow-neo-lg">
             <div className="flex flex-col md:flex-row gap-4">
 
               {/* Search Bar */}
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-black dark:text-gray-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <input
                   type="text"
                   id="search-books"
@@ -344,7 +350,7 @@ export default function ReadNEx() {
                   placeholder="SEARCH BY TITLE, AUTHOR..."
                   value={filters.searchTerm}
                   onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white dark:text-white focus:outline-none focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all text-sm placeholder:text-gray-500 font-bold uppercase"
+                  className="w-full pl-10 pr-4 py-2.5 bg-background border-2 border-border text-foreground focus:outline-none focus:shadow-neo transition-all text-sm placeholder:text-muted-foreground font-bold uppercase"
                 />
               </div>
 
@@ -355,7 +361,7 @@ export default function ReadNEx() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
-                      className="h-10 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all min-w-[140px] justify-between rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] text-black dark:text-white font-bold uppercase"
+                      className="h-10 px-4 border-2 border-border bg-background hover:bg-muted transition-all min-w-[140px] justify-between rounded-none shadow-neo text-foreground font-bold uppercase"
                     >
                       <span className="flex items-center gap-2 text-sm">
                         <BookmarkCheck className="h-4 w-4" />
@@ -364,13 +370,13 @@ export default function ReadNEx() {
                       <ChevronDown className="h-3 w-3" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none" align="end">
-                    <DropdownMenuLabel className="uppercase font-bold border-b-2 border-black dark:border-white dark:text-white">Filter by Status</DropdownMenuLabel>
+                  <DropdownMenuContent className="w-56 border-2 border-border bg-background shadow-neo rounded-none" align="end">
+                    <DropdownMenuLabel className="uppercase font-bold border-b-2 border-border text-foreground">Filter by Status</DropdownMenuLabel>
                     {statusFilters.map((status) => (
                       <DropdownMenuItem
                         key={status}
                         onClick={() => handleFilterChange('statusFilter', status)}
-                        className={`cursor-pointer focus:bg-primary focus:text-black rounded-none my-0.5 font-mono uppercase font-bold hover:bg-primary dark:text-white dark:focus:text-black flex items-center justify-between ${filters.statusFilter === status ? 'bg-primary text-black' : ''}`}
+                        className={`cursor-pointer focus:bg-primary focus:text-primary-foreground rounded-none my-0.5 font-mono uppercase font-bold hover:bg-primary hover:text-primary-foreground flex items-center justify-between ${filters.statusFilter === status ? 'bg-primary text-primary-foreground' : 'text-foreground'}`}
                       >
                         <span className="flex items-center">
                           {status}
@@ -381,16 +387,16 @@ export default function ReadNEx() {
                   </DropdownMenuContent>
                 </DropdownMenu>
 
-                <div className="flex bg-white dark:bg-zinc-900 border-2 border-black dark:border-white p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                <div className="flex bg-background border-2 border-border p-1 shadow-neo">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 transition-all border-2 ${viewMode === 'grid' ? 'bg-primary border-black text-black' : 'border-transparent text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white'}`}
+                    className={`p-2 transition-all border-2 ${viewMode === 'grid' ? 'bg-primary border-border text-primary-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
                   >
                     <Grid3x3 className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`p-2 transition-all border-2 ${viewMode === 'list' ? 'bg-primary border-black text-black' : 'border-transparent text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white'}`}
+                    className={`p-2 transition-all border-2 ${viewMode === 'list' ? 'bg-primary border-border text-primary-foreground' : 'border-transparent text-muted-foreground hover:text-foreground'}`}
                   >
                     <List className="h-4 w-4" />
                   </button>
@@ -454,13 +460,13 @@ export default function ReadNEx() {
                     variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="border-2 border-black dark:border-white rounded-none font-bold uppercase disabled:opacity-50"
+                    className="border-2 border-border rounded-none font-bold uppercase disabled:opacity-50 hover:bg-muted"
                   >
                     <ChevronLeft className="h-4 w-4 mr-2" />
                     Prev
                   </Button>
 
-                  <span className="text-sm font-bold uppercase tracking-wider bg-primary px-3 py-1 border-2 border-black dark:bg-white dark:text-black">
+                  <span className="text-sm font-bold uppercase tracking-wider bg-primary px-3 py-1 border-2 border-border text-primary-foreground">
                     Page {currentPage} of {totalPages}
                   </span>
 
@@ -468,7 +474,7 @@ export default function ReadNEx() {
                     variant="outline"
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="border-2 border-black dark:border-white rounded-none font-bold uppercase disabled:opacity-50"
+                    className="border-2 border-border rounded-none font-bold uppercase disabled:opacity-50 hover:bg-muted"
                   >
                     Next
                     <ChevronRight className="h-4 w-4 ml-2" />

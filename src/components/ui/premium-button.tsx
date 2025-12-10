@@ -5,25 +5,25 @@ import { cn } from "@/lib/utils"
 import { motion } from "framer-motion"
 
 const premiumButtonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap rounded-xl text-sm font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative overflow-hidden",
+  "inline-flex items-center justify-center whitespace-nowrap rounded-none text-sm font-bold uppercase tracking-wider ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 relative overflow-visible border-2",
   {
     variants: {
       variant: {
-        gradient: "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white shadow-lg hover:shadow-xl hover:scale-105 active:scale-95",
-        glass: "backdrop-blur-md bg-white/10 dark:bg-black/10 border border-white/20 dark:border-white/10 text-foreground hover:bg-white/20 dark:hover:bg-black/20",
-        glow: "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/40",
-        aurora: "bg-gradient-to-r from-violet-600 to-indigo-600 text-white relative before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-700",
-        neon: "bg-transparent border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground hover:shadow-[0_0_2rem_-0.5rem] hover:shadow-primary transition-all duration-300",
-        floating: "bg-gradient-to-br from-primary to-purple-600 text-white shadow-lg animate-float",
-        shimmer: "bg-gradient-to-r from-slate-900 to-slate-700 text-white relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        gradient: "bg-gradient-to-r from-primary to-secondary text-primary-foreground border-border shadow-neo hover:shadow-neo-hover hover:translate-x-[-2px] hover:translate-y-[-2px]",
+        glass: "bg-background/80 border-border text-foreground hover:bg-muted shadow-neo hover:shadow-neo-hover backdrop-blur-sm",
+        glow: "bg-primary text-primary-foreground border-border shadow-[0_0_15px_rgba(204,255,0,0.5)] hover:shadow-[0_0_25px_rgba(204,255,0,0.7)]",
+        aurora: "bg-gradient-to-r from-secondary to-accent text-white border-border shadow-neo hover:shadow-neo-hover",
+        neon: "bg-neo-black border-neo-yellow text-neo-yellow hover:bg-neo-yellow hover:text-neo-black shadow-[4px_4px_0px_0px_#CCFF00] hover:shadow-[6px_6px_0px_0px_#CCFF00] transition-all",
+        floating: "bg-accent text-accent-foreground border-border shadow-neo hover:shadow-neo-lg hover:-translate-y-1",
+        shimmer: "bg-foreground text-background border-border relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent before:translate-x-[-200%] hover:before:translate-x-[200%] before:transition-transform before:duration-1000 shadow-neo",
+        ghost: "border-transparent hover:bg-muted hover:text-foreground",
+        link: "border-transparent text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-10 px-4 py-2",
-        sm: "h-9 rounded-lg px-3",
-        lg: "h-12 rounded-xl px-8 text-base",
-        xl: "h-14 rounded-2xl px-10 text-lg",
+        sm: "h-9 px-3 text-xs",
+        lg: "h-12 px-8 text-base",
+        xl: "h-14 px-10 text-lg",
         icon: "h-10 w-10",
       },
       animation: {
@@ -43,7 +43,7 @@ const premiumButtonVariants = cva(
 
 export interface PremiumButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof premiumButtonVariants> {
+  VariantProps<typeof premiumButtonVariants> {
   asChild?: boolean
   ripple?: boolean
   glow?: boolean

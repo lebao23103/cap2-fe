@@ -121,7 +121,7 @@ export default function BookReader() {
   const [showNoteDialog, setShowNoteDialog] = useState(false)
   const [selectedText, setSelectedText] = useState("")
   const [newNote, setNewNote] = useState("")
-  const [fontSize, setFontSize] = useState(16)
+  const [fontSize, setFontSize] = useState(20)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [highlightColor, setHighlightColor] = useState<'yellow' | 'blue' | 'green' | 'pink'>('yellow')
   const [editingNote, setEditingNote] = useState<BookNote | null>(null)
@@ -137,9 +137,25 @@ export default function BookReader() {
 
   // New state for highlight overlay and popover
   const [selectedNote, setSelectedNote] = useState<BookNote | null>(null)
-  const [popoverPosition, setPopoverPosition] = useState<{ x: number; y: number } | null>(null)
+  const [popoverPosition, setPopoverPosition] = useState<{ x: number; y: number; arrowOffset?: number } | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [highlightStyle, setHighlightStyle] = useState<'classic' | 'box' | 'glow'>('classic')
+
+  // Handle click outside to close popover
+  useEffect(() => {
+    const handleOutsideClick = () => {
+      setSelectedNote(null)
+      setPopoverPosition(null)
+    }
+
+    if (selectedNote) {
+      document.addEventListener('mousedown', handleOutsideClick)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick)
+    }
+  }, [selectedNote])
 
 
   // Memoize options to prevent re-renders
@@ -302,7 +318,7 @@ export default function BookReader() {
           break
         case '-':
         case '_':
-          setFontSize(prev => Math.max(prev - 2, 12))
+          setFontSize(prev => Math.max(prev - 2, 18))
           break
         case 'Escape':
           if (showNoteDialog) setShowNoteDialog(false)
@@ -368,7 +384,70 @@ export default function BookReader() {
     if (isReadOnly) return // Disable selection in read-only mode
 
     const selection = window.getSelection()
-    if (!selection || !selection.toString().trim()) return
+    if (!selection || selection.rangeCount === 0 || !selection.toString().trim()) return
+
+    // Smart Selection: Expand to nearest word boundaries if partial word is selected
+    // and if we are not crossing block boundaries significantly
+    try {
+      const range = selection.getRangeAt(0)
+      const text = range.toString()
+
+      // Only expand if length is reasonable (avoid expanding giant selections unexpectedly)
+      if (text.length > 0 && text.length < 200) {
+        // Attempt to expand start
+        let startContainer = range.startContainer
+        let startOffset = range.startOffset
+
+        // If we are in a text node, verify if we split a word
+        if (startContainer.nodeType === Node.TEXT_NODE && startContainer.textContent) {
+          const content = startContainer.textContent
+          // If char before selection is a word char, and char at selection is a word char
+          // Regex for word char including unicode letters
+          const isWordChar = (char: string) => /^\w$/.test(char) || /^[\u00C0-\u00FF]$/.test(char)
+
+          if (startOffset > 0 &&
+            isWordChar(content[startOffset - 1]) &&
+            isWordChar(content[startOffset])) {
+
+            // Walk backwards to find word start
+            let newStart = startOffset
+            while (newStart > 0 && isWordChar(content[newStart - 1])) {
+              newStart--
+            }
+            range.setStart(startContainer, newStart)
+          }
+        }
+
+        // Attempt to expand end
+        let endContainer = range.endContainer
+        let endOffset = range.endOffset
+
+        if (endContainer.nodeType === Node.TEXT_NODE && endContainer.textContent) {
+          const content = endContainer.textContent
+          const isWordChar = (char: string) => /^\w$/.test(char) || /^[\u00C0-\u00FF]$/.test(char)
+
+          // If current char is word char and prev char was word char
+          // endOffset points to the char *after* the selection
+          if (endOffset < content.length &&
+            isWordChar(content[endOffset]) &&
+            isWordChar(content[endOffset - 1])) {
+
+            // Walk forwards to find word end
+            let newEnd = endOffset
+            while (newEnd < content.length && isWordChar(content[newEnd])) {
+              newEnd++
+            }
+            range.setEnd(endContainer, newEnd)
+          }
+        }
+
+        // Update selection to match our new range
+        selection.removeAllRanges()
+        selection.addRange(range)
+      }
+    } catch (e) {
+      console.warn("Smart selection failed", e)
+    }
 
     const selectedText = selection.toString().trim()
     if (selectedText.length === 0) return
@@ -523,13 +602,15 @@ export default function BookReader() {
           n.id === noteId ? { ...n, isPublic: updatedIsPublic } : n
         ))
 
-        // Update selectedNote if it's the one being modified
+        // Update selectedNote to reflect change while keeping popover open
         setSelectedNote(prev => {
           if (prev && prev.id === noteId) {
             return { ...prev, isPublic: updatedIsPublic }
           }
           return prev
         })
+
+
 
         toast({ title: !updatedIsPublic ? 'Note made private' : 'Note shared publicly' })
       }
@@ -915,7 +996,7 @@ export default function BookReader() {
                 <DropdownMenuSeparator className={`h-0.5 my-2 ${theme === 'dark' ? 'bg-gray-600' : theme === 'sepia' ? 'bg-[#8b7355]' : 'bg-black'}`} />
                 <DropdownMenuLabel className={`text-xs uppercase tracking-wider font-bold ${themeStyles.text}`}>Font Size</DropdownMenuLabel>
                 <div className="px-2 pb-2 flex items-center justify-between">
-                  <Button variant="outline" size="icon" className={`h-8 w-8 rounded-none border-2 ${themeStyles.border} ${themeStyles.text} hover:bg-primary hover:text-black bg-transparent`} onClick={() => setFontSize(Math.max(12, fontSize - 2))}>
+                  <Button variant="outline" size="icon" className={`h-8 w-8 rounded-none border-2 ${themeStyles.border} ${themeStyles.text} hover:bg-primary hover:text-black bg-transparent`} onClick={() => setFontSize(Math.max(18, fontSize - 2))}>
                     <span className="text-xs font-bold">A-</span>
                   </Button>
                   <span className={`text-sm font-bold w-12 text-center ${themeStyles.text}`}>{fontSize}px</span>
@@ -939,7 +1020,7 @@ export default function BookReader() {
         </div>
       </motion.div>
 
-      <div className={`w-full max-w-[98vw] mx-auto px-4 pb-8 transition-all duration-300 ${showNavbar ? 'pt-24' : 'pt-4'}`}>
+      <div className={`w-full max-w-[98vw] mx-auto px-4 pb-2 transition-all duration-300 ${showNavbar ? 'pt-20' : 'pt-2'}`}>
         <div className={`grid grid-cols-1 gap-6 lg:gap-8 transition-all duration-500 ${sidebarOpen ? "xl:grid-cols-12" : "xl:grid-cols-1"}`}>
           {/* Main Content - Reading Area */}
           <div className={`transition-all duration-500 ${sidebarOpen ? "xl:col-span-8" : "xl:col-span-12"}`}>
@@ -1012,7 +1093,7 @@ export default function BookReader() {
                         {/* Wrap Page with relative positioning for overlays */}
                         <div
                           ref={pageContainerRef}
-                          className="relative inline-block shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-2 border-black overflow-hidden mb-36"
+                          className="relative inline-block shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] border-2 border-black mb-4"
                         >
                           <Page
                             pageNumber={currentPage}
@@ -1033,12 +1114,36 @@ export default function BookReader() {
                             containerRef={pageContainerRef}
                             onHighlightClick={(note, position) => {
                               setSelectedNote(note)
-                              if (position) {
+                              const container = pageContainerRef.current
+
+                              if (position && container) {
                                 // If we have a rect, center the popover below it
                                 if (position.rect) {
+                                  const containerRect = container.getBoundingClientRect()
+                                  const POP_WIDTH = 300 // Max width of popover
+                                  const CONTAINER_PADDING = 16
+
+                                  // Calculate relative X of click/target
+                                  const targetX = position.x - containerRect.left + container.scrollLeft
+
+                                  // Calculate ideal left position (centered on target)
+                                  const idealLeft = targetX - POP_WIDTH / 2
+
+                                  // Clamp left position within container bounds
+                                  // 0 is left edge, container.scrollWidth is right edge
+                                  const maxLeft = container.scrollWidth - POP_WIDTH - CONTAINER_PADDING
+                                  const minLeft = CONTAINER_PADDING
+                                  const clampedLeft = Math.max(minLeft, Math.min(idealLeft, maxLeft))
+
+                                  // Calculate arrow offset relative to the popover's left edge
+                                  // The arrow should point to 'targetX'
+                                  // offset = targetX - clampedLeft
+                                  const arrowOffset = targetX - clampedLeft
+
                                   setPopoverPosition({
-                                    x: position.rect.left + position.rect.width / 2,
-                                    y: position.rect.bottom + 10 // 10px spacing
+                                    x: clampedLeft,
+                                    y: position.rect.bottom - (containerRect.top + 2) + 10 + container.scrollTop,
+                                    arrowOffset: arrowOffset
                                   })
                                 } else {
                                   setPopoverPosition(position)
@@ -1046,14 +1151,39 @@ export default function BookReader() {
                               } else {
                                 const pageElement = document.querySelector('.pdf-page-content')
                                 if (pageElement) {
-                                  const rect = pageElement.getBoundingClientRect()
+                                  // Fallback logic
                                   setPopoverPosition({
-                                    x: rect.left + rect.width / 2,
-                                    y: rect.top + 100
+                                    x: 100,
+                                    y: 100
                                   })
                                 }
                               }
                             }}
+                          />
+
+                          {/* Note Popover - Moved internal so it scrolls with page */}
+                          <NotePopover
+                            note={selectedNote}
+                            position={popoverPosition}
+                            onClose={() => {
+                              setSelectedNote(null)
+                              setPopoverPosition(null)
+                            }}
+                            onEdit={(note) => {
+                              editNote(note)
+                              setSelectedNote(null)
+                              setPopoverPosition(null)
+                            }}
+                            onDelete={(id) => {
+                              deleteNote(id)
+                              setSelectedNote(null)
+                              setPopoverPosition(null)
+                            }}
+                            onShare={(id) => {
+                              shareNote(id)
+                            }}
+                            readOnly={isReadOnly}
+                            theme={theme}
                           />
                         </div>
                       </motion.div>
@@ -1337,30 +1467,7 @@ export default function BookReader() {
         </div>
       </div >
 
-      {/* Note Popover */}
-      < NotePopover
-        note={selectedNote}
-        position={popoverPosition}
-        onClose={() => {
-          setSelectedNote(null)
-          setPopoverPosition(null)
-        }
-        }
-        onEdit={(note) => {
-          editNote(note)
-          setSelectedNote(null)
-          setPopoverPosition(null)
-        }}
-        onDelete={(id) => {
-          deleteNote(id)
-          setSelectedNote(null)
-          setPopoverPosition(null)
-        }}
-        onShare={(id) => {
-          shareNote(id)
-        }}
-        readOnly={isReadOnly}
-      />
+
 
       {/* Note Dialog */}
       < Dialog open={showNoteDialog} onOpenChange={(open) => {

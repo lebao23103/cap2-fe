@@ -161,9 +161,9 @@ export default function QuizManagerDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto border-4 border-black dark:border-white rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 overflow-hidden flex flex-col p-0">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto border-4 border-border rounded-none shadow-neo-lg bg-card overflow-hidden flex flex-col p-0">
 
-                <DialogHeader className="p-6 border-b-4 border-black dark:border-white bg-secondary flex-shrink-0">
+                <DialogHeader className="p-6 border-b-4 border-border bg-secondary flex-shrink-0">
                     <DialogTitle className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <HelpCircle className="h-6 w-6" />
@@ -173,19 +173,19 @@ export default function QuizManagerDialog({
                             <Button
                                 onClick={handleCreate}
                                 size="sm"
-                                className="font-bold border-2 border-black dark:border-white rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]"
+                                className="font-bold border-2 border-border rounded-none shadow-neo-sm bg-primary text-primary-foreground hover:bg-primary/90"
                             >
                                 <Plus className="h-4 w-4 mr-2" />
                                 Add Question
                             </Button>
                         )}
                     </DialogTitle>
-                    <DialogDescription className="font-mono text-gray-600 dark:text-gray-300">
+                    <DialogDescription className="font-mono text-muted-foreground">
                         {bookTitle} • {questions.length} Questions
                     </DialogDescription>
                 </DialogHeader>
 
-                <div className="flex-1 overflow-y-auto p-6 bg-gray-50 dark:bg-zinc-950">
+                <div className="flex-1 overflow-y-auto p-6 bg-muted">
                     {loading ? (
                         <div className="flex justify-center py-12">
                             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -193,15 +193,15 @@ export default function QuizManagerDialog({
                     ) : view === 'list' ? (
                         <div className="space-y-4">
                             {questions.length === 0 ? (
-                                <div className="text-center py-12 border-2 border-dashed border-black dark:border-white opacity-50">
-                                    <p className="font-bold uppercase">No questions yet</p>
-                                    <p className="text-sm">Click "Add Question" to start</p>
+                                <div className="text-center py-12 border-2 border-dashed border-border opacity-50">
+                                    <p className="font-bold uppercase text-foreground">No questions yet</p>
+                                    <p className="text-sm text-muted-foreground">Click "Add Question" to start</p>
                                 </div>
                             ) : (
                                 questions.sort((a, b) => a.order_num - b.order_num).map((q) => (
-                                    <div key={q.id} className="bg-white dark:bg-zinc-900 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                                    <div key={q.id} className="bg-card border-2 border-border p-4 shadow-neo">
                                         <div className="flex justify-between items-start mb-2">
-                                            <span className="font-bold bg-primary px-2 py-0.5 border border-black dark:border-white text-xs">
+                                            <span className="font-bold bg-primary px-2 py-0.5 border border-border text-xs text-primary-foreground">
                                                 #{q.order_num}
                                             </span>
                                             <div className="flex gap-2">
@@ -223,15 +223,15 @@ export default function QuizManagerDialog({
                                                 </Button>
                                             </div>
                                         </div>
-                                        <h4 className="font-bold mb-2">{q.question_text}</h4>
-                                        <div className="grid grid-cols-2 gap-2 text-sm font-mono text-gray-600 dark:text-gray-400">
+                                        <h4 className="font-bold mb-2 text-foreground">{q.question_text}</h4>
+                                        <div className="grid grid-cols-2 gap-2 text-sm font-mono text-muted-foreground">
                                             <div className={q.correct_answer === 'A' ? 'text-green-600 font-bold' : ''}>A: {q.choice_a}</div>
                                             <div className={q.correct_answer === 'B' ? 'text-green-600 font-bold' : ''}>B: {q.choice_b}</div>
                                             <div className={q.correct_answer === 'C' ? 'text-green-600 font-bold' : ''}>C: {q.choice_c}</div>
                                             <div className={q.correct_answer === 'D' ? 'text-green-600 font-bold' : ''}>D: {q.choice_d}</div>
                                         </div>
                                         {q.explanation && (
-                                            <div className="mt-3 pt-2 border-t border-dashed border-gray-300 text-sm">
+                                            <div className="mt-3 pt-2 border-t border-dashed border-border text-sm">
                                                 <span className="font-bold">Explanation:</span> {q.explanation}
                                             </div>
                                         )}
@@ -248,7 +248,7 @@ export default function QuizManagerDialog({
                                         required
                                         value={formData.question_text}
                                         onChange={e => setFormData(prev => ({ ...prev, question_text: e.target.value }))}
-                                        className="border-2 border-black dark:border-white rounded-none"
+                                        className="border-2 border-border rounded-none bg-background text-foreground"
                                     />
                                 </div>
                                 <div className="grid gap-2">
@@ -258,7 +258,7 @@ export default function QuizManagerDialog({
                                         required
                                         value={formData.order_num}
                                         onChange={e => setFormData(prev => ({ ...prev, order_num: parseInt(e.target.value) || 0 }))}
-                                        className="border-2 border-black dark:border-white rounded-none"
+                                        className="border-2 border-border rounded-none bg-background text-foreground"
                                     />
                                 </div>
                             </div>
@@ -278,7 +278,7 @@ export default function QuizManagerDialog({
                                             required
                                             value={formData[opt.key as keyof CreateQuestionData] as string}
                                             onChange={e => setFormData(prev => ({ ...prev, [opt.key]: e.target.value }))}
-                                            className={`border-2 rounded-none ${formData.correct_answer === opt.label.split(' ')[1] ? 'border-green-500 border-4' : 'border-black dark:border-white'}`}
+                                            className={`border-2 rounded-none bg-background text-foreground ${formData.correct_answer === opt.label.split(' ')[1] ? 'border-green-500 border-4' : 'border-border'}`}
                                         />
                                     </div>
                                 ))}
@@ -290,7 +290,7 @@ export default function QuizManagerDialog({
                                     value={formData.correct_answer}
                                     onValueChange={v => setFormData(prev => ({ ...prev, correct_answer: v }))}
                                 >
-                                    <SelectTrigger className="border-2 border-black dark:border-white rounded-none">
+                                    <SelectTrigger className="border-2 border-border rounded-none bg-background text-foreground">
                                         <SelectValue placeholder="Select correct answer" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -307,7 +307,7 @@ export default function QuizManagerDialog({
                                 <Textarea
                                     value={formData.explanation}
                                     onChange={e => setFormData(prev => ({ ...prev, explanation: e.target.value }))}
-                                    className="border-2 border-black dark:border-white rounded-none"
+                                    className="border-2 border-border rounded-none bg-background text-foreground"
                                 />
                             </div>
 
@@ -316,14 +316,14 @@ export default function QuizManagerDialog({
                                     type="button"
                                     variant="outline"
                                     onClick={() => setView('list')}
-                                    className="flex-1 border-2 border-black dark:border-white rounded-none"
+                                    className="flex-1 border-2 border-border rounded-none hover:bg-muted"
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={saving}
-                                    className="flex-1 bg-primary text-black border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                                    className="flex-1 bg-primary text-primary-foreground border-2 border-border rounded-none shadow-neo hover:shadow-neo-hover hover:translate-x-[-2px] hover:translate-y-[-2px]"
                                 >
                                     {saving ? <Loader2 className="animate-spin" /> : <><Save className="h-4 w-4 mr-2" /> Save Question</>}
                                 </Button>
