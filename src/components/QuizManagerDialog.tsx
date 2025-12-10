@@ -41,7 +41,7 @@ const INITIAL_FORM_STATE: CreateQuestionData = {
     choice_b: '',
     choice_c: '',
     choice_d: '',
-    correct_answer: 'A',
+    correct_answer: '',
     explanation: '',
     order_num: 1
 }
@@ -231,7 +231,7 @@ export default function QuizManagerDialog({
                                             <div className={q.correct_answer === 'D' ? 'text-green-600 font-bold' : ''}>D: {q.choice_d}</div>
                                         </div>
                                         {q.explanation && (
-                                            <div className="mt-2 pt-2 border-t border-dashed border-gray-300 text-xs italic">
+                                            <div className="mt-3 pt-2 border-t border-dashed border-gray-300 text-sm">
                                                 <span className="font-bold">Explanation:</span> {q.explanation}
                                             </div>
                                         )}
@@ -291,7 +291,7 @@ export default function QuizManagerDialog({
                                     onValueChange={v => setFormData(prev => ({ ...prev, correct_answer: v }))}
                                 >
                                     <SelectTrigger className="border-2 border-black dark:border-white rounded-none">
-                                        <SelectValue />
+                                        <SelectValue placeholder="Select correct answer" />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="A">Option A</SelectItem>
