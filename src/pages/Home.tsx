@@ -10,7 +10,6 @@ import { getCoverImageUrl } from '@/lib/utils/mediaUtils'
 import {
   BookOpen,
   Feather,
-  BookMarked,
   Coffee,
   Star,
   Users,
@@ -18,8 +17,9 @@ import {
   Sparkles,
   ChevronRight,
   ArrowRight,
-  Loader2
+  Loader2,
 } from 'lucide-react'
+import NoteInteractionDemo from '@/components/demos/NoteInteractionDemo'
 
 interface FeaturedBook {
   id: string
@@ -174,35 +174,7 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="flex-1 relative w-full max-w-xl lg:max-w-none"
             >
-              <div className="relative aspect-square md:aspect-[4/3] lg:aspect-square border-4 border-black bg-white p-2 shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]">
-                <img
-                  src="https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&q=80&w=1200"
-                  alt="Digital Library Interface"
-                  className="w-full h-full object-cover border-2 border-black transition-all duration-500"
-                />
-
-                {/* Floating Elements */}
-                <motion.div
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.6 }}
-                  className="absolute bottom-8 left-8 right-8 p-6 bg-white border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]"
-                >
-                  <div className="flex items-center gap-4 mb-3">
-                    <div className="p-2 bg-green-400 text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                      <BookMarked className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="font-bold text-sm uppercase">Reading Progress</p>
-                      <p className="text-xs text-gray-600 font-mono">The Midnight Library</p>
-                    </div>
-                    <span className="ml-auto font-bold text-black bg-green-400 px-2 border-2 border-black">78%</span>
-                  </div>
-                  <div className="w-full bg-white border-2 border-black h-4">
-                    <div className="bg-green-400 h-full border-r-2 border-black w-[78%]" />
-                  </div>
-                </motion.div>
-              </div>
+              <NoteInteractionDemo />
             </motion.div>
           </div>
         </div>
