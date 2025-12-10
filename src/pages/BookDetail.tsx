@@ -6,8 +6,6 @@ import {
   Heart,
   BookOpen,
   Share2,
-  ThumbsUp,
-  Flag,
   ArrowLeft,
   Globe,
   Book,
@@ -216,22 +214,6 @@ export default function BookDetail() {
     } finally {
       setSubmittingReview(false);
     }
-  };
-
-  const handleMarkHelpful = (_reviewId: number) => {
-    // TODO: Connect to API
-    toast({
-      title: 'Marked as helpful',
-      description: 'Thank you for your feedback',
-    });
-  };
-
-  const handleReportReview = (_reviewId: number) => {
-    // TODO: Connect to API
-    toast({
-      title: 'Review reported',
-      description: 'We will review this content',
-    });
   };
 
   const renderStarRating = (rating: number, interactive: boolean = false) => {
@@ -585,14 +567,14 @@ export default function BookDetail() {
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
                           <Avatar className="h-10 w-10 border-2 border-black dark:border-white rounded-none">
-                            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user.email}`} />
-                            <AvatarFallback className="rounded-none bg-primary text-black font-bold">{review.user.first_name[0]}</AvatarFallback>
+                            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user?.email || 'anonymous'}`} />
+                            <AvatarFallback className="rounded-none bg-primary text-black font-bold">{review.user?.first_name?.[0] || 'U'}</AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex justify-between items-start mb-2">
                               <div>
                                 <h4 className="font-bold text-black dark:text-white uppercase">
-                                  {review.user.first_name} {review.user.last_name}
+                                  {review.user?.first_name || 'Unknown'} {review.user?.last_name || 'User'}
                                 </h4>
                                 <p className="text-xs text-gray-600 dark:text-gray-400 font-mono">
                                   {new Date(review.created_at).toLocaleDateString(undefined, {
@@ -607,26 +589,7 @@ export default function BookDetail() {
                             <p className="text-gray-800 dark:text-gray-300 leading-relaxed mb-4 font-mono">
                               {review.comment}
                             </p>
-                            <div className="flex gap-2">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 text-xs text-gray-600 dark:text-gray-400 hover:text-black hover:bg-primary/20 hover:border-black dark:hover:text-white dark:hover:border-white border border-transparent rounded-none uppercase font-bold"
-                                onClick={() => handleMarkHelpful(review.id)}
-                              >
-                                <ThumbsUp className="h-3 w-3 mr-1.5" />
-                                Helpful
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="h-8 text-xs text-gray-600 dark:text-gray-400 hover:text-red-600 hover:bg-red-100 border border-transparent hover:border-black dark:hover:border-white rounded-none uppercase font-bold"
-                                onClick={() => handleReportReview(review.id)}
-                              >
-                                <Flag className="h-3 w-3 mr-1.5" />
-                                Report
-                              </Button>
-                            </div>
+
                           </div>
                         </div>
                       </CardContent>

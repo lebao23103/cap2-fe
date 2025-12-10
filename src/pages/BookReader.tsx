@@ -233,7 +233,9 @@ export default function BookReader() {
           isPublic: true
         }
         // Add to beginning of list so it renders on top? or end?
-        allNotes = [...allNotes, mappedPreviewNote]
+        if (!allNotes.some((n: any) => n.id === mappedPreviewNote.id)) {
+          allNotes = [mappedPreviewNote, ...allNotes]
+        }
       }
 
       setNotes(allNotes)
