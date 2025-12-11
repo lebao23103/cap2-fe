@@ -137,11 +137,11 @@ export function ChatWidget() {
       {/* Chat Widget */}
       {(isOpen || isClosing) && (
         <div className="fixed bottom-6 right-6 z-50 font-mono">
-          <Card className={`w-[360px] border-4 border-border shadow-neo-lg bg-card rounded-xl origin-bottom-right transition-all duration-200 ease-out ${isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
+          <Card className={`w-[360px] border-2 border-border shadow-neo bg-card rounded-xl origin-bottom-right transition-all duration-200 ease-out ${isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
             } ${isMinimized ? 'h-16' : 'h-[500px]'
             }`}>
             {/* Header */}
-            <CardHeader className="px-4 py-3 bg-primary border-b-4 border-border">
+            <CardHeader className="px-4 py-3 bg-primary border-b-2 border-border">
               <div className="flex items-center justify-between gap-2">
                 {/* Left: Icon + Title */}
                 <div className="flex items-center gap-3 min-w-0 flex-1">
@@ -231,7 +231,7 @@ export function ChatWidget() {
                 </ScrollArea>
 
                 {/* Input Area */}
-                <div className="p-4 border-t-4 border-border bg-muted">
+                <div className="p-4 border-t-2 border-border bg-muted">
                   <div className="flex items-center gap-2">
                     <div className="flex-1">
                       <Input

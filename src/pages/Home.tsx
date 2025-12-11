@@ -108,7 +108,7 @@ export default function Home() {
       <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       {/* Hero Section */}
-      <section className='relative w-full py-24 sm:py-32 lg:py-40'>
+      <section className='relative w-full pt-8 pb-24 sm:pt-12 sm:pb-32 lg:pt-16 lg:pb-40'>
         <div className='container mx-auto px-4 relative z-10'>
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
 

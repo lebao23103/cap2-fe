@@ -62,7 +62,8 @@ const statusFilters = [
   "Currently Reading",
   "Completed",
   "Not Started",
-  "Favorites"
+  "Favorites",
+  "User Books"
 ]
 
 interface FilterState {
@@ -101,16 +102,20 @@ export default function ReadNEx() {
       setIsLoading(true)
       setError(null)
 
-      const [booksData, favoritesData, historyData] = await Promise.all([
+      const [booksData, favoritesData, historyData, userBooksData] = await Promise.all([
         booksService.getApprovedBooks(),
         userService.getFavorites().catch(() => []),
-        userService.getReadingHistory().catch(() => [])
+        userService.getReadingHistory().catch(() => []),
+        booksService.getApprovedUserBooks().catch(() => [])
       ])
 
       // Create lookup map for reading history
       const historyMap = new Map(
         historyData.map((h: any) => [h.book_id, h])
       )
+
+      // Create user books title set for matching
+      const userBookTitles = new Set(userBooksData.map((ub: any) => ub.title))
 
       const favoriteIds = new Set(
         favoritesData
@@ -142,7 +147,8 @@ export default function ReadNEx() {
           readingProgress: progress,
           isFavorite: favoriteIds.has(book.id),
           pages: book.pages,
-          hasReadingHistory: !!historyItem
+          hasReadingHistory: !!historyItem,
+          isUserCreated: userBookTitles.has(book.title)
         }
       })
 
@@ -184,6 +190,8 @@ export default function ReadNEx() {
         matchesStatus = !book.hasReadingHistory
       } else if (filters.statusFilter === "Favorites") {
         matchesStatus = book.isFavorite === true
+      } else if (filters.statusFilter === "User Books") {
+        matchesStatus = book.isUserCreated === true
       }
 
       const matchesSearch = filters.searchTerm === "" ||
@@ -249,7 +257,7 @@ export default function ReadNEx() {
   }
 
   return (
-    <div className="relative w-full min-h-screen bg-background py-8 sm:py-12 overflow-hidden font-mono">
+    <div className="relative w-full min-h-screen bg-background py-8 sm:py-12 overflow-hidden font-sans">
       {/* Background Grid */}
       <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-0" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
       <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
@@ -376,7 +384,7 @@ export default function ReadNEx() {
                       <DropdownMenuItem
                         key={status}
                         onClick={() => handleFilterChange('statusFilter', status)}
-                        className={`cursor-pointer focus:bg-primary focus:text-primary-foreground rounded-md my-0.5 font-mono uppercase font-bold hover:bg-primary hover:text-primary-foreground flex items-center justify-between ${filters.statusFilter === status ? 'bg-primary text-primary-foreground' : 'text-foreground'}`}
+                        className={`cursor-pointer focus:bg-primary focus:text-primary-foreground rounded-md my-0.5 font-bold uppercase hover:bg-primary hover:text-primary-foreground flex items-center justify-between ${filters.statusFilter === status ? 'bg-primary text-primary-foreground' : 'text-foreground'}`}
                       >
                         <span className="flex items-center">
                           {status}

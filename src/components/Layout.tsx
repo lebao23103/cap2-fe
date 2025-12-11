@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Button } from './ui/button';
@@ -41,6 +41,15 @@ export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
 
   const handleLogout = async () => {
@@ -78,16 +87,22 @@ export function Layout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen bg-background font-mono selection:bg-primary selection:text-black">
       {/* Header/Navigation */}
-      <header className="sticky top-0 z-50 w-full border-b-4 border-border bg-background" role="banner">
-        <div className="container mx-auto relative px-4">
-          <nav className="flex h-20 items-center justify-between gap-4" role="navigation" aria-label="Main navigation">
+      <header
+        className={`sticky top-0 z-50 w-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isScrolled
+          ? 'top-4 left-0 right-0 mx-auto w-[95%] max-w-7xl rounded-2xl border border-border/40 bg-background/80 backdrop-blur-md shadow-md'
+          : 'border-b-4 border-border bg-background'
+          }`}
+        role="banner"
+      >
+        <div className={`container mx-auto px-4 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isScrolled ? 'px-6' : 'px-4'}`}>
+          <nav className={`flex items-center justify-between gap-4 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isScrolled ? 'h-16' : 'h-20'}`} role="navigation" aria-label="Main navigation">
             {/* Left Side - Logo */}
             <div className="flex items-center">
               <Link to="/" className="group flex items-center gap-3 transition-all duration-300 hover:-translate-y-1" aria-label="Knowly home">
-                <div className="relative h-12 w-12 border-4 border-border bg-primary flex items-center justify-center shadow-neo group-hover:shadow-neo-hover transition-all rounded-xl">
-                  <BookOpen className="h-6 w-6 text-black" strokeWidth={3} />
+                <div className="relative h-10 w-10 border-4 border-border bg-primary flex items-center justify-center shadow-neo-sm group-hover:shadow-neo transition-all rounded-xl">
+                  <BookOpen className="h-5 w-5 text-black" strokeWidth={3} />
                 </div>
-                <span className="font-display text-3xl font-black uppercase tracking-tighter text-foreground">
+                <span className="font-display text-2xl font-black uppercase tracking-tighter text-foreground">
                   Knowly
                 </span>
               </Link>
@@ -107,7 +122,7 @@ export function Layout({ children }: LayoutProps) {
                     key={item.path}
                     to={item.path}
                     className={`flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase border-2 transition-all duration-200 rounded-lg ${isActivePath(item.path)
-                      ? 'bg-primary border-border text-primary-foreground shadow-neo -translate-y-1'
+                      ? 'bg-primary border-border text-primary-foreground shadow-neo-sm -translate-y-1'
                       : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground hover:bg-muted'
                       }`}
                   >
@@ -121,7 +136,7 @@ export function Layout({ children }: LayoutProps) {
             {/* Right Side - Auth Actions */}
             <div className="flex items-center justify-end gap-4">
               {/* Theme Toggle */}
-              <div className="border-2 border-border shadow-neo rounded-lg">
+              <div className="border-border shadow-neo-sm rounded-lg">
                 <ThemeToggle />
               </div>
 
@@ -129,24 +144,24 @@ export function Layout({ children }: LayoutProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden h-12 w-12 border-2 border-border rounded-lg shadow-neo active:translate-y-1 active:shadow-none transition-all"
+                className="md:hidden h-10 w-10 border-2 border-border rounded-lg shadow-neo-sm active:translate-y-1 active:shadow-none transition-all"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
 
               {isAuthenticated ? (
                 <div className="hidden md:block">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="flex items-center gap-3 h-12 px-4 border-2 border-border rounded-lg shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover transition-all bg-background">
-                        <Avatar className="h-8 w-8 border-2 border-border rounded-lg">
+                      <Button variant="ghost" className="flex items-center gap-3 h-10 px-4 border-2 border-border rounded-lg shadow-neo-sm hover:translate-y-[-2px] hover:shadow-neo transition-all bg-background">
+                        <Avatar className="h-7 w-7 border-2 border-border rounded-lg">
                           <AvatarImage src={user?.email ? `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}` : undefined} />
                           <AvatarFallback className="bg-primary text-black font-bold rounded-lg">
                             {user?.first_name?.[0]}{user?.last_name?.[0]}
                           </AvatarFallback>
                         </Avatar>
-                        <span className="font-bold uppercase max-w-[120px] truncate">
+                        <span className="font-bold uppercase max-w-[120px] truncate text-sm">
                           {user?.first_name}
                         </span>
                         <ChevronDown className="h-4 w-4" strokeWidth={3} />
@@ -182,14 +197,14 @@ export function Layout({ children }: LayoutProps) {
                   <Link to="/login">
                     <Button
                       variant="ghost"
-                      className="h-12 px-6 font-bold uppercase rounded-lg hover:bg-transparent transition-all"
+                      className="h-10 px-5 font-bold uppercase rounded-lg hover:bg-transparent transition-all text-sm"
                     >
                       Sign In
                     </Button>
                   </Link>
                   <Link to="/register">
                     <Button
-                      className="h-12 px-8 bg-foreground text-background font-bold uppercase border-2 border-border rounded-lg shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover hover:bg-primary hover:text-primary-foreground transition-all"
+                      className="h-10 px-6 bg-foreground text-background font-bold uppercase border-2 border-border rounded-lg shadow-neo-sm hover:translate-y-[-2px] hover:shadow-neo hover:bg-primary hover:text-primary-foreground transition-all text-sm"
                     >
                       Get Started
                     </Button>
@@ -257,12 +272,12 @@ export function Layout({ children }: LayoutProps) {
                     <div className="h-1 bg-black my-2" />
                     <div className="flex flex-col gap-3">
                       <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Button className="w-full h-12 font-bold uppercase border-2 border-border bg-background text-foreground shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover rounded-lg">
+                        <Button className="w-full h-12 font-bold uppercase border-2 border-border bg-background text-foreground shadow-neo-sm hover:translate-y-[-2px] hover:shadow-neo rounded-lg">
                           Sign In
                         </Button>
                       </Link>
                       <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Button className="w-full h-12 font-bold uppercase border-2 border-border bg-primary text-primary-foreground shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover rounded-lg">
+                        <Button className="w-full h-12 font-bold uppercase border-2 border-border bg-primary text-primary-foreground shadow-neo-sm hover:translate-y-[-2px] hover:shadow-neo rounded-lg">
                           Get Started
                         </Button>
                       </Link>

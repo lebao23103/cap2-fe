@@ -266,7 +266,7 @@ export default function NoteShare() {
                     placeholder="Search notes, books, or users..."
                     value={filters.searchTerm}
                     onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 text-sm border-2 border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-black dark:focus:border-white transition-colors font-mono"
+                    className="w-full pl-9 pr-4 py-2 text-sm border-2 border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-black dark:focus:border-white transition-colors font-sans font-bold"
                   />
                   {filters.searchTerm && (
                     <button
@@ -295,7 +295,7 @@ export default function NoteShare() {
                           <DropdownMenuItem
                             key={option}
                             onClick={() => handleFilterChange('noteFilter', option)}
-                            className="font-mono cursor-pointer text-xs hover:bg-black hover:text-white focus:bg-black focus:text-white dark:hover:bg-white dark:hover:text-black dark:focus:bg-white dark:focus:text-black rounded-md"
+                            className="font-bold cursor-pointer text-xs hover:bg-black hover:text-white focus:bg-black focus:text-white dark:hover:bg-white dark:hover:text-black dark:focus:bg-white dark:focus:text-black rounded-md"
                           >
                             {option}
                           </DropdownMenuItem>
@@ -347,12 +347,16 @@ export default function NoteShare() {
                                 >
                                   {note.bookTitle}
                                 </h3>
-                                <p className="text-sm text-gray-600 dark:text-gray-300 font-mono">
-                                  by {note.bookAuthor} • Page {note.page}
-                                </p>
+                                <div className="flex items-center gap-2 mt-1 text-sm text-gray-600 dark:text-gray-300 font-medium">
+                                  <span>by <span className="font-bold text-black dark:text-white uppercase">{note.bookAuthor}</span></span>
+                                  <span className="inline-block w-1 h-1 bg-gray-400 rounded-full" />
+                                  <span className="bg-gray-200 dark:bg-gray-800 border border-black dark:border-white px-1.5 py-0.5 rounded text-xs font-bold text-black dark:text-white">
+                                    PG. {note.page}
+                                  </span>
+                                </div>
                               </div>
                             </div>
-                            <div className="flex items-center gap-1.5 text-xs text-black font-bold uppercase bg-gray-100 border-2 border-border px-2 py-1">
+                            <div className="flex items-center gap-1.5 text-xs font-bold uppercase bg-black text-white dark:bg-white dark:text-black border-2 border-transparent px-3 py-1.5 rounded-lg shadow-sm">
                               <Calendar className="h-3.5 w-3.5" />
                               <span>{new Date(note.sharedDate).toLocaleDateString()}</span>
                             </div>
@@ -366,7 +370,7 @@ export default function NoteShare() {
                           </div>
 
                           {/* User Note */}
-                          <p className="text-base text-gray-800 dark:text-gray-200 mb-6 leading-relaxed font-mono">
+                          <p className="text-base text-gray-800 dark:text-gray-200 mb-6 leading-relaxed font-bold">
                             {note.userNote}
                           </p>
 
