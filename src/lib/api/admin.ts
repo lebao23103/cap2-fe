@@ -14,6 +14,11 @@ export interface ReportStatistics {
     total_users: number;
     total_reviews: number;
     average_rating: number;
+    rating_distribution: Record<number, number>; // {1: count, 2: count, ...}
+    user_roles: {
+        admin: number;
+        user: number;
+    };
 }
 
 export interface RatingStatistics {
@@ -39,6 +44,7 @@ export interface AdminBook {
     author: string;
     pdf_url: string | null;
     pages: number | null;
+    cover_image: string | null;
 }
 
 export interface PendingUserBook {
@@ -111,6 +117,27 @@ class AdminService {
 
     async updateUser(userId: number, data: { username?: string; email?: string; password?: string; is_staff?: boolean }): Promise<AdminUser> {
         const response = await apiClient.put(`/api/admin/users/${userId}/update/`, data);
+        return response.data;
+    }
+
+    async updateBook(bookId: number, data: FormData | { title?: string; author?: string; pages?: number }): Promise<AdminBook> {
+        // We use the edit-book-fields endpoint
+        // If it's FormData, let the browser set Content-Type header (don't set JSON)
+        if (data instanceof FormData) {
+            const response = await apiClient.put(`/api/books/${bookId}/edit/`, data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            return response.data;
+        } else {
+            const response = await apiClient.put(`/api/books/${bookId}/edit/`, data);
+            return response.data;
+        }
+    }
+
+    async createBook(data: FormData): Promise<AdminBook> {
+        const response = await apiClient.post('/api/books/create/', data, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
         return response.data;
     }
 

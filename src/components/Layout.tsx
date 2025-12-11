@@ -111,8 +111,8 @@ export function Layout({ children }: LayoutProps) {
 
   const springTransition = {
     type: "spring" as const,
-    stiffness: 50,
-    damping: 20,
+    stiffness: 250,
+    damping: 30, // No bounce, just fast snap
     mass: 1
   };
 
@@ -124,7 +124,7 @@ export function Layout({ children }: LayoutProps) {
    * Restore robust layout animation with performance optimizations.
    * - Use 'layout' for smooth size/position transitions.
    * - Use conditional classNames for styling ease.
-   * - Force hardware acceleration for 60fps.
+   * - Removed translateZ(0) to fix text blurriness (sub-pixel rendering issue).
    */
   return (
     <div className="min-h-screen bg-background font-mono selection:bg-primary selection:text-black">
@@ -133,13 +133,12 @@ export function Layout({ children }: LayoutProps) {
         layout
         initial={false}
         transition={isNavigating ? noTransition : springTransition}
-        className={`sticky top-0 z-50 mx-auto transition-colors duration-200 ${isScrolled
+        className={`sticky top-0 z-50 mx-auto ${isScrolled
           ? 'top-4 w-[95%] max-w-7xl rounded-2xl border border-border/40 bg-background/80 backdrop-blur-md shadow-md'
           : 'w-full border-b-4 border-border bg-background rounded-none'
           }`}
         style={{
-          willChange: 'width, top, transform', // Optimize for layout changes
-          transform: 'translateZ(0)' // Force GPU
+          willChange: 'width, top', // Reduced will-change surface area
         }}
         role="banner"
       >
