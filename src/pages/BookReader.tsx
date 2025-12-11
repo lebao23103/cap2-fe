@@ -202,13 +202,28 @@ export default function BookReader() {
         author: bookDetails.author,
         content: [], // Will use PDF instead
         totalPages: numPages || 10, // Will be updated when PDF loads
-        currentPage: location.state?.page || (history.find((h: any) => h.book_id === Number(id))?.page_number) || 1, // Prioritize state -> history -> 1
+        currentPage: location.state?.page || (() => {
+          const bookHistory = Array.isArray(history) ? history.filter((h: any) => h.book_id === Number(id)) : []
+          const maxPage = bookHistory.length > 0 ? Math.max(...bookHistory.map((h: any) => h.page_number)) : 1
+
+          // Sync UI state
+          if (!location.state?.page) {
+            setCurrentPage(maxPage)
+          }
+
+          return maxPage
+        })(),
         readingProgress: 0,
         notes: [],
         bookmarks: [],
         isFavorite: favorites.some((fav: any) => fav?.book?.id === Number(id)),
         hasQuiz: true,
-        readingTime: '4h 30m',
+        readingTime: (() => {
+          const totalMinutes = (bookDetails.pages || 0) * 1.5
+          const hours = Math.floor(totalMinutes / 60)
+          const minutes = Math.floor(totalMinutes % 60)
+          return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+        })(),
         rating: bookDetails.rating || 0
       }
 
@@ -861,7 +876,7 @@ export default function BookReader() {
             initial={{ y: -50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -50, opacity: 0 }}
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 pointer-events-auto"
+            className="fixed top-4 left-4 z-50 pointer-events-auto"
           >
             <Button
               onClick={() => setShowNavbar(true)}
@@ -1192,20 +1207,21 @@ export default function BookReader() {
                   </Document>
 
                   {/* Navigation Bar */}
-                  <div className={`px-6 py-4 border-t-2 ${themeStyles.border} flex items-center justify-between ${themeStyles.navBg} absolute bottom-0 left-0 right-0 z-20 rounded-t-xl`}>
+                  <div className={`px-4 pr-20 py-2 border-t-4 ${themeStyles.border} flex items-center justify-between ${themeStyles.navBg} absolute bottom-0 left-0 right-0 z-20 shadow-neo-sm h-14 gap-2 sm:gap-4`}>
                     <Button
                       variant="ghost"
                       onClick={() => handlePageChange('prev')}
                       disabled={currentPage === 1}
-                      className={`rounded-lg border-2 border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
+                      className={`h-9 px-3 rounded-lg border-2 ${themeStyles.border} uppercase font-bold text-xs sm:text-sm ${themeStyles.text} hover:bg-black/5 hover:translate-y-[1px] transition-all disabled:opacity-30`}
                     >
-                      <ChevronLeft className="h-5 w-5 mr-1" />
-                      <span className="hidden sm:inline">Previous</span>
+                      <ChevronLeft className="h-4 w-4 sm:mr-1" />
+                      <span className="hidden sm:inline">Prev</span>
                     </Button>
 
-                    <div className="flex items-center gap-2 sm:gap-4">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-sm font-bold font-mono hidden sm:inline ${themeStyles.text}`}>Page</span>
+                    <div className="flex items-center gap-2 sm:gap-6 flex-1 justify-center max-w-2xl px-2">
+                      {/* Page Counter Compact */}
+                      <div className={`flex items-center gap-2 px-3 py-1 rounded-lg border-2 ${themeStyles.border} ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} shadow-[2px_2px_0_0_rgba(0,0,0,0.1)]`}>
+                        <span className={`text-[10px] sm:text-xs font-bold uppercase ${themeStyles.text} opacity-60`}>Pg</span>
                         <input
                           type="number"
                           min={1}
@@ -1219,17 +1235,16 @@ export default function BookReader() {
                               updateReadingProgress(page)
                             }
                           }}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.currentTarget.blur()
-                            }
-                          }}
-                          className={`w-14 sm:w-16 h-8 text-center font-bold font-mono border-2 ${themeStyles.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${themeStyles.inputBg} ${themeStyles.inputText}`}
+                          className={`w-12 text-center font-black text-sm sm:text-base bg-transparent focus:outline-none ${themeStyles.text} p-0 appearance-none m-0 leading-none h-5`}
+                          style={{ lineHeight: '100%' }}
                         />
-                        <span className={`text-sm font-bold font-mono ${themeStyles.text}`}>of {bookData?.totalPages || 0}</span>
+                        <span className={`text-[10px] sm:text-xs font-bold uppercase ${themeStyles.text} opacity-60`}>/ {bookData?.totalPages || 0}</span>
                       </div>
-                      <div className="w-24 md:w-40 hidden sm:block">
-                        <Progress value={bookData?.readingProgress || 0} className={`h-2 border ${themeStyles.border} rounded-full [&>div]:bg-primary`} />
+
+                      {/* Progress Bar Inline - Hidden on very small screens, compact on others */}
+                      <div className="hidden sm:flex items-center gap-2 flex-1 max-w-[200px]">
+                        <Progress value={bookData?.readingProgress || 0} className={`h-2.5 flex-1 border-2 ${themeStyles.border} rounded-full [&>div]:bg-primary`} />
+                        <span className="text-[10px] font-bold uppercase opacity-50 w-8 text-right">{Math.round(bookData?.readingProgress || 0)}%</span>
                       </div>
                     </div>
 
@@ -1237,10 +1252,10 @@ export default function BookReader() {
                       variant="ghost"
                       onClick={() => handlePageChange('next')}
                       disabled={currentPage === (bookData?.totalPages || 0)}
-                      className={`rounded-lg border-2 border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
+                      className={`h-9 px-3 rounded-lg border-2 ${themeStyles.border} uppercase font-bold text-xs sm:text-sm ${themeStyles.text} hover:bg-black/5 hover:translate-y-[1px] transition-all disabled:opacity-30`}
                     >
                       <span className="hidden sm:inline">Next</span>
-                      <ChevronRight className="h-5 w-5 ml-1" />
+                      <ChevronRight className="h-4 w-4 sm:ml-1" />
                     </Button>
                   </div>
                 </div>
