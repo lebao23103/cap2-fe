@@ -36,8 +36,6 @@ import {
   Upload,
   Image as ImageIcon,
   X,
-  HelpCircle,
-  Clock,
   Library
 } from 'lucide-react'
 import { motion } from 'framer-motion'
@@ -57,14 +55,13 @@ import {
 } from 'recharts'
 import adminService, {
   type ReportStatistics,
-  type RatingStatistics,
   type AdminUser,
   type AdminBook,
   type PendingUserBook
 } from '../lib/api/admin'
-import booksService from '../lib/api/books'
 import { getCoverImageUrl } from '../lib/utils/mediaUtils'
 import QuizManagerDialog from '@/components/QuizManagerDialog'
+import { useConfirmDialog } from '@/components/ui/confirm-dialog'
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -74,24 +71,13 @@ const fadeInUp = {
 
 const COLORS = ['#00C49F', '#FFBB28', '#FF8042', '#0088FE'];
 
-// Mock Activity Data (Since API doesn't provide time-series yet)
-const mockActivityData = [
-  { name: 'Mon', reads: 12, newUsers: 2 },
-  { name: 'Tue', reads: 19, newUsers: 3 },
-  { name: 'Wed', reads: 15, newUsers: 1 },
-  { name: 'Thu', reads: 22, newUsers: 4 },
-  { name: 'Fri', reads: 30, newUsers: 5 },
-  { name: 'Sat', reads: 45, newUsers: 8 },
-  { name: 'Sun', reads: 60, newUsers: 12 },
-];
-
 export default function AdminDashboard() {
   const { toast } = useToast()
+  const { confirm, ConfirmDialog } = useConfirmDialog()
 
   // State
   const [isLoading, setIsLoading] = useState(true)
   const [stats, setStats] = useState<ReportStatistics | null>(null)
-  const [ratingStats, setRatingStats] = useState<RatingStatistics | null>(null)
   const [users, setUsers] = useState<AdminUser[]>([])
   const [books, setBooks] = useState<AdminBook[]>([])
   const [pendingBooks, setPendingBooks] = useState<PendingUserBook[]>([])
@@ -121,16 +107,14 @@ export default function AdminDashboard() {
     try {
       setIsLoading(true)
 
-      const [statsData, ratingData, usersData, booksData, pendingData] = await Promise.all([
+      const [statsData, usersData, booksData, pendingData] = await Promise.all([
         adminService.getReportStatistics().catch(() => null),
-        adminService.getRatingStatistics().catch(() => null),
         adminService.listUsers().catch(() => []),
         adminService.listBooks().catch(() => []),
         adminService.listPendingUserBooks().catch(() => [])
       ])
 
       setStats(statsData)
-      setRatingStats(ratingData)
       setUsers(usersData)
       setBooks(booksData)
       setPendingBooks(pendingData)
@@ -261,17 +245,25 @@ export default function AdminDashboard() {
   }
 
   const handleDeleteUser = async (userId: number) => {
-    if (!confirm('Are you sure you want to delete this user?')) return
-    try {
-      setActionLoading(`deleteUser-${userId}`)
-      await adminService.deleteUser(userId)
-      toast({ title: 'Success', description: 'User deleted successfully!' })
-      loadDashboardData()
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to delete user', variant: 'destructive' })
-    } finally {
-      setActionLoading(null)
-    }
+    confirm({
+      title: 'Delete User',
+      description: 'Are you sure you want to delete this user? This action cannot be undone.',
+      variant: 'danger',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        try {
+          setActionLoading(`deleteUser-${userId}`)
+          await adminService.deleteUser(userId)
+          toast({ title: 'Success', description: 'User deleted successfully!' })
+          loadDashboardData()
+        } catch (error) {
+          toast({ title: 'Error', description: 'Failed to delete user', variant: 'destructive' })
+        } finally {
+          setActionLoading(null)
+        }
+      }
+    })
   }
 
   // Book actions
@@ -344,17 +336,25 @@ export default function AdminDashboard() {
   }
 
   const handleDeleteBook = async (bookId: number) => {
-    if (!confirm('Are you sure you want to delete this book?')) return
-    try {
-      setActionLoading(`deleteBook-${bookId}`)
-      await adminService.deleteBook(bookId)
-      toast({ title: 'Success', description: 'Book deleted successfully!' })
-      loadDashboardData()
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to delete book', variant: 'destructive' })
-    } finally {
-      setActionLoading(null)
-    }
+    confirm({
+      title: 'Delete Book',
+      description: 'Are you sure you want to delete this book? This action cannot be undone.',
+      variant: 'danger',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        try {
+          setActionLoading(`deleteBook-${bookId}`)
+          await adminService.deleteBook(bookId)
+          toast({ title: 'Success', description: 'Book deleted successfully!' })
+          loadDashboardData()
+        } catch (error) {
+          toast({ title: 'Error', description: 'Failed to delete book', variant: 'destructive' })
+        } finally {
+          setActionLoading(null)
+        }
+      }
+    })
   }
 
   // UserBook moderation
@@ -372,17 +372,25 @@ export default function AdminDashboard() {
   }
 
   const handleRejectBook = async (bookId: number) => {
-    if (!confirm('Are you sure you want to reject and delete this book?')) return
-    try {
-      setActionLoading(`rejectBook-${bookId}`)
-      await adminService.rejectUserBook(bookId)
-      toast({ title: 'Success', description: 'Book rejected and deleted!' })
-      loadDashboardData()
-    } catch (error) {
-      toast({ title: 'Error', description: 'Failed to reject book', variant: 'destructive' })
-    } finally {
-      setActionLoading(null)
-    }
+    confirm({
+      title: 'Reject Book',
+      description: 'Are you sure you want to reject and delete this book? This action cannot be undone.',
+      variant: 'danger',
+      confirmText: 'Reject & Delete',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        try {
+          setActionLoading(`rejectBook-${bookId}`)
+          await adminService.rejectUserBook(bookId)
+          toast({ title: 'Success', description: 'Book rejected and deleted!' })
+          loadDashboardData()
+        } catch (error) {
+          toast({ title: 'Error', description: 'Failed to reject book', variant: 'destructive' })
+        } finally {
+          setActionLoading(null)
+        }
+      }
+    })
   }
 
   const openEditUser = (user: AdminUser) => {
@@ -487,8 +495,8 @@ export default function AdminDashboard() {
                     Pending Submissions (7 Days)
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-4 h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                <CardContent className="p-4">
+                  <ResponsiveContainer width="100%" height={180} debounce={50}>
                     <AreaChart data={activityData}>
                       <defs>
                         <linearGradient id="colorSubmissions" x1="0" y1="0" x2="0" y2="1">
@@ -563,8 +571,8 @@ export default function AdminDashboard() {
                     User Roles
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-4 h-[220px] flex flex-col items-center justify-center">
-                  <ResponsiveContainer width="100%" height="100%">
+                <CardContent className="p-4 flex flex-col items-center justify-center">
+                  <ResponsiveContainer width="100%" height={150} debounce={50}>
                     <PieChart>
                       <Pie
                         data={userRolesData}
@@ -576,7 +584,7 @@ export default function AdminDashboard() {
                         paddingAngle={5}
                         dataKey="value"
                       >
-                        {userRolesData.map((entry, index) => (
+                        {userRolesData.map((_entry, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke="#000" strokeWidth={2} />
                         ))}
                       </Pie>
@@ -608,7 +616,7 @@ export default function AdminDashboard() {
                 </CardHeader>
                 <CardContent className="p-4 h-[220px]">
                   {ratingChartData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
+                    <ResponsiveContainer width="100%" height={180} debounce={50}>
                       <BarChart data={ratingChartData} layout="vertical">
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10 }} />
@@ -644,8 +652,8 @@ export default function AdminDashboard() {
                     Content Depth
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-4 h-[220px]">
-                  <ResponsiveContainer width="100%" height="100%">
+                <CardContent className="p-4">
+                  <ResponsiveContainer width="100%" height={180} debounce={50}>
                     <BarChart data={bookDepthData}>
                       <CartesianGrid strokeDasharray="3 3" />
                       <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} />
@@ -1200,9 +1208,9 @@ export default function AdminDashboard() {
                     onClick={() => document.getElementById('new-pdf-input')?.click()}
                   >
                     <FileText className="h-5 w-5 shrink-0" />
-                    <div className="flex-1 min-w-0 mr-8">
+                    <div className="flex-1 w-0 mr-10">
                       <p className="font-bold text-sm truncate">{newBookForm.pdf_file ? newBookForm.pdf_file.name : 'No PDF selected'}</p>
-                      <p className="text-xs text-gray-500 font-mono italic">{newBookForm.pdf_file ? `${(newBookForm.pdf_file.size / 1024 / 1024).toFixed(2)} MB` : 'Click to upload PDF document'}</p>
+                      <p className="text-xs text-gray-500 font-mono italic truncate">{newBookForm.pdf_file ? `${(newBookForm.pdf_file.size / 1024 / 1024).toFixed(2)} MB` : 'Click to upload PDF document'}</p>
                     </div>
                     {/* Upload Icon (Default) or Remove Button (If file selected) */}
                     {newBookForm.pdf_file ? (
@@ -1298,14 +1306,13 @@ export default function AdminDashboard() {
                 <h3 className="font-black uppercase text-lg">Assets</h3>
               </div>
 
-              {/* Cover Manager */}
+              {/* Cover Image Uploader */}
               <div className="grid gap-2">
                 <Label className="font-bold uppercase text-black dark:text-white">Cover Image</Label>
                 <div
                   className="relative w-full h-64 border-4 border-dashed border-black dark:border-white bg-gray-50 dark:bg-zinc-800/50 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors overflow-hidden group"
                   onClick={() => document.getElementById('edit-cover-input')?.click()}
                 >
-                  {/* Priority: New File Preview > Existing URL > Placeholder */}
                   {editBookForm.cover_image ? (
                     <>
                       <img src={URL.createObjectURL(editBookForm.cover_image)} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
@@ -1327,47 +1334,57 @@ export default function AdminDashboard() {
                       </div>
                     </>
                   ) : selectedBook?.cover_image ? (
-                    <img src={getCoverImageUrl(selectedBook.cover_image)} alt="Current Cover" className="absolute inset-0 w-full h-full object-cover" />
+                    <>
+                      <img src={getCoverImageUrl(selectedBook.cover_image)} alt="Current Cover" className="absolute inset-0 w-full h-full object-cover" />
+                      <div className="absolute top-2 right-2 z-10">
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="destructive"
+                          className="h-8 w-8 rounded-full border-2 border-white shadow-md"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </>
                   ) : (
                     <div className="flex flex-col items-center gap-2 text-gray-500">
                       <ImageIcon className="h-10 w-10 opacity-50" />
-                      <span className="font-mono text-sm font-bold">No cover (Click to upload)</span>
+                      <span className="font-mono text-sm font-bold">Click to upload cover</span>
                     </div>
                   )}
-
                   {/* Hover Overlay */}
-                  {!editBookForm.cover_image && (
+                  {!editBookForm.cover_image && !selectedBook?.cover_image && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <Upload className="h-8 w-8 text-white" />
                     </div>
                   )}
-
-                  <input id="edit-cover-input" type="file" accept="image/*" className="hidden" onChange={(e) => setEditBookForm(prev => ({ ...prev, cover_image: e.target.files?.[0] || null }))} />
+                  <input
+                    id="edit-cover-input"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => setEditBookForm(prev => ({ ...prev, cover_image: e.target.files?.[0] || null }))}
+                  />
                 </div>
               </div>
 
-              {/* PDF Manager */}
+              {/* PDF Uploader */}
               <div className="grid gap-2">
                 <Label className="font-bold uppercase text-black dark:text-white">Content (PDF)</Label>
                 <div
-                  className={`h-16 border-2 border-black dark:border-white rounded-lg flex items-center px-4 gap-3 cursor-pointer transition-colors relative group ${editBookForm.pdf_file ? 'bg-blue-100 dark:bg-blue-900/30' : 'bg-white dark:bg-zinc-800 hover:bg-gray-50'}`}
+                  className={`h-16 border-2 border-black dark:border-white rounded-lg flex items-center px-4 gap-3 cursor-pointer transition-colors relative group ${editBookForm.pdf_file ? 'bg-green-100 dark:bg-green-900/30' : selectedBook?.pdf_url ? 'bg-green-100 dark:bg-green-900/30' : 'bg-white dark:bg-zinc-800 hover:bg-gray-50'}`}
                   onClick={() => document.getElementById('edit-pdf-input')?.click()}
                 >
                   <FileText className="h-5 w-5 shrink-0" />
-                  <div className="flex-1 min-w-0 mr-8">
-                    <p className="font-bold text-sm truncate">
-                      {editBookForm.pdf_file
-                        ? editBookForm.pdf_file.name
-                        : (selectedBook?.pdf_url ? 'Existing PDF loaded' : 'No PDF uploaded')}
-                    </p>
-                    <p className="text-xs text-gray-500 font-mono italic">
-                      {editBookForm.pdf_file
-                        ? 'New file selected'
-                        : (selectedBook?.pdf_url ? 'Click to replace existing PDF' : 'Click to upload PDF document')}
-                    </p>
+                  <div className="flex-1 w-0 mr-10">
+                    <p className="font-bold text-sm truncate">{editBookForm.pdf_file ? editBookForm.pdf_file.name : (selectedBook?.pdf_url ? decodeURIComponent(selectedBook.pdf_url.split('/').pop() || 'Existing PDF') : 'No PDF selected')}</p>
+                    <p className="text-xs text-gray-500 font-mono italic truncate">{editBookForm.pdf_file ? `${(editBookForm.pdf_file.size / 1024 / 1024).toFixed(2)} MB` : (selectedBook?.pdf_url ? 'Click to replace existing PDF' : 'Click to upload PDF document')}</p>
                   </div>
-
-                  {/* Upload Icon (Default) or Remove Button (If new file selected) */}
+                  {/* Upload Icon (Default) or Remove Button (If file selected) */}
                   {editBookForm.pdf_file ? (
                     <Button
                       type="button"
@@ -1387,7 +1404,13 @@ export default function AdminDashboard() {
                     <Upload className="h-4 w-4 shrink-0 text-gray-400 absolute right-4" />
                   )}
 
-                  <input id="edit-pdf-input" type="file" accept=".pdf" className="hidden" onChange={(e) => setEditBookForm(prev => ({ ...prev, pdf_file: e.target.files?.[0] || null }))} />
+                  <input
+                    id="edit-pdf-input"
+                    type="file"
+                    accept=".pdf"
+                    className="hidden"
+                    onChange={(e) => setEditBookForm(prev => ({ ...prev, pdf_file: e.target.files?.[0] || null }))}
+                  />
                 </div>
               </div>
             </div>
@@ -1415,6 +1438,8 @@ export default function AdminDashboard() {
         open={isQuizManagerOpen}
         onOpenChange={setIsQuizManagerOpen}
       />
+      {/* Confirm Dialog for Delete/Reject actions */}
+      <ConfirmDialog />
     </div >
   )
 }
