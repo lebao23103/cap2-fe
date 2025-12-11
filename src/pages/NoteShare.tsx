@@ -45,9 +45,10 @@ interface SharedNote {
   bookId: string
   page: number
   color: string
+  isUserBook: boolean
 }
 
-const filterOptions = ["All", "Recent"]
+const filterOptions = ["All", "Recent", "System Books", "User Books"]
 
 interface FilterState {
   noteFilter: string
@@ -72,22 +73,30 @@ export default function NoteShare() {
     try {
       setLoading(true)
       console.log("Fetching books...")
-      // 1. Get all approved books
-      const books = await booksService.getApprovedBooks()
-      console.log("Books fetched:", books.length)
 
-      // 2. For each book, fetch its public notes
-      const allNotesProms = books.map(async (book) => {
+      // 1. Fetch ALL books (contains both System and Approved User books)
+      // and Fetch Approved User Book records (to identify which ones are user books)
+      const [allBooks, userBookRecords] = await Promise.all([
+        booksService.getApprovedBooks(),
+        booksService.getApprovedUserBooks()
+      ])
+
+      // 2. Create a Set of titles from UserBook records for matching
+      // Since BE doesn't link them by ID, we use Title matching as the heuristic
+      const userBookTitles = new Set(userBookRecords.map(ub => ub.title))
+
+      console.log("Total Books:", allBooks.length)
+      console.log("User Book Records:", userBookRecords.length)
+
+      // 3. Process all books, flagging them as User Books if their title exists in userBookRecords
+      const allNotesProms = allBooks.map(async (book) => {
         try {
-          // Use notesService to fetch public notes
+          const isUserBook = userBookTitles.has(book.title)
+
+          // Fetch notes using the actual Book ID
           const data = await notesService.getPublicNotes(book.id)
+          if (!data || !Array.isArray(data.public_notes)) return []
 
-          if (!data || !Array.isArray(data.public_notes)) {
-            console.warn(`Invalid notes format for book ${book.id}`, data)
-            return []
-          }
-
-          // data.public_notes is the array
           return data.public_notes.map((n) => ({
             id: n.id ? n.id.toString() : Math.random().toString(),
             bookTitle: book.title || "Unknown Book",
@@ -102,7 +111,8 @@ export default function NoteShare() {
             sharedDate: n.created_at || new Date().toISOString(),
             bookId: book.id.toString(),
             page: n.page_number || 1,
-            color: n.color || '#FFEB3B'
+            color: n.color || '#FFEB3B',
+            isUserBook: isUserBook
           }))
         } catch (e) {
           console.error(`Failed to fetch notes for book ${book.id}`, e)
@@ -147,6 +157,10 @@ export default function NoteShare() {
       filtered = filtered.filter(note =>
         new Date(note.sharedDate) >= new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
       )
+    } else if (filters.noteFilter === "System Books") {
+      filtered = filtered.filter(note => !note.isUserBook)
+    } else if (filters.noteFilter === "User Books") {
+      filtered = filtered.filter(note => note.isUserBook)
     }
 
     return filtered.sort((a, b) => {
@@ -205,9 +219,9 @@ export default function NoteShare() {
           className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 max-w-4xl mx-auto"
         >
           <motion.div variants={fadeInUp}>
-            <Card className="border-2 border-border shadow-neo bg-card rounded-xl hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover transition-all duration-300">
+            <Card className="border-2 border-black dark:border-white shadow-neo bg-card rounded-xl hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover transition-all duration-300">
               <CardContent className="p-6 text-center">
-                <div className="p-4 border-2 border-border bg-amber-400 w-fit mx-auto mb-4 shadow-neo-sm rounded-xl">
+                <div className="p-4 border-2 border-black dark:border-white bg-amber-400 w-fit mx-auto mb-4 shadow-neo-sm rounded-xl">
                   <StickyNote className="h-8 w-8 text-black" />
                 </div>
                 <div className="text-4xl font-bold text-black dark:text-white font-display mb-1">
@@ -241,7 +255,7 @@ export default function NoteShare() {
         >
           <div className="max-w-4xl mx-auto">
             {/* Filter Controls & Search */}
-            <div className="mb-8 bg-card p-4 rounded-xl border-2 border-border shadow-neo space-y-4">
+            <div className="mb-8 bg-card p-4 rounded-xl border-2 border-black dark:border-white shadow-neo space-y-4">
               <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                 {/* Search Input */}
                 <div className="relative w-full md:max-w-md">

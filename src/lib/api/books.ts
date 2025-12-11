@@ -68,8 +68,12 @@ class BooksService {
   }
 
   // User created books
-  async createUserBook(bookData: CreateUserBookData): Promise<Book> {
-    const response = await apiClient.post('/api/create-user-book/', bookData);
+  async createUserBook(bookData: FormData): Promise<Book> {
+    const response = await apiClient.post('/api/create-user-book/', bookData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     return response.data;
   }
 

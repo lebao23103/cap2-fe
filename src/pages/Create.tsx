@@ -22,6 +22,7 @@ import { Progress } from '@/components/ui/progress'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { validateImageFile, validateBookFile, formatFileSize } from '@/lib/fileValidation'
+import booksService from '@/lib/api/books'
 
 
 // Book creation interface
@@ -134,26 +135,10 @@ export default function Create() {
 
       setUploadProgress(30)
 
-      const token = localStorage.getItem('access_token')
-      if (!token) throw new Error("No access token found")
-
       setUploadProgress(50)
 
-      // Send to backend
-      const response = await fetch('http://127.0.0.1:8000/api/create-user-book/', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        },
-        body: formData
-      })
-
-      setUploadProgress(80)
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || 'Failed to publish book')
-      }
+      // Send to backend using service (handles auth & refresh)
+      await booksService.createUserBook(formData)
 
       setUploadProgress(100)
 
