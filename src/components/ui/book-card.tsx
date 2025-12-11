@@ -11,6 +11,8 @@ export interface BookData {
   cover: string
   rating: number
   genre: string[]
+  page_number?: number
+  readingProgress?: number
 }
 
 export interface BookCardProps {

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react'
 import { Button } from '../components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import BookCard, { type BookData } from '../components/ui/book-card'
 import { useToast } from '../components/ui/use-toast'
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
@@ -23,11 +23,8 @@ import {
   MessageCircle,
   StickyNote,
   Loader2,
-  TrendingUp,
   ArrowRight,
   Clock,
-  Mail,
-  Edit3,
   Save,
   User,
   Lock,
@@ -57,6 +54,7 @@ export default function Dashboard() {
   // Dashboard Metrics
   const [stats, setStats] = useState({
     booksRead: 0,
+    readingCount: 0,
     favoritesCount: 0,
     notesCount: 0
   })
@@ -149,13 +147,16 @@ export default function Dashboard() {
           page_number: item.page_number
         }))
 
-      const completedBooks = historyData.filter((item: any) => item && item.status === 'completed').length
+      const uniqueHistoryArray = Array.from(uniqueHistory.values());
+      const completedBooks = uniqueHistoryArray.filter((item: any) => item && item.status === 'completed').length
+      const readingBooks = uniqueHistoryArray.filter((item: any) => item && item.status !== 'completed').length
 
       setRecommendations(transformedRecommendations)
       setFavorites(transformedFavorites)
       setReadingHistory(transformedHistory)
       setStats({
         booksRead: completedBooks,
+        readingCount: readingBooks,
         favoritesCount: favoritesData.length,
         notesCount: notesStats.total_notes || 0
       })
@@ -269,6 +270,9 @@ export default function Dashboard() {
 
                       <div className="flex flex-wrap gap-2 mt-4">
                         {/* Compact Stats Badges */}
+                        <div className="bg-green-100 dark:bg-green-900/40 border-2 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 px-3 py-1 rounded-full text-xs font-bold uppercase flex items-center gap-1.5">
+                          <Play className="h-3.5 w-3.5 fill-current" /> {stats.readingCount} Reading
+                        </div>
                         <div className="bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-bold uppercase flex items-center gap-1.5">
                           <BookOpen className="h-3.5 w-3.5" /> {stats.booksRead} Read
                         </div>
