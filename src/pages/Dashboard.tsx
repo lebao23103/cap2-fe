@@ -1,11 +1,13 @@
+
 import { useState, useEffect } from 'react'
 import { Button } from '../components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/card'
 import BookCard, { type BookData } from '../components/ui/book-card'
 import { useToast } from '../components/ui/use-toast'
 import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Dialog,
   DialogContent,
@@ -28,7 +30,11 @@ import {
   Edit3,
   Save,
   User,
-  Lock
+  Lock,
+  Settings,
+  Sparkles,
+  Zap,
+  Play
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -48,7 +54,7 @@ export default function Dashboard() {
   const [favorites, setFavorites] = useState<BookData[]>([])
   const [readingHistory, setReadingHistory] = useState<BookData[]>([])
 
-  // Stats - only what backend supports
+  // Dashboard Metrics
   const [stats, setStats] = useState({
     booksRead: 0,
     favoritesCount: 0,
@@ -94,7 +100,6 @@ export default function Dashboard() {
     try {
       setIsLoading(true)
 
-      // Fetch all dashboard data in parallel
       const [booksData, favoritesData, historyData, notesStats] = await Promise.all([
         booksService.getApprovedBooks().catch(() => []),
         userService.getFavorites().catch(() => []),
@@ -102,10 +107,9 @@ export default function Dashboard() {
         notesService.getUserNotesStatistics().catch(() => ({ total_notes: 0 }))
       ])
 
-      // Transform books for recommendations (show first 3 approved books with null checks)
       const transformedRecommendations: BookData[] = booksData
         .filter((book: any) => book && book.id && book.title)
-        .slice(0, 3)
+        .slice(0, 4)
         .map((book: any) => ({
           id: book.id.toString(),
           title: book.title,
@@ -115,10 +119,8 @@ export default function Dashboard() {
           genre: book.subject ? [book.subject] : ['General']
         }))
 
-      // Transform favorites (flat structure from view: list of Books)
       const transformedFavorites: BookData[] = favoritesData
         .filter((book: any) => book && book.id)
-        .slice(0, 2)
         .map((book: any) => ({
           id: book.id.toString(),
           title: book.title,
@@ -128,8 +130,6 @@ export default function Dashboard() {
           genre: book.subject ? [book.subject] : ['General']
         }))
 
-      // Transform reading history (flat structure from serializer)
-      // Deduplicate history by book_id to handle potential legacy duplicates
       const uniqueHistory = new Map();
       historyData.forEach((item: any) => {
         if (item && item.book_id && !uniqueHistory.has(item.book_id)) {
@@ -138,19 +138,17 @@ export default function Dashboard() {
       });
 
       const transformedHistory: BookData[] = Array.from(uniqueHistory.values())
-        .slice(0, 3)
         .map((item: any) => ({
           id: item.book_id.toString(),
           title: item.book_title,
           author: item.book_author || 'Unknown Author',
           cover: getCoverImageUrl(item.book_cover),
-          rating: 0, // Not in flat history
+          rating: 0,
           genre: ['General'],
           readingProgress: item.page_number ? Math.round((item.page_number / (item.book_pages || 100)) * 100) : 0,
           page_number: item.page_number
         }))
 
-      // Calculate stats from actual data
       const completedBooks = historyData.filter((item: any) => item && item.status === 'completed').length
 
       setRecommendations(transformedRecommendations)
@@ -184,7 +182,6 @@ export default function Dashboard() {
         email: editForm.email
       })
 
-      // Refresh user data in context
       updateUser({
         id: user.id,
         email: editForm.email,
@@ -228,6 +225,8 @@ export default function Dashboard() {
     }
   }
 
+  const mostRecentBook = readingHistory.length > 0 ? readingHistory[0] : null;
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden font-mono">
       {/* Background Grid */}
@@ -244,301 +243,309 @@ export default function Dashboard() {
             variants={stagger}
             initial="initial"
             animate="animate"
-            className="space-y-8"
+            className="space-y-8 max-w-6xl mx-auto"
           >
-            {/* Welcome Header Card */}
-            <motion.div variants={fadeInUp}>
-              <Card className="border-4 border-border shadow-neo-lg bg-gradient-to-r from-primary via-yellow-300 to-primary rounded-xl overflow-hidden">
-                <CardContent className="p-6 sm:p-8">
-                  <div className="flex flex-col sm:flex-row items-center gap-6">
-                    {/* Avatar */}
-                    <Avatar className="h-24 w-24 sm:h-28 sm:w-28 ring-4 ring-black dark:ring-white rounded-lg border-4 border-border shadow-neo bg-white">
+            {/* 1. HERO SECTION & WELCOME */}
+            <motion.div variants={fadeInUp} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left: User Profile & Quick Stats */}
+              <Card className="lg:col-span-2 border-2 border-border shadow-neo-lg bg-card rounded-2xl overflow-hidden flex flex-col justify-between">
+                <div className="p-6 md:p-8 bg-gradient-to-br from-white to-gray-50 dark:from-zinc-900 dark:to-zinc-950">
+                  <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+                    <Avatar className="h-24 w-24 ring-2 ring-black dark:ring-white rounded-xl border-2 border-border shadow-neo bg-amber-200">
                       <AvatarImage src={user?.email ? `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}` : undefined} />
-                      <AvatarFallback className="text-3xl font-black bg-white text-black rounded-lg">
+                      <AvatarFallback className="text-3xl font-black bg-amber-200 text-black rounded-xl">
                         {user?.first_name?.[0]}{user?.last_name?.[0]}
                       </AvatarFallback>
                     </Avatar>
 
-                    {/* Welcome Text */}
-                    <div className="flex-1 text-center sm:text-left">
-                      <h1 className="text-2xl sm:text-3xl md:text-4xl font-black uppercase text-black mb-2">
-                        Welcome back, {user?.first_name}! 👋
+                    <div className="flex-1 space-y-1">
+                      <h1 className="text-3xl md:text-4xl font-black text-foreground uppercase tracking-tight">
+                        Hello, {user?.first_name}!
                       </h1>
-                      <div className="flex items-center justify-center sm:justify-start gap-2 text-sm text-black/80 font-bold">
-                        <Mail className="h-4 w-4" />
-                        <span className="font-mono">{user?.email}</span>
+                      <p className="text-muted-foreground font-mono flex items-center gap-2 text-sm font-bold">
+                        <Zap className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                        Ready to optimize your knowledge?
+                      </p>
+
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        {/* Compact Stats Badges */}
+                        <div className="bg-blue-100 dark:bg-blue-900/40 border-2 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-bold uppercase flex items-center gap-1.5">
+                          <BookOpen className="h-3.5 w-3.5" /> {stats.booksRead} Read
+                        </div>
+                        <div className="bg-red-100 dark:bg-red-900/40 border-2 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-3 py-1 rounded-full text-xs font-bold uppercase flex items-center gap-1.5">
+                          <Heart className="h-3.5 w-3.5" /> {stats.favoritesCount} Loved
+                        </div>
+                        <div className="bg-amber-100 dark:bg-amber-900/40 border-2 border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 px-3 py-1 rounded-full text-xs font-bold uppercase flex items-center gap-1.5">
+                          <StickyNote className="h-3.5 w-3.5" /> {stats.notesCount} Notes
+                        </div>
                       </div>
                     </div>
-
-                    <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="h-12 px-4 bg-card border-4 border-border rounded-lg shadow-neo hover:bg-black hover:text-white dark:text-white dark:hover:bg-white dark:hover:text-black transition-all font-bold uppercase"
-                        >
-                          <Edit3 className="h-5 w-5 mr-2" />
-                          Edit Profile
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px] border-4 border-border rounded-xl shadow-neo-lg bg-card text-foreground p-0 gap-0 overflow-hidden">
-                        <DialogHeader className="border-b-4 border-border p-6 bg-muted/20">
-                          <DialogTitle className="text-2xl font-black uppercase flex items-center gap-2">
-                            <User className="h-6 w-6" />
-                            Edit Profile
-                          </DialogTitle>
-                          <DialogDescription className="font-mono text-muted-foreground">
-                            Update your profile information below.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 p-6">
-                          <div className="grid gap-2">
-                            <Label htmlFor="first_name" className="font-bold uppercase">First Name</Label>
-                            <Input
-                              id="first_name"
-                              value={editForm.first_name}
-                              onChange={(e) => setEditForm(prev => ({ ...prev, first_name: e.target.value }))}
-                              className="border-2 border-black rounded-lg h-12 font-mono"
-                            />
-                          </div>
-                          <div className="grid gap-2">
-                            <Label htmlFor="last_name" className="font-bold uppercase">Last Name</Label>
-                            <Input
-                              id="last_name"
-                              value={editForm.last_name}
-                              onChange={(e) => setEditForm(prev => ({ ...prev, last_name: e.target.value }))}
-                              className="border-2 border-black rounded-lg h-12 font-mono"
-                            />
-                          </div>
-                          <div className="grid gap-2">
-                            <Label htmlFor="email" className="font-bold uppercase">Email</Label>
-                            <Input
-                              id="email"
-                              type="email"
-                              value={editForm.email}
-                              onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
-                              className="border-2 border-black dark:border-white rounded-lg h-12 font-mono dark:bg-zinc-800"
-                            />
-                          </div>
-                        </div>
-                        <DialogFooter className="border-t-4 border-border p-6 bg-muted/20">
-                          <Button
-                            onClick={handleUpdateProfile}
-                            disabled={isUpdating}
-                            className="w-full bg-primary text-black border-4 border-border rounded-lg shadow-neo hover:bg-black hover:text-white transition-all font-bold uppercase h-12"
-                          >
-                            {isUpdating ? (
-                              <>
-                                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                                Saving...
-                              </>
-                            ) : (
-                              <>
-                                <Save className="h-5 w-5 mr-2" />
-                                Save Changes
-                              </>
-                            )}
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-
-                    {/* Change Password Dialog */}
-                    <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
-                      <DialogTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className="h-12 px-4 bg-card border-4 border-border rounded-lg shadow-neo hover:bg-black hover:text-white dark:text-white dark:hover:bg-white dark:hover:text-black transition-all font-bold uppercase"
-                        >
-                          <Lock className="h-5 w-5 mr-2" />
-                          Security
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px] border-4 border-border rounded-xl shadow-neo-lg bg-card text-foreground p-0 gap-0 overflow-hidden">
-                        <DialogHeader className="border-b-4 border-border p-6 bg-muted/20">
-                          <DialogTitle className="text-2xl font-black uppercase flex items-center gap-2">
-                            <Lock className="h-6 w-6" />
-                            Change Password
-                          </DialogTitle>
-                        </DialogHeader>
-                        <div className="grid gap-4 p-6">
-                          <div className="grid gap-2">
-                            <Label htmlFor="old_pass" className="font-bold uppercase">Current Password</Label>
-                            <Input type="password" id="old_pass" value={passwordForm.old_password} onChange={e => setPasswordForm(p => ({ ...p, old_password: e.target.value }))} className="border-2 border-border rounded-lg h-12 font-mono" />
-                          </div>
-                          <div className="grid gap-2">
-                            <Label htmlFor="new_pass" className="font-bold uppercase">New Password</Label>
-                            <Input type="password" id="new_pass" value={passwordForm.new_password} onChange={e => setPasswordForm(p => ({ ...p, new_password: e.target.value }))} className="border-2 border-border rounded-lg h-12 font-mono" />
-                          </div>
-                          <div className="grid gap-2">
-                            <Label htmlFor="confirm_pass" className="font-bold uppercase">Confirm Password</Label>
-                            <Input type="password" id="confirm_pass" value={passwordForm.confirm_password} onChange={e => setPasswordForm(p => ({ ...p, confirm_password: e.target.value }))} className="border-2 border-border rounded-lg h-12 font-mono" />
-                          </div>
-                        </div>
-                        <DialogFooter className="border-t-4 border-border p-6 bg-muted/20">
-                          <Button onClick={handleChangePassword} disabled={isChangingPassword} className="w-full bg-black text-white dark:bg-white dark:text-black border-4 border-transparent hover:border-black rounded-lg shadow-neo-sm hover:shadow-neo transition-all font-bold uppercase h-12">
-                            {isChangingPassword ? "Updating..." : "Update Password"}
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
                   </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-              {[
-                { label: 'Books Read', value: stats.booksRead, icon: BookOpen, bg: 'bg-blue-400' },
-                { label: 'Favorites', value: stats.favoritesCount, icon: Heart, bg: 'bg-red-400' },
-                { label: 'Notes Made', value: stats.notesCount, icon: StickyNote, bg: 'bg-yellow-400' }
-              ].map((stat, index) => (
-                <motion.div key={index} variants={fadeInUp}>
-                  <Card className="border-4 border-border bg-card shadow-neo-hover rounded-xl hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-lg transition-all duration-300 group">
-                    <CardContent className="p-6 flex items-center gap-4">
-                      <div className={`p-4 border-4 border-border ${stat.bg} text-black shadow-neo group-hover:rotate-6 transition-transform`}>
-                        <stat.icon className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <div className="text-3xl font-black text-black dark:text-white font-mono">{stat.value}</div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 font-bold uppercase tracking-wide">{stat.label}</p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* Quick Actions */}
-            <motion.div variants={fadeInUp} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Button
-                variant="outline"
-                className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-card border-4 border-border rounded-xl shadow-neo-hover hover:bg-blue-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-lg transition-all group uppercase font-black"
-                onClick={() => navigate('/reading-history')}
-              >
-                <div className="p-3 bg-blue-100 border-2 border-border group-hover:bg-white transition-colors">
-                  <BookOpen className="h-8 w-8 text-black" />
-                </div>
-                <span className="text-lg text-foreground group-hover:text-black">Continue Reading</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-card border-4 border-border rounded-xl shadow-neo-hover hover:bg-red-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-lg transition-all group uppercase font-black"
-                onClick={() => navigate('/favorites')}
-              >
-                <div className="p-3 bg-red-100 border-2 border-border group-hover:bg-white transition-colors">
-                  <Heart className="h-8 w-8 text-black" />
-                </div>
-                <span className="text-lg text-foreground group-hover:text-black">My Favorites</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-card border-4 border-border rounded-xl shadow-neo-hover hover:bg-yellow-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-lg transition-all group uppercase font-black"
-                onClick={() => navigate('/my-notes')}
-              >
-                <div className="p-3 bg-yellow-100 border-2 border-border group-hover:bg-white transition-colors">
-                  <StickyNote className="h-8 w-8 text-black" />
-                </div>
-                <span className="text-lg text-foreground group-hover:text-black">My Notes</span>
-              </Button>
-              <Button
-                variant="outline"
-                className="h-auto py-8 flex flex-col gap-3 items-center justify-center bg-card border-4 border-border rounded-xl shadow-neo-hover hover:bg-green-400 hover:text-black hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-lg transition-all group uppercase font-black"
-                onClick={() => navigate('/chatbot')}
-              >
-                <div className="p-3 bg-green-100 border-2 border-border group-hover:bg-white transition-colors">
-                  <MessageCircle className="h-8 w-8 text-black" />
-                </div>
-                <span className="text-lg text-foreground group-hover:text-black">Chat with AI</span>
-              </Button>
-            </motion.div>
-
-            {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Recommendations */}
-              <motion.div variants={fadeInUp} className="lg:col-span-2 space-y-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-black text-foreground flex items-center gap-2 uppercase">
-                    <span className="bg-black text-white px-2 py-1 inline-flex items-center gap-2">
-                      <TrendingUp className="h-5 w-5" />
-                      Recommended for You
-                    </span>
-                  </h2>
-                  <Button variant="ghost" size="sm" className="text-gray-600 dark:text-gray-300 hover:text-black hover:bg-primary/20 font-bold uppercase border-2 border-transparent hover:border-black" onClick={() => navigate('/readnex')}>
-                    View All <ArrowRight className="ml-1 h-4 w-4" />
-                  </Button>
                 </div>
 
-                <div className="space-y-4">
-                  {recommendations.length === 0 ? (
-                    <Card className="bg-card border-4 border-dashed border-border rounded-xl">
-                      <CardContent className="p-12 text-center">
-                        <div className="w-16 h-16 bg-gray-100 dark:bg-zinc-700 border-2 border-black dark:border-white flex items-center justify-center mx-auto mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                          <BookOpen className="h-8 w-8 text-black dark:text-white" />
+                {/* Profile Quick Action Bar */}
+                <div className="border-t-2 border-border p-4 bg-muted/20 flex gap-3">
+                  <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="sm" className="font-bold uppercase text-xs hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black">
+                        <Settings className="h-4 w-4 mr-2" /> Edit Profile
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px] border-2 border-border rounded-xl shadow-neo-lg bg-card text-foreground p-0 gap-0 overflow-hidden">
+                      <DialogHeader className="border-b-4 border-border p-6 bg-muted/20">
+                        <DialogTitle className="text-2xl font-black uppercase flex items-center gap-2">
+                          <User className="h-6 w-6" />
+                          Edit Profile
+                        </DialogTitle>
+                        <DialogDescription className="font-mono text-muted-foreground">
+                          Update your profile information below.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="grid gap-4 p-6">
+                        <div className="grid gap-2">
+                          <Label htmlFor="first_name" className="font-bold uppercase">First Name</Label>
+                          <Input
+                            id="first_name"
+                            value={editForm.first_name}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, first_name: e.target.value }))}
+                            className="border-2 border-black rounded-lg h-12 font-mono"
+                          />
                         </div>
-                        <p className="text-gray-600 dark:text-gray-300 font-bold uppercase">No recommendations available yet.</p>
-                        <p className="text-gray-500 dark:text-gray-400 font-mono text-sm mt-2">Start reading to get personalized suggestions!</p>
+                        <div className="grid gap-2">
+                          <Label htmlFor="last_name" className="font-bold uppercase">Last Name</Label>
+                          <Input
+                            id="last_name"
+                            value={editForm.last_name}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, last_name: e.target.value }))}
+                            className="border-2 border-black rounded-lg h-12 font-mono"
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="email" className="font-bold uppercase">Email</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={editForm.email}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, email: e.target.value }))}
+                            className="border-2 border-black dark:border-white rounded-lg h-12 font-mono dark:bg-zinc-800"
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter className="border-t-4 border-border p-6 bg-muted/20">
+                        <Button
+                          onClick={handleUpdateProfile}
+                          disabled={isUpdating}
+                          className="w-full bg-primary text-black border-4 border-border rounded-lg shadow-neo hover:bg-black hover:text-white transition-all font-bold uppercase h-12"
+                        >
+                          {isUpdating ? (
+                            <>
+                              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                              Saving...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="h-5 w-5 mr-2" />
+                              Save Changes
+                            </>
+                          )}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+
+                  <Dialog open={isPasswordDialogOpen} onOpenChange={setIsPasswordDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="ghost" size="sm" className="font-bold uppercase text-xs hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black">
+                        <Lock className="h-4 w-4 mr-2" /> Security
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px] border-2 border-border rounded-xl shadow-neo-lg bg-card text-foreground p-0 gap-0 overflow-hidden">
+                      <DialogHeader className="border-b-2 border-border p-6 bg-muted/20">
+                        <DialogTitle className="text-2xl font-black uppercase flex items-center gap-2">
+                          <Lock className="h-6 w-6" />
+                          Change Password
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="grid gap-4 p-6">
+                        <div className="grid gap-2">
+                          <Label htmlFor="old_pass" className="font-bold uppercase">Current Password</Label>
+                          <Input type="password" id="old_pass" value={passwordForm.old_password} onChange={e => setPasswordForm(p => ({ ...p, old_password: e.target.value }))} className="border-2 border-border rounded-lg h-12 font-mono" />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="new_pass" className="font-bold uppercase">New Password</Label>
+                          <Input type="password" id="new_pass" value={passwordForm.new_password} onChange={e => setPasswordForm(p => ({ ...p, new_password: e.target.value }))} className="border-2 border-border rounded-lg h-12 font-mono" />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label htmlFor="confirm_pass" className="font-bold uppercase">Confirm Password</Label>
+                          <Input type="password" id="confirm_pass" value={passwordForm.confirm_password} onChange={e => setPasswordForm(p => ({ ...p, confirm_password: e.target.value }))} className="border-2 border-border rounded-lg h-12 font-mono" />
+                        </div>
+                      </div>
+                      <DialogFooter className="border-t-2 border-border p-6 bg-muted/20">
+                        <Button onClick={handleChangePassword} disabled={isChangingPassword} className="w-full bg-black text-white dark:bg-white dark:text-black border-2 border-transparent hover:border-black rounded-lg shadow-neo-sm hover:shadow-neo transition-all font-bold uppercase h-12">
+                          {isChangingPassword ? "Updating..." : "Update Password"}
+                        </Button>
+                      </DialogFooter>
+                    </DialogContent>
+                  </Dialog>
+                </div>
+              </Card>
+
+              {/* Right: "Jump Back In" Hero */}
+              <div className="lg:col-span-1">
+                {mostRecentBook ? (
+                  <Card className="h-full border-2 border-border shadow-neo bg-primary/20 hover:bg-primary/30 transition-colors rounded-2xl p-6 flex flex-col justify-between group cursor-pointer" onClick={() => navigate(`/book/${mostRecentBook.id}/read`)}>
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="font-black uppercase text-sm flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                          Jump Back In
+                        </h3>
+                        <Button size="icon" className="rounded-full w-12 h-12 bg-lime-400 text-black border-2 border-black shadow-neo-sm group-hover:scale-110 group-hover:shadow-neo transition-all duration-300">
+                          <Play className="h-5 w-5 fill-black ml-1" />
+                        </Button>
+                      </div>
+                      <h2 className="text-2xl font-black font-display uppercase line-clamp-2 mb-1 group-hover:underline decoration-2 underline-offset-2">
+                        {mostRecentBook.title}
+                      </h2>
+                      <p className="font-mono text-xs text-muted-foreground uppercase mb-6">PG. {mostRecentBook.page_number || 1}</p>
+                    </div>
+
+                    <div>
+                      <div className="w-full bg-background/50 h-2 rounded-full overflow-hidden mb-2">
+                        <div className="bg-black h-full rounded-full" style={{ width: `${mostRecentBook.readingProgress}%` }} />
+                      </div>
+                      <p className="text-[10px] font-bold uppercase text-right">{mostRecentBook.readingProgress}% Complete</p>
+                    </div>
+                  </Card>
+                ) : (
+                  <Card className="h-full border-2 border-dashed border-border bg-card/50 rounded-2xl p-6 flex flex-col items-center justify-center text-center gap-4">
+                    <div className="p-4 bg-muted rounded-full">
+                      <BookOpen className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <div>
+                      <h3 className="font-bold uppercase">No Active reading</h3>
+                      <p className="text-sm text-muted-foreground">Start a book to track progress</p>
+                    </div>
+                    <Button size="sm" variant="outline" className="border-2 border-black font-bold uppercase hover:bg-black hover:text-white" onClick={() => navigate('/readnex')}>Browse Books</Button>
+                  </Card>
+                )}
+              </div>
+            </motion.div>
+
+            {/* 2. TABS: OVERVIEW | LIBRARY | DISCOVER */}
+            <motion.div variants={fadeInUp}>
+              <Tabs defaultValue="overview" className="w-full space-y-6">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                  <TabsList className="h-auto p-1 bg-card border-2 border-border shadow-neo-sm rounded-xl">
+                    <TabsTrigger value="overview" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-primary data-[state=active]:text-black transition-all rounded-lg">Overview</TabsTrigger>
+                    <TabsTrigger value="library" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black transition-all rounded-lg">My Library</TabsTrigger>
+                    <TabsTrigger value="discover" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-blue-400 data-[state=active]:text-black transition-all rounded-lg">Discover</TabsTrigger>
+                  </TabsList>
+
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="ghost" className="h-9 text-xs font-bold uppercase border-2 border-transparent hover:border-border" onClick={() => navigate('/chatbot')}><MessageCircle className="h-3.5 w-3.5 mr-2" /> Ask AI</Button>
+                  </div>
+                </div>
+
+                {/* TAB: OVERVIEW */}
+                <TabsContent value="overview" className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Recent History List */}
+                    <Card className="col-span-1 lg:col-span-2 border-2 border-border rounded-xl shadow-neo-sm h-fit">
+                      <CardHeader className="py-4 border-b-2 border-border bg-muted/20">
+                        <CardTitle className="text-sm font-black uppercase flex items-center gap-2">
+                          <Clock className="h-4 w-4" /> Recent Activity
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-0">
+                        {readingHistory.length > 0 ? (
+                          <div className="divide-y-2 divide-border">
+                            {readingHistory.slice(0, 3).map((book) => (
+                              <div key={book.id} className="p-4 flex items-center gap-4 hover:bg-accent/5 transition-colors cursor-pointer" onClick={() => navigate(`/book/${book.id}/read`)}>
+                                <img src={book.cover} className="w-12 h-16 object-cover border-2 border-border rounded-md shadow-sm" alt={book.title} />
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-bold text-sm truncate">{book.title}</h4>
+                                  <p className="text-xs text-muted-foreground uppercase">{book.author}</p>
+                                  <div className="w-24 h-1.5 bg-gray-200 dark:bg-zinc-800 rounded-full mt-2 overflow-hidden">
+                                    <div className="h-full bg-black dark:bg-white rounded-full" style={{ width: `${book.readingProgress}%` }} />
+                                  </div>
+                                </div>
+                                <ArrowRight className="h-4 w-4 text-muted-foreground" />
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="p-8 text-center text-muted-foreground text-sm font-bold uppercase">No activity yet</div>
+                        )}
                       </CardContent>
                     </Card>
-                  ) : (
-                    recommendations.map((book) => (
+
+                    {/* Favorites Column */}
+                    <Card className="border-2 border-border rounded-xl shadow-neo-sm h-fit">
+                      <CardHeader className="py-4 border-b-2 border-border bg-red-100/50 dark:bg-red-900/10">
+                        <CardTitle className="text-sm font-black uppercase flex items-center gap-2">
+                          <Heart className="h-4 w-4 text-red-500 fill-red-500" /> Favorites
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-4 grid gap-4">
+                        {favorites.slice(0, 2).map((book) => (
+                          <div key={book.id} className="group relative">
+                            <BookCard book={book} size="sm" />
+                          </div>
+                        ))}
+                        {favorites.length === 0 && (
+                          <div className="py-8 text-center text-xs font-bold uppercase text-muted-foreground">
+                            No favorites added
+                          </div>
+                        )}
+                        <Button variant="ghost" size="sm" className="w-full text-xs font-bold uppercase border-2 border-dashed border-border hover:border-solid hover:bg-accent" onClick={() => navigate('/readnex')}>
+                          + Add Favorites
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </TabsContent>
+
+                {/* TAB: LIBRARY */}
+                <TabsContent value="library">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {readingHistory.map((book) => (
                       <BookCard key={book.id} book={book} size="md" />
-                    ))
-                  )}
-                </div>
-              </motion.div>
-
-              {/* Sidebar */}
-              <motion.div variants={fadeInUp} className="space-y-6">
-                {/* Reading History */}
-                <Card className="bg-card border-4 border-border shadow-neo-hover rounded-xl">
-                  <CardHeader className="pb-3 border-b-4 border-border bg-blue-100 dark:bg-blue-900">
-                    <CardTitle className="text-lg font-black flex items-center gap-2 uppercase dark:text-white">
-                      <Clock className="h-5 w-5 text-black dark:text-white" />
-                      Continue Reading
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-4 space-y-4">
-                    {readingHistory.length === 0 ? (
-                      <div className="text-center py-6">
-                        <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 border-2 border-border flex items-center justify-center mx-auto mb-2 shadow-neo-sm">
-                          <BookOpen className="h-6 w-6 text-black dark:text-white" />
-                        </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 font-bold">No reading history yet</p>
+                    ))}
+                    {readingHistory.length === 0 && (
+                      <div className="col-span-full py-20 text-center border-2 border-dashed border-border rounded-xl">
+                        <p className="font-bold uppercase text-muted-foreground">Your library is empty.</p>
                       </div>
-                    ) : (
-                      readingHistory.map((book) => (
-                        <BookCard key={book.id} book={book} size="sm" />
-                      ))
                     )}
-                  </CardContent>
-                </Card>
+                  </div>
+                </TabsContent>
 
-                {/* Favorites */}
-                <Card className="bg-card border-4 border-border shadow-neo-hover rounded-xl">
-                  <CardHeader className="pb-3 border-b-4 border-border bg-red-100 dark:bg-red-900">
-                    <CardTitle className="text-lg font-black flex items-center gap-2 uppercase dark:text-white">
-                      <Heart className="h-5 w-5 text-red-500 fill-red-500" />
-                      My Favorites
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="pt-4 space-y-4">
-                    {favorites.length === 0 ? (
-                      <div className="text-center py-6">
-                        <div className="w-12 h-12 bg-red-100 dark:bg-red-900 border-2 border-border flex items-center justify-center mx-auto mb-2 shadow-neo-sm">
-                          <Heart className="h-6 w-6 text-red-500" />
+                {/* TAB: DISCOVER */}
+                <TabsContent value="discover">
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between bg-yellow-100 dark:bg-yellow-900/10 p-4 border-2 border-yellow-400 dark:border-yellow-700/50 rounded-xl">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-yellow-400 rounded-lg border-2 border-black text-black">
+                          <Sparkles className="h-5 w-5" />
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 font-bold">No favorites yet</p>
+                        <div>
+                          <h3 className="font-black uppercase text-sm">Personalized Picks</h3>
+                          <p className="text-xs font-mono text-muted-foreground">Based on your reading history</p>
+                        </div>
                       </div>
-                    ) : (
-                      favorites.map((book) => (
-                        <BookCard key={book.id} book={book} size="sm" />
-                      ))
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </div>
+                      <Button size="sm" className="bg-black text-white dark:bg-white dark:text-black font-bold uppercase text-xs rounded-full px-6 shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] dark:shadow-[1px_1px_0px_0px_rgba(255,255,255,1)] hover:shadow-neo-sm transition-all" onClick={() => navigate('/readnex')}>Browse All</Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                      {recommendations.map((book) => (
+                        <BookCard key={book.id} book={book} size="md" />
+                      ))}
+                    </div>
+                  </div>
+                </TabsContent>
+
+              </Tabs>
+            </motion.div>
           </motion.div>
         )}
       </main>
