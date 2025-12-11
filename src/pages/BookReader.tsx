@@ -1063,10 +1063,10 @@ export default function BookReader() {
               )}
             </AnimatePresence>
 
-            <div className={`relative border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 ${themeStyles.cardBg}`}>
+            <div className={`relative border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all duration-500 ${themeStyles.cardBg}`}>
               {/* PDF Viewer with react-pdf */}
               {pdfUrl ? (
-                <div className={`flex flex-col relative transition-all duration-300 ${showNavbar ? 'h-[calc(100vh-8rem)]' : 'h-[calc(100vh-3rem)]'}`}>
+                <div className={`flex flex-col relative transition-all duration-300 ${showNavbar ? 'h-[calc(100vh-6rem)]' : 'h-[calc(100vh-2rem)]'}`}>
                   <Document
                     file={pdfUrl}
                     onLoadSuccess={({ numPages }) => {
@@ -1315,9 +1315,9 @@ export default function BookReader() {
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: 50, opacity: 0 }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className={`xl:col-span-3 space-y-4 h-fit sticky transition-all duration-300 ${showNavbar ? 'top-24' : 'top-4'}`}
+                className={`xl:col-span-3 flex flex-col gap-4 sticky transition-all duration-300 ${showNavbar ? 'top-24 h-[calc(100vh-7rem)]' : 'top-4 h-[calc(100vh-2rem)]'}`}
               >
-                <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center justify-between mb-0 shrink-0">
                   <h2 className={`text-lg font-bold uppercase pb-1 ${themeStyles.text} border-b-2 ${themeStyles.border}`}>Reading Companion</h2>
                   <Button
                     onClick={() => setSidebarOpen(false)}
@@ -1331,7 +1331,7 @@ export default function BookReader() {
                 </div>
 
                 {/* Book Info */}
-                <Card className={`border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] overflow-hidden rounded-xl ${themeStyles.cardBg}`}>
+                <Card className={`shrink-0 border-2 ${themeStyles.border} shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] overflow-hidden rounded-xl ${themeStyles.cardBg}`}>
                   <CardContent className="p-0">
                     <div className={`p-4 border-b-2 ${themeStyles.border} ${themeStyles.navBg}`}>
                       <div className="flex items-center justify-between">
@@ -1357,8 +1357,49 @@ export default function BookReader() {
                   </CardContent>
                 </Card>
 
+                {/* Bookmarks (Quick Access Ribbon) */}
+                <Card className={`shrink-0 border-2 ${themeStyles.border} shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden ${themeStyles.cardBg}`}>
+                  <div className={`px-4 py-2 border-b-2 ${themeStyles.border} ${themeStyles.navBg} flex items-center justify-between`}>
+                    <div className="flex items-center gap-2">
+                      <Bookmark className={`h-4 w-4 ${themeStyles.text}`} />
+                      <h3 className={`font-bold uppercase text-xs tracking-wider ${themeStyles.text}`}>Quick Access</h3>
+                    </div>
+                    <span className={`text-[10px] font-mono leading-none px-2 py-1 rounded border ${themeStyles.border} ${theme === 'dark' ? 'text-gray-400 border-gray-600' : 'text-gray-500 border-gray-300'}`}>
+                      Press 'B'
+                    </span>
+                  </div>
+                  <div className={`p-3 overflow-x-auto whitespace-nowrap scrollbar-hide flex items-center gap-2 ${theme === 'dark' ? 'bg-black/20' : 'bg-gray-50/50'}`}>
+                    {(bookData?.bookmarks && bookData.bookmarks.length > 0) ? (
+                      bookData.bookmarks.map((page) => (
+                        <button
+                          key={page}
+                          onClick={() => setCurrentPage(page)}
+                          className={`
+                            group flex items-center gap-2 px-3 py-1.5 rounded-none border-2 transition-all
+                            shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
+                            ${theme === 'dark'
+                              ? 'bg-zinc-800 border-gray-400 text-white hover:bg-primary hover:text-black hover:border-black'
+                              : theme === 'sepia'
+                                ? 'bg-[#fdf5e6] border-[#8b7355] text-[#5c4033] hover:bg-primary hover:text-black hover:border-black'
+                                : 'bg-white border-black text-black hover:bg-primary'
+                            }
+                          `}
+                        >
+                          <span className="font-mono font-bold text-xs">Pg.{page}</span>
+                        </button>
+                      ))
+                    ) : (
+                      <div className="w-full text-center py-2">
+                        <span className={`text-xs font-mono italic ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
+                          No bookmarks yet
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </Card>
+
                 {/* Notes */}
-                <Card className={`border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] flex flex-col max-h-[calc(100vh-300px)] rounded-xl ${themeStyles.cardBg}`}>
+                <Card className={`flex-1 min-h-0 border-2 ${themeStyles.border} shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] flex flex-col rounded-xl ${themeStyles.cardBg}`}>
                   <CardHeader className={`p-2 border-b-2 ${themeStyles.border} ${themeStyles.navBg}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
@@ -1447,41 +1488,13 @@ export default function BookReader() {
                   </CardContent>
                 </Card>
 
-                {/* Bookmarks */}
-                <Card className={`border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] rounded-xl ${themeStyles.cardBg}`}>
-                  <CardHeader className={`pb-3 border-b-2 ${themeStyles.border} ${themeStyles.navBg}`}>
-                    <div className="flex items-center gap-2">
-                      <Bookmark className={`h-4 w-4 ${themeStyles.text}`} />
-                      <h3 className={`font-bold uppercase ${themeStyles.text}`}>Bookmarks</h3>
-                      <Badge variant="secondary" className={`text-xs ${themeStyles.inputBg} ${themeStyles.inputText} border-2 ${themeStyles.border} rounded-lg`}>{bookData?.bookmarks?.length || 0}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="p-2">
-                    <div className="grid grid-cols-4 gap-2">
-                      {(bookData?.bookmarks || []).map((page) => (
-                        <Button
-                          key={page}
-                          variant="outline"
-                          size="sm"
-                          className="h-9 w-full rounded-lg border-2 border-black hover:bg-black hover:text-white font-mono font-bold"
-                          onClick={() => setCurrentPage(page)}
-                        >
-                          {page}
-                        </Button>
-                      ))}
-                      {(bookData?.bookmarks?.length || 0) === 0 && (
-                        <div className={`col-span-4 py-4 text-center text-xs font-mono ${theme === 'dark' ? 'text-gray-400' : theme === 'sepia' ? 'text-[#8b7355]' : 'text-gray-500'}`}>
-                          No bookmarks
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
+
               </motion.div>
             )}
           </AnimatePresence>
+          <div className="h-20 xl:hidden"></div>
         </div>
-      </div >
+      </div>
 
 
 

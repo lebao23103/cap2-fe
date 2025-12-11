@@ -120,15 +120,15 @@ export function ChatWidget() {
           <div className="relative group">
             <Button
               onClick={handleOpen}
-              className="relative h-16 w-16 rounded-full bg-primary text-primary-foreground border-2 border-border shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover transition-all duration-200"
+              className="relative h-12 w-12 rounded-full bg-primary text-primary-foreground border-2 border-border shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover transition-all duration-200"
               size="icon"
             >
-              <MessageCircle className="h-8 w-8" strokeWidth={2.5} />
+              <MessageCircle className="h-6 w-6" strokeWidth={2.5} />
             </Button>
 
             {/* Notification dot */}
-            <div className="absolute -top-1 -right-1 h-6 w-6 bg-foreground text-background border-2 border-background flex items-center justify-center shadow-sm">
-              <span className="text-xs font-bold">1</span>
+            <div className="absolute -top-1 -right-1 h-5 w-5 bg-foreground text-background border-2 border-background flex items-center justify-center shadow-sm">
+              <span className="text-[10px] font-bold">1</span>
             </div>
           </div>
         </div>
