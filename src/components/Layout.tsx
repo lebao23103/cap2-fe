@@ -31,6 +31,7 @@ import {
   LogOut,
   StickyNote,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -41,16 +42,38 @@ export function Layout({ children }: LayoutProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.scrollY > 20;
+    }
+    return false;
+  });
+  const [isNavigating, setIsNavigating] = useState(true);
 
+  // Handle scroll events with RAF for performance
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 20);
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Handle route changes to prevent animation
+  useEffect(() => {
+    setIsNavigating(true);
+    // Ensure accurate scroll state on navigation
+    setIsScrolled(window.scrollY > 20);
+    const timer = setTimeout(() => setIsNavigating(false), 200);
+    return () => clearTimeout(timer);
+  }, [location.pathname]);
 
   const handleLogout = async () => {
     await logout();
@@ -59,6 +82,8 @@ export function Layout({ children }: LayoutProps) {
   const isActivePath = (path: string) => {
     return location.pathname === path;
   };
+
+  // ... (navItems logic)
 
   const navItems = isAuthenticated ? [
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -84,18 +109,60 @@ export function Layout({ children }: LayoutProps) {
     );
   }
 
+  const springTransition = {
+    type: "spring" as const,
+    stiffness: 50,
+    damping: 20,
+    mass: 1
+  };
+
+  const noTransition = {
+    duration: 0
+  };
+
+  /* 
+   * Restore robust layout animation with performance optimizations.
+   * - Use 'layout' for smooth size/position transitions.
+   * - Use conditional classNames for styling ease.
+   * - Force hardware acceleration for 60fps.
+   */
   return (
     <div className="min-h-screen bg-background font-mono selection:bg-primary selection:text-black">
       {/* Header/Navigation */}
-      <header
-        className={`sticky top-0 z-50 w-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isScrolled
-          ? 'top-4 left-0 right-0 mx-auto w-[95%] max-w-7xl rounded-2xl border border-border/40 bg-background/80 backdrop-blur-md shadow-md'
-          : 'border-b-4 border-border bg-background'
+      <motion.header
+        layout
+        initial={false}
+        transition={isNavigating ? noTransition : springTransition}
+        className={`sticky top-0 z-50 mx-auto transition-colors duration-200 ${isScrolled
+          ? 'top-4 w-[95%] max-w-7xl rounded-2xl border border-border/40 bg-background/80 backdrop-blur-md shadow-md'
+          : 'w-full border-b-4 border-border bg-background rounded-none'
           }`}
+        style={{
+          willChange: 'width, top, transform', // Optimize for layout changes
+          transform: 'translateZ(0)' // Force GPU
+        }}
         role="banner"
       >
-        <div className={`container mx-auto px-4 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isScrolled ? 'px-6' : 'px-4'}`}>
-          <nav className={`flex items-center justify-between gap-4 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isScrolled ? 'h-16' : 'h-20'}`} role="navigation" aria-label="Main navigation">
+        <motion.div
+          initial={false}
+          animate={{
+            paddingLeft: isScrolled ? "1.5rem" : "1rem",
+            paddingRight: isScrolled ? "1.5rem" : "1rem",
+            maxWidth: isScrolled ? "80rem" : "100%"
+          }}
+          transition={isNavigating ? noTransition : springTransition}
+          className="container mx-auto"
+        >
+          <motion.nav
+            initial={false}
+            animate={{
+              height: isScrolled ? "4rem" : "5rem"
+            }}
+            transition={isNavigating ? noTransition : springTransition}
+            className="flex items-center justify-between gap-4"
+            role="navigation"
+            aria-label="Main navigation"
+          >
             {/* Left Side - Logo */}
             <div className="flex items-center">
               <Link to="/" className="group flex items-center gap-3 transition-all duration-300 hover:-translate-y-1" aria-label="Knowly home">
@@ -110,26 +177,29 @@ export function Layout({ children }: LayoutProps) {
 
             {/* Center - Navigation Menu */}
             <div className="hidden md:flex items-center justify-center flex-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 p-1 bg-muted/20 border border-border/10 rounded-xl backdrop-blur-sm">
                 {[
                   { path: '/', label: 'Home', icon: Home },
                   { path: '/readnex', label: 'ReadNEx', icon: Library },
                   { path: '/create', label: 'Create', icon: Plus },
                   { path: '/noteshare', label: 'NoteShare', icon: Sparkles },
                   { path: '/about', label: 'About', icon: Info },
-                ].map((item) => (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    className={`flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase border-2 transition-all duration-200 rounded-lg ${isActivePath(item.path)
-                      ? 'bg-primary border-border text-primary-foreground shadow-neo-sm -translate-y-1'
-                      : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground hover:bg-muted'
-                      }`}
-                  >
-                    <item.icon className="h-4 w-4" strokeWidth={2.5} />
-                    <span>{item.label}</span>
-                  </Link>
-                ))}
+                ].map((item) => {
+                  const active = isActivePath(item.path);
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      className={`relative flex items-center justify-center gap-2 px-5 h-10 text-sm font-black uppercase tracking-wide transition-all duration-200 rounded-lg select-none ${active
+                        ? 'bg-primary text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
+                        : 'text-muted-foreground border-2 border-transparent hover:text-black hover:bg-muted/50'
+                        }`}
+                    >
+                      <item.icon className={`w-4 h-4 ${active ? "stroke-[3px]" : "stroke-[2.5px]"}`} />
+                      <span>{item.label}</span>
+                    </Link>
+                  );
+                })}
               </div>
             </div>
 
@@ -212,7 +282,7 @@ export function Layout({ children }: LayoutProps) {
                 </div>
               )}
             </div>
-          </nav>
+          </motion.nav>
 
           {/* Mobile Navigation Menu */}
           {isMobileMenuOpen && (
@@ -287,8 +357,8 @@ export function Layout({ children }: LayoutProps) {
               </div>
             </div>
           )}
-        </div>
-      </header >
+        </motion.div>
+      </motion.header >
 
       {/* Main Content */}
       < main className="flex-1" >

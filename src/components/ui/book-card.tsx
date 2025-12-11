@@ -148,3 +148,4 @@ export default function BookCard({ book, size = 'md', className, onClick }: Book
     </Link>
   )
 }
+
