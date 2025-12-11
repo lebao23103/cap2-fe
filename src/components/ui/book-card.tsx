@@ -62,13 +62,13 @@ export default function BookCard({ book, size = 'md', className, onClick }: Book
   const Content = (
     <Card
       className={cn(
-        "group transition-all duration-300 cursor-pointer overflow-hidden border-2 border-black",
-        "bg-white hover:bg-white",
+        "group transition-all duration-300 cursor-pointer overflow-hidden border-2 border-border",
+        "bg-card hover:bg-card",
         "hover:-translate-y-1 hover:-translate-x-1",
         variant.cardShadow,
         variant.hoverShadow,
         "active:translate-y-0 active:translate-x-0 active:shadow-none",
-        "rounded-none",
+        "rounded-xl",
         className
       )}
       onClick={onClick}
@@ -76,20 +76,20 @@ export default function BookCard({ book, size = 'md', className, onClick }: Book
       <CardContent className={cn(variant.container, "relative z-10")}>
         <div className="flex gap-4 items-start">
           <div className="flex-shrink-0 relative group-hover:scale-105 transition-transform duration-500">
-            <div className={cn("absolute inset-0 bg-black", variant.imageOffset)} />
+            <div className={cn("absolute inset-0 bg-black rounded-md", variant.imageOffset)} />
             <img
               src={book.cover}
               alt={book.title}
               loading="lazy"
               className={cn(
                 variant.cover,
-                "object-cover border-2 border-black relative z-10 bg-white"
+                "object-cover border-2 border-border relative z-10 bg-card rounded-md"
               )}
             />
           </div>
           <div className="flex-1 min-w-0 flex flex-col justify-center">
             <h3 className={cn(
-              "font-bold line-clamp-2 mb-1 text-black group-hover:underline decoration-2 underline-offset-2 uppercase",
+              "font-bold line-clamp-2 mb-1 text-foreground group-hover:underline decoration-2 underline-offset-2 uppercase",
               variant.title
             )}>
               {book.title}
@@ -102,10 +102,10 @@ export default function BookCard({ book, size = 'md', className, onClick }: Book
             </p>
             <div className="flex items-center gap-1 mt-2">
               <Star className={cn(
-                "fill-black text-black",
+                "fill-black text-black dark:fill-white dark:text-white",
                 variant.rating
               )} />
-              <span className="text-xs font-bold text-black font-mono">
+              <span className="text-xs font-bold text-foreground font-mono">
                 {book.rating.toFixed(1)}
               </span>
             </div>
@@ -115,7 +115,7 @@ export default function BookCard({ book, size = 'md', className, onClick }: Book
                   key={g}
                   variant="secondary"
                   className={cn(
-                    "bg-white text-black border-2 border-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-1px] hover:translate-x-[-1px] transition-transform",
+                    "bg-card text-foreground border-2 border-border rounded-md shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-1px] hover:translate-x-[-1px] transition-transform",
                     variant.badge
                   )}
                 >

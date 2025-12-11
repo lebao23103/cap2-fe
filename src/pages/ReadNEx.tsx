@@ -314,7 +314,7 @@ export default function ReadNEx() {
               bg: 'bg-purple-400'
             }
           ].map((stat, index) => (
-            <Card key={index} className="border-2 border-border bg-card hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-hover transition-all duration-300 shadow-neo rounded-none">
+            <Card key={index} className="border-2 border-border bg-card hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-hover transition-all duration-300 shadow-neo rounded-xl">
               <CardContent className="p-4 flex flex-col items-center justify-center text-center">
                 <div className={`p-3 border-2 border-border ${stat.bg} mb-3 shadow-neo-sm`}>
                   <stat.icon className={`h-6 w-6 ${stat.color}`} />
@@ -361,7 +361,7 @@ export default function ReadNEx() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
-                      className="h-10 px-4 border-2 border-border bg-background hover:bg-muted transition-all min-w-[140px] justify-between rounded-none shadow-neo text-foreground font-bold uppercase"
+                      className="h-10 px-4 border-2 border-border bg-background hover:bg-muted transition-all min-w-[140px] justify-between rounded-lg shadow-neo text-foreground font-bold uppercase"
                     >
                       <span className="flex items-center gap-2 text-sm">
                         <BookmarkCheck className="h-4 w-4" />
@@ -370,13 +370,13 @@ export default function ReadNEx() {
                       <ChevronDown className="h-3 w-3" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 border-2 border-border bg-background shadow-neo rounded-none" align="end">
+                  <DropdownMenuContent className="w-56 border-2 border-border bg-background shadow-neo rounded-xl" align="end">
                     <DropdownMenuLabel className="uppercase font-bold border-b-2 border-border text-foreground">Filter by Status</DropdownMenuLabel>
                     {statusFilters.map((status) => (
                       <DropdownMenuItem
                         key={status}
                         onClick={() => handleFilterChange('statusFilter', status)}
-                        className={`cursor-pointer focus:bg-primary focus:text-primary-foreground rounded-none my-0.5 font-mono uppercase font-bold hover:bg-primary hover:text-primary-foreground flex items-center justify-between ${filters.statusFilter === status ? 'bg-primary text-primary-foreground' : 'text-foreground'}`}
+                        className={`cursor-pointer focus:bg-primary focus:text-primary-foreground rounded-md my-0.5 font-mono uppercase font-bold hover:bg-primary hover:text-primary-foreground flex items-center justify-between ${filters.statusFilter === status ? 'bg-primary text-primary-foreground' : 'text-foreground'}`}
                       >
                         <span className="flex items-center">
                           {status}
@@ -460,7 +460,7 @@ export default function ReadNEx() {
                     variant="outline"
                     onClick={() => handlePageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="border-2 border-border rounded-none font-bold uppercase disabled:opacity-50 hover:bg-muted"
+                    className="border-2 border-border rounded-lg font-bold uppercase disabled:opacity-50 hover:bg-muted"
                   >
                     <ChevronLeft className="h-4 w-4 mr-2" />
                     Prev
@@ -474,7 +474,7 @@ export default function ReadNEx() {
                     variant="outline"
                     onClick={() => handlePageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="border-2 border-border rounded-none font-bold uppercase disabled:opacity-50 hover:bg-muted"
+                    className="border-2 border-border rounded-lg font-bold uppercase disabled:opacity-50 hover:bg-muted"
                   >
                     Next
                     <ChevronRight className="h-4 w-4 ml-2" />

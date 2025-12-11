@@ -144,7 +144,7 @@ export default function MyNotes() {
                             ← BACK TO DASHBOARD
                         </Button>
                         <h1 className="text-4xl font-black uppercase text-foreground flex items-center gap-3">
-                            <span className="bg-yellow-400 text-black px-2 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                            <span className="bg-yellow-400 text-black px-2 border-2 border-border shadow-neo">
                                 My Notes
                             </span>
                         </h1>
@@ -160,15 +160,15 @@ export default function MyNotes() {
                                 placeholder="Search content or book..."
                                 value={searchTerm}
                                 onChange={e => setSearchTerm(e.target.value)}
-                                className="pl-9 border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900"
+                                className="pl-9 border-2 border-border rounded-lg shadow-neo bg-card"
                             />
                         </div>
-                        <div className="flex border-2 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                        <div className="flex border-2 border-border bg-card shadow-neo rounded-lg overflow-hidden divide-x-2 divide-border">
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => setViewMode('grid')}
-                                className={`rounded-none ${viewMode === 'grid' ? 'bg-primary text-black' : ''}`}
+                                className={`rounded-none hover:bg-muted ${viewMode === 'grid' ? 'bg-primary text-black' : ''}`}
                             >
                                 <Grid className="h-4 w-4" />
                             </Button>
@@ -176,7 +176,7 @@ export default function MyNotes() {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => setViewMode('list')}
-                                className={`rounded-none ${viewMode === 'list' ? 'bg-primary text-black' : ''}`}
+                                className={`rounded-none hover:bg-muted ${viewMode === 'list' ? 'bg-primary text-black' : ''}`}
                             >
                                 <List className="h-4 w-4" />
                             </Button>
@@ -185,7 +185,7 @@ export default function MyNotes() {
                 </motion.div>
 
                 {filteredNotes.length === 0 ? (
-                    <div className="text-center py-20 border-4 border-dashed border-black dark:border-white bg-white dark:bg-zinc-900 opacity-80">
+                    <div className="text-center py-20 border-4 border-dashed border-border bg-card opacity-80">
                         <StickyNote className="h-16 w-16 mx-auto text-gray-400 mb-4" />
                         <h3 className="text-xl font-bold uppercase text-foreground">No notes found</h3>
                         <p className="text-muted-foreground">Start reading and select text to add notes!</p>
@@ -199,8 +199,8 @@ export default function MyNotes() {
                     >
                         {filteredNotes.map((note) => (
                             <motion.div key={note.id} variants={fadeInUp}>
-                                <Card className="h-full border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-all flex flex-col">
-                                    <CardHeader className="pb-2 border-b-2 border-black dark:border-white bg-gray-50 dark:bg-zinc-800">
+                                <Card className="h-full border-4 border-border bg-card shadow-neo rounded-xl hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover transition-all flex flex-col">
+                                    <CardHeader className="pb-2 border-b-2 border-border bg-muted/50 rounded-t-xl">
                                         <div className="flex justify-between items-start gap-2">
                                             <div>
                                                 <h3 className="font-bold text-lg leading-tight line-clamp-1" title={note.bookTitle}>
@@ -210,7 +210,7 @@ export default function MyNotes() {
                                                     Page {note.page_number || '?'} • {new Date(note.created_at).toLocaleDateString()}
                                                 </p>
                                             </div>
-                                            <Badge variant="outline" className={`${note.is_public ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'} border-black dark:border-white rounded-none font-bold text-[10px] uppercase`}>
+                                            <Badge variant="outline" className={`${note.is_public ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'} border-border rounded-md font-bold text-[10px] uppercase`}>
                                                 {note.is_public ? 'Public' : 'Private'}
                                             </Badge>
                                         </div>
@@ -227,14 +227,14 @@ export default function MyNotes() {
                                                 variant="ghost"
                                                 size="sm"
                                                 onClick={() => handleDeleteNote(note)}
-                                                className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-none h-8 px-2"
+                                                className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg h-8 px-2"
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </Button>
                                             <Button
                                                 size="sm"
                                                 onClick={() => handleJumpToNote(note)}
-                                                className="bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase text-xs h-8"
+                                                className="bg-primary text-primary-foreground border-2 border-border rounded-lg shadow-neo-sm hover:translate-y-[-1px] hover:shadow-neo transition-all font-bold uppercase text-xs h-8"
                                             >
                                                 View in Book <ExternalLink className="ml-2 h-3 w-3" />
                                             </Button>

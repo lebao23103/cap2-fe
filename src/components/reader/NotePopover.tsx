@@ -124,7 +124,7 @@ export default function NotePopover({
                 }}
             >
                 {/* Popover content */}
-                <div className={`relative rounded-none border-2 border-l-[6px] overflow-hidden z-20 ${currentTheme.bg} ${currentTheme.border} ${currentTheme.shadow} ${style.border}`}>
+                <div className={`relative rounded-xl border-2 border-l-[6px] overflow-hidden z-20 ${currentTheme.bg} ${currentTheme.border} ${currentTheme.shadow} ${style.border}`}>
                     {/* Header */}
                     <div className={`flex items-start justify-between p-3 pb-2 border-b-2 ${currentTheme.headerBorder}`}>
                         <div className="flex items-center gap-1.5 flex-1">
@@ -138,7 +138,7 @@ export default function NotePopover({
                         </div>
                         <button
                             onClick={(e) => { e.stopPropagation(); onClose() }}
-                            className={`p-1 hover:bg-black/5 rounded-none transition-colors ${currentTheme.muted}`}
+                            className={`p-1 hover:bg-black/5 rounded-lg transition-colors ${currentTheme.muted}`}
                         >
                             <X className="h-4 w-4" />
                         </button>

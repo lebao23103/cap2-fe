@@ -40,7 +40,7 @@
     --input: 0 0% 0%;
     --ring: 75 100% 50%;
 
-    --radius: 0px;
+    --radius: 0.75rem;
 
     /* Custom Neo-Brutalist Shadows */
     --shadow-neo-sm: 2px 2px 0px 0px rgba(0, 0, 0, 1);
@@ -77,8 +77,8 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
+    --border: 0 0% 100%;
+    --input: 0 0% 100%;
     --ring: 75 100% 50%;
 
     /* Custom Neo-Brutalist Shadows - White/Gray for Visibility */
@@ -114,15 +114,15 @@
 
 @layer components {
   .neo-box {
-    @apply border-2 border-border bg-card text-card-foreground shadow-neo;
+    @apply border-2 border-border bg-card text-card-foreground shadow-neo rounded-xl;
   }
 
   .neo-button {
-    @apply border-2 border-border font-bold uppercase tracking-wider transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
+    @apply border-2 border-border font-bold uppercase tracking-wider transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none rounded-lg;
   }
 
   .neo-input {
-    @apply border-2 border-border bg-transparent font-mono rounded-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
+    @apply border-2 border-border bg-transparent font-mono rounded-lg focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
 
   .glitch-text {

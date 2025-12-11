@@ -84,7 +84,7 @@ export function Layout({ children }: LayoutProps) {
             {/* Left Side - Logo */}
             <div className="flex items-center">
               <Link to="/" className="group flex items-center gap-3 transition-all duration-300 hover:-translate-y-1" aria-label="Knowly home">
-                <div className="relative h-12 w-12 border-4 border-border bg-primary flex items-center justify-center shadow-neo group-hover:shadow-neo-hover transition-all">
+                <div className="relative h-12 w-12 border-4 border-border bg-primary flex items-center justify-center shadow-neo group-hover:shadow-neo-hover transition-all rounded-xl">
                   <BookOpen className="h-6 w-6 text-black" strokeWidth={3} />
                 </div>
                 <span className="font-display text-3xl font-black uppercase tracking-tighter text-foreground">
@@ -106,7 +106,7 @@ export function Layout({ children }: LayoutProps) {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase border-2 transition-all duration-200 ${isActivePath(item.path)
+                    className={`flex items-center gap-2 px-4 py-2 text-sm font-bold uppercase border-2 transition-all duration-200 rounded-lg ${isActivePath(item.path)
                       ? 'bg-primary border-border text-primary-foreground shadow-neo -translate-y-1'
                       : 'border-transparent text-muted-foreground hover:border-border hover:text-foreground hover:bg-muted'
                       }`}
@@ -121,7 +121,7 @@ export function Layout({ children }: LayoutProps) {
             {/* Right Side - Auth Actions */}
             <div className="flex items-center justify-end gap-4">
               {/* Theme Toggle */}
-              <div className="border-2 border-border shadow-neo">
+              <div className="border-2 border-border shadow-neo rounded-lg">
                 <ThemeToggle />
               </div>
 
@@ -129,7 +129,7 @@ export function Layout({ children }: LayoutProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden h-12 w-12 border-2 border-border rounded-none shadow-neo active:translate-y-1 active:shadow-none transition-all"
+                className="md:hidden h-12 w-12 border-2 border-border rounded-lg shadow-neo active:translate-y-1 active:shadow-none transition-all"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
                 {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -139,10 +139,10 @@ export function Layout({ children }: LayoutProps) {
                 <div className="hidden md:block">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="flex items-center gap-3 h-12 px-4 border-2 border-border rounded-none shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover transition-all bg-background">
-                        <Avatar className="h-8 w-8 border-2 border-border rounded-none">
+                      <Button variant="ghost" className="flex items-center gap-3 h-12 px-4 border-2 border-border rounded-lg shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover transition-all bg-background">
+                        <Avatar className="h-8 w-8 border-2 border-border rounded-lg">
                           <AvatarImage src={user?.email ? `https://api.dicebear.com/7.x/initials/svg?seed=${user.email}` : undefined} />
-                          <AvatarFallback className="bg-primary text-black font-bold rounded-none">
+                          <AvatarFallback className="bg-primary text-black font-bold rounded-lg">
                             {user?.first_name?.[0]}{user?.last_name?.[0]}
                           </AvatarFallback>
                         </Avatar>
@@ -152,7 +152,7 @@ export function Layout({ children }: LayoutProps) {
                         <ChevronDown className="h-4 w-4" strokeWidth={3} />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-64 border-4 border-border rounded-none shadow-neo-lg p-0 mt-2">
+                    <DropdownMenuContent align="end" className="w-64 border-4 border-border rounded-lg shadow-neo-lg p-0 mt-2">
                       <DropdownMenuLabel className="p-4 bg-primary border-b-4 border-border text-primary-foreground">
                         <div className="flex flex-col space-y-1">
                           <p className="text-sm font-black uppercase">
@@ -164,12 +164,12 @@ export function Layout({ children }: LayoutProps) {
                         </div>
                       </DropdownMenuLabel>
                       <div className="p-2 bg-background border-t-0">
-                        <DropdownMenuItem onClick={() => navigate(isAdmin ? '/admin' : '/dashboard')} className="font-bold uppercase focus:bg-black focus:text-white rounded-none cursor-pointer py-3">
+                        <DropdownMenuItem onClick={() => navigate(isAdmin ? '/admin' : '/dashboard')} className="font-bold uppercase focus:bg-black focus:text-white rounded-md cursor-pointer py-3">
                           <LayoutDashboard className="mr-3 h-4 w-4" />
                           <span>{isAdmin ? 'Admin Panel' : 'Dashboard'}</span>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator className="bg-border h-0.5 my-2" />
-                        <DropdownMenuItem onClick={handleLogout} className="font-bold uppercase text-red-600 focus:bg-red-600 focus:text-white rounded-none cursor-pointer py-3">
+                        <DropdownMenuItem onClick={handleLogout} className="font-bold uppercase text-red-600 focus:bg-red-600 focus:text-white rounded-md cursor-pointer py-3">
                           <LogOut className="mr-3 h-4 w-4" />
                           <span>Log out</span>
                         </DropdownMenuItem>
@@ -182,14 +182,14 @@ export function Layout({ children }: LayoutProps) {
                   <Link to="/login">
                     <Button
                       variant="ghost"
-                      className="h-12 px-6 font-bold uppercase rounded-none hover:bg-transparent transition-all"
+                      className="h-12 px-6 font-bold uppercase rounded-lg hover:bg-transparent transition-all"
                     >
                       Sign In
                     </Button>
                   </Link>
                   <Link to="/register">
                     <Button
-                      className="h-12 px-8 bg-foreground text-background font-bold uppercase border-2 border-border rounded-none shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover hover:bg-primary hover:text-primary-foreground transition-all"
+                      className="h-12 px-8 bg-foreground text-background font-bold uppercase border-2 border-border rounded-lg shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover hover:bg-primary hover:text-primary-foreground transition-all"
                     >
                       Get Started
                     </Button>
@@ -257,12 +257,12 @@ export function Layout({ children }: LayoutProps) {
                     <div className="h-1 bg-black my-2" />
                     <div className="flex flex-col gap-3">
                       <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Button className="w-full h-12 font-bold uppercase border-2 border-border bg-background text-foreground shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover rounded-none">
+                        <Button className="w-full h-12 font-bold uppercase border-2 border-border bg-background text-foreground shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover rounded-lg">
                           Sign In
                         </Button>
                       </Link>
                       <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
-                        <Button className="w-full h-12 font-bold uppercase border-2 border-border bg-primary text-primary-foreground shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover rounded-none">
+                        <Button className="w-full h-12 font-bold uppercase border-2 border-border bg-primary text-primary-foreground shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover rounded-lg">
                           Get Started
                         </Button>
                       </Link>

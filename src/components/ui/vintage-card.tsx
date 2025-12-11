@@ -11,7 +11,7 @@ interface VintageCardProps extends React.HTMLAttributes<HTMLDivElement> {
 const VintageCard = React.forwardRef<HTMLDivElement, VintageCardProps>(
   ({ className, variant = 'paper', texture = true, ornate = false, hoverable = true, children, ...props }, ref) => {
     const baseStyles = cn(
-      'relative rounded-sm overflow-hidden transition-all duration-500',
+      'relative rounded-xl overflow-hidden transition-all duration-500',
       'shadow-md',
       texture && 'before:absolute before:inset-0 before:opacity-20 before:mix-blend-multiply before:pointer-events-none'
     )

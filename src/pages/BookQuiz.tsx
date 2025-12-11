@@ -202,7 +202,7 @@ export default function BookQuiz() {
             <Button
               variant="outline"
               onClick={() => navigate('/readnex')}
-              className="border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-900 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold transition-all"
+              className="border-2 border-border rounded-lg bg-card text-foreground hover:bg-foreground hover:text-background shadow-neo uppercase font-bold transition-all"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Library
@@ -214,10 +214,10 @@ export default function BookQuiz() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
           >
-            <Card className="max-w-2xl mx-auto border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+            <Card className="max-w-2xl mx-auto border-4 border-border shadow-neo-lg rounded-xl bg-card">
               <CardHeader className="text-center border-b-4 border-black dark:border-white pb-6 bg-secondary">
                 <div className="flex justify-center mb-4">
-                  <div className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                  <div className="bg-card border-2 border-border p-4 shadow-neo">
                     <Target className="h-12 w-12 text-black dark:text-white" />
                   </div>
                 </div>
@@ -242,7 +242,7 @@ export default function BookQuiz() {
 
                 <Button
                   size="lg"
-                  className="w-full bg-black text-white dark:bg-white dark:text-black border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-primary hover:text-black dark:hover:bg-primary dark:hover:text-black hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all uppercase font-bold"
+                  className="w-full bg-foreground text-background border-2 border-border rounded-xl shadow-neo hover:bg-primary hover:text-primary-foreground hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover transition-all uppercase font-bold"
                   onClick={handleStartQuiz}
                   disabled={isLoading}
                 >
@@ -275,17 +275,17 @@ export default function BookQuiz() {
             animate={{ opacity: 1, scale: 1 }}
             className="text-center"
           >
-            <Card className="max-w-2xl mx-auto border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+            <Card className="max-w-2xl mx-auto border-4 border-border shadow-neo-lg rounded-xl bg-card">
               <CardHeader className="text-center border-b-4 border-black dark:border-white pb-6 bg-secondary">
                 <div className="flex justify-center mb-4">
-                  <div className={`bg-white dark:bg-zinc-800 border-2 border-black dark:border-white p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}>
+                  <div className={`bg-card border-2 border-border p-4 shadow-neo`}>
                     <Award className={`h-12 w-12 ${isPassed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`} />
                   </div>
                 </div>
                 <CardTitle className="text-3xl font-black uppercase text-black dark:text-white font-display">
                   Quiz Complete!
                 </CardTitle>
-                <Badge className={`mx-auto rounded-none border-2 border-black dark:border-white px-4 py-2 text-lg font-bold uppercase text-black dark:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] ${isPassed ? 'bg-green-400' : 'bg-red-400'}`}>
+                <Badge className={`mx-auto rounded-md border-2 border-black dark:border-white px-4 py-2 text-lg font-bold uppercase text-black dark:text-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] ${isPassed ? 'bg-green-400' : 'bg-red-400'}`}>
                   {isPassed ? 'Passed' : 'Try Again'}
                 </Badge>
               </CardHeader>
@@ -363,7 +363,7 @@ export default function BookQuiz() {
 
         {/* Progress */}
         <div className="mb-6">
-          <Progress value={progress} className="h-4 border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-800 [&>div]:bg-primary" />
+          <Progress value={progress} className="h-4 border-2 border-border rounded-full bg-card [&>div]:bg-primary" />
         </div>
 
         {/* Question Card */}
@@ -373,10 +373,10 @@ export default function BookQuiz() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+          <Card className="border-4 border-border shadow-neo-lg rounded-xl bg-card">
             <CardHeader className="border-b-4 border-black dark:border-white pb-4 bg-secondary">
               <div className="flex items-center gap-2 mb-2">
-                <Badge className="rounded-none border-2 border-black dark:border-white font-bold uppercase text-black dark:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] bg-yellow-400">
+                <Badge className="rounded-md border-2 border-black dark:border-white font-bold uppercase text-black dark:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] bg-yellow-400">
                   Multiple Choice
                 </Badge>
               </div>
@@ -398,7 +398,7 @@ export default function BookQuiz() {
                   const isCorrect = answerResults[currentQuestionIndex];
                   const hasAnswered = selectedAnswers[currentQuestionIndex] !== null;
 
-                  let variantStyle = "bg-white dark:bg-zinc-800 text-black dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]";
+                  let variantStyle = "bg-card text-foreground hover:bg-muted shadow-neo";
                   let circleStyle = "bg-gray-200 border-gray-300 text-black";
 
                   if (isSelected) {
@@ -423,7 +423,7 @@ export default function BookQuiz() {
                     <div key={index} className="space-y-2">
                       <Button
                         variant="outline"
-                        className={`w-full text-left justify-start h-auto p-4 transition-all rounded-none border-2 border-black dark:border-white font-mono font-bold disabled:opacity-100 ${variantStyle}`}
+                        className={`w-full text-left justify-start h-auto p-4 transition-all rounded-lg border-2 border-black dark:border-white font-mono font-bold disabled:opacity-100 ${variantStyle}`}
                         onClick={() => handleAnswerSelect(index)}
                         disabled={hasAnswered}
                       >
@@ -443,7 +443,7 @@ export default function BookQuiz() {
                           initial={{ opacity: 0, y: -10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ duration: 0.3, ease: "easeOut" }}
-                          className="mt-4 p-4 border-2 border-black dark:border-white bg-blue-50 dark:bg-blue-900/20 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none"
+                          className="mt-4 p-4 border-2 border-black dark:border-white bg-blue-50 dark:bg-blue-900/20 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl"
                         >
                           <div className="flex gap-4">
                             <div className="bg-blue-200 dark:bg-blue-800 border-2 border-black dark:border-white p-2 h-10 w-10 flex items-center justify-center flex-shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">

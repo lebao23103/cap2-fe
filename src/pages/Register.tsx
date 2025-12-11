@@ -154,7 +154,7 @@ export default function Register() {
           transition={{ duration: 0.5, delay: 0.2 }}
           className="w-full max-w-lg"
         >
-          <Card className="w-full border-2 border-border shadow-neo-lg bg-card rounded-none">
+          <Card className="w-full border-2 border-border shadow-neo-lg bg-card rounded-xl">
             <CardHeader className="text-center pb-2 pt-8">
               <div className="lg:hidden flex justify-center mb-6">
                 <div className="p-3 border-2 border-border bg-primary shadow-neo">
@@ -285,7 +285,7 @@ export default function Register() {
                 </p>
                 <Button
                   variant="outline"
-                  className="w-full border-2 border-border rounded-none hover:bg-foreground hover:text-background transition-all uppercase font-bold"
+                  className="w-full border-2 border-border rounded-lg hover:bg-foreground hover:text-background transition-all uppercase font-bold"
                   asChild
                 >
                   <Link to="/login">

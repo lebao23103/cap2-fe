@@ -23,11 +23,11 @@ export default function Privacy() {
           {/* Header */}
           <div className="text-center mb-12">
             <div className="flex justify-center mb-4">
-              <div className="p-4 bg-white dark:bg-zinc-800 border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                <Shield className="h-12 w-12 text-black dark:text-white" />
+              <div className="p-4 bg-card border-4 border-border shadow-neo">
+                <Shield className="h-12 w-12 text-foreground" />
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-black uppercase mb-4 text-black dark:text-white bg-white dark:bg-zinc-900 inline-block px-4 py-2 border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+            <h1 className="text-4xl sm:text-5xl font-black uppercase mb-4 text-foreground bg-card inline-block px-4 py-2 border-4 border-border shadow-neo-lg">
               Privacy Policy
             </h1>
             <p className="text-muted-foreground text-lg font-bold">
@@ -38,14 +38,14 @@ export default function Privacy() {
           <div className="grid lg:grid-cols-4 gap-8">
             {/* Table of Contents - Sticky Sidebar */}
             <nav className="lg:col-span-1 hidden lg:block" aria-label="Privacy policy navigation">
-              <Card className="sticky top-24 rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
+              <Card className="sticky top-24 rounded-xl border-4 border-border shadow-neo-lg bg-card">
                 <CardContent className="p-6">
-                  <h2 className="font-black mb-4 text-lg uppercase text-black dark:text-white border-b-2 border-black dark:border-white pb-2">Contents</h2>
+                  <h2 className="font-black mb-4 text-lg uppercase text-foreground border-b-2 border-border pb-2">Contents</h2>
                   <ul className="space-y-2 text-sm font-bold">
                     <li>
                       <button
                         onClick={() => scrollToSection('introduction')}
-                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
+                        className="text-muted-foreground hover:text-foreground hover:underline transition-all text-left w-full uppercase"
                       >
                         Introduction
                       </button>
@@ -53,7 +53,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('data-collection')}
-                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
+                        className="text-muted-foreground hover:text-foreground hover:underline transition-all text-left w-full uppercase"
                       >
                         Data Collection
                       </button>
@@ -61,7 +61,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('data-usage')}
-                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
+                        className="text-muted-foreground hover:text-foreground hover:underline transition-all text-left w-full uppercase"
                       >
                         How We Use Data
                       </button>
@@ -69,7 +69,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('data-sharing')}
-                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
+                        className="text-muted-foreground hover:text-foreground hover:underline transition-all text-left w-full uppercase"
                       >
                         Data Sharing
                       </button>
@@ -77,7 +77,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('cookies')}
-                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
+                        className="text-muted-foreground hover:text-foreground hover:underline transition-all text-left w-full uppercase"
                       >
                         Cookies
                       </button>
@@ -85,7 +85,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('security')}
-                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
+                        className="text-muted-foreground hover:text-foreground hover:underline transition-all text-left w-full uppercase"
                       >
                         Data Security
                       </button>
@@ -93,7 +93,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('user-rights')}
-                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
+                        className="text-muted-foreground hover:text-foreground hover:underline transition-all text-left w-full uppercase"
                       >
                         Your Rights
                       </button>
@@ -101,7 +101,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('children')}
-                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
+                        className="text-muted-foreground hover:text-foreground hover:underline transition-all text-left w-full uppercase"
                       >
                         Children's Privacy
                       </button>
@@ -109,7 +109,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('changes')}
-                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
+                        className="text-muted-foreground hover:text-foreground hover:underline transition-all text-left w-full uppercase"
                       >
                         Policy Changes
                       </button>
@@ -117,7 +117,7 @@ export default function Privacy() {
                     <li>
                       <button
                         onClick={() => scrollToSection('contact')}
-                        className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:underline transition-all text-left w-full uppercase"
+                        className="text-muted-foreground hover:text-foreground hover:underline transition-all text-left w-full uppercase"
                       >
                         Contact Us
                       </button>
@@ -129,12 +129,12 @@ export default function Privacy() {
 
             {/* Main Content */}
             <article className="lg:col-span-3">
-              <Card className="rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
+              <Card className="rounded-xl border-4 border-border shadow-neo-lg bg-card">
                 <CardContent className="p-6 sm:p-8 lg:p-12 space-y-8 font-sans">
                   {/* Introduction */}
                   <section id="introduction" className="scroll-mt-24">
-                    <h2 className="text-2xl sm:text-3xl font-black mb-4 uppercase text-black dark:text-white">Introduction</h2>
-                    <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
+                    <h2 className="text-2xl sm:text-3xl font-black mb-4 uppercase text-foreground">Introduction</h2>
+                    <div className="space-y-4 text-muted-foreground leading-relaxed font-medium">
                       <p>
                         Welcome to Knowly. We respect your privacy and are committed to protecting your personal data.
                         This privacy policy explains how we collect, use, disclose, and safeguard your information when

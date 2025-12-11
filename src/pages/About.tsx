@@ -41,7 +41,7 @@ export default function About() {
       <section className="relative w-full pt-32 pb-20 border-b-4 border-black dark:border-white bg-white dark:bg-zinc-800 z-10">
         <div className="container mx-auto max-w-4xl text-center">
           <motion.div {...fadeInUp}>
-            <Badge variant="outline" className="mb-6 px-4 py-2 text-sm font-bold uppercase border-2 border-black dark:border-white rounded-none bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <Badge variant="outline" className="mb-6 px-4 py-2 text-sm font-bold uppercase border-2 border-black dark:border-white rounded-md bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
               📖 Our Story
             </Badge>
             <h1 className="text-4xl md:text-6xl font-black text-black dark:text-white mb-6 uppercase">
@@ -62,10 +62,10 @@ export default function About() {
       <section className="relative w-full py-20 z-10">
         <div className="container mx-auto px-4">
           <motion.div {...fadeInUp} className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-black text-black dark:text-white mb-6 uppercase bg-white dark:bg-zinc-800 border-4 border-black dark:border-white inline-block px-8 py-4 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+            <h2 className="text-3xl md:text-4xl font-black text-foreground mb-6 uppercase bg-card border-4 border-border inline-block px-8 py-4 shadow-neo-lg rounded-xl">
               Our Mission
             </h2>
-            <p className="text-xl text-black dark:text-gray-200 max-w-3xl mx-auto font-bold bg-primary/20 p-6 border-2 border-black dark:border-white">
+            <p className="text-xl text-foreground max-w-3xl mx-auto font-bold bg-primary/20 p-6 border-2 border-border rounded-xl">
               To revolutionize academic learning through collaborative knowledge sharing,
               interactive reading experiences, and AI-powered educational insights.
             </p>
@@ -93,9 +93,9 @@ export default function About() {
               }
             ].map((item, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full text-center border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all duration-200 rounded-none bg-white dark:bg-zinc-900">
+                <Card className="h-full text-center border-4 border-border shadow-neo-lg hover:translate-y-[-4px] hover:shadow-neo-hover transition-all duration-200 rounded-xl bg-card">
                   <CardHeader>
-                    <div className={`mx-auto mb-4 p-4 ${item.color} border-4 border-black dark:border-white w-20 h-20 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}>
+                    <div className={`mx-auto mb-4 p-4 ${item.color} border-4 border-border w-20 h-20 flex items-center justify-center shadow-neo rounded-xl`}>
                       <item.icon className="h-10 w-10 text-black" strokeWidth={2.5} />
                     </div>
                     <CardTitle className="text-2xl font-black uppercase text-black dark:text-white">{item.title}</CardTitle>
@@ -113,7 +113,7 @@ export default function About() {
       </section>
 
       {/* Timeline Section */}
-      <section className="relative w-full py-20 bg-gray-50 dark:bg-zinc-800 border-y-4 border-black dark:border-white z-10">
+      <section className="relative w-full py-20 bg-gray-50 dark:bg-zinc-800 border-y-4 border-border z-10">
         <div className="container mx-auto px-4">
           <motion.div {...fadeInUp} className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-black text-black dark:text-white mb-6 uppercase">
@@ -157,11 +157,11 @@ export default function About() {
             ].map((item, index) => (
               <motion.div key={index} {...fadeInUp} className={`flex items-center ${item.side === 'left' ? 'justify-start' : 'justify-end'}`}>
                 <div className={`w-full md:w-1/2 ${item.side === 'left' ? 'pr-8' : 'pl-8'}`}>
-                  <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all rounded-none bg-white dark:bg-zinc-900">
+                  <Card className="border-4 border-border shadow-neo-lg hover:translate-y-[-4px] hover:shadow-neo-hover transition-all rounded-xl bg-card">
                     <CardHeader>
                       <div className="flex items-center mb-2">
-                        <Badge variant="outline" className="mr-3 rounded-none border-2 border-black dark:border-white bg-primary text-black font-bold">{item.year}</Badge>
-                        <item.icon className="h-5 w-5 text-black dark:text-white" />
+                        <Badge variant="outline" className="mr-3 rounded-md border-2 border-border bg-primary text-black font-bold">{item.year}</Badge>
+                        <item.icon className="h-5 w-5 text-foreground" />
                       </div>
                       <CardTitle className="text-xl font-black uppercase text-black dark:text-white">{item.title}</CardTitle>
                     </CardHeader>
@@ -218,7 +218,7 @@ export default function About() {
               }
             ].map((member, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full text-center border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all rounded-none bg-white dark:bg-zinc-900">
+                <Card className="h-full text-center border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all rounded-xl bg-white dark:bg-zinc-900">
                   <CardHeader>
                     <Avatar className="h-24 w-24 mx-auto mb-4 border-4 border-black dark:border-white">
                       <AvatarImage src={member.avatar} alt={`${member.name} profile picture`} />
@@ -227,7 +227,7 @@ export default function About() {
                       </AvatarFallback>
                     </Avatar>
                     <CardTitle className="text-xl font-black uppercase text-black dark:text-white">{member.name}</CardTitle>
-                    <Badge variant="secondary" className="bg-gray-200 dark:bg-zinc-700 text-black dark:text-white rounded-none border border-black dark:border-white">{member.role}</Badge>
+                    <Badge variant="secondary" className="bg-gray-200 dark:bg-zinc-700 text-black dark:text-white rounded-md border border-black dark:border-white">{member.role}</Badge>
                   </CardHeader>
                   <CardContent>
                     <CardDescription className="text-sm font-bold text-gray-600 dark:text-gray-300">
@@ -287,7 +287,7 @@ export default function About() {
               }
             ].map((value, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all rounded-none bg-white dark:bg-zinc-900">
+                <Card className="h-full border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-all rounded-xl bg-white dark:bg-zinc-900">
                   <CardHeader className="text-center">
                     <div className="mx-auto mb-4 p-3 bg-white dark:bg-zinc-800 border-4 border-black dark:border-white w-16 h-16 flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                       <value.icon className="h-8 w-8 text-black dark:text-white" strokeWidth={2.5} />
@@ -318,7 +318,7 @@ export default function About() {
               experiencing the Knowly difference.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <PremiumButton variant="aurora" size="xl" asChild className="h-16 px-8 text-lg font-black uppercase bg-black text-white dark:bg-white dark:text-black border-4 border-black dark:border-white rounded-none shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all">
+              <PremiumButton variant="aurora" size="xl" asChild className="h-16 px-8 text-lg font-black uppercase bg-black text-white dark:bg-white dark:text-black border-4 border-black dark:border-white rounded-xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all">
                 <Link to="/register">
                   Start Reading Today
                   <ArrowRight className="ml-2 h-5 w-5" />

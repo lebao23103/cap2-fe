@@ -36,7 +36,7 @@ const BookListCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
             animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
             transition={{ delay: Math.min(index * 0.05, 0.5) }}
         >
-            <Card className="group overflow-hidden border-2 border-border bg-card shadow-neo hover:shadow-neo-hover transition-all duration-300 rounded-none">
+            <Card className="group overflow-hidden border-2 border-border bg-card shadow-neo hover:shadow-neo-hover transition-all duration-300 rounded-xl">
                 <div className="flex flex-col sm:flex-row gap-4 p-4">
                     <div className="relative w-full sm:w-24 md:w-32 aspect-[2/3] border-2 border-border overflow-hidden flex-shrink-0">
                         <img
@@ -75,13 +75,13 @@ const BookListCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
                         </div>
 
                         <div className="flex items-center gap-3 mt-4 sm:mt-0">
-                            <Button size="sm" onClick={() => navigate(`/book/${book.id}/read`)} className="bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-border rounded-none shadow-neo-sm uppercase font-bold">
+                            <Button size="sm" onClick={() => navigate(`/book/${book.id}/read`)} className="bg-primary text-primary-foreground hover:bg-primary/90 border-2 border-border rounded-lg shadow-neo-sm uppercase font-bold">
                                 <Play className="h-3.5 w-3.5 mr-2" /> {book.hasReadingHistory ? 'Resume' : 'Read'}
                             </Button>
-                            <Button size="sm" variant="outline" onClick={() => navigate(`/book/${book.id}`)} className="bg-background text-foreground border-2 border-border hover:bg-muted rounded-none shadow-neo-sm uppercase font-bold">
+                            <Button size="sm" variant="outline" onClick={() => navigate(`/book/${book.id}`)} className="bg-background text-foreground border-2 border-border hover:bg-muted rounded-lg shadow-neo-sm uppercase font-bold">
                                 Details
                             </Button>
-                            <Button size="icon" variant="ghost" onClick={() => onToggleFavorite(book.id)} className="border-2 border-border rounded-none hover:bg-pink-400">
+                            <Button size="icon" variant="ghost" onClick={() => onToggleFavorite(book.id)} className="border-2 border-border rounded-lg hover:bg-pink-400">
                                 <Heart className={`h-4 w-4 ${book.isFavorite ? 'fill-foreground text-foreground' : 'text-muted-foreground'}`} />
                             </Button>
                         </div>

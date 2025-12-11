@@ -161,7 +161,7 @@ export default function QuizManagerDialog({
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto border-4 border-border rounded-none shadow-neo-lg bg-card overflow-hidden flex flex-col p-0">
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto border-4 border-border rounded-xl shadow-neo-lg bg-card overflow-hidden flex flex-col p-0">
 
                 <DialogHeader className="p-6 border-b-4 border-border bg-secondary flex-shrink-0">
                     <DialogTitle className="flex items-center justify-between">
@@ -173,7 +173,7 @@ export default function QuizManagerDialog({
                             <Button
                                 onClick={handleCreate}
                                 size="sm"
-                                className="font-bold border-2 border-border rounded-none shadow-neo-sm bg-primary text-primary-foreground hover:bg-primary/90"
+                                className="font-bold border-2 border-border rounded-lg shadow-neo-sm bg-primary text-primary-foreground hover:bg-primary/90"
                             >
                                 <Plus className="h-4 w-4 mr-2" />
                                 Add Question
@@ -248,7 +248,7 @@ export default function QuizManagerDialog({
                                         required
                                         value={formData.question_text}
                                         onChange={e => setFormData(prev => ({ ...prev, question_text: e.target.value }))}
-                                        className="border-2 border-border rounded-none bg-background text-foreground"
+                                        className="border-2 border-border rounded-lg bg-background text-foreground"
                                     />
                                 </div>
                                 <div className="grid gap-2">
@@ -258,7 +258,7 @@ export default function QuizManagerDialog({
                                         required
                                         value={formData.order_num}
                                         onChange={e => setFormData(prev => ({ ...prev, order_num: parseInt(e.target.value) || 0 }))}
-                                        className="border-2 border-border rounded-none bg-background text-foreground"
+                                        className="border-2 border-border rounded-lg bg-background text-foreground"
                                     />
                                 </div>
                             </div>
@@ -278,7 +278,7 @@ export default function QuizManagerDialog({
                                             required
                                             value={formData[opt.key as keyof CreateQuestionData] as string}
                                             onChange={e => setFormData(prev => ({ ...prev, [opt.key]: e.target.value }))}
-                                            className={`border-2 rounded-none bg-background text-foreground ${formData.correct_answer === opt.label.split(' ')[1] ? 'border-green-500 border-4' : 'border-border'}`}
+                                            className={`border-2 rounded-lg bg-background text-foreground ${formData.correct_answer === opt.label.split(' ')[1] ? 'border-green-500 border-4' : 'border-border'}`}
                                         />
                                     </div>
                                 ))}
@@ -290,7 +290,7 @@ export default function QuizManagerDialog({
                                     value={formData.correct_answer}
                                     onValueChange={v => setFormData(prev => ({ ...prev, correct_answer: v }))}
                                 >
-                                    <SelectTrigger className="border-2 border-border rounded-none bg-background text-foreground">
+                                    <SelectTrigger className="border-2 border-border rounded-lg bg-background text-foreground">
                                         <SelectValue placeholder="Select correct answer" />
                                     </SelectTrigger>
                                     <SelectContent>
@@ -307,7 +307,7 @@ export default function QuizManagerDialog({
                                 <Textarea
                                     value={formData.explanation}
                                     onChange={e => setFormData(prev => ({ ...prev, explanation: e.target.value }))}
-                                    className="border-2 border-border rounded-none bg-background text-foreground"
+                                    className="border-2 border-border rounded-lg bg-background text-foreground"
                                 />
                             </div>
 
@@ -316,14 +316,14 @@ export default function QuizManagerDialog({
                                     type="button"
                                     variant="outline"
                                     onClick={() => setView('list')}
-                                    className="flex-1 border-2 border-border rounded-none hover:bg-muted"
+                                    className="flex-1 border-2 border-border rounded-lg hover:bg-muted"
                                 >
                                     Cancel
                                 </Button>
                                 <Button
                                     type="submit"
                                     disabled={saving}
-                                    className="flex-1 bg-primary text-primary-foreground border-2 border-border rounded-none shadow-neo hover:shadow-neo-hover hover:translate-x-[-2px] hover:translate-y-[-2px]"
+                                    className="flex-1 bg-primary text-primary-foreground border-2 border-border rounded-lg shadow-neo hover:shadow-neo-hover hover:translate-x-[-2px] hover:translate-y-[-2px]"
                                 >
                                     {saving ? <Loader2 className="animate-spin" /> : <><Save className="h-4 w-4 mr-2" /> Save Question</>}
                                 </Button>

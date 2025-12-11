@@ -100,10 +100,10 @@ export default function ReadingHistory() {
   }
 
   const ReadingCard = ({ session }: { session: ReadingSession }) => (
-    <Card className="hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all duration-200 border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800">
+    <Card className="hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-lg transition-all duration-200 border-2 border-border rounded-xl shadow-neo bg-card">
       <CardContent className="p-6">
         <div className="flex gap-4">
-          <div className="relative w-16 h-20 shrink-0 border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+          <div className="relative w-16 h-20 shrink-0 border-2 border-border shadow-neo-sm">
             <img
               src={session.cover}
               alt={session.bookTitle}
@@ -113,11 +113,11 @@ export default function ReadingHistory() {
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between mb-2">
               <div>
-                <h3 className="font-bold text-lg text-black dark:text-white uppercase line-clamp-1">{session.bookTitle}</h3>
-                <p className="text-gray-600 dark:text-gray-300 font-mono">{session.author}</p>
+                <h3 className="font-bold text-lg text-foreground uppercase line-clamp-1">{session.bookTitle}</h3>
+                <p className="text-muted-foreground font-mono">{session.author}</p>
               </div>
               <Badge
-                className={`${getStatusColor(session.status)} text-white rounded-none border-2 border-black dark:border-white font-bold uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]`}
+                className={`${getStatusColor(session.status)} text-white rounded-md border-2 border-border font-bold uppercase shadow-neo-sm`}
               >
                 {getStatusText(session.status)}
               </Badge>
@@ -125,14 +125,14 @@ export default function ReadingHistory() {
 
             <div className="space-y-3">
               <div>
-                <div className="flex justify-between text-sm mb-1 font-bold font-mono text-black dark:text-white">
+                <div className="flex justify-between text-sm mb-1 font-bold font-mono text-foreground">
                   <span>Progress</span>
                   <span>{session.progress}%</span>
                 </div>
-                <Progress value={session.progress} className="h-4 border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-700 [&>div]:bg-primary" />
+                <Progress value={session.progress} className="h-4 border-2 border-border rounded-lg bg-card [&>div]:bg-primary" />
               </div>
 
-              <div className="grid grid-cols-2 gap-4 text-sm font-mono text-gray-700 dark:text-gray-300">
+              <div className="grid grid-cols-2 gap-4 text-sm font-mono text-muted-foreground">
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
                   <span>Started: {new Date(session.startDate).toLocaleDateString()}</span>
@@ -144,7 +144,7 @@ export default function ReadingHistory() {
               </div>
 
               {session.notes && (
-                <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-black dark:border-yellow-500/50 text-xs italic text-gray-600 dark:text-gray-300 font-serif">
+                <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-border text-xs italic text-muted-foreground font-serif">
                   "{session.notes}"
                 </div>
               )}
@@ -170,20 +170,20 @@ export default function ReadingHistory() {
       <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       {/* Header */}
-      <header className="border-b-4 border-black dark:border-white bg-white dark:bg-zinc-800 relative z-10">
+      <header className="border-b-4 border-border bg-card relative z-10">
         <div className="container mx-auto py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <Button variant="ghost" onClick={() => navigate(-1)} className="hover:bg-transparent hover:text-primary font-bold uppercase transition-colors">
-                <ArrowLeft className="mr-2 h-4 w-4 text-black dark:text-white" />
+                <ArrowLeft className="mr-2 h-4 w-4 text-foreground" />
                 Back to Dashboard
               </Button>
-              <div className="flex items-center gap-2 px-3 py-1 bg-primary border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+              <div className="flex items-center gap-2 px-3 py-1 bg-primary border-2 border-border shadow-neo-sm">
                 <BookOpen className="h-4 w-4 text-black" />
                 <span className="font-black text-black uppercase">Reading History</span>
               </div>
             </div>
-            <div className="text-sm font-bold font-mono text-black dark:text-white bg-white dark:bg-zinc-900 border-2 border-black dark:border-white px-3 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+            <div className="text-sm font-bold font-mono text-foreground bg-card border-2 border-border px-3 py-1 shadow-neo-sm">
               {filteredHistory.length} books
             </div>
           </div>
@@ -199,32 +199,32 @@ export default function ReadingHistory() {
           <>
             {/* Statistics */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <Card className="border-4 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+              <Card className="border-4 border-border shadow-neo-lg rounded-xl bg-card">
                 <CardContent className="p-6 text-center">
-                  <Target className="w-8 h-8 text-black dark:text-white mx-auto mb-2" />
-                  <div className="text-3xl font-black text-black dark:text-white">{stats.totalBooks}</div>
-                  <div className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400">Total Books</div>
+                  <Target className="w-8 h-8 text-foreground mx-auto mb-2" />
+                  <div className="text-3xl font-black text-foreground">{stats.totalBooks}</div>
+                  <div className="text-xs font-bold uppercase text-muted-foreground">Total Books</div>
                 </CardContent>
               </Card>
-              <Card className="border-4 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+              <Card className="border-4 border-border shadow-neo-lg rounded-xl bg-card">
                 <CardContent className="p-6 text-center">
                   <BookOpen className="w-8 h-8 text-green-600 dark:text-green-500 mx-auto mb-2" />
                   <div className="text-3xl font-black text-green-600 dark:text-green-500">{stats.completedBooks}</div>
-                  <div className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400">Completed</div>
+                  <div className="text-xs font-bold uppercase text-muted-foreground">Completed</div>
                 </CardContent>
               </Card>
-              <Card className="border-4 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+              <Card className="border-4 border-border shadow-neo-lg rounded-xl bg-card">
                 <CardContent className="p-6 text-center">
                   <Clock className="w-8 h-8 text-blue-600 dark:text-blue-500 mx-auto mb-2" />
                   <div className="text-3xl font-black text-blue-600 dark:text-blue-500">{stats.currentlyReading}</div>
-                  <div className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400">Reading</div>
+                  <div className="text-xs font-bold uppercase text-muted-foreground">Reading</div>
                 </CardContent>
               </Card>
-              <Card className="border-4 border-black dark:border-white shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+              <Card className="border-4 border-border shadow-neo-lg rounded-xl bg-card">
                 <CardContent className="p-6 text-center">
                   <div className="text-3xl font-black text-primary mx-auto mb-2">📊</div>
                   <div className="text-3xl font-black text-primary">{stats.averageProgress}%</div>
-                  <div className="text-xs font-bold uppercase text-gray-600 dark:text-gray-400">Avg Progress</div>
+                  <div className="text-xs font-bold uppercase text-muted-foreground">Avg Progress</div>
                 </CardContent>
               </Card>
             </div>
@@ -241,13 +241,13 @@ export default function ReadingHistory() {
                   key={key}
                   variant={filter === key ? 'default' : 'outline'}
                   onClick={() => setFilter(key as 'all' | 'reading' | 'completed' | 'paused')}
-                  className={`flex items-center gap-2 border-2 border-black dark:border-white rounded-none font-bold uppercase transition-all shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-1px] active:translate-y-0 active:shadow-none ${filter === key
-                    ? 'bg-black text-white dark:bg-white dark:text-black'
-                    : 'bg-white text-black dark:bg-zinc-800 dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black'
+                  className={`flex items-center gap-2 border-2 border-border rounded-lg font-bold uppercase transition-all shadow-neo hover:translate-y-[-1px] active:translate-y-0 active:shadow-none ${filter === key
+                    ? 'bg-foreground text-background'
+                    : 'bg-card text-foreground hover:bg-foreground hover:text-background'
                     }`}
                 >
                   {label}
-                  <Badge variant="secondary" className="ml-1 rounded-none border border-current bg-transparent text-current">
+                  <Badge variant="secondary" className="ml-1 rounded-md border border-current bg-transparent text-current">
                     {count}
                   </Badge>
                 </Button>

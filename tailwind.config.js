@@ -55,12 +55,6 @@ export default {
         'neo-black': '#050505',
         'neo-white': '#FFFFFF',
       },
-      borderRadius: {
-        lg: "0px",
-        md: "0px",
-        sm: "0px",
-        DEFAULT: "0px",
-      },
       fontFamily: {
         sans: ['Inter', 'Archivo', 'sans-serif'],
         heading: ['Archivo', 'sans-serif'],

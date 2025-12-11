@@ -120,7 +120,7 @@ export function ChatWidget() {
           <div className="relative group">
             <Button
               onClick={handleOpen}
-              className="relative h-16 w-16 rounded-none bg-primary text-primary-foreground border-2 border-border shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover transition-all duration-200"
+              className="relative h-16 w-16 rounded-full bg-primary text-primary-foreground border-2 border-border shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover transition-all duration-200"
               size="icon"
             >
               <MessageCircle className="h-8 w-8" strokeWidth={2.5} />
@@ -137,7 +137,7 @@ export function ChatWidget() {
       {/* Chat Widget */}
       {(isOpen || isClosing) && (
         <div className="fixed bottom-6 right-6 z-50 font-mono">
-          <Card className={`w-[360px] border-4 border-border shadow-neo-lg bg-card rounded-none origin-bottom-right transition-all duration-200 ease-out ${isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
+          <Card className={`w-[360px] border-4 border-border shadow-neo-lg bg-card rounded-xl origin-bottom-right transition-all duration-200 ease-out ${isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'
             } ${isMinimized ? 'h-16' : 'h-[500px]'
             }`}>
             {/* Header */}
@@ -165,7 +165,7 @@ export function ChatWidget() {
                     variant="ghost"
                     size="icon"
                     onClick={() => setIsMinimized(!isMinimized)}
-                    className="h-8 w-8 text-primary-foreground hover:bg-foreground hover:text-background rounded-none border-2 border-transparent hover:border-border transition-all"
+                    className="h-8 w-8 text-primary-foreground hover:bg-foreground hover:text-background rounded-lg border-2 border-transparent hover:border-border transition-all"
                   >
                     <Minimize2 className="h-4 w-4" />
                   </Button>
@@ -173,7 +173,7 @@ export function ChatWidget() {
                     variant="ghost"
                     size="icon"
                     onClick={handleClose}
-                    className="h-8 w-8 text-primary-foreground hover:bg-foreground hover:text-background rounded-none border-2 border-transparent hover:border-border transition-all"
+                    className="h-8 w-8 text-primary-foreground hover:bg-foreground hover:text-background rounded-lg border-2 border-transparent hover:border-border transition-all"
                   >
                     <X className="h-4 w-4" />
                   </Button>
@@ -239,14 +239,14 @@ export function ChatWidget() {
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
                         placeholder="TYPE MESSAGE..."
-                        className="h-10 text-sm font-bold bg-background border-2 border-border rounded-none shadow-neo-sm focus-visible:ring-0 focus-visible:translate-x-[2px] focus-visible:translate-y-[2px] focus-visible:shadow-none transition-all placeholder:text-muted-foreground"
+                        className="h-10 text-sm font-bold bg-background border-2 border-border rounded-lg shadow-neo-sm focus-visible:ring-0 focus-visible:translate-x-[2px] focus-visible:translate-y-[2px] focus-visible:shadow-none transition-all placeholder:text-muted-foreground"
                       />
                     </div>
                     <Button
                       onClick={handleSendMessage}
                       disabled={!inputMessage.trim() || isLoading}
                       size="icon"
-                      className="h-10 w-10 bg-foreground text-background border-2 border-border rounded-none shadow-neo-sm hover:translate-y-[-2px] hover:shadow-neo hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-neo-sm"
+                      className="h-10 w-10 bg-foreground text-background border-2 border-border rounded-lg shadow-neo-sm hover:translate-y-[-2px] hover:shadow-neo hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-neo-sm"
                     >
                       <Send className="h-4 w-4" />
                     </Button>

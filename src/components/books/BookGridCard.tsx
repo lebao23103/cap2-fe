@@ -69,7 +69,7 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
             }}
             className="group relative"
         >
-            <Card className="h-full border-2 border-border bg-card shadow-neo hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-hover transition-all duration-300 overflow-hidden rounded-none flex flex-col">
+            <Card className="h-full border-2 border-border bg-card shadow-neo hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-hover transition-all duration-300 overflow-hidden rounded-xl flex flex-col">
 
                 {/* Cover Image Area */}
                 <Link to={`/book/${book.id}`} className="relative aspect-[3/4] overflow-hidden block border-b-2 border-border">
@@ -104,7 +104,7 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
                     <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4 border-2 border-border m-2">
                         <Button
                             size="lg"
-                            className="w-full max-w-[160px] bg-background text-foreground hover:bg-foreground hover:text-background font-bold shadow-neo border-2 border-border rounded-none uppercase"
+                            className="w-full max-w-[160px] bg-background text-foreground hover:bg-foreground hover:text-background font-bold shadow-neo border-2 border-border rounded-lg uppercase"
                             onClick={(e) => {
                                 e.preventDefault()
                                 e.stopPropagation()
@@ -119,7 +119,7 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
                             <Button
                                 size="icon"
                                 variant="secondary"
-                                className="h-10 w-10 bg-background text-foreground border-2 border-border hover:bg-foreground hover:text-background rounded-none shadow-neo"
+                                className="h-10 w-10 bg-background text-foreground border-2 border-border hover:bg-foreground hover:text-background rounded-lg shadow-neo"
                                 onClick={(e) => {
                                     e.preventDefault()
                                     e.stopPropagation()

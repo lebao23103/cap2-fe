@@ -119,7 +119,7 @@ export default function Home() {
               transition={{ duration: 0.6 }}
               className="flex-1 text-center lg:text-left"
             >
-              <Badge variant="outline" className="mb-6 px-4 py-1.5 text-sm border-2 border-black dark:border-white bg-white dark:bg-zinc-900 text-black dark:text-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold">
+              <Badge variant="outline" className="mb-6 px-4 py-1.5 text-sm border-2 border-border bg-card text-foreground rounded-lg shadow-neo uppercase font-bold">
                 <Sparkles className="mr-2 h-3.5 w-3.5" />
                 Reimagining Academic Reading
               </Badge>
@@ -136,12 +136,12 @@ export default function Home() {
               </p>
 
               <div className='flex flex-col sm:flex-row gap-4 justify-center lg:justify-start'>
-                <Button size="lg" className="h-14 px-8 text-lg bg-black text-white hover:bg-primary hover:text-black border-2 border-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-primary rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold">
+                <Button size="lg" className="h-14 px-8 text-lg bg-black text-white hover:bg-primary hover:text-black border-2 border-border dark:bg-white dark:text-black dark:hover:bg-primary rounded-lg shadow-neo uppercase font-bold">
                   <Link to='/readnex' className='flex items-center'>
                     Start Reading <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-black dark:border-white bg-white dark:bg-zinc-900 text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold">
+                <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-border bg-card text-foreground hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-lg shadow-neo uppercase font-bold">
                   <Link to='/noteshare' className='flex items-center'>
                     <Sparkles className="mr-2 h-5 w-5" /> NoteShare
                   </Link>
@@ -185,7 +185,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <motion.div {...fadeInUp} className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold text-black mb-4 uppercase font-display">
-              Everything you need to <span className="bg-white px-2 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">excel</span>
+              Everything you need to <span className="bg-white px-2 border-2 border-border shadow-neo-sm">excel</span>
             </h2>
             <p className="text-lg text-black font-mono max-w-2xl mx-auto font-bold">
               Our platform combines powerful tools to enhance your reading and learning experience.
@@ -217,9 +217,9 @@ export default function Home() {
               }
             ].map((feature, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 rounded-none group">
+                <Card className="h-full border-2 border-border bg-card shadow-neo-lg hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-neo-hover transition-all duration-300 rounded-xl group">
                   <CardHeader>
-                    <div className={`w-14 h-14 border-2 border-black dark:border-white ${feature.bg} ${feature.color} flex items-center justify-center mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}>
+                    <div className={`w-14 h-14 border-2 border-border ${feature.bg} ${feature.color} flex items-center justify-center mb-4 shadow-neo`}>
                       <feature.icon className="h-7 w-7" />
                     </div>
                     <CardTitle className="text-xl font-bold uppercase dark:text-white">{feature.title}</CardTitle>
@@ -241,14 +241,14 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-end mb-12">
             <motion.div {...fadeInUp}>
-              <Badge variant="outline" className="mb-4 text-black dark:text-white border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none uppercase font-bold">
+              <Badge variant="outline" className="mb-4 text-foreground border-2 border-border bg-card shadow-neo rounded-lg uppercase font-bold">
                 <TrendingUp className="mr-2 h-3 w-3" /> Trending
               </Badge>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground uppercase font-display">
                 Featured Books
               </h2>
             </motion.div>
-            <Button variant="ghost" className="hidden sm:flex group border-2 border-black rounded-none hover:bg-black hover:text-white font-bold uppercase" asChild>
+            <Button variant="ghost" className="hidden sm:flex group border-2 border-border rounded-lg hover:bg-black hover:text-white font-bold uppercase" asChild>
               <Link to="/readnex">
                 View All <ChevronRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
@@ -260,7 +260,7 @@ export default function Home() {
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
             </div>
           ) : featuredBooks.length === 0 ? (
-            <Card className="bg-white border-4 border-dashed border-black rounded-none">
+            <Card className="bg-white border-4 border-dashed border-border rounded-xl">
               <CardContent className="p-12 text-center">
                 <div className="text-6xl mb-4">📚</div>
                 <p className="text-gray-600 font-bold uppercase">No books available yet.</p>
@@ -271,8 +271,8 @@ export default function Home() {
             <motion.div {...stagger} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {featuredBooks.map((book) => (
                 <motion.div key={book.id} {...fadeInUp}>
-                  <Card className="h-full border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all duration-500 group overflow-hidden rounded-none">
-                    <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-black dark:border-white">
+                  <Card className="h-full border-2 border-border bg-card shadow-neo-lg hover:shadow-neo-hover transition-all duration-500 group overflow-hidden rounded-xl">
+                    <div className="relative aspect-[2/3] overflow-hidden border-b-2 border-border">
                       <img
                         src={book.coverImage}
                         alt={book.title}
@@ -281,12 +281,12 @@ export default function Home() {
                           (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x400?text=No+Cover'
                         }}
                       />
-                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 border-2 border-black dark:border-white m-2">
-                        <Button className="w-full bg-white text-black hover:bg-black hover:text-white font-bold border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase" asChild>
+                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 border-2 border-border m-2">
+                        <Button className="w-full bg-white text-black hover:bg-black hover:text-white font-bold border-2 border-border rounded-lg shadow-neo uppercase" asChild>
                           <Link to={`/book/${book.id}`}>View Details</Link>
                         </Button>
                       </div>
-                      <div className="absolute top-3 right-3 bg-yellow-400 text-black border-2 border-black dark:border-white text-xs font-bold px-2.5 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] flex items-center gap-1">
+                      <div className="absolute top-3 right-3 bg-yellow-400 text-black border-2 border-border text-xs font-bold px-2.5 py-1 shadow-neo-sm flex items-center gap-1">
                         <Star className="h-3 w-3 fill-black text-black" />
                         {book.rating.toFixed(1)}
                       </div>
@@ -307,7 +307,7 @@ export default function Home() {
           )}
 
           <div className="mt-8 text-center sm:hidden">
-            <Button variant="outline" className="w-full border-2 border-black rounded-none uppercase font-bold" asChild>
+            <Button variant="outline" className="w-full border-2 border-border rounded-lg uppercase font-bold" asChild>
               <Link to="/readnex">View All Books</Link>
             </Button>
           </div>
@@ -315,7 +315,7 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className='relative w-full py-24 bg-secondary border-y-4 border-black dark:border-white'>
+      <section className='relative w-full py-24 bg-secondary border-y-4 border-border'>
         <div className='container mx-auto px-4'>
           <motion.div {...fadeInUp} className='text-center mb-16'>
             <h2 className='text-3xl md:text-4xl font-bold text-white mb-4 uppercase font-display'>
@@ -329,13 +329,13 @@ export default function Home() {
           <motion.div {...stagger} className='grid md:grid-cols-3 gap-8'>
             {testimonials.map((testimonial, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full p-8 border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none relative">
+                <Card className="h-full p-8 border-2 border-border bg-card shadow-neo-lg rounded-xl relative">
                   <CardContent className="p-0">
                     <div className="flex items-center gap-4 mb-6">
                       <img
                         src={testimonial.avatar}
                         alt={testimonial.name}
-                        className="w-12 h-12 rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+                        className="w-12 h-12 rounded-lg border-2 border-border shadow-neo"
                       />
                       <div>
                         <p className="font-bold text-foreground uppercase dark:text-white">{testimonial.name}</p>
@@ -347,7 +347,7 @@ export default function Home() {
                         <Star key={i} className="h-4 w-4 fill-black text-black dark:text-white dark:fill-white" />
                       ))}
                     </div>
-                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed italic font-mono border-l-4 border-black dark:border-white pl-4">
+                    <p className="text-gray-800 dark:text-gray-200 leading-relaxed italic font-mono border-l-4 border-border pl-4">
                       "{testimonial.content}"
                     </p>
                   </CardContent>
@@ -359,10 +359,10 @@ export default function Home() {
       </section>
 
       {/* Tech Stack Marquee Section */}
-      <section className="relative w-full py-16 bg-white dark:bg-zinc-900 border-b-4 border-black dark:border-white overflow-hidden">
+      <section className="relative w-full py-16 bg-white dark:bg-zinc-900 border-b-4 border-border overflow-hidden">
         <div className="container mx-auto px-4 mb-10">
           <motion.div {...fadeInUp} className="text-center">
-            <Badge variant="outline" className="mb-4 text-black border-2 border-black dark:border-white bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none uppercase font-bold">
+            <Badge variant="outline" className="mb-4 text-black border-2 border-border bg-primary shadow-neo rounded-lg uppercase font-bold">
               <Sparkles className="mr-2 h-3 w-3" /> Tech Stack
             </Badge>
             <h2 className="text-2xl md:text-3xl font-bold text-foreground uppercase font-display">
@@ -379,7 +379,7 @@ export default function Home() {
               {techStack.map((tech, index) => (
                 <div
                   key={index}
-                  className={`tech-card flex flex-col items-center gap-4 mx-6 px-10 py-8 ${tech.bg} border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] cursor-pointer group text-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 ${index % 2 === 0 ? 'rotate-1' : '-rotate-1'}`}
+                  className={`tech-card flex flex-col items-center gap-4 mx-6 px-10 py-8 ${tech.bg} border-4 border-border shadow-neo-lg cursor-pointer group text-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 ${index % 2 === 0 ? 'rotate-1' : '-rotate-1'}`}
                 >
                   <img
                     src={tech.logo}
@@ -395,7 +395,7 @@ export default function Home() {
               {techStack.map((tech, index) => (
                 <div
                   key={`dup-${index}`}
-                  className={`tech-card flex flex-col items-center gap-4 mx-6 px-10 py-8 ${tech.bg} border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] cursor-pointer group text-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 ${index % 2 === 0 ? 'rotate-1' : '-rotate-1'}`}
+                  className={`tech-card flex flex-col items-center gap-4 mx-6 px-10 py-8 ${tech.bg} border-4 border-border shadow-neo-lg cursor-pointer group text-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors duration-300 ${index % 2 === 0 ? 'rotate-1' : '-rotate-1'}`}
                 >
                   <img
                     src={tech.logo}
@@ -458,7 +458,7 @@ export default function Home() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <div className="relative border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] dark:shadow-[16px_16px_0px_0px_rgba(255,255,255,1)]">
+            <div className="relative border-4 border-border bg-card shadow-[16px_16px_0px_0px_rgba(0,0,0,1)] dark:shadow-[16px_16px_0px_0px_rgba(255,255,255,1)]">
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
 
               <div className="relative z-10 p-12 md:p-20 text-center text-black dark:text-white">
@@ -469,12 +469,12 @@ export default function Home() {
                   Join thousands of learners today and experience the future of academic reading and collaboration.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Button size="lg" className="h-14 px-8 text-lg bg-black text-white hover:bg-primary hover:text-black border-2 border-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-primary dark:hover:text-black font-bold rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] uppercase transition-all hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)]" asChild>
+                  <Button size="lg" className="h-14 px-8 text-lg bg-black text-white hover:bg-primary hover:text-black border-2 border-border dark:bg-white dark:text-black dark:hover:bg-primary dark:hover:text-black font-bold rounded-lg shadow-neo-lg uppercase transition-all hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)]" asChild>
                     <Link to='/register'>
                       Get Started for Free
                     </Link>
                   </Button>
-                  <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-none transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] uppercase font-bold" asChild>
+                  <Button size="lg" variant="outline" className="h-14 px-8 text-lg border-2 border-border text-foreground hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black rounded-lg transition-all shadow-neo-lg uppercase font-bold" asChild>
                     <Link to='/about'>
                       Learn More
                     </Link>

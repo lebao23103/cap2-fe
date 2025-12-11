@@ -36,7 +36,7 @@ export const ModernButton = forwardRef<HTMLButtonElement, ModernButtonProps>(
     useLoadingAnnouncement(isLoading || false, loadingText || 'Loading...')
     useSuccessAnnouncement(isSuccess || false, successText || 'Success')
 
-    const baseStyles = "group relative overflow-hidden rounded-none border-2 transition-all duration-300 font-bold inline-flex items-center justify-center gap-2 uppercase tracking-wide"
+    const baseStyles = "group relative overflow-hidden rounded-lg border-2 transition-all duration-300 font-bold inline-flex items-center justify-center gap-2 uppercase tracking-wide"
 
     const variantStyles = {
       primary: "border-border bg-primary text-primary-foreground shadow-neo hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover active:translate-x-[0px] active:translate-y-[0px] active:shadow-neo",

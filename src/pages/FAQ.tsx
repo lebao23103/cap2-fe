@@ -119,7 +119,7 @@ export default function FAQ() {
       <section className="relative w-full pt-32 pb-20 border-b-4 border-black dark:border-white bg-white dark:bg-zinc-800 z-10">
         <div className="container mx-auto max-w-4xl text-center px-4">
           <motion.div {...fadeInUp}>
-            <Badge variant="outline" className="mb-6 px-4 py-2 text-sm font-bold uppercase border-2 border-black dark:border-white rounded-none bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <Badge variant="outline" className="mb-6 px-4 py-2 text-sm font-bold uppercase border-2 border-black dark:border-white rounded-md bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
               ❓ Frequently Asked Questions
             </Badge>
             <h1 className="text-5xl md:text-7xl font-black text-black dark:text-white mb-6 uppercase tracking-tighter">
@@ -142,7 +142,7 @@ export default function FAQ() {
           <motion.div {...stagger} className="space-y-12">
             {faqCategories.map((category, categoryIndex) => (
               <motion.div key={categoryIndex} {...fadeInUp}>
-                <Card className="overflow-hidden rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
+                <Card className="overflow-hidden rounded-xl border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
                   <CardHeader className="bg-black dark:bg-zinc-800 text-white border-b-4 border-black dark:border-white p-6">
                     <CardTitle className="text-2xl font-black uppercase flex items-center gap-3 text-white">
                       <div className="p-2 bg-white text-black border-2 border-white">
@@ -188,13 +188,13 @@ export default function FAQ() {
               Can't find the answer you're looking for? Our friendly support team is here to help.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Button size="lg" className="h-16 px-8 text-lg font-black uppercase bg-black text-white dark:bg-white dark:text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-black dark:hover:bg-gray-200 transition-all" asChild>
+              <Button size="lg" className="h-16 px-8 text-lg font-black uppercase bg-black text-white dark:bg-white dark:text-black border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-black dark:hover:bg-gray-200 transition-all" asChild>
                 <Link to="/contact">
                   <MessageSquare className="h-6 w-6 mr-3" />
                   Contact Support
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" className="h-16 px-8 text-lg font-black uppercase bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-white dark:hover:bg-zinc-900 transition-all" asChild>
+              <Button size="lg" variant="outline" className="h-16 px-8 text-lg font-black uppercase bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-white dark:hover:bg-zinc-900 transition-all" asChild>
                 <Link to="/">
                   Browse Help Center
                 </Link>
@@ -250,8 +250,8 @@ export default function FAQ() {
               }
             ].map((tip, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all bg-white dark:bg-zinc-900">
-                  <CardHeader className="text-center border-b-4 border-black dark:border-white bg-gray-50 dark:bg-zinc-800">
+                <Card className="h-full rounded-xl border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all bg-white dark:bg-zinc-900">
+                  <CardHeader className="text-center border-b-4 border-black dark:border-white bg-gray-50 dark:bg-zinc-800 rounded-t-xl">
                     <div className="mx-auto mb-4 p-4 bg-white dark:bg-zinc-900 border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] w-20 h-20 flex items-center justify-center">
                       <tip.icon className="h-8 w-8 text-black dark:text-white" strokeWidth={2.5} />
                     </div>
@@ -280,7 +280,7 @@ export default function FAQ() {
               Join thousands of students and educators who have revolutionized their academic reading with Knowly.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-              <Button size="lg" className="h-16 px-10 text-lg font-black uppercase bg-primary text-black border-4 border-white rounded-none shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] hover:bg-primary transition-all" asChild>
+              <Button size="lg" className="h-16 px-10 text-lg font-black uppercase bg-primary text-black border-4 border-white rounded-xl shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] hover:bg-primary transition-all" asChild>
                 <Link to="/register">
                   Get Started Free
                   <ArrowRight className="ml-2 h-6 w-6" strokeWidth={3} />

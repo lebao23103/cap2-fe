@@ -51,14 +51,14 @@ export const StatCard = ({
 
   return (
     <div className={cn(
-      "group relative overflow-hidden border-2 p-4 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover shadow-neo transition-all duration-300 rounded-none",
+      "group relative overflow-hidden border-2 p-4 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-hover shadow-neo transition-all duration-300 rounded-lg",
       styles.border,
       styles.bg,
       className
     )}>
       <div className="flex items-center gap-4">
         <div className={cn(
-          "flex-shrink-0 p-3 shadow-neo-sm group-hover:scale-105 transition-all duration-300 rounded-none",
+          "flex-shrink-0 p-3 shadow-neo-sm group-hover:scale-105 transition-all duration-300 rounded-lg",
           styles.iconBg
         )}>
           <Icon className={cn("h-5 w-5", styles.iconColor)} />

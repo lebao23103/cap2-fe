@@ -267,7 +267,7 @@ export default function BookDetail() {
             <Button
               variant="outline"
               onClick={() => navigate('/readnex')}
-              className="border-2 border-black dark:border-white rounded-none hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black dark:bg-zinc-900 dark:text-white uppercase font-bold"
+              className="border-2 border-black dark:border-white rounded-lg hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black dark:bg-zinc-900 dark:text-white uppercase font-bold"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Library
@@ -289,7 +289,7 @@ export default function BookDetail() {
           <p className="text-muted-foreground mb-8 font-mono">
             The book you're looking for doesn't exist or has been removed.
           </p>
-          <Button onClick={() => navigate('/readnex')} className="border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold">Back to Library</Button>
+          <Button onClick={() => navigate('/readnex')} className="border-2 border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold">Back to Library</Button>
         </div>
       </div>
     );
@@ -342,7 +342,7 @@ export default function BookDetail() {
             <div className="flex flex-col gap-3">
               <Button
                 size="lg"
-                className="w-full bg-primary text-black border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all uppercase font-bold"
+                className="w-full bg-primary text-black border-2 border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all uppercase font-bold"
                 onClick={handleStartReading}
               >
                 <BookOpen className="h-5 w-5 mr-2" />
@@ -353,7 +353,7 @@ export default function BookDetail() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="flex-1 bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
+                  className="flex-1 bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
                   onClick={handleToggleFavorite}
                   disabled={favoritingState === 'loading'}
                 >
@@ -377,7 +377,7 @@ export default function BookDetail() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="flex-1 bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
+                  className="flex-1 bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-gray-100 dark:hover:bg-zinc-800 transition-all"
                   onClick={handleShare}
                   disabled={sharingState === 'loading'}
                 >
@@ -398,7 +398,7 @@ export default function BookDetail() {
               </div>
 
               <Button
-                className="w-full bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all font-bold uppercase"
+                className="w-full bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all font-bold uppercase"
                 onClick={handleTakeQuiz}
               >
                 Take Quiz
@@ -412,11 +412,11 @@ export default function BookDetail() {
             <div>
               <div className="flex flex-wrap gap-2 mb-4">
                 {book.subject && (
-                  <Badge variant="secondary" className="bg-white dark:bg-zinc-800 text-black dark:text-white border-2 border-black dark:border-white rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] px-3 py-1 uppercase font-bold">
+                  <Badge variant="secondary" className="bg-white dark:bg-zinc-800 text-black dark:text-white border-2 border-black dark:border-white rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] px-3 py-1 uppercase font-bold">
                     {book.subject}
                   </Badge>
                 )}
-                <Badge variant="outline" className="text-black dark:text-white border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-800 uppercase font-bold">
+                <Badge variant="outline" className="text-black dark:text-white border-2 border-black dark:border-white rounded-lg bg-white dark:bg-zinc-800 uppercase font-bold">
                   {book.language || 'English'}
                 </Badge>
               </div>
@@ -464,7 +464,7 @@ export default function BookDetail() {
 
             {/* Additional Details Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Card className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+              <Card className="bg-white dark:bg-zinc-800 border-2 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                 <CardContent className="p-4 flex items-start gap-3">
                   <div className="p-2 border-2 border-black dark:border-white bg-blue-400 text-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
                     <Globe className="h-5 w-5" />
@@ -483,7 +483,7 @@ export default function BookDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Left Column: Rating Distribution & Write Review */}
           <div className="lg:col-span-4 space-y-6">
-            <Card className="border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none">
+            <Card className="border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl">
               <CardContent className="p-6">
                 <h3 className="text-lg font-bold mb-4 flex items-center gap-2 uppercase text-black dark:text-white">
                   <Star className="h-5 w-5 text-black dark:text-white fill-black dark:fill-white" />
@@ -493,7 +493,7 @@ export default function BookDetail() {
                   {calculateRatingDistribution().map((dist) => (
                     <div key={dist.stars} className="flex items-center gap-3 font-mono">
                       <span className="text-sm font-bold w-3 text-black dark:text-white">{dist.stars}</span>
-                      <Progress value={dist.percentage} className="h-2 bg-gray-200 dark:bg-zinc-700 border border-black dark:border-white rounded-none [&>div]:bg-black dark:[&>div]:bg-white" />
+                      <Progress value={dist.percentage} className="h-2 bg-gray-200 dark:bg-zinc-700 border border-black dark:border-white rounded-lg [&>div]:bg-black dark:[&>div]:bg-white" />
                       <span className="text-xs text-gray-600 dark:text-gray-300 w-10 text-right">
                         {dist.percentage}%
                       </span>
@@ -503,7 +503,7 @@ export default function BookDetail() {
               </CardContent>
             </Card>
 
-            <Card className="border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none">
+            <Card className="border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl">
               <CardContent className="p-6 space-y-4">
                 <h3 className="text-lg font-bold uppercase text-black dark:text-white">Write a Review</h3>
                 <div>
@@ -519,14 +519,14 @@ export default function BookDetail() {
                     value={userReview}
                     onChange={(e) => setUserReview(e.target.value)}
                     rows={4}
-                    className="resize-none bg-white dark:bg-zinc-900 border-2 border-black dark:border-white rounded-none focus:ring-0 focus:border-black dark:focus:border-white font-mono text-black dark:text-white"
+                    className="resize-none bg-white dark:bg-zinc-900 border-2 border-black dark:border-white rounded-lg focus:ring-0 focus:border-black dark:focus:border-white font-mono text-black dark:text-white"
                   />
                   <p className="text-xs text-gray-600 dark:text-gray-400 mt-1.5 text-right font-mono">
                     {userReview.length} / 50 min chars
                   </p>
                 </div>
                 <Button
-                  className="w-full bg-black dark:bg-white hover:bg-primary hover:text-black text-white dark:text-black border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold transition-all"
+                  className="w-full bg-black dark:bg-white hover:bg-primary hover:text-black text-white dark:text-black border-2 border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold transition-all"
                   onClick={handleSubmitReview}
                   disabled={submittingReview || !userRating || userReview.length < 50}
                 >
@@ -543,7 +543,7 @@ export default function BookDetail() {
             </h3>
 
             {reviews.length === 0 ? (
-              <Card className="border-2 border-dashed border-black dark:border-white bg-transparent rounded-none">
+              <Card className="border-2 border-dashed border-black dark:border-white bg-transparent rounded-xl">
                 <CardContent className="p-12 text-center">
                   <div className="w-16 h-16 bg-gray-100 dark:bg-zinc-800 border-2 border-black dark:border-white flex items-center justify-center mx-auto mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                     <Star className="h-8 w-8 text-black dark:text-white" />
@@ -563,12 +563,12 @@ export default function BookDetail() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
                   >
-                    <Card className="border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-none hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all">
+                    <Card className="border-2 border-black dark:border-white bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all">
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
-                          <Avatar className="h-10 w-10 border-2 border-black dark:border-white rounded-none">
+                          <Avatar className="h-10 w-10 border-2 border-black dark:border-white rounded-lg">
                             <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user?.email || 'anonymous'}`} />
-                            <AvatarFallback className="rounded-none bg-primary text-black font-bold">{review.user?.first_name?.[0] || 'U'}</AvatarFallback>
+                            <AvatarFallback className="rounded-lg bg-primary text-black font-bold">{review.user?.first_name?.[0] || 'U'}</AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex justify-between items-start mb-2">

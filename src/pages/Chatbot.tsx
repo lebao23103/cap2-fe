@@ -197,7 +197,7 @@ export default function Chatbot() {
   }
 
   const BookRecommendation = ({ book }: { book: Book }) => (
-    <Card className="mb-4 cursor-pointer rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all bg-white dark:bg-zinc-800">
+    <Card className="mb-4 cursor-pointer rounded-xl border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all bg-white dark:bg-zinc-800">
       <CardContent className="p-3">
         <div className="flex gap-4">
           <div className="relative w-16 h-24 shrink-0 border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
@@ -216,7 +216,7 @@ export default function Chatbot() {
             </div>
             <div className="flex flex-wrap gap-1">
               {book.genre.slice(0, 2).map((g) => (
-                <Badge key={g} variant="secondary" className="text-[10px] rounded-none border border-black dark:border-white bg-primary/20 text-black dark:text-white font-bold">
+                <Badge key={g} variant="secondary" className="text-[10px] rounded-md border border-black dark:border-white bg-primary/20 text-black dark:text-white font-bold">
                   {g}
                 </Badge>
               ))}
@@ -234,7 +234,7 @@ export default function Chatbot() {
 
           {/* Chat Area */}
           <div className="lg:col-span-3 flex flex-col h-full">
-            <Card className="flex-1 flex flex-col border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none overflow-hidden bg-white dark:bg-zinc-900">
+            <Card className="flex-1 flex flex-col border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden bg-white dark:bg-zinc-900">
               {/* Header */}
               <CardHeader className="py-4 px-6 border-b-4 border-black dark:border-white bg-primary">
                 <div className="flex items-center justify-between">
@@ -243,7 +243,7 @@ export default function Chatbot() {
                       variant="ghost"
                       size="icon"
                       onClick={() => navigate('/dashboard')}
-                      className="h-10 w-10 border-2 border-black dark:border-white bg-white dark:bg-zinc-800 hover:bg-black hover:text-white dark:text-white dark:hover:bg-white dark:hover:text-black rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all"
+                      className="h-10 w-10 border-2 border-black dark:border-white bg-white dark:bg-zinc-800 hover:bg-black hover:text-white dark:text-white dark:hover:bg-white dark:hover:text-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all"
                     >
                       <ArrowLeft className="h-5 w-5" strokeWidth={3} />
                     </Button>
@@ -264,20 +264,20 @@ export default function Chatbot() {
                   <div className="flex items-center gap-3">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" className="hidden sm:flex h-10 font-bold border-2 border-black dark:border-white rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 text-black dark:text-white transition-all">
+                        <Button variant="outline" className="hidden sm:flex h-10 font-bold border-2 border-black dark:border-white rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 text-black dark:text-white transition-all">
                           CHANGE MODE
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-56 border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] p-0">
+                      <DropdownMenuContent align="end" className="w-56 border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] p-0">
                         <DropdownMenuLabel className="p-3 bg-gray-100 dark:bg-zinc-800 border-b-2 border-black dark:border-white font-black uppercase text-black dark:text-white">Select Persona</DropdownMenuLabel>
                         <div className="p-1 bg-white dark:bg-zinc-900">
-                          <DropdownMenuItem onClick={() => setSelectedRole('book advisor')} className="font-bold uppercase focus:bg-primary focus:text-black rounded-none cursor-pointer py-2 dark:text-white dark:focus:text-black">
+                          <DropdownMenuItem onClick={() => setSelectedRole('book advisor')} className="font-bold uppercase focus:bg-primary focus:text-black rounded-lg m-1 cursor-pointer py-2 dark:text-white dark:focus:text-black">
                             Book Advisor
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setSelectedRole('literary expert')} className="font-bold uppercase focus:bg-primary focus:text-black rounded-none cursor-pointer py-2 dark:text-white dark:focus:text-black">
+                          <DropdownMenuItem onClick={() => setSelectedRole('literary expert')} className="font-bold uppercase focus:bg-primary focus:text-black rounded-lg m-1 cursor-pointer py-2 dark:text-white dark:focus:text-black">
                             Literary Expert
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setSelectedRole('book enthusiast')} className="font-bold uppercase focus:bg-primary focus:text-black rounded-none cursor-pointer py-2 dark:text-white dark:focus:text-black">
+                          <DropdownMenuItem onClick={() => setSelectedRole('book enthusiast')} className="font-bold uppercase focus:bg-primary focus:text-black rounded-lg m-1 cursor-pointer py-2 dark:text-white dark:focus:text-black">
                             Book Enthusiast
                           </DropdownMenuItem>
                         </div>
@@ -287,7 +287,7 @@ export default function Chatbot() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="lg:hidden h-10 w-10 border-2 border-black bg-white hover:bg-black hover:text-white rounded-none shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                      className="lg:hidden h-10 w-10 border-2 border-black bg-white hover:bg-black hover:text-white rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
                       onClick={() => setSidebarOpen(!sidebarOpen)}
                     >
                       {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -306,16 +306,16 @@ export default function Chatbot() {
                         className={`flex gap-4 ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
                         {message.type === 'bot' && (
-                          <div className="w-10 h-10 border-2 border-black dark:border-white bg-white dark:bg-zinc-800 flex items-center justify-center shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                          <div className="w-10 h-10 border-2 border-black dark:border-white bg-white dark:bg-zinc-800 flex items-center justify-center shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-lg">
                             <Bot className="w-6 h-6 text-black dark:text-white" strokeWidth={2.5} />
                           </div>
                         )}
 
                         <div className={`max-w-[85%] md:max-w-[75%] ${message.type === 'user' ? 'order-first' : ''}`}>
                           <div
-                            className={`p-4 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] ${message.type === 'user'
-                              ? 'bg-black text-white dark:bg-white dark:text-black'
-                              : 'bg-white text-black dark:bg-zinc-800 dark:text-white'
+                            className={`p-4 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl ${message.type === 'user'
+                              ? 'bg-black text-white dark:bg-white dark:text-black rounded-tr-none'
+                              : 'bg-white text-black dark:bg-zinc-800 dark:text-white rounded-tl-none'
                               }`}
                           >
                             <p className="text-sm md:text-base font-bold leading-relaxed whitespace-pre-wrap">
@@ -343,7 +343,7 @@ export default function Chatbot() {
                         </div>
 
                         {message.type === 'user' && (
-                          <div className="w-10 h-10 border-2 border-black dark:border-white bg-primary flex items-center justify-center shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                          <div className="w-10 h-10 border-2 border-black dark:border-white bg-primary flex items-center justify-center shrink-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-lg">
                             <User className="w-6 h-6 text-black" strokeWidth={2.5} />
                           </div>
                         )}
@@ -378,12 +378,12 @@ export default function Chatbot() {
                     onChange={(e) => setInputMessage(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                     disabled={isLoading}
-                    className="h-14 text-lg font-bold border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] focus-visible:ring-0 focus-visible:translate-x-[2px] focus-visible:translate-y-[2px] focus-visible:shadow-none transition-all placeholder:text-gray-400 bg-white dark:bg-zinc-900 text-black dark:text-white"
+                    className="h-14 text-lg font-bold border-2 border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] focus-visible:ring-0 focus-visible:translate-x-[2px] focus-visible:translate-y-[2px] focus-visible:shadow-none transition-all placeholder:text-gray-400 bg-white dark:bg-zinc-900 text-black dark:text-white"
                   />
                   <Button
                     onClick={handleSendMessage}
                     disabled={isLoading || !inputMessage.trim()}
-                    className="h-14 w-14 shrink-0 bg-black text-white hover:bg-primary hover:text-black dark:bg-white dark:text-black dark:hover:bg-primary dark:hover:text-black border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] active:translate-y-0 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all disabled:opacity-50"
+                    className="h-14 w-14 shrink-0 bg-black text-white hover:bg-primary hover:text-black dark:bg-white dark:text-black dark:hover:bg-primary dark:hover:text-black border-2 border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] active:translate-y-0 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:active:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all disabled:opacity-50"
                   >
                     <Send className="h-6 w-6" strokeWidth={3} />
                   </Button>
@@ -409,7 +409,7 @@ export default function Chatbot() {
             <div className="absolute right-0 top-0 bottom-0 w-80 bg-background lg:static lg:w-auto lg:h-full flex flex-col gap-6 p-4 lg:p-0 overflow-y-auto">
 
               {/* History / New Chat */}
-              <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-secondary dark:bg-zinc-800 flex flex-col h-[60vh] lg:h-auto">
+              <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-xl bg-secondary dark:bg-zinc-800 flex flex-col h-[60vh] lg:h-auto overflow-hidden">
                 <CardHeader className="border-b-4 border-black dark:border-white py-3">
                   <div onClick={handleNewChat} className="cursor-pointer bg-black text-white p-3 flex items-center justify-center gap-2 hover:bg-primary hover:text-black transition-all border-2 border-transparent hover:border-black shadow-[2px_2px_0px_0px_rgba(255,255,255,0.2)]">
                     <Zap className="h-4 w-4" />
@@ -427,7 +427,7 @@ export default function Chatbot() {
                           <div
                             key={conv.id}
                             onClick={() => handleLoadConversation(conv.id)}
-                            className={`group flex items-center justify-between p-3 text-xs font-bold border-2 border-black dark:border-white cursor-pointer transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] ${conversationId === conv.id ? 'bg-primary text-black' : 'bg-white dark:bg-zinc-900 text-black dark:text-white'}`}
+                            className={`group flex items-center justify-between p-3 text-xs font-bold border-2 border-black dark:border-white cursor-pointer transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[3px_3px_0px_0px_rgba(255,255,255,1)] rounded-lg ${conversationId === conv.id ? 'bg-primary text-black' : 'bg-white dark:bg-zinc-900 text-black dark:text-white'}`}
                           >
                             <div className="truncate flex-1 mr-2">
                               <div className="truncate uppercase">{conv.title || "Untitled Chat"}</div>
@@ -447,7 +447,7 @@ export default function Chatbot() {
               </Card>
 
               {/* Capabilities */}
-              <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-accent dark:bg-zinc-800">
+              <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-xl bg-accent dark:bg-zinc-800 overflow-hidden">
                 <CardHeader className="border-b-4 border-black dark:border-white py-3">
                   <CardTitle className="text-sm font-black uppercase flex items-center gap-2 text-black dark:text-white">
                     <Bot className="h-4 w-4" />
@@ -455,15 +455,15 @@ export default function Chatbot() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-3 space-y-3">
-                  <div className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                  <div className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] rounded-lg">
                     <BookOpen className="h-5 w-5 text-black dark:text-white" />
                     <span className="text-xs font-bold uppercase text-black dark:text-white">Smart Recommendations</span>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                  <div className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] rounded-lg">
                     <Star className="h-5 w-5 text-black dark:text-white" />
                     <span className="text-xs font-bold uppercase text-black dark:text-white">Deep Literary Analysis</span>
                   </div>
-                  <div className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                  <div className="flex items-center gap-3 p-3 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] rounded-lg">
                     <MessageSquare className="h-5 w-5 text-black dark:text-white" />
                     <span className="text-xs font-bold uppercase text-black dark:text-white">Context Awareness</span>
                   </div>
@@ -472,7 +472,7 @@ export default function Chatbot() {
 
               {/* Mobile Close Button */}
               <Button
-                className="lg:hidden w-full border-2 border-black bg-black text-white rounded-none font-bold uppercase"
+                className="lg:hidden w-full border-2 border-black bg-black text-white rounded-lg font-bold uppercase"
                 onClick={() => setSidebarOpen(false)}
               >
                 Close Menu

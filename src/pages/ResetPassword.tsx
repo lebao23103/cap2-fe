@@ -93,7 +93,7 @@ export default function ResetPassword() {
           <p className="text-sm text-muted-foreground font-mono font-bold">— Oscar Wilde</p>
         </motion.div>
 
-        <Card className="w-full border-2 border-border shadow-neo-lg bg-card rounded-none">
+        <Card className="w-full border-2 border-border shadow-neo-lg bg-card rounded-xl">
           <CardHeader className="text-center pb-8 pt-8 border-b-2 border-border">
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
@@ -174,7 +174,7 @@ export default function ResetPassword() {
                     type="email"
                     placeholder="your.name@example.com"
                     {...register('email')}
-                    className={`bg-background text-foreground border-2 border-border focus:ring-0 focus:border-foreground focus:shadow-neo h-12 rounded-none transition-all font-bold ${errors.email && touchedFields.email ? 'border-destructive focus:border-destructive focus:shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]' : ''
+                    className={`bg-background text-foreground border-2 border-border focus:ring-0 focus:border-foreground focus:shadow-neo h-12 rounded-lg transition-all font-bold ${errors.email && touchedFields.email ? 'border-destructive focus:border-destructive focus:shadow-[4px_4px_0px_0px_rgba(239,68,68,1)]' : ''
                       }`}
                     disabled={isLoading}
                     aria-required="true"

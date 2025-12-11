@@ -106,7 +106,7 @@ export default function NoteInteractionDemo() {
             {/* --- HEADER --- */}
             <div className="h-14 border-b-2 border-border flex items-center justify-between px-4 bg-background z-20">
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" className="rounded-none border-transparent hover:opacity-70"><ChevronLeft className="h-5 w-5" /></Button>
+                    <Button variant="ghost" size="icon" className="rounded-lg border-transparent hover:opacity-70"><ChevronLeft className="h-5 w-5" /></Button>
                     <div className="h-6 w-0.5 bg-foreground" />
                     <div>
                         <h1 className="text-sm font-bold uppercase line-clamp-1 text-foreground">Midnight Library</h1>
@@ -114,10 +114,10 @@ export default function NoteInteractionDemo() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="rounded-none border-transparent hover:opacity-70"><Bookmark className="h-4 w-4" /></Button>
-                    <Button variant="ghost" size="icon" className="rounded-none border-transparent hover:opacity-70"><Heart className="h-4 w-4" /></Button>
+                    <Button variant="ghost" size="icon" className="rounded-lg border-transparent hover:opacity-70"><Bookmark className="h-4 w-4" /></Button>
+                    <Button variant="ghost" size="icon" className="rounded-lg border-transparent hover:opacity-70"><Heart className="h-4 w-4" /></Button>
                     <div className="h-6 w-0.5 bg-foreground mx-1" />
-                    <Button variant="ghost" size="icon" className="rounded-none border-transparent hover:opacity-70"><Settings className="h-4 w-4" /></Button>
+                    <Button variant="ghost" size="icon" className="rounded-lg border-transparent hover:opacity-70"><Settings className="h-4 w-4" /></Button>
                 </div>
             </div>
 
@@ -170,7 +170,7 @@ export default function NoteInteractionDemo() {
                                         >
 
                                             {/* Popover content */}
-                                            <div className="relative rounded-none border-2 border-black bg-white shadow-neo overflow-hidden z-20 border-l-[6px] border-l-amber-400 font-sans">
+                                            <div className="relative rounded-xl border-2 border-black bg-white shadow-neo overflow-hidden z-20 border-l-[6px] border-l-amber-400 font-sans">
                                                 {/* Header */}
                                                 <div className="flex items-start justify-between p-3 pb-2 border-b-2 border-black">
                                                     <div className="flex items-center gap-1.5 flex-1">
@@ -266,7 +266,7 @@ export default function NoteInteractionDemo() {
                                 initial={{ opacity: 0, scale: 0.95 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
-                                className="absolute top-[30%] bg-card neo-box z-50 w-96 rounded-none p-0"
+                                className="absolute top-[30%] bg-card neo-box z-50 w-96 rounded-xl p-0"
                             >
                                 <div className="p-4 border-b-2 border-border bg-pink-100 dark:bg-pink-900/50">
                                     <div className="flex items-center gap-2 font-bold uppercase text-foreground">
@@ -287,8 +287,8 @@ export default function NoteInteractionDemo() {
                                         {step >= 5 && "The concept of parallel lives is fascinating..."}
                                     </div>
                                     <div className="flex justify-end gap-2">
-                                        <Button size="sm" variant="ghost" className="rounded-none border-2 border-transparent hover:bg-muted font-bold uppercase text-foreground">Cancel</Button>
-                                        <Button size="sm" className="rounded-none border-2 border-foreground shadow-neo-sm bg-amber-400 text-black hover:bg-amber-500 font-bold uppercase">Save Note</Button>
+                                        <Button size="sm" variant="ghost" className="rounded-lg border-2 border-transparent hover:bg-muted font-bold uppercase text-foreground">Cancel</Button>
+                                        <Button size="sm" className="rounded-lg border-2 border-foreground shadow-neo-sm bg-amber-400 text-black hover:bg-amber-500 font-bold uppercase">Save Note</Button>
                                     </div>
                                 </div>
                             </motion.div>

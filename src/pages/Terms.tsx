@@ -38,7 +38,7 @@ export default function Terms() {
           <div className="grid lg:grid-cols-4 gap-8">
             {/* Table of Contents - Sticky Sidebar */}
             <nav className="lg:col-span-1 hidden lg:block" aria-label="Terms of service navigation">
-              <Card className="sticky top-24 rounded-none border-4 border-border shadow-neo-lg bg-card">
+              <Card className="sticky top-24 rounded-xl border-4 border-border shadow-neo-lg bg-card">
                 <CardContent className="p-6">
                   <h2 className="font-black mb-4 text-lg uppercase text-foreground border-b-2 border-border pb-2">Contents</h2>
                   <ul className="space-y-2 text-sm font-bold">
@@ -129,7 +129,7 @@ export default function Terms() {
 
             {/* Main Content */}
             <article className="lg:col-span-3">
-              <Card className="rounded-none border-4 border-border shadow-neo-lg bg-card">
+              <Card className="rounded-xl border-4 border-border shadow-neo-lg bg-card">
                 <CardContent className="p-6 sm:p-8 lg:p-12 space-y-8 font-sans">
                   {/* Acceptance */}
                   <section id="acceptance" className="scroll-mt-24">

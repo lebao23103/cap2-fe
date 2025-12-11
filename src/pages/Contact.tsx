@@ -107,10 +107,10 @@ export default function Contact() {
       <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
       {/* Hero Section */}
-      <section className="relative w-full pt-32 pb-20 border-b-4 border-black dark:border-white bg-white dark:bg-zinc-800 z-10">
+      <section className="relative w-full pt-32 pb-20 border-b-4 border-border bg-card z-10">
         <div className="container mx-auto max-w-4xl text-center px-4">
           <motion.div {...fadeInUp}>
-            <Badge variant="outline" className="mb-6 px-4 py-2 text-sm font-bold uppercase border-2 border-black dark:border-white rounded-none bg-primary text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+            <Badge variant="outline" className="mb-6 px-4 py-2 text-sm font-bold uppercase border-2 border-border rounded-md bg-primary text-black shadow-neo">
               💬 Get In Touch
             </Badge>
             <h1 className="text-5xl md:text-7xl font-black text-black dark:text-white mb-6 uppercase tracking-tighter">
@@ -133,8 +133,8 @@ export default function Contact() {
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
             <motion.div {...fadeInUp} className="h-full">
-              <Card className="h-full flex flex-col rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
-                <CardHeader className="border-b-4 border-black dark:border-white bg-gray-50 dark:bg-zinc-800">
+              <Card className="h-full flex flex-col rounded-xl border-4 border-border shadow-neo-lg bg-card">
+                <CardHeader className="border-b-4 border-border bg-muted/50 rounded-t-xl">
                   <CardTitle className="text-2xl font-black uppercase flex items-center text-black dark:text-white">
                     <MessageSquare className="h-6 w-6 mr-3 text-black dark:text-white" strokeWidth={2.5} />
                     Send us a Message
@@ -151,7 +151,7 @@ export default function Contact() {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="mb-4 p-4 bg-green-500 text-white border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex items-center gap-3 font-bold"
+                        className="mb-4 p-4 bg-green-500 text-white border-4 border-border shadow-neo flex items-center gap-3 font-bold"
                         role="alert"
                       >
                         <CheckCircle2 className="h-6 w-6" strokeWidth={2.5} />
@@ -167,7 +167,7 @@ export default function Contact() {
                     <motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="mb-4 p-4 bg-red-500 text-white border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] font-bold"
+                      className="mb-4 p-4 bg-red-500 text-white border-4 border-border shadow-neo font-bold"
                       role="alert"
                     >
                       <p>{submitError}</p>
@@ -187,7 +187,7 @@ export default function Contact() {
                           aria-invalid={!!errors.name}
                           aria-describedby={errors.name ? 'name-error' : undefined}
                           autoComplete="name"
-                          className={`rounded-none border-2 border-black dark:border-white bg-white dark:bg-zinc-800 text-black dark:text-white focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus-visible:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all ${errors.name && touchedFields.name ? 'border-red-500 bg-red-50' : ''}`}
+                          className={`rounded-lg border-2 border-border bg-card text-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-neo transition-all ${errors.name && touchedFields.name ? 'border-destructive bg-destructive/10' : ''}`}
                         />
                         {errors.name && touchedFields.name && (
                           <p id="name-error" className="text-sm font-bold text-red-500" role="alert">
@@ -207,7 +207,7 @@ export default function Contact() {
                           aria-invalid={!!errors.email}
                           aria-describedby={errors.email ? 'email-error' : undefined}
                           autoComplete="email"
-                          className={`rounded-none border-2 border-black dark:border-white bg-white dark:bg-zinc-800 text-black dark:text-white focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus-visible:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all ${errors.email && touchedFields.email ? 'border-red-500 bg-red-50' : ''}`}
+                          className={`rounded-lg border-2 border-border bg-card text-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-neo transition-all ${errors.email && touchedFields.email ? 'border-destructive bg-destructive/10' : ''}`}
                         />
                         {errors.email && touchedFields.email && (
                           <p id="email-error" className="text-sm font-bold text-red-500" role="alert">
@@ -226,7 +226,7 @@ export default function Contact() {
                         aria-required="true"
                         aria-invalid={!!errors.subject}
                         aria-describedby={errors.subject ? 'subject-error' : undefined}
-                        className={`rounded-none border-2 border-black dark:border-white bg-white dark:bg-zinc-800 text-black dark:text-white focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus-visible:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all ${errors.subject && touchedFields.subject ? 'border-red-500 bg-red-50' : ''}`}
+                        className={`rounded-lg border-2 border-border bg-card text-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-neo transition-all ${errors.subject && touchedFields.subject ? 'border-destructive bg-destructive/10' : ''}`}
                       />
                       {errors.subject && touchedFields.subject && (
                         <p id="subject-error" className="text-sm font-bold text-red-500" role="alert">
@@ -240,7 +240,7 @@ export default function Contact() {
                         id="message"
                         {...register('message')}
                         placeholder="Tell us more about your question, feedback, or how we can help..."
-                        className={`flex-1 min-h-[120px] resize-none rounded-none border-2 border-black dark:border-white bg-white dark:bg-zinc-800 text-black dark:text-white focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus-visible:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all ${errors.message && touchedFields.message ? 'border-red-500 bg-red-50' : ''}`}
+                        className={`flex-1 min-h-[120px] resize-none rounded-lg border-2 border-border bg-card text-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-primary focus-visible:shadow-neo transition-all ${errors.message && touchedFields.message ? 'border-destructive bg-destructive/10' : ''}`}
                         disabled={isSubmitting || isSuccess}
                         aria-required="true"
                         aria-invalid={!!errors.message}
@@ -254,7 +254,7 @@ export default function Contact() {
                     </div>
                     <Button
                       type="submit"
-                      className="w-full mt-auto h-14 text-lg font-black uppercase bg-black text-white dark:bg-white dark:text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-black dark:hover:bg-white transition-all disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:disabled:hover:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]"
+                      className="w-full mt-auto h-14 text-lg font-black uppercase bg-foreground text-background border-4 border-border rounded-xl shadow-neo hover:translate-y-[-4px] hover:shadow-neo-lg hover:bg-foreground transition-all disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-neo"
                       size="lg"
                       disabled={isSubmitting || isSuccess}
                       aria-label={isSubmitting ? 'Sending message' : 'Send message'}
@@ -288,8 +288,8 @@ export default function Contact() {
 
             {/* Contact Information */}
             <motion.div {...fadeInUp} className="space-y-8">
-              <Card className="rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
-                <CardHeader className="border-b-4 border-black dark:border-white bg-gray-50 dark:bg-zinc-800">
+              <Card className="rounded-xl border-4 border-border shadow-neo-lg bg-card">
+                <CardHeader className="border-b-4 border-border bg-muted/50 rounded-t-xl">
                   <CardTitle className="text-2xl font-black uppercase text-center text-black dark:text-white">Get in Touch</CardTitle>
                   <CardDescription className="text-center text-base font-medium text-black dark:text-gray-300">
                     Prefer to reach out directly? Here are all the ways you can contact us.
@@ -324,7 +324,7 @@ export default function Contact() {
                       }
                     ].map((item, index) => (
                       <div key={index} className="flex flex-col items-center text-center space-y-2">
-                        <div className="p-3 bg-white dark:bg-zinc-800 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                        <div className="p-3 bg-card border-2 border-border shadow-neo">
                           <item.icon className="h-6 w-6 text-black dark:text-white" strokeWidth={2.5} />
                         </div>
                         <div>
@@ -339,8 +339,8 @@ export default function Contact() {
               </Card>
 
               {/* Social Links */}
-              <Card className="rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900">
-                <CardHeader className="border-b-4 border-black dark:border-white bg-gray-50 dark:bg-zinc-800">
+              <Card className="rounded-xl border-4 border-border shadow-neo-lg bg-card">
+                <CardHeader className="border-b-4 border-black dark:border-white bg-gray-50 dark:bg-zinc-800 rounded-t-xl">
                   <CardTitle className="text-xl font-black uppercase text-black dark:text-white">Follow Us</CardTitle>
                   <CardDescription className="text-base font-medium text-black dark:text-gray-300">
                     Stay connected with Knowly on social media.
@@ -353,7 +353,7 @@ export default function Contact() {
                       { icon: Facebook, label: "Facebook", link: "https://facebook.com/knowly" },
                       { icon: Twitter, label: "Twitter", link: "https://twitter.com/knowly" }
                     ].map((social, index) => (
-                      <Button key={index} variant="outline" size="lg" className="flex-1 rounded-none border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] hover:bg-white dark:hover:bg-zinc-800 text-black dark:text-white transition-all font-bold uppercase" asChild>
+                      <Button key={index} variant="outline" size="lg" className="flex-1 rounded-lg border-2 border-border shadow-neo hover:translate-y-[-2px] hover:shadow-neo-hover hover:bg-card text-foreground transition-all font-bold uppercase" asChild>
                         <a
                           href={social.link}
                           target="_blank"
@@ -383,7 +383,7 @@ export default function Contact() {
             <p className="text-xl font-bold text-gray-600 dark:text-gray-300 mb-8">
               Can't find what you're looking for? Check out our FAQ page for quick answers.
             </p>
-            <Button variant="outline" size="lg" className="h-14 px-8 text-lg font-black uppercase bg-white dark:bg-black text-black dark:text-white border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:bg-white dark:hover:bg-black transition-all" asChild>
+            <Button variant="outline" size="lg" className="h-14 px-8 text-lg font-black uppercase bg-card text-foreground border-4 border-border rounded-xl shadow-neo hover:translate-y-[-4px] hover:shadow-neo-lg hover:bg-card transition-all" asChild>
               <Link to="/faq">
                 <MessageSquare className="h-5 w-5 mr-2" />
                 View FAQ
@@ -394,7 +394,7 @@ export default function Contact() {
       </section>
 
       {/* Office Hours & Response Times */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-zinc-900 border-t-4 border-black dark:border-white z-10">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-card border-t-4 border-border z-10">
         <div className="max-w-7xl mx-auto">
           <motion.div {...fadeInUp} className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-black text-black dark:text-white mb-6 uppercase">
@@ -427,13 +427,13 @@ export default function Contact() {
               }
             ].map((item, index) => (
               <motion.div key={index} {...fadeInUp}>
-                <Card className="h-full text-center rounded-none border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-4px] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)] transition-all bg-white dark:bg-zinc-900">
+                <Card className="h-full text-center rounded-xl border-4 border-border shadow-neo-lg hover:translate-y-[-4px] hover:shadow-neo-xl transition-all bg-card">
                   <CardHeader>
-                    <div className="mx-auto mb-4 p-3 bg-white dark:bg-zinc-900 border-4 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] w-16 h-16 flex items-center justify-center">
+                    <div className="mx-auto mb-4 p-3 bg-card border-4 border-border shadow-neo w-16 h-16 flex items-center justify-center">
                       <item.icon className="h-8 w-8 text-black dark:text-white" strokeWidth={2.5} />
                     </div>
                     <CardTitle className="text-xl font-black uppercase text-black dark:text-white">{item.title}</CardTitle>
-                    <Badge variant="secondary" className="mx-auto w-fit rounded-none border-2 border-black dark:border-white bg-gray-100 dark:bg-zinc-800 text-black dark:text-white font-bold">{item.time}</Badge>
+                    <Badge variant="secondary" className="mx-auto w-fit rounded-md border-2 border-black dark:border-white bg-gray-100 dark:bg-zinc-800 text-black dark:text-white font-bold">{item.time}</Badge>
                   </CardHeader>
                   <CardContent>
                     <CardDescription className="text-base font-medium text-black dark:text-gray-300">

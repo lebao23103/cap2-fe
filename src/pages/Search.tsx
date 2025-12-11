@@ -205,7 +205,7 @@ export default function Search() {
               placeholder="SEARCH TITLES, AUTHORS, OR KEYWORDS..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 pr-4 h-14 text-lg font-bold border-2 border-border rounded-none shadow-neo focus-visible:ring-0 focus-visible:translate-x-[2px] focus-visible:translate-y-[2px] focus-visible:shadow-none transition-all placeholder:text-muted-foreground bg-card text-foreground uppercase"
+              className="pl-12 pr-4 h-14 text-lg font-bold border-2 border-border rounded-lg shadow-neo focus-visible:ring-0 focus-visible:translate-x-[2px] focus-visible:translate-y-[2px] focus-visible:shadow-none transition-all placeholder:text-muted-foreground bg-card text-foreground uppercase"
             />
           </div>
         </form>
@@ -216,7 +216,7 @@ export default function Search() {
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="sm:hidden w-full border-2 border-border rounded-none shadow-neo bg-card text-foreground uppercase font-bold"
+            className="sm:hidden w-full border-2 border-border rounded-lg shadow-neo bg-card text-foreground uppercase font-bold"
           >
             <Filter className="mr-2 h-4 w-4" aria-hidden="true" />
             Filters {hasActiveFilters && `(${selectedGenres.length + (selectedRating !== 'all' ? 1 : 0)})`}
@@ -226,11 +226,11 @@ export default function Search() {
           <div className={`flex-1 flex flex-col sm:flex-row gap-4 ${showFilters ? 'block' : 'hidden sm:flex'}`}>
             {/* Sort By */}
             <Select value={sortBy} onValueChange={setSortBy}>
-              <SelectTrigger className="w-full sm:w-[200px] border-2 border-border rounded-none shadow-neo bg-card text-foreground font-bold uppercase transition-all mb-4 sm:mb-0">
+              <SelectTrigger className="w-full sm:w-[200px] border-2 border-border rounded-lg shadow-neo bg-card text-foreground font-bold uppercase transition-all mb-4 sm:mb-0">
                 <SlidersHorizontal className="mr-2 h-4 w-4" aria-hidden="true" />
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
-              <SelectContent className="border-2 border-border rounded-none shadow-neo bg-card">
+              <SelectContent className="border-2 border-border rounded-xl shadow-neo bg-card">
                 <SelectItem value="relevance" className="font-bold uppercase focus:bg-primary focus:text-primary-foreground">Most Relevant</SelectItem>
                 <SelectItem value="rating-high" className="font-bold uppercase focus:bg-primary focus:text-primary-foreground">Highest Rated</SelectItem>
                 <SelectItem value="rating-low" className="font-bold uppercase focus:bg-primary focus:text-primary-foreground">Lowest Rated</SelectItem>
@@ -243,10 +243,10 @@ export default function Search() {
 
             {/* Rating Filter */}
             <Select value={selectedRating} onValueChange={setSelectedRating}>
-              <SelectTrigger className="w-full sm:w-[180px] border-2 border-border rounded-none shadow-neo bg-card text-foreground font-bold uppercase transition-all">
+              <SelectTrigger className="w-full sm:w-[180px] border-2 border-border rounded-lg shadow-neo bg-card text-foreground font-bold uppercase transition-all">
                 <SelectValue placeholder="Min Rating" />
               </SelectTrigger>
-              <SelectContent className="border-2 border-border rounded-none shadow-neo bg-card">
+              <SelectContent className="border-2 border-border rounded-xl shadow-neo bg-card">
                 <SelectItem value="all" className="font-bold uppercase focus:bg-primary focus:text-primary-foreground">All Ratings</SelectItem>
                 <SelectItem value="4.5" className="font-bold uppercase focus:bg-primary focus:text-primary-foreground">4.5+ Stars</SelectItem>
                 <SelectItem value="4.0" className="font-bold uppercase focus:bg-primary focus:text-primary-foreground">4.0+ Stars</SelectItem>
@@ -262,7 +262,7 @@ export default function Search() {
                 size="icon"
                 onClick={() => setViewMode('grid')}
                 aria-label="Grid view"
-                className={`border-2 border-border rounded-none shadow-neo-sm transition-all ${viewMode === 'grid' ? 'bg-primary text-primary-foreground border-border' : 'bg-card text-muted-foreground hover:text-foreground hover:shadow-neo-hover'}`}
+                className={`border-2 border-border rounded-lg shadow-neo-sm transition-all ${viewMode === 'grid' ? 'bg-primary text-primary-foreground border-border' : 'bg-card text-muted-foreground hover:text-foreground hover:shadow-neo-hover'}`}
               >
                 <Grid3x3 className="h-4 w-4" aria-hidden="true" />
               </Button>
@@ -271,7 +271,7 @@ export default function Search() {
                 size="icon"
                 onClick={() => setViewMode('list')}
                 aria-label="List view"
-                className={`border-2 border-border rounded-none shadow-neo-sm transition-all ${viewMode === 'list' ? 'bg-primary text-primary-foreground border-border' : 'bg-card text-muted-foreground hover:text-foreground hover:shadow-neo-hover'}`}
+                className={`border-2 border-border rounded-lg shadow-neo-sm transition-all ${viewMode === 'list' ? 'bg-primary text-primary-foreground border-border' : 'bg-card text-muted-foreground hover:text-foreground hover:shadow-neo-hover'}`}
               >
                 <List className="h-4 w-4" aria-hidden="true" />
               </Button>
@@ -282,7 +282,7 @@ export default function Search() {
         {/* Genre Filters */}
         <div className={`mb-6 ${showFilters ? 'block' : 'hidden sm:block'}`}>
           <div className="flex items-center gap-2 mb-3">
-            <h3 className="text-sm font-black uppercase text-black dark:text-white">Genres:</h3>
+            <h3 className="text-sm font-black uppercase text-foreground">Genres:</h3>
             {hasActiveFilters && (
               <Button variant="ghost" size="sm" onClick={clearFilters} className="text-destructive hover:text-destructive hover:bg-destructive/10 font-bold uppercase transition-colors">
                 <X className="mr-1 h-3 w-3" aria-hidden="true" />
@@ -295,7 +295,7 @@ export default function Search() {
               <Badge
                 key={genre}
                 variant={selectedGenres.includes(genre) ? 'default' : 'outline'}
-                className={`cursor-pointer transition-all rounded-none border-2 border-border px-3 py-1 text-sm font-bold uppercase ${selectedGenres.includes(genre)
+                className={`cursor-pointer transition-all rounded-md border-2 border-border px-3 py-1 text-sm font-bold uppercase ${selectedGenres.includes(genre)
                   ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-neo'
                   : 'bg-card text-foreground hover:bg-muted hover:text-foreground shadow-neo-sm'
                   }`}
@@ -358,7 +358,7 @@ export default function Search() {
                   variant="outline"
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="border-2 border-border rounded-none shadow-neo active:translate-y-0 active:shadow-none hover:translate-y-[-2px] hover:shadow-neo-hover transition-all font-bold uppercase bg-card text-foreground disabled:opacity-50"
+                  className="border-2 border-border rounded-lg shadow-neo active:translate-y-0 active:shadow-none hover:translate-y-[-2px] hover:shadow-neo-hover transition-all font-bold uppercase bg-card text-foreground disabled:opacity-50"
                 >
                   Previous
                 </Button>
@@ -376,7 +376,7 @@ export default function Search() {
                           key={page}
                           variant={currentPage === page ? 'default' : 'outline'}
                           onClick={() => setCurrentPage(page)}
-                          className={`w-10 h-10 border-2 border-border rounded-none font-bold transition-all ${currentPage === page
+                          className={`w-10 h-10 border-2 border-border rounded-lg font-bold transition-all ${currentPage === page
                             ? 'bg-primary text-primary-foreground shadow-neo'
                             : 'bg-card text-foreground shadow-neo-sm hover:translate-y-[-1px]'
                             }`}
@@ -395,7 +395,7 @@ export default function Search() {
                   variant="outline"
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="border-2 border-border rounded-none shadow-neo active:translate-y-0 active:shadow-none hover:translate-y-[-2px] hover:shadow-neo-hover transition-all font-bold uppercase bg-card text-foreground disabled:opacity-50"
+                  className="border-2 border-border rounded-lg shadow-neo active:translate-y-0 active:shadow-none hover:translate-y-[-2px] hover:shadow-neo-hover transition-all font-bold uppercase bg-card text-foreground disabled:opacity-50"
                 >
                   Next
                 </Button>

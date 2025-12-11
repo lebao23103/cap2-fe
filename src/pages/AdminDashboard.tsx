@@ -275,7 +275,7 @@ export default function AdminDashboard() {
             </div>
             <Button
               onClick={loadDashboardData}
-              className="bg-white dark:bg-zinc-800 text-black dark:text-white border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-primary hover:text-black dark:hover:bg-primary dark:hover:text-black transition-all font-bold uppercase"
+              className="bg-white dark:bg-zinc-800 text-black dark:text-white border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-primary hover:text-black dark:hover:bg-primary dark:hover:text-black transition-all font-bold uppercase"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
@@ -291,7 +291,7 @@ export default function AdminDashboard() {
             { label: 'Total Reviews', value: stats?.total_reviews || 0, icon: Star, bg: 'bg-yellow-400' },
             { label: 'Pending Approvals', value: pendingBooks.length, icon: FileText, bg: 'bg-red-400' }
           ].map((stat, index) => (
-            <Card key={index} className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] transition-all">
+            <Card key={index} className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl hover:translate-x-[-4px] hover:translate-y-[-4px] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[10px_10px_0px_0px_rgba(255,255,255,1)] transition-all">
               <CardContent className="p-6 flex items-center gap-4">
                 <div className={`p-4 border-4 border-black dark:border-white ${stat.bg} shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]`}>
                   <stat.icon className="h-6 w-6 text-black" />
@@ -317,7 +317,7 @@ export default function AdminDashboard() {
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="flex items-center gap-2 py-3 px-4 border-4 border-black dark:border-white bg-white dark:bg-zinc-900 text-black dark:text-white data-[state=active]:bg-primary data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] font-bold uppercase transition-all"
+                className="flex items-center gap-2 py-3 px-4 border-4 border-black dark:border-white bg-white dark:bg-zinc-900 text-black dark:text-white data-[state=active]:bg-primary data-[state=active]:text-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] font-bold uppercase transition-all"
               >
                 <tab.icon className="h-4 w-4" />
                 <span className="hidden sm:inline">{tab.label}</span>
@@ -329,7 +329,7 @@ export default function AdminDashboard() {
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Rating Distribution */}
-              <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
+              <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl">
                 <CardHeader className="border-b-4 border-black dark:border-white bg-yellow-100 dark:bg-yellow-900/30">
                   <CardTitle className="flex items-center gap-2 font-black uppercase text-black dark:text-white">
                     <Star className="h-5 w-5" />
@@ -363,7 +363,7 @@ export default function AdminDashboard() {
               </Card>
 
               {/* Most Read Book */}
-              <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
+              <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl">
                 <CardHeader className="border-b-4 border-black dark:border-white bg-green-100 dark:bg-green-900/30">
                   <CardTitle className="flex items-center gap-2 font-black uppercase text-black dark:text-white">
                     <TrendingUp className="h-5 w-5" />
@@ -401,7 +401,7 @@ export default function AdminDashboard() {
 
           {/* Users Tab */}
           <TabsContent value="users" className="space-y-6">
-            <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
+            <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl">
               <CardHeader className="border-b-4 border-black dark:border-white bg-blue-100 dark:bg-blue-900/30 flex flex-row items-center justify-between">
                 <div>
                   <CardTitle className="font-black uppercase text-black dark:text-white">User Management</CardTitle>
@@ -409,7 +409,7 @@ export default function AdminDashboard() {
                 </div>
                 <Button
                   onClick={() => setIsCreateUserOpen(true)}
-                  className="bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase"
+                  className="bg-primary text-black border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase"
                 >
                   <UserPlus className="h-4 w-4 mr-2" />
                   Add User
@@ -432,14 +432,14 @@ export default function AdminDashboard() {
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Badge className={`${user.is_staff ? 'bg-primary' : 'bg-gray-200 dark:bg-zinc-700'} text-black dark:text-white border-2 border-black dark:border-white rounded-none font-bold uppercase`}>
+                          <Badge className={`${user.is_staff ? 'bg-primary' : 'bg-gray-200 dark:bg-zinc-700'} text-black dark:text-white border-2 border-black dark:border-white rounded-md font-bold uppercase`}>
                             {user.is_staff ? 'Admin' : 'User'}
                           </Badge>
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() => openEditUser(user)}
-                            className="border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-800 text-black dark:text-white"
+                            className="border-2 border-black dark:border-white rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -448,7 +448,7 @@ export default function AdminDashboard() {
                             size="sm"
                             onClick={() => handleDeleteUser(user.id)}
                             disabled={actionLoading === `deleteUser-${user.id}`}
-                            className="border-2 border-black dark:border-white rounded-none hover:bg-red-100 dark:hover:bg-red-900/30 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                            className="border-2 border-black dark:border-white rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 bg-white dark:bg-zinc-800 text-black dark:text-white"
                           >
                             {actionLoading === `deleteUser-${user.id}` ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -467,7 +467,7 @@ export default function AdminDashboard() {
 
           {/* Books Tab */}
           <TabsContent value="books" className="space-y-6">
-            <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
+            <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl">
               <CardHeader className="border-b-4 border-black dark:border-white bg-green-100 dark:bg-green-900/30">
                 <CardTitle className="font-black uppercase text-black dark:text-white">Book Management</CardTitle>
                 <CardDescription className="font-mono text-gray-600 dark:text-gray-300">Manage all published books</CardDescription>
@@ -495,7 +495,7 @@ export default function AdminDashboard() {
                               variant="outline"
                               size="sm"
                               onClick={() => window.open(book.pdf_url!, '_blank')}
-                              className="border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-800 text-black dark:text-white"
+                              className="border-2 border-black dark:border-white rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white"
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
@@ -504,7 +504,7 @@ export default function AdminDashboard() {
                             variant="outline"
                             size="sm"
                             onClick={() => openQuizManager(book)}
-                            className="border-2 border-black dark:border-white rounded-none bg-blue-100 dark:bg-blue-900/30 text-black dark:text-white hover:bg-blue-200"
+                            className="border-2 border-black dark:border-white rounded-lg bg-blue-100 dark:bg-blue-900/30 text-black dark:text-white hover:bg-blue-200"
                             title="Manage Quiz"
                           >
                             <CheckCircle className="h-4 w-4" />
@@ -513,7 +513,7 @@ export default function AdminDashboard() {
                             variant="outline"
                             size="sm"
                             onClick={() => openEditBook(book)}
-                            className="border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-800 text-black dark:text-white"
+                            className="border-2 border-black dark:border-white rounded-lg bg-white dark:bg-zinc-800 text-black dark:text-white"
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
@@ -522,7 +522,7 @@ export default function AdminDashboard() {
                             size="sm"
                             onClick={() => handleDeleteBook(book.id)}
                             disabled={actionLoading === `deleteBook-${book.id}`}
-                            className="border-2 border-black dark:border-white rounded-none hover:bg-red-100 dark:hover:bg-red-900/30 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                            className="border-2 border-border rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 bg-card text-foreground"
                           >
                             {actionLoading === `deleteBook-${book.id}` ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -541,25 +541,23 @@ export default function AdminDashboard() {
 
           {/* Pending Approvals Tab */}
           <TabsContent value="pending" className="space-y-6">
-            <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-none">
-              <CardHeader className="border-b-4 border-black dark:border-white bg-red-100 dark:bg-red-900/30">
-                <CardTitle className="font-black uppercase flex items-center gap-2 text-black dark:text-white">
+            <Card className="border-4 border-border bg-card shadow-neo rounded-xl">
+              <CardHeader className="border-b-4 border-border bg-red-100 dark:bg-red-900/30">
+                <CardTitle className="font-black uppercase flex items-center gap-2 text-foreground">
                   <Activity className="h-5 w-5" />
                   Pending Book Approvals ({pendingBooks.length})
                 </CardTitle>
-                <CardDescription className="font-mono text-gray-600 dark:text-gray-300">Review and approve user-submitted books</CardDescription>
+                <CardDescription className="font-mono text-muted-foreground">Review and approve user-submitted books</CardDescription>
               </CardHeader>
               <CardContent className="p-6">
                 <div className="space-y-4">
                   {pendingBooks.length === 0 ? (
-                    <div className="text-center py-12">
-                      <CheckCircle className="h-16 w-16 mx-auto text-green-500 mb-4" />
-                      <p className="text-gray-600 dark:text-gray-300 font-bold">No pending approvals!</p>
-                      <p className="text-sm text-gray-500">All submissions have been reviewed.</p>
+                    <div className="text-center py-8 text-muted-foreground font-mono">
+                      No pending books to review.
                     </div>
                   ) : (
                     pendingBooks.map((book) => (
-                      <div key={book.id} className="p-4 border-4 border-black dark:border-white bg-white dark:bg-zinc-800">
+                      <div key={book.id} className="p-4 border-4 border-border bg-card">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex gap-4">
                             <div className="w-16 h-20 bg-gray-200 dark:bg-gray-700 border-2 border-black dark:border-white flex items-center justify-center shrink-0">
@@ -582,7 +580,7 @@ export default function AdminDashboard() {
                             <Button
                               onClick={() => handleApproveBook(book.id)}
                               disabled={actionLoading === `approveBook-${book.id}`}
-                              className="bg-green-400 text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-green-500 transition-all font-bold uppercase"
+                              className="bg-green-400 text-black border-4 border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-green-500 transition-all font-bold uppercase"
                             >
                               {actionLoading === `approveBook-${book.id}` ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -597,7 +595,7 @@ export default function AdminDashboard() {
                               variant="outline"
                               onClick={() => handleRejectBook(book.id)}
                               disabled={actionLoading === `rejectBook-${book.id}`}
-                              className="border-4 border-black dark:border-white bg-white dark:bg-zinc-800 text-black dark:text-white rounded-none hover:bg-red-100 dark:hover:bg-red-900/30 font-bold uppercase transition-all"
+                              className="border-4 border-black dark:border-white bg-white dark:bg-zinc-800 text-black dark:text-white rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 font-bold uppercase transition-all"
                             >
                               {actionLoading === `rejectBook-${book.id}` ? (
                                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -622,7 +620,7 @@ export default function AdminDashboard() {
 
       {/* Create User Dialog */}
       <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
-        <DialogContent className="border-4 border-black dark:border-white rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
+        <DialogContent className="border-4 border-black dark:border-white rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
           <DialogHeader className="border-b-4 border-black dark:border-white pb-4">
             <DialogTitle className="font-black uppercase flex items-center gap-2">
               <UserPlus className="h-5 w-5" />
@@ -638,7 +636,7 @@ export default function AdminDashboard() {
                   id="username"
                   value={newUserForm.username}
                   onChange={(e) => setNewUserForm(prev => ({ ...prev, username: e.target.value }))}
-                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  className="border-2 border-black dark:border-white rounded-lg h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
                   autoComplete="off"
                 />
               </div>
@@ -649,7 +647,7 @@ export default function AdminDashboard() {
                   type="email"
                   value={newUserForm.email}
                   onChange={(e) => setNewUserForm(prev => ({ ...prev, email: e.target.value }))}
-                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  className="border-2 border-black dark:border-white rounded-lg h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
                   autoComplete="off"
                 />
               </div>
@@ -660,7 +658,7 @@ export default function AdminDashboard() {
                   type="password"
                   value={newUserForm.password}
                   onChange={(e) => setNewUserForm(prev => ({ ...prev, password: e.target.value }))}
-                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  className="border-2 border-black dark:border-white rounded-lg h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
                   autoComplete="new-password"
                 />
               </div>
@@ -669,7 +667,7 @@ export default function AdminDashboard() {
               <Button
                 type="submit"
                 disabled={actionLoading === 'createUser'}
-                className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
+                className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
               >
                 {actionLoading === 'createUser' ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -684,7 +682,7 @@ export default function AdminDashboard() {
 
       {/* Edit User Dialog */}
       <Dialog open={isEditUserOpen} onOpenChange={setIsEditUserOpen}>
-        <DialogContent className="border-4 border-black dark:border-white rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
+        <DialogContent className="border-4 border-black dark:border-white rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
           <DialogHeader className="border-b-4 border-black dark:border-white pb-4">
             <DialogTitle className="font-black uppercase flex items-center gap-2">
               <Edit className="h-5 w-5" />
@@ -700,7 +698,7 @@ export default function AdminDashboard() {
                   id="edit-username"
                   value={editUserForm.username}
                   onChange={(e) => setEditUserForm(prev => ({ ...prev, username: e.target.value }))}
-                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  className="border-2 border-black dark:border-white rounded-lg h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
                   autoComplete="off"
                 />
               </div>
@@ -711,7 +709,7 @@ export default function AdminDashboard() {
                   type="email"
                   value={editUserForm.email}
                   onChange={(e) => setEditUserForm(prev => ({ ...prev, email: e.target.value }))}
-                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  className="border-2 border-black dark:border-white rounded-lg h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
                   autoComplete="off"
                 />
               </div>
@@ -722,7 +720,7 @@ export default function AdminDashboard() {
                   type="password"
                   value={editUserForm.password}
                   onChange={(e) => setEditUserForm(prev => ({ ...prev, password: e.target.value }))}
-                  className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                  className="border-2 border-black dark:border-white rounded-lg h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
                   placeholder="••••••••"
                   autoComplete="new-password"
                 />
@@ -733,7 +731,7 @@ export default function AdminDashboard() {
                   id="is_staff"
                   checked={editUserForm.is_staff}
                   onChange={(e) => setEditUserForm(prev => ({ ...prev, is_staff: e.target.checked }))}
-                  className="h-5 w-5 border-2 border-black rounded-none"
+                  className="h-5 w-5 border-2 border-black rounded-md"
                 />
                 <Label htmlFor="is_staff" className="font-bold uppercase text-black dark:text-white cursor-pointer">
                   Grant Admin Access
@@ -744,7 +742,7 @@ export default function AdminDashboard() {
               <Button
                 type="submit"
                 disabled={actionLoading === 'updateUser'}
-                className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
+                className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
               >
                 {actionLoading === 'updateUser' ? (
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -759,7 +757,7 @@ export default function AdminDashboard() {
 
       {/* Edit Book Dialog */}
       <Dialog open={isEditBookOpen} onOpenChange={setIsEditBookOpen}>
-        <DialogContent className="border-4 border-black dark:border-white rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
+        <DialogContent className="border-4 border-black dark:border-white rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
           <DialogHeader className="border-b-4 border-black dark:border-white pb-4">
             <DialogTitle className="font-black uppercase flex items-center gap-2">
               <Edit className="h-5 w-5" />
@@ -774,7 +772,7 @@ export default function AdminDashboard() {
                 id="edit-book-title"
                 value={editBookForm.title}
                 onChange={(e) => setEditBookForm(prev => ({ ...prev, title: e.target.value }))}
-                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                className="border-2 border-black dark:border-white rounded-lg h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
               />
             </div>
             <div className="grid gap-2">
@@ -783,7 +781,7 @@ export default function AdminDashboard() {
                 id="edit-book-author"
                 value={editBookForm.author}
                 onChange={(e) => setEditBookForm(prev => ({ ...prev, author: e.target.value }))}
-                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                className="border-2 border-black dark:border-white rounded-lg h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
               />
             </div>
             <div className="grid gap-2">
@@ -793,7 +791,7 @@ export default function AdminDashboard() {
                 type="number"
                 value={editBookForm.pages}
                 onChange={(e) => setEditBookForm(prev => ({ ...prev, pages: parseInt(e.target.value) || 0 }))}
-                className="border-2 border-black dark:border-white rounded-none h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
+                className="border-2 border-black dark:border-white rounded-lg h-12 bg-white dark:bg-zinc-800 text-black dark:text-white"
               />
             </div>
           </div>
@@ -801,7 +799,7 @@ export default function AdminDashboard() {
             <Button
               onClick={handleUpdateBook}
               disabled={actionLoading === 'updateBook'}
-              className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
+              className="w-full bg-primary text-black border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase h-12"
             >
               {actionLoading === 'updateBook' ? (
                 <Loader2 className="h-5 w-5 animate-spin" />

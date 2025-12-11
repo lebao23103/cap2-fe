@@ -112,10 +112,10 @@ export default function Favorites() {
   const allGenres = Array.from(new Set(favorites.flatMap(book => book.genre)))
 
   const BookCard = ({ book }: { book: Book }) => (
-    <Card className="group hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all duration-200 border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800">
+    <Card className="group hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-neo-lg transition-all duration-200 border-2 border-border rounded-xl shadow-neo bg-card">
       <CardContent className="p-4">
         <div className="flex gap-4">
-          <div className="relative w-16 h-20 shrink-0 border-2 border-black dark:border-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+          <div className="relative w-16 h-20 shrink-0 border-2 border-border shadow-neo-sm">
             <img
               src={book.cover}
               alt={`${book.title} by ${book.author} - Book cover`}
@@ -124,7 +124,7 @@ export default function Favorites() {
             />
           </div>
           <div className="flex-1 min-w-0">
-            <h3 className="font-bold text-sm text-black dark:text-white line-clamp-2 uppercase">{book.title}</h3>
+            <h3 className="font-bold text-sm text-foreground line-clamp-2 uppercase">{book.title}</h3>
             <p className="text-sm text-gray-600 dark:text-gray-300 font-mono">{book.author}</p>
             <div className="flex items-center gap-1 mt-1">
               <Star className="w-3 h-3 fill-black text-black dark:fill-white dark:text-white" />
@@ -132,7 +132,7 @@ export default function Favorites() {
             </div>
             <div className="flex gap-1 mt-2">
               {book.genre.slice(0, 2).map((g) => (
-                <Badge key={g} variant="secondary" className="text-[10px] rounded-none border border-black dark:border-white bg-primary/20 text-black dark:text-white font-bold uppercase">
+                <Badge key={g} variant="secondary" className="text-[10px] rounded-md border border-border bg-primary/20 text-foreground font-bold uppercase">
                   {g}
                 </Badge>
               ))}
@@ -145,7 +145,7 @@ export default function Favorites() {
             variant="ghost"
             size="sm"
             onClick={() => handleRemoveFavorite(book.id)}
-            className="md:opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 dark:hover:bg-red-900/40 rounded-none h-8 w-8 p-0"
+            className="md:opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-100 dark:hover:bg-red-900/40 rounded-lg h-8 w-8 p-0"
             aria-label={`Remove ${book.title} from favorites`}
           >
             <Trash2 className="h-4 w-4 text-red-600 dark:text-red-400" aria-hidden="true" />
@@ -197,7 +197,7 @@ export default function Favorites() {
                     placeholder="SEARCH YOUR FAVORITES..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 h-12 text-lg font-bold border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] focus-visible:ring-0 focus-visible:translate-x-[2px] focus-visible:translate-y-[2px] focus-visible:shadow-none transition-all placeholder:text-gray-400 bg-white dark:bg-zinc-900 text-black dark:text-white uppercase"
+                    className="pl-10 h-12 text-lg font-bold border-2 border-border rounded-lg shadow-neo focus-visible:ring-0 focus-visible:translate-x-[2px] focus-visible:translate-y-[2px] focus-visible:shadow-none transition-all placeholder:text-muted-foreground bg-card text-foreground uppercase"
                   />
                 </div>
                 <div className="flex items-center gap-2">
@@ -206,7 +206,7 @@ export default function Favorites() {
                     <select
                       value={selectedGenre}
                       onChange={(e) => setSelectedGenre(e.target.value)}
-                      className="pl-9 pr-8 h-12 border-2 border-black dark:border-white rounded-none bg-white dark:bg-zinc-900 text-black dark:text-white font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] cursor-pointer focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all appearance-none min-w-[180px]"
+                      className="pl-9 pr-8 h-12 border-2 border-border rounded-lg bg-card text-foreground font-bold uppercase shadow-neo cursor-pointer focus:outline-none focus:translate-x-[2px] focus:translate-y-[2px] focus:shadow-none transition-all appearance-none min-w-[180px]"
                     >
                       <option value="all">Check All Genres</option>
                       {allGenres.map((genre) => (
@@ -248,13 +248,13 @@ export default function Favorites() {
             {/* Statistics */}
             {favorites.length > 0 && (
               <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+                <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-xl bg-white dark:bg-zinc-900">
                   <CardContent className="p-6 text-center">
                     <div className="text-4xl font-black text-black dark:text-white mb-2">{favorites.length}</div>
                     <div className="text-sm font-bold uppercase text-gray-600 dark:text-gray-400">Total Favorites</div>
                   </CardContent>
                 </Card>
-                <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+                <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-xl bg-white dark:bg-zinc-900">
                   <CardContent className="p-6 text-center">
                     <div className="text-4xl font-black text-black dark:text-white mb-2">
                       {allGenres.length}
@@ -262,7 +262,7 @@ export default function Favorites() {
                     <div className="text-sm font-bold uppercase text-gray-600 dark:text-gray-400">Different Genres</div>
                   </CardContent>
                 </Card>
-                <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-none bg-white dark:bg-zinc-900">
+                <Card className="border-4 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] rounded-xl bg-white dark:bg-zinc-900">
                   <CardContent className="p-6 text-center">
                     <div className="flex items-center justify-center gap-2 mb-2">
                       <Star className="h-8 w-8 fill-black text-black dark:fill-white dark:text-white" />

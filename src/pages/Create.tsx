@@ -196,7 +196,7 @@ export default function Create() {
 
         {/* Header */}
         <motion.div {...fadeInUp} className="mb-12 text-center">
-          <Badge variant="outline" className="mb-6 px-4 py-2 bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] text-sm font-bold uppercase">
+          <Badge variant="outline" className="mb-6 px-4 py-2 bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-md shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] text-sm font-bold uppercase">
             <Feather className="mr-2 h-4 w-4" />
             Create & Publish
           </Badge>
@@ -218,21 +218,22 @@ export default function Create() {
             <TabsList className="grid w-full grid-cols-3 mb-8 h-auto p-0 bg-transparent gap-4">
               <TabsTrigger
                 value="info"
-                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
+                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
               >
+
                 <FileText className="h-4 w-4" />
                 <span className="hidden sm:inline">Book Info</span>
               </TabsTrigger>
               <TabsTrigger
                 value="media"
-                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
+                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
               >
                 <Upload className="h-4 w-4" />
                 <span className="hidden sm:inline">Upload Files</span>
               </TabsTrigger>
               <TabsTrigger
                 value="preview"
-                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
+                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
               >
                 <Eye className="h-4 w-4" />
                 <span className="hidden sm:inline">Preview</span>
@@ -240,7 +241,7 @@ export default function Create() {
             </TabsList>
 
             <TabsContent value="info">
-              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none">
+              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-xl">
                 <CardHeader className="border-b-2 border-black dark:border-white pb-6">
                   <div className="flex items-center gap-4">
                     <div className="p-3 border-2 border-black dark:border-white bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
@@ -271,7 +272,7 @@ export default function Create() {
                           handleInputChange('title', e.target.value)
                           setValidationErrors(prev => ({ ...prev, title: '' }))
                         }}
-                        className={`h-12 border-2 border-black dark:border-white rounded-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] dark:bg-zinc-900 dark:text-white text-black transition-all ${validationErrors.title ? 'border-red-500' : ''}`}
+                        className={`h-12 border-2 border-black dark:border-white rounded-lg focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] dark:bg-zinc-900 dark:text-white text-black transition-all ${validationErrors.title ? 'border-red-500' : ''}`}
                       />
                       <div className="min-h-[20px]">
                         {validationErrors.title && (
@@ -297,7 +298,7 @@ export default function Create() {
                           handleInputChange('author', e.target.value)
                           setValidationErrors(prev => ({ ...prev, author: '' }))
                         }}
-                        className={`h-12 border-2 border-black dark:border-white rounded-none focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] dark:bg-zinc-900 dark:text-white text-black transition-all ${validationErrors.author ? 'border-red-500' : ''}`}
+                        className={`h-12 border-2 border-black dark:border-white rounded-lg focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] dark:bg-zinc-900 dark:text-white text-black transition-all ${validationErrors.author ? 'border-red-500' : ''}`}
                       />
                       <div className="min-h-[20px]">
                         {validationErrors.author && (
@@ -318,7 +319,7 @@ export default function Create() {
 
             {/* Media Upload Tab */}
             <TabsContent value="media">
-              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none">
+              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-xl">
                 <CardHeader className="border-b-2 border-black dark:border-white pb-6">
                   <div className="flex items-center gap-4">
                     <div className="p-3 border-2 border-black dark:border-white bg-purple-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
@@ -340,7 +341,7 @@ export default function Create() {
                       <Image className="h-4 w-4 text-black dark:text-white" />
                       Book Cover Image
                     </Label>
-                    <div className="group relative border-2 border-dashed border-black dark:border-white hover:bg-gray-50 dark:hover:bg-zinc-700 p-12 text-center transition-all duration-300 rounded-none">
+                    <div className="group relative border-2 border-dashed border-black dark:border-white hover:bg-gray-50 dark:hover:bg-zinc-700 p-12 text-center transition-all duration-300 rounded-xl">
                       {bookData.coverImage ? (
                         <div className="space-y-4">
                           <div className="relative inline-block">
@@ -403,7 +404,7 @@ export default function Create() {
                       <FileText className="h-4 w-4 text-black dark:text-white" />
                       Book File (Optional)
                     </Label>
-                    <div className="group relative border-2 border-dashed border-black dark:border-white hover:bg-gray-50 dark:hover:bg-zinc-700 p-12 text-center transition-all duration-300 rounded-none">
+                    <div className="group relative border-2 border-dashed border-black dark:border-white hover:bg-gray-50 dark:hover:bg-zinc-700 p-12 text-center transition-all duration-300 rounded-xl">
                       {bookData.bookFile ? (
                         <div className="space-y-4">
                           <div className="relative inline-block">
@@ -465,7 +466,7 @@ export default function Create() {
 
             {/* Preview Tab */}
             <TabsContent value="preview">
-              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none">
+              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-xl">
                 <CardHeader className="border-b-2 border-black dark:border-white pb-6">
                   <div className="flex items-center gap-4">
                     <div className="p-3 border-2 border-black dark:border-white bg-amber-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
@@ -482,7 +483,8 @@ export default function Create() {
                 <CardContent className="p-8">
                   <div className="max-w-4xl mx-auto">
                     {/* Book Card Preview */}
-                    <div className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-none overflow-hidden">
+                    {/* Book Card Preview */}
+                    <div className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-xl overflow-hidden">
                       <div className="flex flex-col sm:flex-row p-8 gap-6">
                         <div className="flex-shrink-0 w-full sm:w-40 h-56 sm:h-52 bg-gray-100 dark:bg-zinc-700 border-2 border-black dark:border-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
                           {bookData.coverImage ? (
@@ -503,7 +505,7 @@ export default function Create() {
                             by {bookData.author || 'Author Name'}
                           </p>
                           <div className="flex gap-2 mb-3">
-                            <Badge className="bg-green-400 text-black border-2 border-black rounded-none font-bold uppercase">
+                            <Badge className="bg-green-400 text-black border-2 border-black rounded-md font-bold uppercase">
                               ✍️ User Created
                             </Badge>
                           </div>
@@ -521,7 +523,7 @@ export default function Create() {
                         <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 font-mono">
                           <FileText className="h-5 w-5" />
                           <span>{bookData.bookFile.name}</span>
-                          <Badge variant="outline" className="text-xs border-black dark:border-white rounded-none bg-gray-100 dark:bg-zinc-700 dark:text-white">
+                          <Badge variant="outline" className="text-xs border-black dark:border-white rounded-md bg-gray-100 dark:bg-zinc-700 dark:text-white">
                             {(bookData.bookFile.size / (1024 * 1024)).toFixed(2)} MB
                           </Badge>
                         </div>
@@ -582,7 +584,7 @@ export default function Create() {
                       <span>Uploading...</span>
                       <span>{uploadProgress}%</span>
                     </div>
-                    <Progress value={uploadProgress} className="w-full h-4 border-2 border-black rounded-none bg-white [&>div]:bg-primary" />
+                    <Progress value={uploadProgress} className="w-full h-4 border-2 border-black rounded-full bg-white [&>div]:bg-primary" />
                   </div>
                 )}
                 <ModernButton

@@ -102,7 +102,7 @@ export const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             required={required}
             className={cn(
               // Base styles - Neo-Brutalist
-              'bg-background text-foreground border-2 border-border h-12 rounded-none transition-all pr-10 font-bold placeholder:text-muted-foreground',
+              'bg-background text-foreground border-2 border-border h-12 rounded-lg transition-all pr-10 font-bold placeholder:text-muted-foreground',
               // Focus styles
               'focus:ring-0 focus:border-foreground focus:shadow-neo focus:translate-x-[-2px] focus:translate-y-[-2px]',
               // Error state

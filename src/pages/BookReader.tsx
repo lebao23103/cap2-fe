@@ -12,6 +12,7 @@ import NotePopover from '@/components/reader/NotePopover'
 import {
   ChevronLeft,
   ChevronRight,
+  Minus,
   Settings,
   Bookmark,
 
@@ -768,19 +769,19 @@ export default function BookReader() {
             >
               <div className="flex justify-between items-start mb-2">
                 <div className="flex items-center gap-2">
-                  <span className={`text-xs font-bold px-1.5 py-0.5 border-2 rounded-none uppercase ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : theme === 'sepia' ? 'bg-[#fdf5e6] text-[#5c4033] border-[#8b7355]' : 'bg-white text-black border-black'}`}>
+                  <span className={`text-xs font-bold px-1.5 py-0.5 border-2 rounded-lg uppercase ${theme === 'dark' ? 'bg-gray-800 text-white border-gray-600' : theme === 'sepia' ? 'bg-[#fdf5e6] text-[#5c4033] border-[#8b7355]' : 'bg-white text-black border-black'}`}>
                     Page {note.page}
                   </span>
-                  <Badge variant="outline" className={`text-[10px] h-5 px-1 rounded-none border-2 bg-transparent ${note.isPublic ? 'border-blue-500 text-blue-600' : 'border-gray-400 text-gray-500'}`}>
+                  <Badge variant="outline" className={`text-[10px] h-5 px-1 rounded-lg border-2 bg-transparent ${note.isPublic ? 'border-blue-500 text-blue-600' : 'border-gray-400 text-gray-500'}`}>
                     {note.isPublic ? 'SHARED' : 'PRIVATE'}
                   </Badge>
                 </div>
 
-                <div className={`flex gap-1 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity absolute right-2 top-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] border-2 ${themeStyles.border} p-0.5 ${theme === 'dark' ? 'bg-gray-800' : theme === 'sepia' ? 'bg-[#fdf5e6]' : 'bg-white'}`}>
+                <div className={`flex gap-1 opacity-100 lg:opacity-0 group-hover:opacity-100 transition-opacity absolute right-2 top-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] border-2 ${themeStyles.border} p-0.5 rounded-lg ${theme === 'dark' ? 'bg-gray-800' : theme === 'sepia' ? 'bg-[#fdf5e6]' : 'bg-white'}`}>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`h-6 w-6 rounded-none ${themeStyles.text} hover:bg-primary hover:text-black`}
+                    className={`h-6 w-6 rounded-lg ${themeStyles.text} hover:bg-primary hover:text-black`}
                     title="Edit"
                     onClick={(e) => { e.stopPropagation(); editNote(note) }}
                   >
@@ -789,7 +790,7 @@ export default function BookReader() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`h-6 w-6 hover:bg-blue-400 hover:text-black rounded-none ${themeStyles.text}`}
+                    className={`h-6 w-6 hover:bg-blue-400 hover:text-black rounded-lg ${themeStyles.text}`}
                     title={note.isPublic ? "Make Private" : "Make Public"}
                     onClick={(e) => { e.stopPropagation(); shareNote(note.id) }}
                   >
@@ -802,7 +803,7 @@ export default function BookReader() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className={`h-6 w-6 hover:bg-red-400 hover:text-black rounded-none ${themeStyles.text}`}
+                    className={`h-6 w-6 hover:bg-red-400 hover:text-black rounded-lg ${themeStyles.text}`}
                     title="Delete"
                     onClick={(e) => { e.stopPropagation(); deleteNote(note.id) }}
                   >
@@ -840,7 +841,7 @@ export default function BookReader() {
           <p className="text-gray-600 mb-8 font-mono">The book you're looking for doesn't exist or you don't have access to it.</p>
           <Button
             onClick={() => navigate('/readnex')}
-            className="rounded-none px-8 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold"
+            className="rounded-lg px-8 border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold"
           >
             Back to Library
           </Button>
@@ -879,12 +880,12 @@ export default function BookReader() {
         animate={{ y: showNavbar ? 0 : -200 }}
         className="fixed top-0 left-0 right-0 z-50 px-4 py-3 pointer-events-none"
       >
-        <div className={`max-w-6xl mx-auto flex items-center justify-between pointer-events-auto ${themeStyles.navBg} border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] px-6 py-2`}>
+        <div className={`max-w-6xl mx-auto flex items-center justify-between pointer-events-auto ${themeStyles.navBg} border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] px-6 py-2 rounded-xl`}>
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               size="icon"
-              className={`rounded-none border border-transparent hover:opacity-70 transition-all ${themeStyles.text}`}
+              className={`rounded-lg border border-transparent hover:opacity-70 transition-all ${themeStyles.text}`}
               onClick={() => navigate('/readnex')}
             >
               <ArrowLeft className="h-5 w-5" />
@@ -906,7 +907,7 @@ export default function BookReader() {
                 variant="ghost"
                 size="icon"
                 onClick={goToQuiz}
-                className={`rounded-none border border-transparent transition-all ${themeStyles.text} hover:opacity-70`}
+                className={`rounded-lg border border-transparent transition-all ${themeStyles.text} hover:opacity-70`}
                 title="Take Quiz"
               >
                 <Target className="h-4 w-4" />
@@ -917,7 +918,7 @@ export default function BookReader() {
               variant="ghost"
               size="icon"
               onClick={toggleBookmark}
-              className={`rounded-none transition-all border border-transparent ${isBookmarked ? 'text-black bg-yellow-400 border-yellow-500' : `${themeStyles.text} hover:opacity-70`}`}
+              className={`rounded-lg transition-all border border-transparent ${isBookmarked ? 'text-black bg-yellow-400 border-yellow-500' : `${themeStyles.text} hover:opacity-70`}`}
               title="Bookmark Page"
             >
               <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
@@ -927,7 +928,7 @@ export default function BookReader() {
               variant="ghost"
               size="icon"
               onClick={toggleFavorite}
-              className={`rounded-none transition-all border border-transparent ${isFavorite ? 'text-black bg-red-400 border-red-500' : `${themeStyles.text} hover:opacity-70`}`}
+              className={`rounded-lg transition-all border border-transparent ${isFavorite ? 'text-black bg-red-400 border-red-500' : `${themeStyles.text} hover:opacity-70`}`}
               title="Add to Favorites"
             >
               <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
@@ -937,30 +938,30 @@ export default function BookReader() {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className={`rounded-none border border-transparent transition-all ${themeStyles.text} hover:opacity-70`}>
+                <Button variant="ghost" size="icon" className={`rounded-lg border border-transparent transition-all ${themeStyles.text} hover:opacity-70`}>
                   <Settings className="h-4 w-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className={`w-56 rounded-none border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] ${themeStyles.cardBg}`}>
+              <DropdownMenuContent align="end" className={`w-56 rounded-xl border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] ${themeStyles.cardBg}`}>
                 <DropdownMenuLabel className={`text-xs uppercase tracking-wider font-bold border-b-2 ${themeStyles.border} pb-2 mb-2 ${themeStyles.text}`}>Appearance</DropdownMenuLabel>
                 <div className="p-2 grid grid-cols-3 gap-2">
                   <button
                     onClick={() => setTheme('light')}
-                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${theme === 'light' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all rounded-lg ${theme === 'light' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
                   >
                     <Sun className="h-4 w-4" />
                     <span className="text-[10px] font-bold uppercase">Light</span>
                   </button>
                   <button
                     onClick={() => setTheme('dark')}
-                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${theme === 'dark' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all rounded-lg ${theme === 'dark' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
                   >
                     <Moon className="h-4 w-4" />
                     <span className="text-[10px] font-bold uppercase">Dark</span>
                   </button>
                   <button
                     onClick={() => setTheme('sepia')}
-                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${theme === 'sepia' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all rounded-lg ${theme === 'sepia' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
                   >
                     <Palette className="h-4 w-4" />
                     <span className="text-[10px] font-bold uppercase">Sepia</span>
@@ -972,21 +973,21 @@ export default function BookReader() {
                 <div className="p-2 grid grid-cols-3 gap-2">
                   <button
                     onClick={() => setHighlightStyle('classic')}
-                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${highlightStyle === 'classic' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all rounded-lg ${highlightStyle === 'classic' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
                   >
                     <div className="h-4 w-4 bg-yellow-400/50 border border-current" />
                     <span className="text-[10px] font-bold uppercase">Classic</span>
                   </button>
                   <button
                     onClick={() => setHighlightStyle('box')}
-                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${highlightStyle === 'box' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all rounded-lg ${highlightStyle === 'box' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
                   >
                     <div className="h-4 w-4 border-2 border-dashed border-current" />
                     <span className="text-[10px] font-bold uppercase">Box</span>
                   </button>
                   <button
                     onClick={() => setHighlightStyle('glow')}
-                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all ${highlightStyle === 'glow' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
+                    className={`flex flex-col items-center gap-1 p-2 border-2 transition-all rounded-lg ${highlightStyle === 'glow' ? 'border-primary bg-primary text-black' : `${themeStyles.border} hover:opacity-70 ${themeStyles.text}`}`}
                   >
                     <div className="h-4 w-4 bg-yellow-400/50 shadow-[0_0_10px_rgba(250,204,21,0.8)]" />
                     <span className="text-[10px] font-bold uppercase">Glow</span>
@@ -996,11 +997,11 @@ export default function BookReader() {
                 <DropdownMenuSeparator className={`h-0.5 my-2 ${theme === 'dark' ? 'bg-gray-600' : theme === 'sepia' ? 'bg-[#8b7355]' : 'bg-black'}`} />
                 <DropdownMenuLabel className={`text-xs uppercase tracking-wider font-bold ${themeStyles.text}`}>Font Size</DropdownMenuLabel>
                 <div className="px-2 pb-2 flex items-center justify-between">
-                  <Button variant="outline" size="icon" className={`h-8 w-8 rounded-none border-2 ${themeStyles.border} ${themeStyles.text} hover:bg-primary hover:text-black bg-transparent`} onClick={() => setFontSize(Math.max(18, fontSize - 2))}>
-                    <span className="text-xs font-bold">A-</span>
+                  <Button variant="outline" size="icon" className={`h-8 w-8 rounded-lg border-2 ${themeStyles.border} ${themeStyles.text} hover:bg-primary hover:text-black bg-transparent`} onClick={() => setFontSize(Math.max(18, fontSize - 2))}>
+                    <Minus className="h-4 w-4" />
                   </Button>
-                  <span className={`text-sm font-bold w-12 text-center ${themeStyles.text}`}>{fontSize}px</span>
-                  <Button variant="outline" size="icon" className={`h-8 w-8 rounded-none border-2 ${themeStyles.border} ${themeStyles.text} hover:bg-primary hover:text-black bg-transparent`} onClick={() => setFontSize(Math.min(24, fontSize + 2))}>
+                  <span className={`text-sm font-bold ${themeStyles.text}`}>{fontSize}px</span>
+                  <Button variant="outline" size="icon" className={`h-8 w-8 rounded-lg border-2 ${themeStyles.border} ${themeStyles.text} hover:bg-primary hover:text-black bg-transparent`} onClick={() => setFontSize(Math.min(24, fontSize + 2))}>
                     <span className="text-sm font-bold">A+</span>
                   </Button>
                 </div>
@@ -1011,7 +1012,7 @@ export default function BookReader() {
               variant="ghost"
               size="icon"
               onClick={() => setShowNavbar(false)}
-              className={`rounded-none border border-transparent transition-all ${themeStyles.text} hover:opacity-70`}
+              className={`rounded-lg border border-transparent transition-all ${themeStyles.text} hover:opacity-70`}
               title="Hide Navbar"
             >
               <EyeOff className="h-4 w-4" />
@@ -1020,10 +1021,10 @@ export default function BookReader() {
         </div>
       </motion.div>
 
-      <div className={`w-full max-w-[98vw] mx-auto px-4 pb-2 transition-all duration-300 ${showNavbar ? 'pt-20' : 'pt-2'}`}>
-        <div className={`grid grid-cols-1 gap-6 lg:gap-8 transition-all duration-500 ${sidebarOpen ? "xl:grid-cols-12" : "xl:grid-cols-1"}`}>
+      <div className={`w-full max-w-[100vw] mx-auto px-2 pb-2 transition-all duration-300 ${showNavbar ? 'pt-20' : 'pt-2'}`}>
+        <div className={`grid grid-cols-1 gap-4 lg:gap-6 transition-all duration-500 ${sidebarOpen ? "xl:grid-cols-12" : "xl:grid-cols-1"}`}>
           {/* Main Content - Reading Area */}
-          <div className={`transition-all duration-500 ${sidebarOpen ? "xl:col-span-8" : "xl:col-span-12"}`}>
+          <div className={`transition-all duration-500 ${sidebarOpen ? "xl:col-span-9" : "xl:col-span-12"}`}>
             {/* Floating Toggle Button (when sidebar closed) */}
             <AnimatePresence>
               {!sidebarOpen && (
@@ -1035,11 +1036,11 @@ export default function BookReader() {
                 >
                   <Button
                     onClick={() => setSidebarOpen(true)}
-                    className="h-12 px-6 rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-primary text-black border-2 border-black hover:bg-primary/90 transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] uppercase font-bold"
+                    className="h-12 px-6 rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] bg-primary text-black border-2 border-black hover:bg-primary/90 transition-all hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] uppercase font-bold"
                   >
                     <StickyNote className="h-4 w-4 mr-2" />
                     <span className="font-bold">Notes</span>
-                    <Badge variant="secondary" className="ml-2 bg-white text-black border-2 border-black rounded-none">
+                    <Badge variant="secondary" className="ml-2 bg-white text-black border-2 border-black rounded-lg">
                       {notes.length}
                     </Badge>
                   </Button>
@@ -1191,12 +1192,12 @@ export default function BookReader() {
                   </Document>
 
                   {/* Navigation Bar */}
-                  <div className={`px-6 py-4 border-t-2 ${themeStyles.border} flex items-center justify-between ${themeStyles.navBg} absolute bottom-0 left-0 right-0 z-20`}>
+                  <div className={`px-6 py-4 border-t-2 ${themeStyles.border} flex items-center justify-between ${themeStyles.navBg} absolute bottom-0 left-0 right-0 z-20 rounded-t-xl`}>
                     <Button
                       variant="ghost"
                       onClick={() => handlePageChange('prev')}
                       disabled={currentPage === 1}
-                      className={`rounded-none border-2 border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
+                      className={`rounded-lg border-2 border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
                     >
                       <ChevronLeft className="h-5 w-5 mr-1" />
                       <span className="hidden sm:inline">Previous</span>
@@ -1223,12 +1224,12 @@ export default function BookReader() {
                               e.currentTarget.blur()
                             }
                           }}
-                          className={`w-14 sm:w-16 h-8 text-center font-bold font-mono border-2 ${themeStyles.border} rounded-none focus:outline-none focus:ring-2 focus:ring-primary ${themeStyles.inputBg} ${themeStyles.inputText}`}
+                          className={`w-14 sm:w-16 h-8 text-center font-bold font-mono border-2 ${themeStyles.border} rounded-lg focus:outline-none focus:ring-2 focus:ring-primary ${themeStyles.inputBg} ${themeStyles.inputText}`}
                         />
                         <span className={`text-sm font-bold font-mono ${themeStyles.text}`}>of {bookData?.totalPages || 0}</span>
                       </div>
                       <div className="w-24 md:w-40 hidden sm:block">
-                        <Progress value={bookData?.readingProgress || 0} className={`h-2 border ${themeStyles.border} rounded-none [&>div]:bg-primary`} />
+                        <Progress value={bookData?.readingProgress || 0} className={`h-2 border ${themeStyles.border} rounded-full [&>div]:bg-primary`} />
                       </div>
                     </div>
 
@@ -1236,7 +1237,7 @@ export default function BookReader() {
                       variant="ghost"
                       onClick={() => handlePageChange('next')}
                       disabled={currentPage === (bookData?.totalPages || 0)}
-                      className={`rounded-none border-2 border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
+                      className={`rounded-lg border-2 border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
                     >
                       <span className="hidden sm:inline">Next</span>
                       <ChevronRight className="h-5 w-5 ml-1" />
@@ -1281,7 +1282,7 @@ export default function BookReader() {
 
                     <Button
                       onClick={() => navigate('/readnex')}
-                      className="w-full h-14 text-lg rounded-none bg-white text-black border-4 border-black hover:bg-black hover:text-white hover:translate-x-[2px] hover:translate-y-[2px] transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none uppercase font-black tracking-widest"
+                      className="w-full h-14 text-lg rounded-xl bg-white text-black border-4 border-black hover:bg-black hover:text-white hover:translate-x-[2px] hover:translate-y-[2px] transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none uppercase font-black tracking-widest"
                     >
                       Escape to Library
                     </Button>
@@ -1299,7 +1300,7 @@ export default function BookReader() {
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: 50, opacity: 0 }}
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className={`xl:col-span-4 space-y-6 h-fit sticky transition-all duration-300 ${showNavbar ? 'top-24' : 'top-4'}`}
+                className={`xl:col-span-3 space-y-4 h-fit sticky transition-all duration-300 ${showNavbar ? 'top-24' : 'top-4'}`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <h2 className={`text-lg font-bold uppercase pb-1 ${themeStyles.text} border-b-2 ${themeStyles.border}`}>Reading Companion</h2>
@@ -1307,7 +1308,7 @@ export default function BookReader() {
                     onClick={() => setSidebarOpen(false)}
                     variant="ghost"
                     size="sm"
-                    className={`rounded-none border border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
+                    className={`rounded-lg border border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
                   >
                     <ChevronRight className="h-4 w-4 mr-1" />
                     Hide
@@ -1315,14 +1316,14 @@ export default function BookReader() {
                 </div>
 
                 {/* Book Info */}
-                <Card className={`border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] overflow-hidden rounded-none ${themeStyles.cardBg}`}>
+                <Card className={`border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] overflow-hidden rounded-xl ${themeStyles.cardBg}`}>
                   <CardContent className="p-0">
                     <div className={`p-4 border-b-2 ${themeStyles.border} ${themeStyles.navBg}`}>
                       <div className="flex items-center justify-between">
                         <span className={`text-xs font-bold uppercase tracking-wider ${themeStyles.text}`}>Progress</span>
                         <span className={`text-sm font-bold font-mono ${themeStyles.text}`}>{bookData?.readingProgress || 0}%</span>
                       </div>
-                      <Progress value={bookData?.readingProgress || 0} className={`h-3 mt-2 border ${themeStyles.border} rounded-none [&>div]:bg-primary`} />
+                      <Progress value={bookData?.readingProgress || 0} className={`h-3 mt-2 border ${themeStyles.border} rounded-full [&>div]:bg-primary`} />
                     </div>
                     <div className={`grid grid-cols-2 divide-x-2 ${theme === 'dark' ? 'divide-gray-600' : theme === 'sepia' ? 'divide-[#8b7355]' : 'divide-black'}`}>
                       <div className="p-4 text-center">
@@ -1342,18 +1343,18 @@ export default function BookReader() {
                 </Card>
 
                 {/* Notes */}
-                <Card className={`border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] flex flex-col max-h-[calc(100vh-300px)] rounded-none ${themeStyles.cardBg}`}>
+                <Card className={`border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] flex flex-col max-h-[calc(100vh-300px)] rounded-xl ${themeStyles.cardBg}`}>
                   <CardHeader className={`p-2 border-b-2 ${themeStyles.border} ${themeStyles.navBg}`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <StickyNote className={`h-4 w-4 ${themeStyles.text}`} />
                         <h3 className={`font-bold uppercase ${themeStyles.text}`}>My Notes</h3>
-                        <Badge variant="secondary" className={`text-xs ${themeStyles.inputBg} ${themeStyles.inputText} border-2 ${themeStyles.border} rounded-none`}>{notes.length}</Badge>
+                        <Badge variant="secondary" className={`text-xs ${themeStyles.inputBg} ${themeStyles.inputText} border-2 ${themeStyles.border} rounded-lg`}>{notes.length}</Badge>
                       </div>
                       <Button
                         size="sm"
                         variant="ghost"
-                        className={`h-7 text-xs rounded-none border border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
+                        className={`h-7 text-xs rounded-lg border border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}
                         onClick={() => {
                           setSelectedText("Add a note...")
                           setShowNoteDialog(true)
@@ -1371,7 +1372,7 @@ export default function BookReader() {
                           <TabsTrigger
                             value="all"
                             className={`
-                              rounded-none border-2 font-bold uppercase text-[10px] md:text-xs py-1 transition-all
+                              rounded-lg border-2 font-bold uppercase text-[10px] md:text-xs py-1 transition-all
                               data-[state=active]:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
                               ${theme === 'dark'
                                 ? 'border-gray-600 data-[state=active]:bg-white data-[state=active]:text-black text-gray-400 hover:text-white'
@@ -1386,7 +1387,7 @@ export default function BookReader() {
                           <TabsTrigger
                             value="private"
                             className={`
-                              rounded-none border-2 font-bold uppercase text-[10px] md:text-xs py-1 transition-all
+                              rounded-lg border-2 font-bold uppercase text-[10px] md:text-xs py-1 transition-all
                               data-[state=active]:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
                               ${theme === 'dark'
                                 ? 'border-gray-600 data-[state=active]:bg-white data-[state=active]:text-black text-gray-400 hover:text-white'
@@ -1401,7 +1402,7 @@ export default function BookReader() {
                           <TabsTrigger
                             value="shared"
                             className={`
-                              rounded-none border-2 font-bold uppercase text-[10px] md:text-xs py-1 transition-all
+                              rounded-lg border-2 font-bold uppercase text-[10px] md:text-xs py-1 transition-all
                               data-[state=active]:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]
                               ${theme === 'dark'
                                 ? 'border-gray-600 data-[state=active]:bg-white data-[state=active]:text-black text-gray-400 hover:text-white'
@@ -1416,14 +1417,14 @@ export default function BookReader() {
                         </TabsList>
                       </div>
 
-                      <div className="flex-1 min-h-0 bg-transparent flex flex-col">
-                        <TabsContent value="all" className="flex-1 overflow-y-auto custom-scrollbar m-0 py-2">
+                      <div className="flex-1 min-h-0 bg-transparent flex flex-col w-full overflow-hidden">
+                        <TabsContent value="all" className="flex-1 overflow-y-auto overflow-x-hidden m-0 !mt-0 outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none w-full [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent" style={{ marginTop: 0 }}>
                           {renderNotesList(notes)}
                         </TabsContent>
-                        <TabsContent value="private" className="flex-1 overflow-y-auto custom-scrollbar m-0 py-2">
+                        <TabsContent value="private" className="flex-1 overflow-y-auto overflow-x-hidden m-0 !mt-0 outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none w-full [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent" style={{ marginTop: 0 }}>
                           {renderNotesList(notes.filter(n => !n.isPublic))}
                         </TabsContent>
-                        <TabsContent value="shared" className="flex-1 overflow-y-auto custom-scrollbar m-0 py-2">
+                        <TabsContent value="shared" className="flex-1 overflow-y-auto overflow-x-hidden m-0 !mt-0 outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none w-full [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent" style={{ marginTop: 0 }}>
                           {renderNotesList(notes.filter(n => n.isPublic))}
                         </TabsContent>
                       </div>
@@ -1432,12 +1433,12 @@ export default function BookReader() {
                 </Card>
 
                 {/* Bookmarks */}
-                <Card className={`border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] rounded-none ${themeStyles.cardBg}`}>
+                <Card className={`border-2 ${themeStyles.border} shadow-[4px_4px_0px_0px_rgba(0,0,0,0.3)] rounded-xl ${themeStyles.cardBg}`}>
                   <CardHeader className={`pb-3 border-b-2 ${themeStyles.border} ${themeStyles.navBg}`}>
                     <div className="flex items-center gap-2">
                       <Bookmark className={`h-4 w-4 ${themeStyles.text}`} />
                       <h3 className={`font-bold uppercase ${themeStyles.text}`}>Bookmarks</h3>
-                      <Badge variant="secondary" className={`text-xs ${themeStyles.inputBg} ${themeStyles.inputText} border-2 ${themeStyles.border} rounded-none`}>{bookData?.bookmarks?.length || 0}</Badge>
+                      <Badge variant="secondary" className={`text-xs ${themeStyles.inputBg} ${themeStyles.inputText} border-2 ${themeStyles.border} rounded-lg`}>{bookData?.bookmarks?.length || 0}</Badge>
                     </div>
                   </CardHeader>
                   <CardContent className="p-2">
@@ -1447,7 +1448,7 @@ export default function BookReader() {
                           key={page}
                           variant="outline"
                           size="sm"
-                          className="h-9 w-full rounded-none border-2 border-black hover:bg-black hover:text-white font-mono font-bold"
+                          className="h-9 w-full rounded-lg border-2 border-black hover:bg-black hover:text-white font-mono font-bold"
                           onClick={() => setCurrentPage(page)}
                         >
                           {page}
@@ -1480,7 +1481,7 @@ export default function BookReader() {
           window.getSelection()?.removeAllRanges()
         }
       }}>
-        <DialogContent className="sm:max-w-[500px] rounded-none overflow-hidden p-0 gap-0 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <DialogContent className="sm:max-w-[500px] rounded-xl overflow-hidden p-0 gap-0 border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <div className={`p-6 border-b-2 ${themeStyles.border} transition-colors duration-300 ${theme === 'dark'
             ? (highlightColor === 'yellow' ? 'bg-yellow-900/30' : highlightColor === 'blue' ? 'bg-blue-900/30' : highlightColor === 'green' ? 'bg-green-900/30' : 'bg-pink-900/30')
             : (highlightColor === 'yellow' ? 'bg-amber-100' : highlightColor === 'blue' ? 'bg-blue-100' : highlightColor === 'green' ? 'bg-green-100' : 'bg-pink-100')
@@ -1505,7 +1506,7 @@ export default function BookReader() {
                 <button
                   key={color}
                   onClick={() => setHighlightColor(color)}
-                  className={`w-8 h-8 rounded-none border-2 transition-all ${highlightColor === color ? 'border-black scale-110 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-transparent hover:border-black hover:scale-105'
+                  className={`w-8 h-8 rounded-full border-2 transition-all ${highlightColor === color ? 'border-black scale-110 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]' : 'border-transparent hover:border-black hover:scale-105'
                     } ${color === 'yellow' ? 'bg-amber-400' :
                       color === 'blue' ? 'bg-blue-400' :
                         color === 'green' ? 'bg-green-400' :
@@ -1519,20 +1520,20 @@ export default function BookReader() {
               value={newNote}
               onChange={(e) => setNewNote(e.target.value)}
               placeholder="Type your note here..."
-              className={`min-h-[150px] resize-none border-2 bg-transparent focus:ring-0 rounded-none text-base p-4 font-mono shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${themeStyles.border} ${themeStyles.text} focus:border-primary`}
+              className={`min-h-[150px] resize-none border-2 bg-transparent focus:ring-0 rounded-lg text-base p-4 font-mono shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${themeStyles.border} ${themeStyles.text} focus:border-primary`}
             />
           </div>
 
           <DialogFooter className={`p-4 border-t-2 ${themeStyles.border} ${themeStyles.navBg}`}>
-            <Button variant="ghost" onClick={() => setShowNoteDialog(false)} className={`rounded-none border-2 border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}>Cancel</Button>
-            <Button onClick={saveNote} disabled={!newNote.trim()} className="rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all uppercase font-bold bg-primary text-black hover:bg-primary/90">Save Note</Button>
+            <Button variant="ghost" onClick={() => setShowNoteDialog(false)} className={`rounded-lg border-2 border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}>Cancel</Button>
+            <Button onClick={saveNote} disabled={!newNote.trim()} className="rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all uppercase font-bold bg-primary text-black hover:bg-primary/90">Save Note</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog >
 
       {/* Review Dialog */}
       < Dialog open={showReviewDialog} onOpenChange={setShowReviewDialog} >
-        <DialogContent className="sm:max-w-[500px] rounded-none border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+        <DialogContent className="sm:max-w-[500px] rounded-xl border-2 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <DialogHeader>
             <DialogTitle className="text-center text-2xl uppercase font-bold">Finished!</DialogTitle>
             <DialogDescription className="text-center font-mono text-black">
@@ -1559,11 +1560,11 @@ export default function BookReader() {
             value={reviewText}
             onChange={(e) => setReviewText(e.target.value)}
             placeholder="Write a brief review..."
-            className="mb-4 border-2 border-black rounded-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-mono focus:ring-0"
+            className="mb-4 border-2 border-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-mono focus:ring-0"
           />
 
           <DialogFooter>
-            <Button onClick={submitReview} className="w-full rounded-none border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold bg-black text-white hover:bg-gray-800" disabled={userRating === 0}>
+            <Button onClick={submitReview} className="w-full rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] uppercase font-bold bg-black text-white hover:bg-gray-800" disabled={userRating === 0}>
               Submit Review
             </Button>
           </DialogFooter>
