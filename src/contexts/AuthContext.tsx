@@ -9,6 +9,7 @@ interface User {
   first_name: string;
   last_name: string;
   is_staff?: boolean;
+  is_superuser?: boolean;
 }
 
 interface AuthContextType {
@@ -58,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const response = await authService.login({ email, password });
       setUser(response.user);
-      
+
       toast({
         title: "Welcome back!",
         description: `Logged in as ${response.user.first_name} ${response.user.last_name}`,
@@ -71,16 +72,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         navigate('/dashboard');
       }
     } catch (error: any) {
-      const message = error.response?.data?.detail || 
-                     error.response?.data?.message || 
-                     'Login failed. Please check your credentials.';
-      
+      const message = error.response?.data?.detail ||
+        error.response?.data?.message ||
+        'Login failed. Please check your credentials.';
+
       toast({
         title: "Login failed",
         description: message,
         variant: "destructive",
       });
-      
+
       throw error;
     }
   };
@@ -94,17 +95,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }) => {
     try {
       const response = await authService.register(data);
-      
+
       // Check if backend provides auto-login (tokens + user data)
       if (response && response.user && response.access) {
         // Auto-login: Set user state and navigate to dashboard
         setUser(response.user);
-        
+
         toast({
           title: "Welcome to Knowly!",
           description: `Account created for ${response.user.first_name} ${response.user.last_name}`,
         });
-        
+
         // Navigate based on user role
         if (response.user.is_staff) {
           navigate('/admin');
@@ -117,22 +118,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           title: "Registration successful!",
           description: "Please login with your new account.",
         });
-        
+
         navigate('/login');
       }
     } catch (error: any) {
-      const message = error.response?.data?.error || 
-                     error.response?.data?.detail || 
-                     error.response?.data?.message ||
-                     error.response?.data?.email?.[0] ||
-                     'Registration failed. Please try again.';
-      
+      const message = error.response?.data?.error ||
+        error.response?.data?.detail ||
+        error.response?.data?.message ||
+        error.response?.data?.email?.[0] ||
+        'Registration failed. Please try again.';
+
       toast({
         title: "Registration failed",
         description: message,
         variant: "destructive",
       });
-      
+
       throw error;
     }
   };
@@ -141,12 +142,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authService.logout();
       setUser(null);
-      
+
       toast({
         title: "Logged out",
         description: "You have been successfully logged out.",
       });
-      
+
       navigate('/login');
     } catch (error) {
       console.error('Logout error:', error);
@@ -184,10 +185,10 @@ export function useAuth() {
 }
 
 // Protected Route Component
-export function ProtectedRoute({ 
-  children, 
-  requireAdmin = false 
-}: { 
+export function ProtectedRoute({
+  children,
+  requireAdmin = false
+}: {
   children: ReactNode;
   requireAdmin?: boolean;
 }) {

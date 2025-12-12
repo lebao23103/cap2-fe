@@ -56,7 +56,14 @@ export function Layout({ children }: LayoutProps) {
     const handleScroll = () => {
       if (!ticking) {
         window.requestAnimationFrame(() => {
-          setIsScrolled(window.scrollY > 20);
+          const scrollY = window.scrollY;
+          // Add hysteresis to prevent flickering at the threshold
+          // Only switch state if we've moved significantly past the threshold
+          if (scrollY > 50) {
+            setIsScrolled(true);
+          } else if (scrollY < 20) {
+            setIsScrolled(false);
+          }
           ticking = false;
         });
         ticking = true;
