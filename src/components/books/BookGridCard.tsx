@@ -78,6 +78,7 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
                         alt={book.title}
                         className="w-full h-full object-cover"
                         loading="lazy"
+                        decoding="async"
                     />
 
                     {/* Top Badges */}

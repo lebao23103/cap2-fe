@@ -10,7 +10,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          'ui-vendor': [
+          'ui-low-priority': [
             '@radix-ui/react-accordion',
             '@radix-ui/react-avatar',
             '@radix-ui/react-dialog',
@@ -27,6 +27,8 @@ export default defineConfig({
             'framer-motion',
             'lucide-react'
           ],
+          'feature-pdf': ['pdfjs-dist'],
+          'feature-charts': ['recharts'],
           'utils-vendor': ['clsx', 'tailwind-merge', 'zod', 'axios'],
         }
       }

@@ -44,6 +44,7 @@ const BookListCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
                             alt={book.title}
                             className="w-full h-full object-cover transition-all duration-500"
                             loading="lazy"
+                            decoding="async"
                         />
                     </div>
                     <div className="flex-1 flex flex-col justify-between py-1">
