@@ -1,7 +1,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import {
   Filter,
   Search,
@@ -12,10 +12,9 @@ import {
   Check,
   Eye,
   ThumbsUp,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react'
 
-import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
@@ -50,15 +49,6 @@ interface SharedNote {
   helpful_count: number
   awful_count: number
   status: string
-}
-
-interface GroupedNotes {
-  bookId: string
-  bookTitle: string
-  bookAuthor: string
-  bookCover: string
-  notes: SharedNote[]
-  lastUpdate: string
 }
 
 const filterOptions = ["All", "Recent", "System Books", "User Books"]
@@ -148,13 +138,13 @@ export default function NoteShare() {
     fetchNotes()
   }, [])
 
-  // Filter and Group Data
-  const groupedData = useMemo(() => {
-    // 1. First Filter the Flat Notes
+  // Filter Data
+  const filteredNotes = useMemo(() => {
     let filtered = sharedNotes.filter(note =>
       note.bookTitle.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
       note.userName.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-      note.userNote.toLowerCase().includes(filters.searchTerm.toLowerCase())
+      note.userNote.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
+      note.noteText.toLowerCase().includes(filters.searchTerm.toLowerCase())
     )
 
     if (filters.noteFilter === "Recent") {
@@ -167,33 +157,7 @@ export default function NoteShare() {
       filtered = filtered.filter(note => note.isUserBook)
     }
 
-    // 2. Group by Book ID (or Title if ID missing)
-    const groups: Record<string, GroupedNotes> = {}
-
-    filtered.forEach(note => {
-      const key = note.bookId
-      if (!groups[key]) {
-        groups[key] = {
-          bookId: note.bookId,
-          bookTitle: note.bookTitle,
-          bookAuthor: note.bookAuthor,
-          bookCover: note.bookCover,
-          notes: [],
-          lastUpdate: note.sharedDate
-        }
-      }
-      groups[key].notes.push(note)
-      // Update lastUpdate if this note is newer
-      if (new Date(note.sharedDate) > new Date(groups[key].lastUpdate)) {
-        groups[key].lastUpdate = note.sharedDate
-      }
-    })
-
-    // 3. Return as Array, sorted by most recently updated book
-    return Object.values(groups).sort((a, b) =>
-      new Date(b.lastUpdate).getTime() - new Date(a.lastUpdate).getTime()
-    )
-
+    return filtered
   }, [filters, sharedNotes])
 
 
@@ -205,13 +169,7 @@ export default function NoteShare() {
     // 1. Optimistic Update
     setSharedNotes(prev => prev.map(note => {
       if (note.id !== noteId) return note;
-
-      // Simple optimistic: just increment/decrement based on type
-      // Note: A real optimistic update needs to know previous state (user_vote). 
-      // For MVP, we'll just optimistically increment and let backend correct it on re-fetch or ignore validation errors visually for a bit.
-      // Actually, better to just wait for response for accuracy, OR assume +1.
-      // Let's rely on backend response to update state to ensure consistency.
-      return note;
+      return note; // Optimistic update logic if needed
     }));
 
     try {
@@ -276,7 +234,7 @@ export default function NoteShare() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.6 }}
         >
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-6xl mx-auto">
             {/* Filter Controls & Search */}
             <div className="mb-8 bg-card p-4 rounded-xl border-2 border-black dark:border-white shadow-neo space-y-4">
               <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
@@ -285,7 +243,7 @@ export default function NoteShare() {
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <input
                     type="text"
-                    placeholder="Search notes, books, or users..."
+                    placeholder="Search ideas, books, or people..."
                     value={filters.searchTerm}
                     onChange={(e) => handleFilterChange('searchTerm', e.target.value)}
                     className="w-full pl-9 pr-4 py-2 text-sm border-2 border-border rounded-lg bg-background text-foreground focus:outline-none focus:border-black dark:focus:border-white transition-colors font-sans font-bold"
@@ -327,13 +285,13 @@ export default function NoteShare() {
                   </div>
 
                   <Badge variant="secondary" className="bg-primary text-black border-2 border-border rounded-md font-bold uppercase px-2 py-1 shadow-sm text-xs whitespace-nowrap">
-                    {sharedNotes.filter(n => n.bookTitle.toLowerCase().includes(filters.searchTerm.toLowerCase()) || n.noteText.toLowerCase().includes(filters.searchTerm.toLowerCase())).length} Notes Found
+                    {filteredNotes.length} Found
                   </Badge>
                 </div>
               </div>
             </div>
 
-            {/* Content Grid */}
+            {/* Content Grid (Masonry) */}
             {loading ? (
               <div className="flex items-center justify-center py-20">
                 <div className="animate-spin h-12 w-12 border-4 border-black border-t-transparent rounded-full"></div>
@@ -343,14 +301,14 @@ export default function NoteShare() {
                 variants={stagger}
                 initial="initial"
                 animate="animate"
-                className="grid grid-cols-1 gap-6"
+                className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6"
               >
-                {groupedData.length > 0 ? (
-                  groupedData.map((group) => (
-                    <BookGroupItem key={group.bookId} group={group} navigate={navigate} onVote={handleVote} />
+                {filteredNotes.length > 0 ? (
+                  filteredNotes.map((note) => (
+                    <NoteCard key={note.id} note={note} navigate={navigate} onVote={handleVote} />
                   ))
                 ) : (
-                  <div className="text-center py-20 border-2 border-dashed border-border rounded-xl">
+                  <div className="text-center py-20 border-2 border-dashed border-border rounded-xl col-span-full">
                     <p className="text-lg text-muted-foreground font-mono">No notes found matching your search.</p>
                   </div>
                 )}
@@ -363,172 +321,106 @@ export default function NoteShare() {
   )
 }
 
-function BookGroupItem({ group, navigate, onVote }: { group: GroupedNotes, navigate: any, onVote: (id: string, type: 'helpful' | 'awful') => void }) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [copiedQuote, setCopiedQuote] = useState<string | null>(null)
+function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any, onVote: (id: string, type: 'helpful' | 'awful') => void }) {
+  const [copiedQuote, setCopiedQuote] = useState<boolean>(false)
 
-  const copyQuoteToClipboard = (text: string, noteId: string) => {
+  const copyQuoteToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
-      setCopiedQuote(noteId)
-      setTimeout(() => setCopiedQuote(null), 2000)
+      setCopiedQuote(true)
+      setTimeout(() => setCopiedQuote(false), 2000)
     })
   }
 
   return (
-    <motion.div variants={fadeInUp}>
-      <Card className={`border-2 border-border bg-card rounded-xl transition-all duration-300 overflow-hidden ${isOpen ? 'shadow-neo-lg' : 'shadow-neo hover:shadow-neo-hover'}`}>
-        <div
-          onClick={() => setIsOpen(!isOpen)}
-          className="p-4 flex flex-col sm:flex-row gap-6 cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-        >
-          {/* Book Cover */}
-          <div className="relative shrink-0 mx-auto sm:mx-0">
-            <img
-              src={group.bookCover}
-              alt={group.bookTitle}
-              className="w-24 h-36 object-cover border-2 border-border shadow-neo-sm rounded-md"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = 'https://placehold.co/400x600?text=Cover'
-              }}
-            />
-            <div className="absolute -top-2 -right-2 bg-primary text-black border-2 border-black w-8 h-8 flex items-center justify-center rounded-full font-bold text-sm shadow-sm z-10">
-              {group.notes.length}
+    <motion.div variants={fadeInUp} className="break-inside-avoid">
+      <div className="bg-card border-2 border-border rounded-xl p-0 shadow-neo hover:shadow-neo-hover transition-all duration-300 overflow-hidden flex flex-col h-full bg-white dark:bg-zinc-900 group">
+
+        {/* Header: User Info */}
+        <div className="p-4 border-b-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between bg-gray-50 dark:bg-zinc-800/50">
+          <div className="flex items-center gap-3">
+            <img src={note.userAvatar} className="w-8 h-8 rounded-lg border-2 border-white shadow-sm" alt={note.userName} />
+            <div>
+              <p className="text-xs font-black uppercase text-foreground truncate max-w-[120px]">{note.userName}</p>
+              <p className="text-[10px] text-muted-foreground font-mono font-bold">{new Date(note.sharedDate).toLocaleDateString()}</p>
             </div>
           </div>
+          <Badge variant="secondary" className="text-[10px] font-black font-mono border border-border bg-white dark:bg-zinc-900 text-black dark:text-white px-2 py-0.5 rounded shadow-sm">
+            PG. {note.page}
+          </Badge>
+        </div>
 
-          {/* Book Info Header */}
-          <div className="flex-1 flex flex-col justify-center text-center sm:text-left">
-            <h3 className="text-xl md:text-2xl font-bold font-display uppercase mb-2 line-clamp-2">
-              {group.bookTitle}
-            </h3>
-            <p className="text-sm font-mono text-muted-foreground mb-4 uppercase">
-              By {group.bookAuthor}
+        {/* Body: Note Content */}
+        <div className="p-5 flex-1">
+          {/* Quote Block */}
+          <div className="relative bg-amber-50 dark:bg-amber-900/10 border-l-4 border-primary pl-4 pr-3 py-3 mb-4 rounded-r-lg">
+            <p className="font-serif text-sm italic text-foreground/90 leading-relaxed line-clamp-4">
+              "{note.noteText}"
             </p>
-
-            <div className="flex items-center justify-center sm:justify-start gap-4 mt-auto">
-              <div className="flex -space-x-3">
-                {group.notes.slice(0, 4).map((note, i) => (
-                  <img
-                    key={i}
-                    src={note.userAvatar}
-                    className="w-8 h-8 rounded-full border-2 border-background"
-                    alt={note.userName}
-                  />
-                ))}
-                {group.notes.length > 4 && (
-                  <div className="w-8 h-8 rounded-full border-2 border-background bg-gray-200 flex items-center justify-center text-xs font-bold">
-                    +{group.notes.length - 4}
-                  </div>
-                )}
-              </div>
-              <span className="text-xs font-bold text-muted-foreground uppercase">
-                {new Set(group.notes.map(n => n.userName)).size} Contributors
-              </span>
-            </div>
           </div>
 
-          {/* Expand Icon */}
-          <div className="flex items-center justify-center sm:items-start shrink-0">
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`rounded-full border-2 border-transparent hover:border-border transition-all ${isOpen ? 'bg-black text-white dark:bg-white dark:text-black rotate-180' : ''}`}
-            >
-              <ChevronDown className="h-6 w-6" />
-            </Button>
+          {/* User Comment */}
+          <p className="text-sm font-bold text-foreground leading-relaxed mb-4">
+            {note.userNote}
+          </p>
+
+
+          {/* Book Context (Mini) */}
+          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-dashed border-gray-200 dark:border-zinc-700">
+            <img
+              src={note.bookCover}
+              alt={note.bookTitle}
+              className="w-10 h-14 object-cover border border-border rounded shadow-sm"
+              onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/400x600?text=Cover' }}
+            />
+            <div className="flex-1 overflow-hidden">
+              <h4 className="text-xs font-black uppercase truncate text-muted-foreground hover:text-primary transition-colors cursor-pointer" onClick={() => navigate(`/book/${note.bookId}/read`)}>
+                {note.bookTitle}
+              </h4>
+              <p className="text-[10px] text-muted-foreground truncate">by {note.bookAuthor}</p>
+            </div>
           </div>
         </div>
 
-        {/* Collapsible Content */}
-        <AnimatePresence>
-          {isOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+        {/* Footer: Actions */}
+        <div className="p-3 bg-gray-50 dark:bg-zinc-800/50 border-t-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-[10px] font-bold text-muted-foreground hover:text-green-600 hover:bg-green-50"
+              onClick={() => onVote(note.id, 'helpful')}
             >
-              <div className="border-t-2 border-border bg-muted/30 p-4 sm:p-6 space-y-6">
-                {group.notes.map((note) => (
-                  <motion.div
-                    key={note.id}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="bg-card border-2 border-border rounded-xl p-5 shadow-neo-sm relative group hover:bg-accent/5 transition-colors"
-                  >
-                    <div className="flex items-center justify-between gap-4 mb-4">
-                      <div className="flex items-center gap-3">
-                        <img src={note.userAvatar} className="w-10 h-10 rounded-xl border-2 border-border shadow-sm" alt={note.userName} />
-                        <div>
-                          <p className="text-sm font-black uppercase text-foreground">{note.userName}</p>
-                          <p className="text-xs text-muted-foreground font-mono font-bold mt-0.5">{new Date(note.sharedDate).toLocaleDateString()}</p>
-                        </div>
-                      </div>
-                      <Badge variant="secondary" className="text-xs font-black font-mono border-2 border-border bg-white dark:bg-zinc-800 text-black dark:text-white px-2.5 py-1 rounded-md shadow-sm">
-                        PG. {note.page}
-                      </Badge>
-                    </div>
+              <ThumbsUp className="h-3 w-3 mr-1" /> {note.helpful_count || 0}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 px-2 text-[10px] font-bold text-muted-foreground hover:text-red-600 hover:bg-red-50"
+              onClick={() => onVote(note.id, 'awful')}
+            >
+              <AlertTriangle className="h-3 w-3 mr-1" />
+            </Button>
+          </div>
 
-                    <div className="relative bg-amber-50 dark:bg-amber-900/20 border-l-[6px] border-primary pl-5 pr-4 py-4 mb-5 rounded-r-xl shadow-sm">
-                      <p className="font-serif text-lg italic text-foreground/90 leading-relaxed">
-                        "{note.noteText}"
-                      </p>
-                    </div>
-
-                    <div className="mb-6 pl-1">
-                      <p className="text-base font-bold text-foreground leading-relaxed">
-                        {note.userNote}
-                      </p>
-                    </div>
-
-                    <div className="flex justify-end gap-3 transition-opacity">
-                      {/* VOTE BUTTONS */}
-                      <div className="mr-auto flex items-center gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-9 gap-1.5 px-3 text-xs font-bold border-2 border-transparent hover:border-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg group/vote"
-                          onClick={() => onVote(note.id, 'helpful')}
-                        >
-                          <ThumbsUp className="h-4 w-4 group-hover/vote:scale-110 transition-transform" />
-                          <span>{note.helpful_count > 0 ? note.helpful_count : 'Helpful'}</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-9 gap-1.5 px-3 text-xs font-bold border-2 border-transparent hover:border-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg group/report"
-                          onClick={() => onVote(note.id, 'awful')}
-                        >
-                          <AlertTriangle className="h-4 w-4 group-hover/report:scale-110 transition-transform" />
-                          <span>{note.awful_count > 0 ? note.awful_count : 'Report'}</span>
-                        </Button>
-                      </div>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-9 px-4 text-xs font-bold border-2 border-transparent hover:border-border hover:bg-transparent rounded-lg"
-                        onClick={() => copyQuoteToClipboard(note.noteText, note.id)}
-                      >
-                        {copiedQuote === note.id ? <Check className="h-4 w-4 mr-2" /> : <Copy className="h-4 w-4 mr-2" />}
-                        {copiedQuote === note.id ? "COPIED" : "COPY QUOTE"}
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="h-9 px-4 text-xs font-bold bg-primary text-black hover:bg-primary/80 border-2 border-black rounded-lg shadow-neo-sm hover:translate-y-[-2px] hover:shadow-neo transition-all"
-                        onClick={() => navigate(`/book/${note.bookId}/read`, { state: { page: note.page, previewMode: true, previewNote: note } })}
-                      >
-                        <Eye className="h-4 w-4 mr-2" /> VIEW IN BOOK
-                      </Button>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </Card>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 w-7 p-0 rounded-full hover:bg-gray-200 dark:hover:bg-zinc-700"
+              onClick={() => copyQuoteToClipboard(note.noteText)}
+            >
+              {copiedQuote ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+            </Button>
+            <Button
+              size="sm"
+              className="h-7 px-3 text-[10px] font-bold bg-black text-white dark:bg-white dark:text-black border border-transparent shadow-sm hover:translate-y-[-1px] transition-transform"
+              onClick={() => navigate(`/book/${note.bookId}/read`, { state: { page: note.page, previewMode: true, previewNote: note } })}
+            >
+              <Eye className="h-3 w-3 mr-1" /> VIEW
+            </Button>
+          </div>
+        </div>
+      </div>
     </motion.div>
   )
 }
