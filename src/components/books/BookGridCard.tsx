@@ -101,7 +101,7 @@ const BookGridCard = memo(({ book, onToggleFavorite, index }: BookCardProps) => 
                     )}
 
                     {/* Hover Actions Overlay */}
-                    <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4 border-2 border-border m-2">
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-center gap-3 p-4">
                         <Button
                             size="lg"
                             className="w-full max-w-[160px] bg-background text-foreground hover:bg-foreground hover:text-background font-bold shadow-neo border-2 border-border rounded-lg uppercase"

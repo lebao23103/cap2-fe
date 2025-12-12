@@ -281,7 +281,7 @@ export default function Home() {
                           (e.target as HTMLImageElement).src = 'https://via.placeholder.com/300x400?text=No+Cover'
                         }}
                       />
-                      <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6 border-2 border-border m-2">
+                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
                         <Button className="w-full bg-white text-black hover:bg-black hover:text-white font-bold border-2 border-border rounded-lg shadow-neo uppercase" asChild>
                           <Link to={`/book/${book.id}`}>View Details</Link>
                         </Button>

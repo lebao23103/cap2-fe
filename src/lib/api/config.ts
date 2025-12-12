@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-// API Base URL - can be configured via environment variables
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+// API Base URL - empty string means "use the same domain I am currently on"
+// This is crucial for Cloudflare Tunnel to work properly
+export const API_BASE_URL = '';
 
 // Create axios instance with default config
 export const apiClient = axios.create({
