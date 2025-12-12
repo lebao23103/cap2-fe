@@ -165,7 +165,7 @@ export function Layout({ children }: LayoutProps) {
               height: isScrolled ? "4rem" : "5rem"
             }}
             transition={isNavigating ? noTransition : springTransition}
-            className="flex items-center justify-between gap-4"
+            className="relative flex items-center justify-between gap-4"
             role="navigation"
             aria-label="Main navigation"
           >
@@ -182,8 +182,8 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Center - Navigation Menu */}
-            <div className="hidden md:flex items-center justify-center flex-1">
-              <div className="flex items-center gap-1 p-1 bg-muted/20 border border-border/10 rounded-xl backdrop-blur-sm">
+            <div className="hidden md:flex items-center justify-center absolute left-1/2 -translate-x-1/2">
+              <div className="flex items-center gap-1 p-1">
                 {[
                   { path: '/', label: 'Home', icon: Home },
                   { path: '/readnex', label: 'ReadNEx', icon: Library },
@@ -197,8 +197,8 @@ export function Layout({ children }: LayoutProps) {
                       key={item.path}
                       to={item.path}
                       className={`relative flex items-center justify-center gap-2 px-5 h-10 text-sm font-black uppercase tracking-wide transition-all duration-200 rounded-lg select-none ${active
-                        ? 'bg-primary text-black border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]'
-                        : 'text-muted-foreground border-2 border-transparent hover:text-black hover:bg-muted/50'
+                        ? 'bg-primary text-black border-2 border-black shadow-neo-sm'
+                        : 'text-muted-foreground dark:text-foreground/70 border-2 border-transparent hover:text-foreground hover:bg-muted'
                         }`}
                     >
                       <item.icon className={`w-4 h-4 ${active ? "stroke-[3px]" : "stroke-[2.5px]"}`} />
