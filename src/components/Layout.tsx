@@ -165,12 +165,12 @@ export function Layout({ children }: LayoutProps) {
               height: isScrolled ? "4rem" : "5rem"
             }}
             transition={isNavigating ? noTransition : springTransition}
-            className="relative flex items-center justify-between gap-4"
+            className="grid grid-cols-[1fr_auto_1fr] items-center gap-4"
             role="navigation"
             aria-label="Main navigation"
           >
             {/* Left Side - Logo */}
-            <div className="flex items-center">
+            <div className="flex items-center justify-self-start">
               <Link to="/" className="group flex items-center gap-3 transition-all duration-300 hover:-translate-y-1" aria-label="Knowly home">
                 <div className="relative h-10 w-10 border-4 border-border bg-primary flex items-center justify-center shadow-neo-sm group-hover:shadow-neo transition-all rounded-xl">
                   <BookOpen className="h-5 w-5 text-black" strokeWidth={3} />
@@ -182,7 +182,7 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Center - Navigation Menu */}
-            <div className="hidden md:flex items-center justify-center absolute left-1/2 -translate-x-1/2">
+            <div className="hidden md:flex items-center justify-center justify-self-center">
               <div className="flex items-center gap-1 p-1">
                 {[
                   { path: '/', label: 'Home', icon: Home },
@@ -210,7 +210,7 @@ export function Layout({ children }: LayoutProps) {
             </div>
 
             {/* Right Side - Auth Actions */}
-            <div className="flex items-center justify-end gap-4">
+            <div className="flex items-center justify-end gap-4 justify-self-end">
               {/* Theme Toggle */}
               <div className="border-border shadow-neo-sm rounded-lg">
                 <ThemeToggle />
