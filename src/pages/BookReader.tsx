@@ -9,12 +9,13 @@ import userService from '@/lib/api/user'
 import { useToast } from '@/components/ui/use-toast'
 import NoteHighlightOverlay from '@/components/reader/NoteHighlightOverlay'
 import NotePopover from '@/components/reader/NotePopover'
+import { FocusTapeDeck } from '@/components/FocusTapeDeck'
 import {
   ChevronLeft,
   ChevronRight,
   Minus,
   Settings,
-  Bookmark,
+
 
   Sun,
   Moon,
@@ -123,7 +124,7 @@ export default function BookReader() {
   const [selectedText, setSelectedText] = useState("")
   const [newNote, setNewNote] = useState("")
   const [fontSize, setFontSize] = useState(20)
-  const [isBookmarked, setIsBookmarked] = useState(false)
+
   const [highlightColor, setHighlightColor] = useState<'yellow' | 'blue' | 'green' | 'pink'>('yellow')
   const [editingNote, setEditingNote] = useState<BookNote | null>(null)
   const [showReviewDialog, setShowReviewDialog] = useState(false)
@@ -297,7 +298,7 @@ export default function BookReader() {
 
   useEffect(() => {
     if (bookData) {
-      setIsBookmarked(bookData.bookmarks?.includes(currentPage) || false)
+      setIsFavorite(bookData.isFavorite || false)
     }
   }, [currentPage, bookData])
 
@@ -324,10 +325,7 @@ export default function BookReader() {
             handlePageChange('next')
           }
           break
-        case 'b':
-        case 'B':
-          toggleBookmark()
-          break
+
         case '+':
         case '=':
           setFontSize(prev => Math.min(prev + 2, 24))
@@ -693,18 +691,6 @@ export default function BookReader() {
     return themes[theme]
   }
 
-  const toggleBookmark = () => {
-    if (!bookData) return // Guard clause
-
-    setBookData(prev => prev ? ({
-      ...prev,
-      bookmarks: isBookmarked
-        ? (prev.bookmarks || []).filter(page => page !== currentPage)
-        : [...(prev.bookmarks || []), currentPage]
-    }) : null)
-    setIsBookmarked(!isBookmarked)
-  }
-
   const toggleFavorite = async () => {
     try {
       if (isFavorite) {
@@ -869,6 +855,7 @@ export default function BookReader() {
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${themeStyles.bg} ${theme === 'dark' ? 'dark' : ''} font-mono`}>
+      <FocusTapeDeck theme={theme} />
       {/* Floating Restore Button (when navbar is hidden) */}
       <AnimatePresence>
         {!showNavbar && (
@@ -929,15 +916,7 @@ export default function BookReader() {
               </Button>
             )}
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleBookmark}
-              className={`rounded-lg transition-all border border-transparent ${isBookmarked ? 'text-black bg-yellow-400 border-yellow-500' : `${themeStyles.text} hover:opacity-70`}`}
-              title="Bookmark Page"
-            >
-              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current' : ''}`} />
-            </Button>
+
 
             <Button
               variant="ghost"
@@ -1357,46 +1336,7 @@ export default function BookReader() {
                   </CardContent>
                 </Card>
 
-                {/* Bookmarks (Quick Access Ribbon) */}
-                <Card className={`shrink-0 border-2 ${themeStyles.border} shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] rounded-xl overflow-hidden ${themeStyles.cardBg}`}>
-                  <div className={`px-4 py-2 border-b-2 ${themeStyles.border} ${themeStyles.navBg} flex items-center justify-between`}>
-                    <div className="flex items-center gap-2">
-                      <Bookmark className={`h-4 w-4 ${themeStyles.text}`} />
-                      <h3 className={`font-bold uppercase text-xs tracking-wider ${themeStyles.text}`}>Quick Access</h3>
-                    </div>
-                    <span className={`text-[10px] font-mono leading-none px-2 py-1 rounded border ${themeStyles.border} ${theme === 'dark' ? 'text-gray-400 border-gray-600' : 'text-gray-500 border-gray-300'}`}>
-                      Press 'B'
-                    </span>
-                  </div>
-                  <div className={`p-3 overflow-x-auto whitespace-nowrap scrollbar-hide flex items-center gap-2 ${theme === 'dark' ? 'bg-black/20' : 'bg-gray-50/50'}`}>
-                    {(bookData?.bookmarks && bookData.bookmarks.length > 0) ? (
-                      bookData.bookmarks.map((page) => (
-                        <button
-                          key={page}
-                          onClick={() => setCurrentPage(page)}
-                          className={`
-                            group flex items-center gap-2 px-3 py-1.5 rounded-none border-2 transition-all
-                            shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]
-                            ${theme === 'dark'
-                              ? 'bg-zinc-800 border-gray-400 text-white hover:bg-primary hover:text-black hover:border-black'
-                              : theme === 'sepia'
-                                ? 'bg-[#fdf5e6] border-[#8b7355] text-[#5c4033] hover:bg-primary hover:text-black hover:border-black'
-                                : 'bg-white border-black text-black hover:bg-primary'
-                            }
-                          `}
-                        >
-                          <span className="font-mono font-bold text-xs">Pg.{page}</span>
-                        </button>
-                      ))
-                    ) : (
-                      <div className="w-full text-center py-2">
-                        <span className={`text-xs font-mono italic ${theme === 'dark' ? 'text-gray-500' : 'text-gray-400'}`}>
-                          No bookmarks yet
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </Card>
+
 
                 {/* Notes */}
                 <Card className={`flex-1 min-h-0 border-2 ${themeStyles.border} shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] flex flex-col rounded-xl ${themeStyles.cardBg}`}>
