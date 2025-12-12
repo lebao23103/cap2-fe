@@ -40,6 +40,9 @@ export interface PublicBookNote {
   page_number: number;
   color: string;
   is_public: boolean;
+  status?: string;
+  helpful_count?: number;
+  awful_count?: number;
   created_at: string;
 }
 
@@ -94,6 +97,22 @@ class NotesService {
   // Get user's notes statistics
   async getUserNotesStatistics(): Promise<any> {
     const response = await apiClient.get('/api/my-notes/stats/');
+    return response.data;
+  }
+
+  // --- MODERATION ---
+  async voteNote(noteId: number, type: 'helpful' | 'awful'): Promise<any> {
+    const response = await apiClient.post(`/api/notes/${noteId}/vote/`, { type });
+    return response.data;
+  }
+
+  async getFlaggedNotes(): Promise<any[]> {
+    const response = await apiClient.get(`/api/admin/moderation/flagged/`);
+    return response.data;
+  }
+
+  async moderateNote(noteId: number, action: 'restore' | 'delete'): Promise<any> {
+    const response = await apiClient.post(`/api/admin/moderation/note/${noteId}/moderate/`, { action });
     return response.data;
   }
 }

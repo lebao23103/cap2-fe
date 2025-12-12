@@ -10,7 +10,9 @@ import {
   Users,
   Copy,
   Check,
-  Eye
+  Eye,
+  ThumbsUp,
+  AlertTriangle
 } from 'lucide-react'
 
 import { Card } from '@/components/ui/card'
@@ -45,6 +47,9 @@ interface SharedNote {
   page: number
   color: string
   isUserBook: boolean
+  helpful_count: number
+  awful_count: number
+  status: string
 }
 
 interface GroupedNotes {
@@ -109,7 +114,10 @@ export default function NoteShare() {
             bookId: book.id.toString(),
             page: n.page_number || 1,
             color: n.color || '#FFEB3B',
-            isUserBook: isUserBook
+            isUserBook: isUserBook,
+            helpful_count: n.helpful_count || 0,
+            awful_count: n.awful_count || 0,
+            status: n.status || 'visible'
           }))
         } catch (e) {
           console.error(`Failed to fetch notes for book ${book.id}`, e)
@@ -191,6 +199,41 @@ export default function NoteShare() {
 
   const handleFilterChange = (filterType: keyof FilterState, value: string) => {
     setFilters(prev => ({ ...prev, [filterType]: value }))
+  }
+
+  const handleVote = async (noteId: string, type: 'helpful' | 'awful') => {
+    // 1. Optimistic Update
+    setSharedNotes(prev => prev.map(note => {
+      if (note.id !== noteId) return note;
+
+      // Simple optimistic: just increment/decrement based on type
+      // Note: A real optimistic update needs to know previous state (user_vote). 
+      // For MVP, we'll just optimistically increment and let backend correct it on re-fetch or ignore validation errors visually for a bit.
+      // Actually, better to just wait for response for accuracy, OR assume +1.
+      // Let's rely on backend response to update state to ensure consistency.
+      return note;
+    }));
+
+    try {
+      const result = await notesService.voteNote(Number(noteId), type);
+
+      // 2. Update with actual server data
+      setSharedNotes(prev => prev.map(note => {
+        if (note.id !== noteId) return note;
+        return {
+          ...note,
+          helpful_count: result.helpful_count,
+          awful_count: result.awful_count,
+          status: result.status
+        };
+      }).filter(n => n.status === 'visible')); // Remove if status becomes hidden
+
+      toast({ title: type === 'helpful' ? "Marked as Helpful!" : "Reported as Awful", description: type === 'helpful' ? "Thanks for your feedback!" : "Notes with high report count will be reviewed." });
+
+    } catch (error) {
+      console.error("Vote failed", error);
+      toast({ title: "Action Failed", variant: "destructive" });
+    }
   }
 
   return (
@@ -304,7 +347,7 @@ export default function NoteShare() {
               >
                 {groupedData.length > 0 ? (
                   groupedData.map((group) => (
-                    <BookGroupItem key={group.bookId} group={group} navigate={navigate} />
+                    <BookGroupItem key={group.bookId} group={group} navigate={navigate} onVote={handleVote} />
                   ))
                 ) : (
                   <div className="text-center py-20 border-2 border-dashed border-border rounded-xl">
@@ -320,7 +363,7 @@ export default function NoteShare() {
   )
 }
 
-function BookGroupItem({ group, navigate }: { group: GroupedNotes, navigate: any }) {
+function BookGroupItem({ group, navigate, onVote }: { group: GroupedNotes, navigate: any, onVote: (id: string, type: 'helpful' | 'awful') => void }) {
   const [isOpen, setIsOpen] = useState(false)
   const [copiedQuote, setCopiedQuote] = useState<string | null>(null)
 
@@ -440,6 +483,28 @@ function BookGroupItem({ group, navigate }: { group: GroupedNotes, navigate: any
                     </div>
 
                     <div className="flex justify-end gap-3 transition-opacity">
+                      {/* VOTE BUTTONS */}
+                      <div className="mr-auto flex items-center gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-9 gap-1.5 px-3 text-xs font-bold border-2 border-transparent hover:border-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg group/vote"
+                          onClick={() => onVote(note.id, 'helpful')}
+                        >
+                          <ThumbsUp className="h-4 w-4 group-hover/vote:scale-110 transition-transform" />
+                          <span>{note.helpful_count > 0 ? note.helpful_count : 'Helpful'}</span>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-9 gap-1.5 px-3 text-xs font-bold border-2 border-transparent hover:border-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg group/report"
+                          onClick={() => onVote(note.id, 'awful')}
+                        >
+                          <AlertTriangle className="h-4 w-4 group-hover/report:scale-110 transition-transform" />
+                          <span>{note.awful_count > 0 ? note.awful_count : 'Report'}</span>
+                        </Button>
+                      </div>
+
                       <Button
                         variant="ghost"
                         size="sm"

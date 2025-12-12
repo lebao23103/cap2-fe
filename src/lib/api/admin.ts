@@ -31,6 +31,21 @@ export interface UserRolesStatistics {
     total_users: number;
 }
 
+export interface DailyStats {
+    date: string;
+    new_users: number;
+    new_books: number;
+    interactions: number;
+}
+
+export interface SystemLog {
+    type: 'user_join' | 'book_submit' | 'review' | 'flag';
+    timestamp: string;
+    message: string;
+    user: string;
+    details?: any;
+}
+
 export interface AdminUser {
     id: number;
     username: string;
@@ -102,6 +117,16 @@ class AdminService {
 
     async getUserRolesStatistics(): Promise<UserRolesStatistics> {
         const response = await apiClient.get('/api/user-roles-statistics/');
+        return response.data;
+    }
+
+    async getDailyStats(): Promise<DailyStats[]> {
+        const response = await apiClient.get('/api/admin/stats/daily/');
+        return response.data;
+    }
+
+    async getSystemActivity(): Promise<SystemLog[]> {
+        const response = await apiClient.get('/api/admin/system-activity/');
         return response.data;
     }
 

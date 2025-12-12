@@ -34,20 +34,25 @@ import {
   X,
   Plus,
   Upload,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Flag, // NEW
+  CheckSquare // NEW
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
+import notesService from '../lib/api/notes' // NEW
 import {
   BarChart,
   Bar,
   XAxis,
   YAxis,
-  CartesianGrid,
+  // CartesianGrid, // Unused
   Tooltip,
   ResponsiveContainer,
-
+  Area,
+  AreaChart,
 } from 'recharts'
+import { Search, Download } from 'lucide-react' // NEW
 import adminService, {
   type ReportStatistics,
   type AdminUser,
@@ -77,7 +82,15 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<AdminUser[]>([])
   const [books, setBooks] = useState<AdminBook[]>([])
   const [pendingBooks, setPendingBooks] = useState<PendingUserBook[]>([])
+  const [dailyStats, setDailyStats] = useState<any[]>([]) // NEW
+  const [systemLogs, setSystemLogs] = useState<any[]>([]) // NEW
   const [activeTab, setActiveTab] = useState('overview')
+
+  const [searchTerm, setSearchTerm] = useState('') // NEW: Search State
+
+  // Moderation state
+  const [flaggedNotes, setFlaggedNotes] = useState<any[]>([])
+  const [loadingFlagged, setLoadingFlagged] = useState(false)
 
   // Dialog state
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false)
@@ -97,28 +110,39 @@ export default function AdminDashboard() {
 
   // Widget Dialog States
   const [isSecurityOpen, setIsSecurityOpen] = useState(false)
-  const [isTrafficOpen, setIsTrafficOpen] = useState(false)
   const [isContributorsOpen, setIsContributorsOpen] = useState(false)
 
   useEffect(() => {
     loadDashboardData()
   }, [])
 
+  // Fetch flagged notes when tab is active
+  useEffect(() => {
+    if (activeTab === 'moderation') {
+      fetchFlaggedNotes()
+    }
+  }, [activeTab])
+
+
   const loadDashboardData = async () => {
     try {
       setIsLoading(true)
 
-      const [statsData, usersData, booksData, pendingData] = await Promise.all([
+      const [statsData, usersData, booksData, pendingData, dailyData, activityData] = await Promise.all([
         adminService.getReportStatistics().catch(() => null),
         adminService.listUsers().catch(() => []),
         adminService.listBooks().catch(() => []),
-        adminService.listPendingUserBooks().catch(() => [])
+        adminService.listPendingUserBooks().catch(() => []),
+        adminService.getDailyStats().catch(() => []),
+        adminService.getSystemActivity().catch(() => []) // NEW
       ])
 
       setStats(statsData)
       setUsers(usersData)
       setBooks(booksData)
       setPendingBooks(pendingData)
+      setDailyStats(dailyData)
+      setSystemLogs(activityData) // NEW
     } catch (error) {
       console.error('Error loading admin data:', error)
       toast({
@@ -183,18 +207,7 @@ export default function AdminDashboard() {
     return [...users].sort((a, b) => b.id - a.id).slice(0, 5);
   }, [users]);
 
-  const peakHoursData = useMemo(() => {
-    const counts = { 'Night (0-6)': 0, 'Morning (6-12)': 0, 'Afternoon (12-18)': 0, 'Evening (18-24)': 0 };
-    pendingBooks.forEach(book => {
-      if (!book.created_at) return;
-      const hour = new Date(book.created_at).getHours();
-      if (hour < 6) counts['Night (0-6)']++;
-      else if (hour < 12) counts['Morning (6-12)']++;
-      else if (hour < 18) counts['Afternoon (12-18)']++;
-      else counts['Evening (18-24)']++;
-    });
-    return Object.entries(counts).map(([name, count]) => ({ name, count }));
-  }, [pendingBooks]);
+
 
   const securityStats = useMemo(() => {
     const adminCount = users.filter(u => u.is_staff).length;
@@ -361,6 +374,33 @@ export default function AdminDashboard() {
   }
 
   // UserBook moderation
+
+  const fetchFlaggedNotes = async () => {
+    setLoadingFlagged(true)
+    try {
+      const data = await notesService.getFlaggedNotes()
+      setFlaggedNotes(data)
+    } catch (error) {
+      console.error("Failed to fetch flagged notes", error)
+    } finally {
+      setLoadingFlagged(false)
+    }
+  }
+
+  const handleModerateNote = async (noteId: number, action: 'restore' | 'delete') => {
+    try {
+      await notesService.moderateNote(noteId, action)
+      toast({
+        title: action === 'restore' ? "Note Restored" : "Note Deleted",
+        description: action === 'restore' ? "The note is now visible again." : "The note has been permanently removed.",
+        variant: action === 'delete' ? 'destructive' : 'default'
+      })
+      fetchFlaggedNotes()
+    } catch (e) {
+      toast({ title: "Action Failed", variant: "destructive" })
+    }
+  }
+
   const handleApproveBook = async (userBookId: number) => {
     try {
       setActionLoading(`approveBook-${userBookId}`)
@@ -409,6 +449,33 @@ export default function AdminDashboard() {
       </div>
     )
   }
+
+  // Helper: Export to CSV
+  const handleExportCSV = (data: any[], filename: string) => {
+    if (!data.length) return
+    const headers = Object.keys(data[0])
+    const csvContent = [
+      headers.join(','),
+      ...data.map(row => headers.map(header => JSON.stringify(row[header] || '')).join(','))
+    ].join('\n')
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`
+    link.click()
+  }
+
+  // Filtered Data
+  const filteredUsers = users.filter(u =>
+    u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.email.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+
+  const filteredBooks = books.filter(b =>
+    b.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    b.author.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden font-mono selection:bg-primary selection:text-black">
@@ -468,7 +535,8 @@ export default function AdminDashboard() {
               { value: 'overview', label: 'Overview', icon: BarChart3 },
               { value: 'users', label: 'Users', icon: Users },
               { value: 'books', label: 'Books', icon: BookOpen },
-              { value: 'pending', label: 'Pending', icon: FileText }
+              { value: 'pending', label: 'Pending', icon: FileText },
+              { value: 'moderation', label: 'Moderation', icon: Flag } // NEW
             ].map((tab) => (
               <TabsTrigger
                 key={tab.value}
@@ -602,27 +670,34 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Traffic Peaks */}
-                <Card
-                  className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl cursor-pointer hover:border-green-500 transition-colors"
-                  onClick={() => setIsTrafficOpen(true)}
-                >
+                {/* Daily Growth Trend (Replaces Traffic Peaks) */}
+                <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl">
                   <CardHeader className="py-3 px-4 border-b-4 border-black dark:border-white bg-green-100 dark:bg-green-900/30">
                     <CardTitle className="flex items-center gap-2 font-black uppercase text-black dark:text-white text-base">
-                      <BarChart3 className="h-4 w-4" />
-                      Traffic Peaks
+                      <TrendingUp className="h-4 w-4" />
+                      Daily Growth
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-4">
                     <ResponsiveContainer width="100%" height={180}>
-                      <BarChart data={peakHoursData}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="name" tick={{ fontSize: 9 }} interval={0} />
-                        <Tooltip cursor={{ fill: 'transparent' }} contentStyle={{ borderRadius: '8px', border: '2px solid black' }} />
-                        <Bar dataKey="count" fill="#4ade80" radius={[4, 4, 0, 0]} barSize={30} stroke="#000" strokeWidth={2} />
-                      </BarChart>
+                      <AreaChart data={dailyStats}>
+                        <defs>
+                          <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                            <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                          </linearGradient>
+                          <linearGradient id="colorInteractions" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                            <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="date" tick={{ fontSize: 9 }} tickFormatter={(val) => val.slice(5)} interval={1} />
+                        <Tooltip contentStyle={{ borderRadius: '8px', border: '2px solid black' }} />
+                        <Area type="monotone" dataKey="new_users" stroke="#8884d8" fillOpacity={1} fill="url(#colorUsers)" strokeWidth={2} name="New Users" />
+                        <Area type="monotone" dataKey="interactions" stroke="#82ca9d" fillOpacity={1} fill="url(#colorInteractions)" strokeWidth={2} name="Activity" />
+                      </AreaChart>
                     </ResponsiveContainer>
-                    <p className="text-center text-[10px] font-bold text-gray-500 uppercase mt-2">Submissions by Time of Day</p>
+                    <p className="text-center text-[10px] font-bold text-gray-500 uppercase mt-2">14-Day Performance</p>
                   </CardContent>
                 </Card>
 
@@ -684,28 +759,45 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Activity Logs */}
-                <Card className="lg:col-span-2 border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl">
-                  <CardHeader className="py-3 px-4 border-b-4 border-black dark:border-white bg-orange-100 dark:bg-orange-900/30">
-                    <CardTitle className="flex items-center gap-2 font-black uppercase text-black dark:text-white text-base">
+                {/* System Live Logs (Aggregated) */}
+                <Card className="col-span-1 lg:col-span-2 border-4 border-black dark:border-white bg-black text-white shadow-[4px_4px_0px_0px_rgba(128,128,128,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden flex flex-col">
+                  <CardHeader className="py-3 px-4 border-b-2 border-zinc-800 flex flex-row items-center justify-between bg-zinc-900">
+                    <CardTitle className="flex items-center gap-2 font-mono text-sm uppercase text-green-400">
                       <Activity className="h-4 w-4" />
-                      System Live Logs
+                      {'>'} System_Live_Logs
+                      <span className="animate-pulse">_</span>
                     </CardTitle>
+                    <Badge variant="outline" className="text-green-400 border-green-400 text-[10px] font-mono uppercase bg-transparent">
+                      Real-time
+                    </Badge>
                   </CardHeader>
                   <CardContent className="p-0 h-[300px] overflow-y-auto custom-scrollbar bg-black text-green-400 font-mono text-xs p-4">
-                    {pendingBooks.length > 0 ? (
+                    {systemLogs.length > 0 ? (
                       <div className="space-y-1">
-                        {pendingBooks.slice().sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((book, idx) => (
+                        {systemLogs.map((log, idx) => (
                           <div key={idx} className="flex gap-4 border-b border-green-900/30 pb-1 mb-1">
-                            <span className="opacity-50 min-w-[140px]">{new Date(book.created_at).toLocaleString()}</span>
-                            <span className="text-white font-bold">{book.user?.username || 'SYSTEM'}</span>
-                            <span>submitted new book <span className="text-yellow-400">"{book.title}"</span></span>
+                            <span className="opacity-50 min-w-[140px]">{new Date(log.timestamp).toLocaleString()}</span>
+                            <div className="flex-1">
+                              {log.type === 'user_join' && (
+                                <span><span className="text-white font-bold">{log.user}</span> joined the party 🎉</span>
+                              )}
+                              {log.type === 'book_submit' && (
+                                <span><span className="text-white font-bold">{log.user}</span> submitted <span className="text-yellow-400">"{log.details.title}"</span></span>
+                              )}
+                              {log.type === 'review' && (
+                                <span><span className="text-white font-bold">{log.user}</span> reviewed <span className="text-blue-400">"{log.details.book}"</span> ({log.details.rating}★)</span>
+                              )}
+                              {log.type === 'flag' && (
+                                <span><span className="text-red-500 font-bold">ALERT:</span> <span className="text-white font-bold">{log.user}</span> reported a note in <span className="text-red-400">"{log.details.book}"</span></span>
+                              )}
+                            </div>
                           </div>
                         ))}
                       </div>
                     ) : (
-                      <div className="flex flex-col items-center justify-center h-full opacity-50">
-                        <p>_ No recent activity detected _</p>
+                      <div className="flex flex-col items-center justify-center p-8 text-gray-400 h-full">
+                        <Activity className="h-8 w-8 mb-2 opacity-20" />
+                        <p className="font-bold uppercase opacity-50 text-xs">Waiting for activity...</p>
                       </div>
                     )}
                   </CardContent>
@@ -731,7 +823,18 @@ export default function AdminDashboard() {
                   </CardDescription>
                 </div>
                 <div className="flex w-full sm:w-auto items-center gap-2">
-                  {/* Search Input could go here if we add state for it */}
+                  <div className="relative flex-1 sm:w-auto">
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-black dark:text-gray-300" />
+                    <Input
+                      placeholder="SEARCH USERS..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-9 h-10 w-full sm:w-[250px] border-2 border-black dark:border-white bg-white dark:bg-zinc-800 font-bold uppercase placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
+                    />
+                  </div>
+                  <Button size="sm" variant="outline" className="h-10 border-2 border-black dark:border-white font-black uppercase bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all" onClick={() => handleExportCSV(users, 'users_export')}>
+                    <Download className="h-4 w-4 mr-2" /> Export
+                  </Button>
                   <Button
                     onClick={() => setIsCreateUserOpen(true)}
                     className="w-full sm:w-auto bg-primary text-black border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase"
@@ -752,12 +855,12 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {users.length === 0 ? (
+                    {filteredUsers.length === 0 ? (
                       <tr>
                         <td colSpan={4} className="p-8 text-center text-gray-500 font-mono">No users found.</td>
                       </tr>
                     ) : (
-                      users.map((user) => (
+                      filteredUsers.map((user) => (
                         <tr key={user.id} className="border-b-2 border-gray-100 dark:border-zinc-800 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-colors group">
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
                             <div className="w-10 h-10 bg-blue-200 dark:bg-blue-900 border-2 border-black dark:border-white flex items-center justify-center font-black text-lg text-black dark:text-white rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
@@ -821,6 +924,18 @@ export default function AdminDashboard() {
                   </CardDescription>
                 </div>
                 <div className="flex w-full sm:w-auto items-center gap-2">
+                  <div className="relative flex-1 sm:w-auto">
+                    <Search className="absolute left-3 top-2.5 h-4 w-4 text-black dark:text-gray-300" />
+                    <Input
+                      placeholder="SEARCH BOOKS..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-9 h-10 w-full sm:w-[250px] border-2 border-black dark:border-white bg-white dark:bg-zinc-800 font-bold uppercase placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
+                    />
+                  </div>
+                  <Button size="sm" variant="outline" className="h-10 border-2 border-black dark:border-white font-black uppercase bg-white dark:bg-zinc-800 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all" onClick={() => handleExportCSV(books, 'books_export')}>
+                    <Download className="h-4 w-4 mr-2" /> Export
+                  </Button>
                   <Button
                     onClick={() => setIsCreateBookOpen(true)}
                     className="w-full sm:w-auto bg-green-400 text-black border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase"
@@ -841,12 +956,12 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {books.length === 0 ? (
+                    {filteredBooks.length === 0 ? (
                       <tr>
                         <td colSpan={4} className="p-8 text-center text-gray-500 font-mono">No books found.</td>
                       </tr>
                     ) : (
-                      books.map((book) => (
+                      filteredBooks.map((book) => (
                         <tr key={book.id} className="border-b-2 border-gray-100 dark:border-zinc-800 hover:bg-green-50 dark:hover:bg-green-900/10 transition-colors group">
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
                             <div className="w-20 h-28 bg-gray-200 dark:bg-gray-700 border-2 border-black dark:border-white flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] rounded-sm overflow-hidden">
@@ -998,6 +1113,68 @@ export default function AdminDashboard() {
                               )}
                             </Button>
                           </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Moderation Tab */}
+          <TabsContent value="moderation" className="space-y-6">
+            <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden">
+              <CardHeader className="border-b-4 border-black dark:border-white bg-red-800 text-white">
+                <CardTitle className="font-black uppercase flex items-center gap-2">
+                  <Flag className="h-5 w-5" />
+                  Content Moderation Queue ({flaggedNotes.length})
+                </CardTitle>
+                <CardDescription className="font-mono text-gray-200">
+                  Review flagged and hidden notes
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {loadingFlagged ? (
+                  <div className="flex justify-center py-12"><Loader2 className="animate-spin h-8 w-8" /></div>
+                ) : flaggedNotes.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <CheckCircle className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                    <p className="font-bold">No flagged content!</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    {flaggedNotes.map((note) => (
+                      <div key={note.id} className="border-4 border-black dark:border-white p-4 rounded-xl flex flex-col md:flex-row gap-4 justify-between items-start bg-white dark:bg-zinc-800 shadow-sm">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant={note.status === 'hidden' ? 'destructive' : 'outline'} className="uppercase font-black tracking-wider">
+                              {note.status}
+                            </Badge>
+                            <span className="text-xs font-bold text-gray-500">Reported {note.awful_count} times</span>
+                            <span className="text-xs font-mono text-gray-400">| User: {note.user}</span>
+                          </div>
+                          <p className="font-serif italic text-lg mb-2 bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded border-l-4 border-yellow-400">
+                            "{note.content}"
+                          </p>
+                          <p className="text-xs text-gray-400 font-mono">Book: {note.book_title} | Date: {new Date(note.created_at).toLocaleDateString()}</p>
+                        </div>
+                        <div className="flex gap-2 shrink-0">
+                          <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700 text-white font-bold border-2 border-transparent"
+                            onClick={() => handleModerateNote(note.id, 'restore')}
+                          >
+                            <CheckSquare className="h-4 w-4 mr-2" /> RESTORE
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            className="font-bold border-2 border-transparent"
+                            onClick={() => handleModerateNote(note.id, 'delete')}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" /> DELETE
+                          </Button>
                         </div>
                       </div>
                     ))}
@@ -1584,56 +1761,7 @@ export default function AdminDashboard() {
         </DialogContent>
       </Dialog>
 
-      {/* Traffic Peaks Dialog */}
-      <Dialog open={isTrafficOpen} onOpenChange={setIsTrafficOpen}>
-        <DialogContent className="max-w-xl border-4 border-black dark:border-white bg-white dark:bg-zinc-900 p-6">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 font-black uppercase text-2xl">
-              <BarChart3 className="h-6 w-6 text-green-600" />
-              Submission Traffic Log
-            </DialogTitle>
-            <DialogDescription>
-              Detailed timestamp log of recent submissions to identify peak activity.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mt-4 max-h-[400px] overflow-y-auto custom-scrollbar border-2 border-gray-100 rounded-lg">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-gray-100 sticky top-0">
-                <tr>
-                  <th className="p-2 font-bold uppercase text-xs">Time</th>
-                  <th className="p-2 font-bold uppercase text-xs">User</th>
-                  <th className="p-2 font-bold uppercase text-xs">Book</th>
-                  <th className="p-2 text-right"></th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {pendingBooks.slice().sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map(book => (
-                  <tr key={book.id} className="hover:bg-green-50">
-                    <td className="p-2 font-mono text-xs text-gray-500">
-                      {new Date(book.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </td>
-                    <td className="p-2 font-bold text-xs">{book.user?.username}</td>
-                    <td className="p-2 truncate max-w-[150px] text-xs">{book.title}</td>
-                    <td className="p-2 text-right">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-6 text-[10px] uppercase border-black hover:bg-black hover:text-white"
-                        onClick={() => {
-                          setIsTrafficOpen(false);
-                          setActiveTab('pending');
-                        }}
-                      >
-                        Review
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </DialogContent>
-      </Dialog>
+
 
       {/* Top Contributors Dialog */}
       <Dialog open={isContributorsOpen} onOpenChange={setIsContributorsOpen}>
