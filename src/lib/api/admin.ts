@@ -57,6 +57,7 @@ export interface AdminUser {
     is_superuser: boolean;
     is_active: boolean; // NEW: Account status
     last_login: string | null; // NEW: Last login timestamp
+    is_online?: boolean; // NEW: Real-time online status
 }
 
 export interface AdminBook {

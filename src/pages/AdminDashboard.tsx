@@ -817,7 +817,8 @@ export default function AdminDashboard() {
                             <div className="h-10 w-10 rounded-lg bg-purple-200 border-2 border-black flex items-center justify-center font-black text-sm relative">
                               {getDisplayName(user).charAt(0).toUpperCase()}
                               {/* Online Status Dot */}
-                              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${user.is_active ? 'bg-green-500' : 'bg-gray-400'}`} />
+                              {/* Online Status Dot */}
+                              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${user.is_online ? 'bg-green-500' : 'bg-gray-400'}`} />
                             </div>
                             <div className="flex-1 min-w-0 flex flex-col justify-center">
                               <div className="flex flex-col">
@@ -968,15 +969,20 @@ export default function AdminDashboard() {
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
                             <div className="flex flex-col gap-1">
                               <div className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full border-2 border-black ${user.is_active ? 'bg-green-500' : 'bg-gray-300'}`} />
-                                <span className="font-bold text-xs uppercase">{user.is_active ? 'Active' : 'Inactive'}</span>
+                                <div className={`w-3 h-3 rounded-full border-2 border-black ${user.is_online ? 'bg-green-500' : 'bg-gray-300'}`} />
+                                <span className={`font-bold text-xs uppercase ${user.is_online ? 'text-green-600' : 'text-gray-500'}`}>
+                                  {user.is_online ? 'Online' : 'Offline'}
+                                </span>
                               </div>
                               {user.last_login ? (
                                 <span className="text-[10px] text-gray-500 font-mono">
                                   Seen: {timeAgo(user.last_login)}
                                 </span>
                               ) : (
-                                <span className="text-[10px] text-gray-400 font-mono">Never</span>
+                                <span className="text-[10px] text-gray-400 font-mono">Never seen</span>
+                              )}
+                              {!user.is_active && (
+                                <Badge variant="destructive" className="h-4 px-1 text-[9px] w-fit">DISABLED</Badge>
                               )}
                             </div>
                           </td>
