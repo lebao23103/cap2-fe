@@ -211,7 +211,7 @@ export default function About() {
                 avatar: "/api/placeholder/150/150"
               },
               {
-                name: "Nguyen Duc ",
+                name: "Nguyen Duc Tan",
                 role: "Developer",
                 bio: "Full-stack developer who loves books and believes technology should make reading more accessible.",
                 avatar: "/api/placeholder/150/150"
@@ -227,7 +227,7 @@ export default function About() {
                       </AvatarFallback>
                     </Avatar>
                     <CardTitle className="text-xl font-black uppercase text-black dark:text-white">{member.name}</CardTitle>
-                    <Badge variant="secondary" className="bg-gray-200 dark:bg-zinc-700 text-black dark:text-white rounded-md border border-black dark:border-white">{member.role}</Badge>
+                    <Badge variant="secondary" className="bg-gray-200 dark:bg-zinc-700 text-black dark:text-white rounded-md border border-black dark:border-white w-full justify-center">{member.role}</Badge>
                   </CardHeader>
                   <CardContent>
                     <CardDescription className="text-sm font-bold text-gray-600 dark:text-gray-300">
