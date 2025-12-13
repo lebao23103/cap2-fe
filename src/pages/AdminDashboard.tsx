@@ -30,7 +30,21 @@ function timeAgo(dateString: string | null): string {
   return date.toLocaleDateString()
 }
 
-// Helper to display username as handle if it's an email
+// Helper to getting display name (Effective Username)
+function getDisplayName(user: { username: string; first_name?: string; last_name?: string; full_name?: string | null }): string {
+  // If specific full_name property exists (logs), use it
+  if (user.full_name) return user.full_name
+
+  // Construct from first/last
+  if (user.first_name || user.last_name) {
+    return `${user.first_name || ''} ${user.last_name || ''}`.trim()
+  }
+
+  // Fallback to formatted username (handle)
+  return formatUsername(user.username)
+}
+
+// Helper to remove email domain for fallback
 function formatUsername(username: string): string {
   if (username.includes('@')) {
     return username.split('@')[0]
@@ -766,20 +780,18 @@ export default function AdminDashboard() {
                   <CardContent className="p-0">
                     <div className="divide-y divide-gray-100 dark:divide-zinc-800">
                       {recentUsers.map(user => {
-                        const fullName = user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : ''
                         return (
                           <div key={user.id} className="p-3 flex items-center gap-3 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-colors">
                             <div className="h-10 w-10 rounded-lg bg-purple-200 border-2 border-black flex items-center justify-center font-black text-sm relative">
-                              {formatUsername(user.username).charAt(0).toUpperCase()}
+                              {getDisplayName(user).charAt(0).toUpperCase()}
                               {/* Online Status Dot */}
                               <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${user.is_active ? 'bg-green-500' : 'bg-gray-400'}`} />
                             </div>
                             <div className="flex-1 min-w-0 flex flex-col justify-center">
-                              <div className="flex items-baseline gap-2 overflow-hidden">
-                                <span className="text-sm font-black truncate">{formatUsername(user.username)}</span>
+                              <div className="flex flex-col">
+                                <span className="text-sm font-black truncate">{getDisplayName(user)}</span>
                                 <span className="text-[10px] text-gray-500 truncate font-mono">{user.email}</span>
                               </div>
-                              {fullName && <p className="text-xs font-bold text-gray-700 dark:text-gray-300 truncate">{fullName}</p>}
                             </div>
                             {user.is_staff ? (
                               <Badge className="bg-black text-white text-[10px]">ADMIN</Badge>
@@ -814,30 +826,26 @@ export default function AdminDashboard() {
                             <div className="flex-1">
                               {log.type === 'user_join' && (
                                 <span>
-                                  <span className="text-white font-bold hover:underline cursor-help" title={log.full_name || 'No Name'}>{formatUsername(log.user)}</span>
-                                  {log.full_name && <span className="text-gray-400 text-xs ml-2">({log.full_name})</span>}
+                                  <span className="text-white font-bold hover:underline cursor-help" title={log.user}>{getDisplayName({ ...log, username: log.user })}</span>
                                   <span className="ml-1">joined the party 🎉</span>
                                 </span>
                               )}
                               {log.type === 'book_submit' && (
                                 <span>
-                                  <span className="text-white font-bold hover:underline cursor-help" title={log.full_name || 'No Name'}>{formatUsername(log.user)}</span>
-                                  {log.full_name && <span className="text-gray-400 text-xs ml-2">({log.full_name})</span>}
+                                  <span className="text-white font-bold hover:underline cursor-help" title={log.user}>{getDisplayName({ ...log, username: log.user })}</span>
                                   <span className="ml-1">submitted <span className="text-yellow-400">"{log.details.title}"</span></span>
                                 </span>
                               )}
                               {log.type === 'review' && (
                                 <span>
-                                  <span className="text-white font-bold hover:underline cursor-help" title={log.full_name || 'No Name'}>{formatUsername(log.user)}</span>
-                                  {log.full_name && <span className="text-gray-400 text-xs ml-2">({log.full_name})</span>}
+                                  <span className="text-white font-bold hover:underline cursor-help" title={log.user}>{getDisplayName({ ...log, username: log.user })}</span>
                                   <span className="ml-1">reviewed <span className="text-blue-400">"{log.details.book}"</span> ({log.details.rating}★)</span>
                                 </span>
                               )}
                               {log.type === 'flag' && (
                                 <span>
                                   <span className="text-red-500 font-bold">ALERT:</span>
-                                  <span className="text-white font-bold hover:underline cursor-help ml-1" title={log.full_name || 'No Name'}>{formatUsername(log.user)}</span>
-                                  {log.full_name && <span className="text-gray-400 text-xs ml-2">({log.full_name})</span>}
+                                  <span className="text-white font-bold hover:underline cursor-help ml-1" title={log.user}>{getDisplayName({ ...log, username: log.user })}</span>
                                   <span className="ml-1">reported a note in <span className="text-red-400">"{log.details.book}"</span></span>
                                 </span>
                               )}
@@ -916,21 +924,13 @@ export default function AdminDashboard() {
                         <tr key={user.id} className="border-b-2 border-gray-100 dark:border-zinc-800 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-colors group">
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
                             <div className="w-10 h-10 bg-blue-200 dark:bg-blue-900 border-2 border-black dark:border-white flex items-center justify-center font-black text-lg text-black dark:text-white rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-                              {formatUsername(user.username)[0]?.toUpperCase()}
+                              {getDisplayName(user)[0]?.toUpperCase()}
                             </div>
                           </td>
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
                             <div className="flex flex-col">
-                              {/* Option: Username next to Email */}
-                              <div className="flex flex-wrap items-baseline gap-2 mb-1">
-                                <span className="font-black text-base leading-none">{formatUsername(user.username)}</span>
-                                <span className="text-[10px] text-gray-500 font-mono">{user.email}</span>
-                              </div>
-                              {(user.first_name || user.last_name) && (
-                                <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                                  {user.first_name} {user.last_name}
-                                </span>
-                              )}
+                              <span className="font-black text-base leading-none mb-1">{getDisplayName(user)}</span>
+                              <span className="text-[10px] text-gray-500 font-mono text-xs">{user.email}</span>
                             </div>
                           </td>
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
