@@ -13,6 +13,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../components/ui/dialog'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '../components/ui/popover'
 // Helper for relative time
 function timeAgo(dateString: string | null): string {
   if (!dateString) return 'Never'
@@ -75,7 +80,8 @@ import {
   Upload,
   Image as ImageIcon,
   Flag, // NEW
-  CheckSquare // NEW
+  CheckSquare, // NEW
+  Info // NEW
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
@@ -716,6 +722,32 @@ export default function AdminDashboard() {
                     <CardTitle className="flex items-center gap-2 font-black uppercase text-black dark:text-white text-base">
                       <TrendingUp className="h-4 w-4" />
                       Daily Growth
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="ghost" size="sm" className="h-4 w-4 p-0 ml-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-gray-400 hover:text-black dark:hover:text-white">
+                            <Info className="h-3 w-3" />
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 p-3 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                          <h4 className="font-black uppercase text-xs mb-2 border-b-2 border-gray-100 dark:border-zinc-800 pb-1">Chart Details</h4>
+                          <ul className="space-y-2 text-xs font-mono">
+                            <li className="flex items-start gap-2">
+                              <span className="w-2 h-2 rounded-full bg-[#8884d8] mt-1 shrink-0" />
+                              <div>
+                                <span className="font-bold">New Users:</span>
+                                <p className="text-gray-500">Signups per day.</p>
+                              </div>
+                            </li>
+                            <li className="flex items-start gap-2">
+                              <span className="w-2 h-2 rounded-full bg-[#82ca9d] mt-1 shrink-0" />
+                              <div>
+                                <span className="font-bold">Activity:</span>
+                                <p className="text-gray-500">Total actions (Reviews + Books + Notes).</p>
+                              </div>
+                            </li>
+                          </ul>
+                        </PopoverContent>
+                      </Popover>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-4">
