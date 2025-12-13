@@ -193,25 +193,25 @@ export default function About() {
           <motion.div {...stagger} className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
-                name: "Alexandra Chen",
+                name: "Tran Vu Gia Bao",
                 role: "CEO & Co-Founder",
                 bio: "Former librarian and tech entrepreneur with a passion for connecting readers with books.",
                 avatar: "/api/placeholder/150/150"
               },
               {
-                name: "Marcus Rodriguez",
+                name: "Tran Trong Bang",
                 role: "CTO & Co-Founder",
                 bio: "AI researcher and engineer dedicated to building technology that enhances human experiences.",
                 avatar: "/api/placeholder/150/150"
               },
               {
-                name: "Sarah Kim",
+                name: "Nguyen Vu Gia Bao",
                 role: "Head of Product",
                 bio: "Product designer focused on creating intuitive and delightful user experiences for readers.",
                 avatar: "/api/placeholder/150/150"
               },
               {
-                name: "David Thompson",
+                name: "Nguyen Duc Tan",
                 role: "Lead Engineer",
                 bio: "Full-stack developer who loves books and believes technology should make reading more accessible.",
                 avatar: "/api/placeholder/150/150"
