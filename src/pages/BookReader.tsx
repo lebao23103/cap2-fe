@@ -185,13 +185,13 @@ export default function BookReader() {
         // Only fetch my notes if NOT in read-only mode, or if we want to show them alongside preview note?
         // User requested "just view" the shared note. So maybe don't fetch my notes?
         // But context implies just viewing. Let's fetch my notes but disable editing them.
-        fetch(`http://127.0.0.1:8000/api/books/${id}/notes/`, {
+        fetch(`/api/books/${id}/notes/`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('access_token')}`
           }
         }).then(res => res.json()).catch(() => []),
         userService.getFavorites().catch(() => []),
-        fetch(`http://127.0.0.1:8000/api/reading-history/`, {
+        fetch(`/api/reading-history/`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
         }).then(res => res.json()).catch(() => [])
       ])
@@ -275,7 +275,7 @@ export default function BookReader() {
       setIsFavorite(favorites.some((fav: any) => fav?.book?.id === Number(id)))
 
       // Track reading history
-      await fetch(`http://127.0.0.1:8000/api/reading-history/add/`, {
+      await fetch(`/api/reading-history/add/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -381,7 +381,7 @@ export default function BookReader() {
 
     // Update backend
     try {
-      await fetch(`http://127.0.0.1:8000/api/reading-history/${id}/update/`, {
+      await fetch(`/api/reading-history/${id}/update/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -513,7 +513,7 @@ export default function BookReader() {
 
         if (editingNote) {
           // Update existing note
-          const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/notes/${editingNote.id}/update/`, {
+          const response = await fetch(`/api/books/${id}/notes/${editingNote.id}/update/`, {
             method: 'PATCH',
             headers: {
               'Content-Type': 'application/json',
@@ -532,7 +532,7 @@ export default function BookReader() {
           setEditingNote(null)
         } else {
           // Create new note
-          const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/notes/create/`, {
+          const response = await fetch(`/api/books/${id}/notes/create/`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -568,7 +568,7 @@ export default function BookReader() {
   const deleteNote = async (noteId: string) => {
     if (isReadOnly) return
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/notes/${noteId}/delete/`, {
+      const response = await fetch(`/api/books/${id}/notes/${noteId}/delete/`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('access_token')}`
@@ -598,7 +598,7 @@ export default function BookReader() {
       const note = notes.find(n => n.id === noteId)
       if (!note) return
 
-      const response = await fetch(`http://127.0.0.1:8000/api/books/${id}/notes/${noteId}/update/`, {
+      const response = await fetch(`/api/books/${id}/notes/${noteId}/update/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

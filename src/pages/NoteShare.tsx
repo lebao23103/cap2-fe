@@ -94,7 +94,7 @@ export default function NoteShare() {
             bookTitle: book.title || "Unknown Book",
             bookAuthor: book.author || "Unknown Author",
             bookCover: book.cover_image
-              ? (book.cover_image.startsWith('http') ? book.cover_image : `http://127.0.0.1:8000${book.cover_image}`)
+              ? (book.cover_image.startsWith('http') ? book.cover_image : book.cover_image)
               : "/placeholder.svg",
             noteText: n.selected_text || "",
             userNote: n.note_content || "",
