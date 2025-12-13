@@ -194,25 +194,25 @@ export default function About() {
             {[
               {
                 name: "Tran Vu Gia Bao",
-                role: "CEO & Co-Founder",
-                bio: "Former librarian and tech entrepreneur with a passion for connecting readers with books.",
+                role: "Developer",
+                bio: "Full-stack developer with a passion for connecting readers with books.",
                 avatar: "/api/placeholder/150/150"
               },
               {
                 name: "Tran Trong Bang",
-                role: "CTO & Co-Founder",
-                bio: "AI researcher and engineer dedicated to building technology that enhances human experiences.",
+                role: "Developer",
+                bio: "Full-stack developer dedicated to building technology that enhances human experiences.",
                 avatar: "/api/placeholder/150/150"
               },
               {
                 name: "Nguyen Vu Gia Bao",
-                role: "Head of Product",
+                role: "Developer",
                 bio: "Product designer focused on creating intuitive and delightful user experiences for readers.",
                 avatar: "/api/placeholder/150/150"
               },
               {
-                name: "Nguyen Duc Tan",
-                role: "Lead Engineer",
+                name: "Nguyen Duc ",
+                role: "Developer",
                 bio: "Full-stack developer who loves books and believes technology should make reading more accessible.",
                 avatar: "/api/placeholder/150/150"
               }
