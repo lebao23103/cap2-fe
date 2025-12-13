@@ -13,6 +13,23 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../components/ui/dialog'
+// Helper for relative time
+function timeAgo(dateString: string | null): string {
+  if (!dateString) return 'Never'
+  const date = new Date(dateString)
+  const now = new Date()
+  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+
+  if (seconds < 60) return 'Just now'
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes}m ago`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  if (days < 7) return `${days}d ago`
+  return date.toLocaleDateString()
+}
+
 import { useToast } from '../components/ui/use-toast'
 import {
   Users,
@@ -140,6 +157,7 @@ export default function AdminDashboard() {
       setStats(statsData)
       setUsers(usersData)
       setBooks(booksData)
+      setPendingBooks(pendingData)
       setPendingBooks(pendingData)
       setDailyStats(dailyData)
       setSystemLogs(activityData) // NEW
@@ -739,22 +757,28 @@ export default function AdminDashboard() {
                   </CardHeader>
                   <CardContent className="p-0">
                     <div className="divide-y divide-gray-100 dark:divide-zinc-800">
-                      {recentUsers.map(user => (
-                        <div key={user.id} className="p-3 flex items-center gap-3 hover:bg-purple-50 dark:hover:bg-purple-900/10">
-                          <div className="h-8 w-8 rounded bg-purple-200 border-2 border-black flex items-center justify-center font-black text-xs">
-                            {user.username.charAt(0).toUpperCase()}
+                      {recentUsers.map(user => {
+                        const fullName = user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : ''
+                        return (
+                          <div key={user.id} className="p-3 flex items-center gap-3 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-colors">
+                            <div className="h-10 w-10 rounded-lg bg-purple-200 border-2 border-black flex items-center justify-center font-black text-sm relative">
+                              {user.username.charAt(0).toUpperCase()}
+                              {/* Online Status Dot */}
+                              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${user.is_active ? 'bg-green-500' : 'bg-gray-400'}`} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-black truncate">{user.username}</p>
+                              {fullName && <p className="text-xs font-bold text-gray-700 dark:text-gray-300 truncate">{fullName}</p>}
+                              <p className="text-[10px] text-gray-500 truncate font-mono">{user.email}</p>
+                            </div>
+                            {user.is_staff ? (
+                              <Badge className="bg-black text-white text-[10px]">ADMIN</Badge>
+                            ) : (
+                              <Badge className="bg-white border-2 border-black text-black text-[10px] hover:bg-gray-100">MEMBER</Badge>
+                            )}
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold truncate">{user.username}</p>
-                            <p className="text-[10px] text-gray-500 truncate">{user.email}</p>
-                          </div>
-                          {user.is_staff ? (
-                            <Badge className="bg-black text-white text-[10px]">ADMIN</Badge>
-                          ) : (
-                            <Badge className="bg-white border-2 border-black text-black text-[10px] hover:bg-gray-100">MEMBER</Badge>
-                          )}
-                        </div>
-                      ))}
+                        )
+                      })}
                     </div>
                   </CardContent>
                 </Card>
@@ -779,16 +803,24 @@ export default function AdminDashboard() {
                             <span className="opacity-50 min-w-[140px]">{new Date(log.timestamp).toLocaleString()}</span>
                             <div className="flex-1">
                               {log.type === 'user_join' && (
-                                <span><span className="text-white font-bold">{log.user}</span> joined the party 🎉</span>
+                                <span>
+                                  <span className="text-white font-bold hover:underline cursor-help" title={log.full_name || 'No Name'}>{log.user}</span> joined the party 🎉
+                                </span>
                               )}
                               {log.type === 'book_submit' && (
-                                <span><span className="text-white font-bold">{log.user}</span> submitted <span className="text-yellow-400">"{log.details.title}"</span></span>
+                                <span>
+                                  <span className="text-white font-bold hover:underline cursor-help" title={log.full_name || 'No Name'}>{log.user}</span> submitted <span className="text-yellow-400">"{log.details.title}"</span>
+                                </span>
                               )}
                               {log.type === 'review' && (
-                                <span><span className="text-white font-bold">{log.user}</span> reviewed <span className="text-blue-400">"{log.details.book}"</span> ({log.details.rating}★)</span>
+                                <span>
+                                  <span className="text-white font-bold hover:underline cursor-help" title={log.full_name || 'No Name'}>{log.user}</span> reviewed <span className="text-blue-400">"{log.details.book}"</span> ({log.details.rating}★)
+                                </span>
                               )}
                               {log.type === 'flag' && (
-                                <span><span className="text-red-500 font-bold">ALERT:</span> <span className="text-white font-bold">{log.user}</span> reported a note in <span className="text-red-400">"{log.details.book}"</span></span>
+                                <span>
+                                  <span className="text-red-500 font-bold">ALERT:</span> <span className="text-white font-bold hover:underline cursor-help" title={log.full_name || 'No Name'}>{log.user}</span> reported a note in <span className="text-red-400">"{log.details.book}"</span>
+                                </span>
                               )}
                             </div>
                           </div>
@@ -849,9 +881,10 @@ export default function AdminDashboard() {
                   <thead>
                     <tr className="bg-gray-100 dark:bg-zinc-800 border-b-4 border-black dark:border-white">
                       <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white w-[80px]">Avatar</th>
-                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white">User Info</th>
-                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white">Role</th>
-                      <th className="p-4 font-black uppercase text-sm text-right">Actions</th>
+                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white">User Identity</th>
+                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white w-[180px]">Status</th>
+                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white w-[120px]">Role</th>
+                      <th className="p-4 font-black uppercase text-sm text-right w-[100px]">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -868,12 +901,34 @@ export default function AdminDashboard() {
                             </div>
                           </td>
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
-                            <h3 className="font-bold text-black dark:text-white">{user.username}</h3>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 font-mono">{user.email}</p>
+                            <div className="flex flex-col">
+                              <span className="font-black text-base leading-none mb-1">{user.username}</span>
+                              {(user.first_name || user.last_name) && (
+                                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 mb-0.5">
+                                  {user.first_name} {user.last_name}
+                                </span>
+                              )}
+                              <span className="text-[10px] text-gray-500 font-mono text-xs">{user.email}</span>
+                            </div>
                           </td>
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
-                            <Badge className={`${user.is_staff ? 'bg-primary text-black' : 'bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-300'} border-2 border-black dark:border-white rounded-md font-bold uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]`}>
-                              {user.is_staff ? 'Admin' : 'Member'}
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-2">
+                                <div className={`w-3 h-3 rounded-full border-2 border-black ${user.is_active ? 'bg-green-500' : 'bg-gray-300'}`} />
+                                <span className="font-bold text-xs uppercase">{user.is_active ? 'Active' : 'Inactive'}</span>
+                              </div>
+                              {user.last_login ? (
+                                <span className="text-[10px] text-gray-500 font-mono">
+                                  Seen: {timeAgo(user.last_login)}
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-gray-400 font-mono">Never</span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
+                            <Badge className={`${user.is_staff ? 'bg-black text-white' : 'bg-white text-black'} border-2 border-black dark:border-white rounded-md font-bold uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] text-[10px]`}>
+                              {user.is_staff ? 'ADMIN' : 'MEMBER'}
                             </Badge>
                           </td>
                           <td className="p-4 text-right">

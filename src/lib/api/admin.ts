@@ -43,6 +43,7 @@ export interface SystemLog {
     timestamp: string;
     message: string;
     user: string;
+    full_name?: string | null; // NEW: Added full name
     details?: any;
 }
 
@@ -50,8 +51,12 @@ export interface AdminUser {
     id: number;
     username: string;
     email: string;
+    first_name: string; // NEW
+    last_name: string; // NEW
     is_staff: boolean;
     is_superuser: boolean;
+    is_active: boolean; // NEW: Account status
+    last_login: string | null; // NEW: Last login timestamp
 }
 
 export interface AdminBook {
