@@ -12,8 +12,8 @@ import {
   User
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Progress } from '@/components/ui/progress';
 import { Textarea } from '@/components/ui/textarea';
 import type { Book as BookType, Review } from '@/lib/api/books';
 import booksService from '@/lib/api/books';
@@ -329,14 +329,17 @@ export default function BookDetail() {
           <div className="lg:col-span-4 flex flex-col gap-6">
             <div className="relative group">
               <div className="absolute -inset-1 bg-black dark:bg-white translate-x-2 translate-y-2"></div>
-              <div className="relative aspect-[3/4] border-2 border-black dark:border-white bg-white dark:bg-zinc-800 overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]">
+              <motion.div
+                layoutId={`book-cover-${book.id}`}
+                className="relative aspect-[3/4] border-2 border-black dark:border-white bg-white dark:bg-zinc-800 overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)]"
+              >
                 <img
                   src={getCoverImageUrl(book.cover_image)}
                   alt={`${book.title} by ${book.author} - Book cover`}
                   className="w-full h-full object-cover"
-                  loading="lazy"
+                  loading="eager"
                 />
-              </div>
+              </motion.div>
             </div>
 
             <div className="flex flex-col gap-3">
@@ -435,19 +438,28 @@ export default function BookDetail() {
                 <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1">
                     <Star className="h-5 w-5 fill-black text-black dark:fill-white dark:text-white" />
-                    <span className="text-xl font-bold text-black dark:text-white font-mono">{(book.rating || 0).toFixed(1)}</span>
+                    <span className="text-xl font-bold text-black dark:text-white font-mono flex items-center">
+                      <AnimatedCounter
+                        value={reviews.length > 0
+                          ? reviews.reduce((acc, r) => acc + (r.rating || 0), 0) / reviews.length
+                          : (book.rating || 0)}
+                        decimalPlaces={1}
+                      />
+                    </span>
                   </div>
-                  <span className="text-sm text-gray-600 dark:text-gray-300 font-mono">
-                    ({book.reviews_count?.toLocaleString() || 0} reviews)
+                  <span className="text-sm text-gray-600 dark:text-gray-300 font-mono flex gap-1">
+                    (<AnimatedCounter value={reviews.length || book.reviews_count || 0} /> reviews)
                   </span>
                 </div>
 
                 <div className="w-px h-8 bg-black dark:bg-white hidden sm:block" />
 
-                <div className="flex items-center gap-2 text-sm text-black dark:text-white font-bold font-mono">
-                  <Book className="h-4 w-4" />
-                  <span>{book.pages || 'N/A'} Pages</span>
-                </div>
+                <Button variant="ghost" className="p-0 h-auto font-bold font-mono hover:bg-transparent text-black dark:text-white" onClick={() => { }}>
+                  <Book className="h-4 w-4 mr-2" />
+                  <span className="flex gap-1">
+                    <AnimatedCounter value={book.pages || 0} /> Pages
+                  </span>
+                </Button>
               </div>
             </div>
 
@@ -493,9 +505,16 @@ export default function BookDetail() {
                   {calculateRatingDistribution().map((dist) => (
                     <div key={dist.stars} className="flex items-center gap-3 font-mono">
                       <span className="text-sm font-bold w-3 text-black dark:text-white">{dist.stars}</span>
-                      <Progress value={dist.percentage} className="h-2 bg-gray-200 dark:bg-zinc-700 border border-black dark:border-white rounded-lg [&>div]:bg-black dark:[&>div]:bg-white" />
-                      <span className="text-xs text-gray-600 dark:text-gray-300 w-10 text-right">
-                        {dist.percentage}%
+                      <div className="h-2 flex-1 bg-gray-200 dark:bg-zinc-700 border border-black dark:border-white rounded-lg overflow-hidden relative">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${dist.percentage}%` }}
+                          transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
+                          className="absolute top-0 left-0 h-full bg-black dark:bg-white"
+                        />
+                      </div>
+                      <span className="text-xs text-gray-600 dark:text-gray-300 w-10 text-right flex justify-end gap-0.5">
+                        <AnimatedCounter value={dist.percentage} />%
                       </span>
                     </div>
                   ))}
