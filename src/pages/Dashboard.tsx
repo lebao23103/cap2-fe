@@ -31,7 +31,8 @@ import {
   Settings,
   Sparkles,
   Zap,
-  Play
+  Play,
+  Globe
 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
@@ -50,6 +51,7 @@ export default function Dashboard() {
   const [recommendations, setRecommendations] = useState<BookData[]>([])
   const [favorites, setFavorites] = useState<BookData[]>([])
   const [readingHistory, setReadingHistory] = useState<BookData[]>([])
+  const [userNotes, setUserNotes] = useState<any[]>([])
 
   // Dashboard Metrics
   const [stats, setStats] = useState({
@@ -98,12 +100,15 @@ export default function Dashboard() {
     try {
       setIsLoading(true)
 
-      const [booksData, favoritesData, historyData, notesStats] = await Promise.all([
+      const [booksData, favoritesData, historyData, notesStats, allUserNotes] = await Promise.all([
         booksService.getApprovedBooks().catch(() => []),
         userService.getFavorites().catch(() => []),
         userService.getReadingHistory().catch(() => []),
-        notesService.getUserNotesStatistics().catch(() => ({ total_notes: 0 }))
+        notesService.getUserNotesStatistics().catch(() => ({ total_notes: 0 })),
+        notesService.getAllUserNotes().catch(() => [])
       ])
+
+      setUserNotes(allUserNotes || [])
 
       const transformedRecommendations: BookData[] = booksData
         .filter((book: any) => book && book.id && book.title)
@@ -443,6 +448,7 @@ export default function Dashboard() {
                   <TabsList className="h-auto p-1 bg-card border-2 border-border shadow-neo-sm rounded-xl">
                     <TabsTrigger value="overview" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-primary data-[state=active]:text-black transition-all rounded-lg">Overview</TabsTrigger>
                     <TabsTrigger value="library" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black transition-all rounded-lg">My Library</TabsTrigger>
+                    <TabsTrigger value="notes" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-amber-400 data-[state=active]:text-black transition-all rounded-lg">My Notes</TabsTrigger>
                     <TabsTrigger value="discover" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-blue-400 data-[state=active]:text-black transition-all rounded-lg">Discover</TabsTrigger>
                   </TabsList>
 
@@ -519,6 +525,73 @@ export default function Dashboard() {
                     {readingHistory.length === 0 && (
                       <div className="col-span-full py-20 text-center border-2 border-dashed border-border rounded-xl">
                         <p className="font-bold uppercase text-muted-foreground">Your library is empty.</p>
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                {/* TAB: MY NOTES */}
+                <TabsContent value="notes">
+                  <div className="space-y-4">
+                    {userNotes.length > 0 ? (
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {userNotes.map((note: any) => {
+                          const colorStyles: Record<string, string> = {
+                            '#FFEB3B': 'border-l-amber-400 bg-amber-50 dark:bg-amber-900/20',
+                            '#2196F3': 'border-l-blue-400 bg-blue-50 dark:bg-blue-900/20',
+                            '#4CAF50': 'border-l-green-400 bg-green-50 dark:bg-green-900/20',
+                            '#E91E63': 'border-l-pink-400 bg-pink-50 dark:bg-pink-900/20',
+                          }
+                          const style = colorStyles[note.color] || colorStyles['#FFEB3B']
+
+                          return (
+                            <Card key={note.id} className={`border-2 border-border rounded-xl shadow-neo-sm overflow-hidden border-l-[6px] ${style}`}>
+                              <CardHeader className="py-3 px-4 border-b border-border/50 bg-muted/20 flex flex-row items-center justify-between">
+                                <div className="min-w-0">
+                                  <p className="font-bold text-sm truncate">{note.book_title || `Book #${note.book}`}</p>
+                                  <p className="text-[10px] text-muted-foreground uppercase">Page {note.page_number || 'N/A'}</p>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className={`h-7 w-7 rounded-full ${note.is_public ? 'text-blue-500 hover:text-blue-700' : 'text-gray-400 hover:text-gray-600'}`}
+                                  title={note.is_public ? 'Make Private' : 'Make Public'}
+                                  onClick={async (e) => {
+                                    e.stopPropagation()
+                                    try {
+                                      await notesService.updateNote(note.book, note.id, { is_public: !note.is_public })
+                                      setUserNotes(prev => prev.map(n => n.id === note.id ? { ...n, is_public: !n.is_public } : n))
+                                      toast({ title: note.is_public ? 'Note made private' : 'Note shared publicly' })
+                                    } catch {
+                                      toast({ title: 'Error', variant: 'destructive' })
+                                    }
+                                  }}
+                                >
+                                  {note.is_public ? <Globe className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
+                                </Button>
+                              </CardHeader>
+                              <CardContent className="p-4 space-y-2">
+                                {note.selected_text && (
+                                  <p className="text-xs italic text-muted-foreground line-clamp-2 border-l-2 border-foreground/20 pl-2">
+                                    "{note.selected_text}"
+                                  </p>
+                                )}
+                                <p className="text-sm font-mono">{note.note_content}</p>
+                              </CardContent>
+                              <div className="px-4 py-2 bg-muted/10 border-t border-border/50 flex justify-end">
+                                <Button size="sm" variant="ghost" className="text-xs font-bold uppercase h-7" onClick={() => navigate(`/book/${note.book}/read`, { state: { page: note.page_number || 1 } })}>
+                                  Jump to <ArrowRight className="h-3 w-3 ml-1" />
+                                </Button>
+                              </div>
+                            </Card>
+                          )
+                        })}
+                      </div>
+                    ) : (
+                      <div className="col-span-full py-20 text-center border-2 border-dashed border-border rounded-xl">
+                        <StickyNote className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
+                        <p className="font-bold uppercase text-muted-foreground">You haven't created any notes yet.</p>
+                        <p className="text-xs text-muted-foreground mt-1">Start reading and highlight text to create notes.</p>
                       </div>
                     )}
                   </div>

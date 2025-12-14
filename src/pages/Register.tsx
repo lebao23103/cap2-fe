@@ -97,12 +97,12 @@ export default function Register() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-background overflow-hidden font-mono">
+    <div className="relative min-h-screen flex items-start justify-center pt-12 lg:pt-16 bg-background overflow-hidden font-mono">
       {/* Background Grid */}
       <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-10" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
       <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
-      <div className="container relative z-10 flex flex-col lg:flex-row items-center justify-center gap-12 lg:gap-24 px-4">
+      <div className="container relative z-10 flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 px-4">
         {/* Left Side - Hero Content (Hidden on mobile) */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
@@ -155,7 +155,7 @@ export default function Register() {
           className="w-full max-w-lg"
         >
           <Card className="w-full border-2 border-border shadow-neo-lg bg-card rounded-xl">
-            <CardHeader className="text-center pb-2 pt-8">
+            <CardHeader className="text-center pb-2 pt-6">
               <div className="lg:hidden flex justify-center mb-6">
                 <div className="p-3 border-2 border-border bg-primary shadow-neo">
                   <BookOpen className="h-6 w-6 text-primary-foreground" />

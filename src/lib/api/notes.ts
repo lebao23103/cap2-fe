@@ -67,7 +67,7 @@ class NotesService {
 
   // Update a note
   async updateNote(bookId: number, noteId: number, noteData: UpdateNoteData): Promise<BookNote> {
-    const response = await apiClient.put(`/api/books/${bookId}/notes/${noteId}/update/`, noteData);
+    const response = await apiClient.patch(`/api/books/${bookId}/notes/${noteId}/update/`, noteData);
     return response.data;
   }
 
