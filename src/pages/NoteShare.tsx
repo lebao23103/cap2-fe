@@ -1,5 +1,5 @@
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -200,6 +200,44 @@ export default function NoteShare() {
       <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-0" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
       <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
 
+      {/* Ambient Motion Background */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-30">
+        <motion.div
+          animate={{
+            x: [0, 100, 0],
+            y: [0, 50, 0],
+            rotate: [0, 180, 360],
+          }}
+          transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+          className="absolute top-20 left-10 w-32 h-32 border-4 border-dashed border-gray-300 dark:border-gray-700 rounded-full opacity-20"
+        />
+        <motion.div
+          animate={{
+            x: [0, -50, 0],
+            y: [0, 100, 0],
+            rotate: [0, -90, 0],
+          }}
+          transition={{ duration: 35, repeat: Infinity, ease: "linear" }}
+          className="absolute top-1/2 right-20 w-24 h-24 border-4 border-primary/20 bg-primary/5 rotate-45"
+        />
+        <motion.div
+          animate={{
+            y: [0, -100, 0],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-20 left-1/3 w-16 h-16 bg-blue-400/10 rounded-full blur-md"
+        />
+        <motion.div
+          animate={{
+            rotate: [0, 360],
+            scale: [1, 0.8, 1],
+          }}
+          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
+          className="absolute -bottom-10 -right-10 w-96 h-96 border-2 border-dashed border-gray-200 dark:border-zinc-800 rounded-full opacity-10"
+        />
+      </div>
+
       <div className="container mx-auto py-8 relative z-10 px-4">
 
         {/* Header */}
@@ -324,6 +362,41 @@ export default function NoteShare() {
 function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any, onVote: (id: string, type: 'helpful' | 'awful') => void }) {
   const [copiedQuote, setCopiedQuote] = useState<boolean>(false)
 
+  // Spotlight State
+  const divRef = useRef<HTMLDivElement>(null)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const [opacity, setOpacity] = useState(0)
+
+  // Tilt State
+  const [rotation, setRotation] = useState({ x: 0, y: 0 })
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!divRef.current) return
+
+    const div = divRef.current
+    const rect = div.getBoundingClientRect()
+
+    // Spotlight calculation
+    setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top })
+    setOpacity(1)
+
+    // Tilt calculation (Max tilt 5 degrees)
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+    const centerX = rect.width / 2
+    const centerY = rect.height / 2
+
+    const rotateX = ((y - centerY) / centerY) * -5 // Invert Y
+    const rotateY = ((x - centerX) / centerX) * 5
+
+    setRotation({ x: rotateX, y: rotateY })
+  }
+
+  const handleMouseLeave = () => {
+    setOpacity(0)
+    setRotation({ x: 0, y: 0 })
+  }
+
   const copyQuoteToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
       setCopiedQuote(true)
@@ -332,95 +405,133 @@ function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any,
   }
 
   return (
-    <motion.div variants={fadeInUp} className="break-inside-avoid">
-      <div className="bg-card border-2 border-border rounded-xl p-0 shadow-neo hover:shadow-neo-hover transition-all duration-300 overflow-hidden flex flex-col h-full bg-white dark:bg-zinc-900 group">
+    <motion.div
+      variants={fadeInUp}
+      className="break-inside-avoid perspective-1000" // perspective for 3D
+      style={{ perspective: '1000px' }}
+    >
+      <motion.div
+        ref={divRef}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        animate={{
+          rotateX: rotation.x,
+          rotateY: rotation.y,
+        }}
+        transition={{ type: "spring", stiffness: 100, damping: 30, mass: 0.5 }}
+        className="relative bg-card border-2 border-border rounded-xl p-0 shadow-neo hover:shadow-neo-hover transition-shadow duration-300 overflow-hidden flex flex-col h-full bg-white dark:bg-zinc-900 group transform-gpu"
+      >
+        {/* Spotlight Overlay */}
+        <div
+          className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 rounded-xl z-10"
+          style={{
+            opacity,
+            background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(var(--primary-rgb), 0.15), transparent 40%)`,
+          }}
+        />
 
-        {/* Header: User Info */}
-        <div className="p-4 border-b-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between bg-gray-50 dark:bg-zinc-800/50">
-          <div className="flex items-center gap-3">
-            <img src={note.userAvatar} className="w-8 h-8 rounded-lg border-2 border-white shadow-sm" alt={note.userName} />
-            <div>
-              <p className="text-xs font-black uppercase text-foreground truncate max-w-[120px]">{note.userName}</p>
-              <p className="text-[10px] text-muted-foreground font-mono font-bold">{new Date(note.sharedDate).toLocaleDateString()}</p>
+        {/* Border Highlighting Spotlight */}
+        <div
+          className="pointer-events-none absolute -inset-[2px] opacity-0 transition-opacity duration-300 rounded-xl z-20"
+          style={{
+            opacity,
+            background: `radial-gradient(400px circle at ${position.x}px ${position.y}px, rgba(0,0,0, 0.4), transparent 40%)`,
+            maskImage: 'linear-gradient(black, black), linear-gradient(black, black)',
+            maskClip: 'content-box, padding-box',
+            maskComposite: 'exclude', // Show only border
+            WebkitMaskComposite: 'xor',
+          }}
+        />
+
+        {/* Content Container (z-index to stay above spotlight bg) */}
+        <div className="relative z-0">
+
+          {/* Header: User Info */}
+          <div className="p-4 border-b-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between bg-gray-50 dark:bg-zinc-800/50">
+            <div className="flex items-center gap-3">
+              <img src={note.userAvatar} className="w-8 h-8 rounded-lg border-2 border-white shadow-sm" alt={note.userName} />
+              <div>
+                <p className="text-xs font-black uppercase text-foreground truncate max-w-[120px]">{note.userName}</p>
+                <p className="text-[10px] text-muted-foreground font-mono font-bold">{new Date(note.sharedDate).toLocaleDateString()}</p>
+              </div>
             </div>
+            <Badge variant="secondary" className="text-[10px] font-black font-mono border border-border bg-white dark:bg-zinc-900 text-black dark:text-white px-2 py-0.5 rounded shadow-sm">
+              PG. {note.page}
+            </Badge>
           </div>
-          <Badge variant="secondary" className="text-[10px] font-black font-mono border border-border bg-white dark:bg-zinc-900 text-black dark:text-white px-2 py-0.5 rounded shadow-sm">
-            PG. {note.page}
-          </Badge>
-        </div>
 
-        {/* Body: Note Content */}
-        <div className="p-5 flex-1">
-          {/* Quote Block */}
-          <div className="relative bg-amber-50 dark:bg-amber-900/10 border-l-4 border-primary pl-4 pr-3 py-3 mb-4 rounded-r-lg">
-            <p className="font-serif text-sm italic text-foreground/90 leading-relaxed line-clamp-4">
-              "{note.noteText}"
+          {/* Body: Note Content */}
+          <div className="p-5 flex-1">
+            {/* Quote Block */}
+            <div className="relative bg-amber-50 dark:bg-amber-900/10 border-l-4 border-primary pl-4 pr-3 py-3 mb-4 rounded-r-lg group-hover:border-black dark:group-hover:border-white transition-colors">
+              <p className="font-serif text-sm italic text-foreground/90 leading-relaxed line-clamp-4">
+                "{note.noteText}"
+              </p>
+            </div>
+
+            {/* User Comment */}
+            <p className="text-sm font-bold text-foreground leading-relaxed mb-4">
+              {note.userNote}
             </p>
+
+            {/* Book Context (Mini) */}
+            <div className="flex items-center gap-3 mt-4 pt-4 border-t border-dashed border-gray-200 dark:border-zinc-700">
+              <img
+                src={note.bookCover}
+                alt={note.bookTitle}
+                className="w-10 h-14 object-cover border border-border rounded shadow-sm group-hover:scale-105 transition-transform"
+                onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/400x600?text=Cover' }}
+              />
+              <div className="flex-1 overflow-hidden">
+                <h4 className="text-xs font-black uppercase truncate text-muted-foreground hover:text-primary transition-colors cursor-pointer" onClick={() => navigate(`/book/${note.bookId}/read`)}>
+                  {note.bookTitle}
+                </h4>
+                <p className="text-[10px] text-muted-foreground truncate">by {note.bookAuthor}</p>
+              </div>
+            </div>
           </div>
 
-          {/* User Comment */}
-          <p className="text-sm font-bold text-foreground leading-relaxed mb-4">
-            {note.userNote}
-          </p>
+          {/* Footer: Actions */}
+          <div className="p-3 bg-gray-50 dark:bg-zinc-800/50 border-t-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-[10px] font-bold text-muted-foreground hover:text-green-600 hover:bg-green-50"
+                onClick={() => onVote(note.id, 'helpful')}
+              >
+                <ThumbsUp className="h-3 w-3 mr-1" /> {note.helpful_count || 0}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 px-2 text-[10px] font-bold text-muted-foreground hover:text-red-600 hover:bg-red-50"
+                onClick={() => onVote(note.id, 'awful')}
+              >
+                <AlertTriangle className="h-3 w-3 mr-1" />
+              </Button>
+            </div>
 
-
-          {/* Book Context (Mini) */}
-          <div className="flex items-center gap-3 mt-4 pt-4 border-t border-dashed border-gray-200 dark:border-zinc-700">
-            <img
-              src={note.bookCover}
-              alt={note.bookTitle}
-              className="w-10 h-14 object-cover border border-border rounded shadow-sm"
-              onError={(e) => { (e.target as HTMLImageElement).src = 'https://placehold.co/400x600?text=Cover' }}
-            />
-            <div className="flex-1 overflow-hidden">
-              <h4 className="text-xs font-black uppercase truncate text-muted-foreground hover:text-primary transition-colors cursor-pointer" onClick={() => navigate(`/book/${note.bookId}/read`)}>
-                {note.bookTitle}
-              </h4>
-              <p className="text-[10px] text-muted-foreground truncate">by {note.bookAuthor}</p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 rounded-full hover:bg-gray-200 dark:hover:bg-zinc-700"
+                onClick={() => copyQuoteToClipboard(note.noteText)}
+              >
+                {copiedQuote ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+              </Button>
+              <Button
+                size="sm"
+                className="h-7 px-3 text-[10px] font-bold bg-black text-white dark:bg-white dark:text-black border border-transparent shadow-sm hover:translate-y-[-1px] transition-transform"
+                onClick={() => navigate(`/book/${note.bookId}/read`, { state: { page: note.page, previewMode: true, previewNote: note } })}
+              >
+                <Eye className="h-3 w-3 mr-1" /> VIEW
+              </Button>
             </div>
           </div>
         </div>
-
-        {/* Footer: Actions */}
-        <div className="p-3 bg-gray-50 dark:bg-zinc-800/50 border-t-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-[10px] font-bold text-muted-foreground hover:text-green-600 hover:bg-green-50"
-              onClick={() => onVote(note.id, 'helpful')}
-            >
-              <ThumbsUp className="h-3 w-3 mr-1" /> {note.helpful_count || 0}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 px-2 text-[10px] font-bold text-muted-foreground hover:text-red-600 hover:bg-red-50"
-              onClick={() => onVote(note.id, 'awful')}
-            >
-              <AlertTriangle className="h-3 w-3 mr-1" />
-            </Button>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 rounded-full hover:bg-gray-200 dark:hover:bg-zinc-700"
-              onClick={() => copyQuoteToClipboard(note.noteText)}
-            >
-              {copiedQuote ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
-            </Button>
-            <Button
-              size="sm"
-              className="h-7 px-3 text-[10px] font-bold bg-black text-white dark:bg-white dark:text-black border border-transparent shadow-sm hover:translate-y-[-1px] transition-transform"
-              onClick={() => navigate(`/book/${note.bookId}/read`, { state: { page: note.page, previewMode: true, previewNote: note } })}
-            >
-              <Eye className="h-3 w-3 mr-1" /> VIEW
-            </Button>
-          </div>
-        </div>
-      </div>
+      </motion.div>
     </motion.div>
   )
 }
