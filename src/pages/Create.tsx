@@ -1,28 +1,26 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { fadeInUp } from '@/lib/animations'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Upload,
   FileText,
-  Image,
-  Save,
+  Image as ImageIcon,
   Eye,
   Check,
   AlertCircle,
-  ChevronRight,
-  Feather
+  Feather,
+
+  Trash2,
+  RefreshCw,
+
 } from 'lucide-react'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { ModernButton } from '@/components/ui/modern'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
 import { validateImageFile, validateBookFile, formatFileSize } from '@/lib/fileValidation'
-import booksService from '@/lib/api/books'
+import booksService from '@/lib/api/books' // Assuming this exists
 
 
 // Book creation interface
@@ -46,7 +44,6 @@ export default function Create() {
     tags: []
   })
 
-  const [activeTab, setActiveTab] = useState('info')
   const [isUploading, setIsUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
@@ -105,18 +102,17 @@ export default function Create() {
         description: "Please fix the errors before publishing.",
         variant: "destructive"
       })
-      setActiveTab('info')
+
       return
     }
 
-    // Check if PDF file is uploaded (required by backend)
     if (!bookData.bookFile) {
       toast({
         title: "Missing File",
         description: "Please upload a PDF file for your book.",
         variant: "destructive"
       })
-      setActiveTab('media')
+
       return
     }
 
@@ -124,7 +120,6 @@ export default function Create() {
     setUploadProgress(10)
 
     try {
-      // Create FormData for file upload
       const formData = new FormData()
       formData.append('title', bookData.title)
       formData.append('pdf_file', bookData.bookFile)
@@ -134,20 +129,17 @@ export default function Create() {
       }
 
       setUploadProgress(30)
-
       setUploadProgress(50)
 
-      // Send to backend using service (handles auth & refresh)
       await booksService.createUserBook(formData)
 
       setUploadProgress(100)
 
       toast({
-        title: "Success!",
-        description: "Your book has been submitted for admin approval.",
+        title: "Success! Book Published",
+        description: "Your book is now pending approval.",
       })
 
-      // Reset form after successful submission
       setBookData({
         title: '',
         author: '',
@@ -156,443 +148,325 @@ export default function Create() {
         bookFile: null,
         tags: []
       })
-      setActiveTab('info')
+
 
     } catch (error) {
       console.error('Publish error:', error)
       toast({
-        title: "Upload Failed",
-        description: error instanceof Error ? error.message : "There was an error publishing your book. Please try again.",
+        title: "Publishing Failed",
+        description: "There was an error submitting your book. Please try again.",
         variant: "destructive"
       })
     } finally {
       setIsUploading(false)
-      setUploadProgress(0)
+      setTimeout(() => setUploadProgress(0), 1000)
     }
   }
 
+
   return (
-    <div className="relative w-full min-h-screen bg-background py-12 font-mono">
-      {/* Background Grid */}
-      <div className="fixed inset-0 pointer-events-none z-0 opacity-20 dark:opacity-0" style={{ backgroundImage: 'linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-      <div className="fixed inset-0 pointer-events-none z-0 opacity-0 dark:opacity-20" style={{ backgroundImage: 'linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+    <div className="relative w-full h-[calc(100vh-64px)] bg-[#fafafa] dark:bg-zinc-950 overflow-hidden font-mono flex flex-col transition-colors duration-300">
+      {/* Global Grid Background */}
+      <div className="absolute inset-0 pointer-events-none z-0 opacity-40 dark:opacity-20"
+        style={{
+          backgroundImage: 'linear-gradient(to right, #ccc 1px, transparent 1px), linear-gradient(to bottom, #ccc 1px, transparent 1px)',
+          backgroundSize: '40px 40px'
+        }}
+      />
 
-      <div className="container mx-auto max-w-6xl relative z-10">
-
-        {/* Header */}
-        <motion.div {...fadeInUp} className="mb-12 text-center">
-          <Badge variant="outline" className="mb-6 px-4 py-2 bg-white dark:bg-zinc-900 text-black dark:text-white border-2 border-black dark:border-white rounded-md shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] text-sm font-bold uppercase">
-            <Feather className="mr-2 h-4 w-4" />
-            Create & Publish
-          </Badge>
-          <h1 className="font-display text-4xl md:text-5xl font-bold mb-4 tracking-tight uppercase text-foreground">
-            Share Your <span className="bg-primary text-black px-2 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">Story</span>
+      {/* Header Bar */}
+      <div className="relative z-10 w-full px-6 py-3 border-b-2 border-black dark:border-white bg-white dark:bg-zinc-900 flex items-center justify-between shadow-sm h-16 shrink-0 transition-colors duration-300">
+        <div className="flex items-center gap-4">
+          <div className="bg-[#B8FF29] dark:bg-[#B8FF29] border-2 border-black dark:border-white px-3 py-1 font-black text-sm uppercase shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] flex items-center gap-2 text-black">
+            <Feather className="h-4 w-4" /> Create
+          </div>
+          <h1 className="font-display text-2xl font-bold uppercase tracking-tighter text-black dark:text-white">
+            Publish Book
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed font-mono">
-            Transform your manuscript into a published book and share it with readers worldwide.
-          </p>
-        </motion.div>
+        </div>
 
-        {/* Main Content */}
+        {/* Top Actions */}
+        <div className="flex items-center gap-3">
+          {isUploading && (
+            <div className="flex items-center gap-3 mr-4">
+              <span className="text-xs font-bold uppercase animate-pulse border-2 border-black bg-yellow-300 px-2 py-0.5 text-black">Uploading {uploadProgress}%</span>
+              <Progress value={uploadProgress} className="w-32 h-3 border-2 border-black rounded-none bg-white" />
+            </div>
+          )}
+
+          <ModernButton
+            size="sm"
+            variant="primary"
+            icon={isUploading ? AlertCircle : Check}
+            onClick={handlePublish}
+            disabled={!bookData.title || !bookData.author || !bookData.bookFile || isUploading}
+            className="h-9 px-6 text-xs font-black uppercase border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] transition-all bg-[#B8FF29] hover:bg-[#a3e624] text-black"
+          >
+            {isUploading ? 'Publishing...' : 'Publish Now'}
+          </ModernButton>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 w-full max-w-[1920px] mx-auto p-6 overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-6 items-start h-full">
+
+        {/* LEFT PANEL: Editor */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.6 }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3 }}
+          className="lg:col-span-7 h-full flex flex-col gap-6 overflow-y-auto pr-2 pb-10"
         >
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-3 mb-8 h-auto p-0 bg-transparent gap-4">
-              <TabsTrigger
-                value="info"
-                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
-              >
+          {/* Metadata Card */}
+          <div className="bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] p-0">
+            <div className="border-b-2 border-black dark:border-white bg-gray-50 dark:bg-zinc-800 px-4 py-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="bg-black dark:bg-white text-white dark:text-black p-1">
+                  <FileText className="h-4 w-4" />
+                </div>
+                <span className="font-black text-sm uppercase text-black dark:text-white">Book Details</span>
+              </div>
+              <span className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-900/20 px-2 py-0.5 rounded-sm">* Required</span>
+            </div>
 
-                <FileText className="h-4 w-4" />
-                <span className="hidden sm:inline">Book Info</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="media"
-                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
-              >
-                <Upload className="h-4 w-4" />
-                <span className="hidden sm:inline">Upload Files</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="preview"
-                className="flex items-center gap-2 py-4 px-4 border-2 border-black dark:border-white bg-white dark:bg-zinc-900 data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all duration-300 font-bold uppercase text-black dark:text-gray-300"
-              >
-                <Eye className="h-4 w-4" />
-                <span className="hidden sm:inline">Preview</span>
-              </TabsTrigger>
-            </TabsList>
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase tracking-wider text-black dark:text-white">Book Title</Label>
+                <Input
+                  placeholder="ENTER TITLE..."
+                  value={bookData.title}
+                  onChange={(e) => {
+                    handleInputChange('title', e.target.value)
+                    setValidationErrors(prev => ({ ...prev, title: '' }))
+                  }}
+                  className={`h-12 border-2 border-black dark:border-white rounded-none text-lg font-bold placeholder:text-gray-300 dark:placeholder:text-zinc-600 bg-white dark:bg-zinc-900 text-black dark:text-white focus-visible:ring-0 focus-visible:ring-offset-0 focus:bg-yellow-50 dark:focus:bg-zinc-800 transition-colors ${validationErrors.title ? 'border-red-500 bg-red-50' : ''}`}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs font-bold uppercase tracking-wider text-black dark:text-white">Author Name</Label>
+                <Input
+                  placeholder="ENTER AUTHOR..."
+                  value={bookData.author}
+                  onChange={(e) => {
+                    handleInputChange('author', e.target.value)
+                    setValidationErrors(prev => ({ ...prev, author: '' }))
+                  }}
+                  className={`h-12 border-2 border-black dark:border-white rounded-none text-lg font-bold placeholder:text-gray-300 dark:placeholder:text-zinc-600 bg-white dark:bg-zinc-900 text-black dark:text-white focus-visible:ring-0 focus-visible:ring-offset-0 focus:bg-yellow-50 dark:focus:bg-zinc-800 transition-colors ${validationErrors.author ? 'border-red-500 bg-red-50' : ''}`}
+                />
+              </div>
+            </div>
+          </div>
 
-            <TabsContent value="info">
-              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-xl">
-                <CardHeader className="border-b-2 border-black dark:border-white pb-6">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 border-2 border-black dark:border-white bg-primary shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                      <FileText className="h-6 w-6 text-black" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-2xl font-bold uppercase font-display text-black dark:text-white">Book Information</CardTitle>
-                      <CardDescription className="mt-1.5 font-mono text-black dark:text-gray-300">
-                        Fill in the essential details about your book
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-8 space-y-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-6">
+          {/* ASSETS SPLIT */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 min-h-0">
 
-                    {/* Title */}
-                    <div className="space-y-2">
-                      <Label htmlFor="title" className="text-sm font-bold text-black dark:text-white flex items-center gap-2 uppercase">
-                        Book Title <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="title"
-                        type="text"
-                        placeholder="Enter your book title..."
-                        value={bookData.title}
-                        onChange={(e) => {
-                          handleInputChange('title', e.target.value)
-                          setValidationErrors(prev => ({ ...prev, title: '' }))
-                        }}
-                        className={`h-12 border-2 border-black dark:border-white rounded-lg focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] dark:bg-zinc-900 dark:text-white text-black transition-all ${validationErrors.title ? 'border-red-500' : ''}`}
-                      />
-                      <div className="min-h-[20px]">
-                        {validationErrors.title && (
-                          <p className="text-xs text-red-500 flex items-center gap-1 mt-1 font-bold">
-                            <AlertCircle className="h-3 w-3" />
-                            {validationErrors.title}
+            {/* Cover Upload Card */}
+            <div className="bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex flex-col h-full group">
+              <div className="border-b-2 border-black dark:border-white bg-gray-50 dark:bg-zinc-800 px-4 py-2 flex items-center justify-between">
+                <span className="font-black text-xs uppercase flex items-center gap-2 text-black dark:text-white">
+                  <ImageIcon className="h-3.5 w-3.5" /> Cover Image
+                </span>
+                {bookData.coverImage && <span className="text-[10px] font-bold bg-green-400 text-black border border-black px-1.5 shadow-sm">SELECTED</span>}
+              </div>
+
+              <div className="p-4 flex-1 flex flex-col">
+                <div
+                  className={`flex-1 relative border-2 ${bookData.coverImage ? 'border-solid border-black dark:border-white bg-zinc-50 dark:bg-zinc-800' : 'border-dashed border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:border-black dark:hover:border-white'} transition-all cursor-pointer min-h-[220px] flex flex-col items-center justify-center overflow-hidden`}
+                  onClick={() => document.getElementById('simple-cover-upload')?.click()}
+                >
+                  <input type="file" accept="image/*" className="hidden" id="simple-cover-upload" onChange={(e) => e.target.files?.[0] && handleFileUpload('coverImage', e.target.files[0])} />
+
+                  <AnimatePresence mode='wait'>
+                    {bookData.coverImage ? (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="relative w-full h-full p-4 flex flex-col items-center justify-center"
+                      >
+                        {/* Background blur effect */}
+                        <img src={URL.createObjectURL(bookData.coverImage)} className="absolute inset-0 w-full h-full object-cover opacity-20 blur-sm" alt="Bg" />
+
+                        {/* Main Image */}
+                        <img src={URL.createObjectURL(bookData.coverImage)} className="relative h-48 w-auto shadow-xl border-2 border-white dark:border-zinc-500 rotate-2 group-hover:rotate-0 transition-transform duration-300 z-10 rounded-sm object-cover" alt="Preview" />
+
+                        {/* File Info Overlay */}
+                        <div className="absolute top-2 left-2 bg-black/70 backdrop-blur text-white px-2 py-1 text-[10px] font-mono rounded-sm z-20">
+                          {formatFileSize(bookData.coverImage.size)}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="absolute top-2 right-2 flex gap-2 z-20">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); document.getElementById('simple-cover-upload')?.click() }}
+                            className="p-1.5 bg-white border border-black hover:bg-gray-100 shadow-sm transition-colors text-black"
+                            title="Replace"
+                          >
+                            <RefreshCw className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleFileUpload('coverImage', null) }}
+                            className="p-1.5 bg-red-500 border border-black hover:bg-red-600 shadow-sm transition-colors text-white"
+                            title="Remove"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center p-6"
+                      >
+                        <div className="border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-full p-4 inline-block mb-3 group-hover:border-black dark:group-hover:border-white transition-colors">
+                          <ImageIcon className="h-8 w-8 text-gray-400 dark:text-zinc-500 group-hover:text-black dark:group-hover:text-white transition-colors" />
+                        </div>
+                        <p className="text-xs font-bold uppercase text-gray-500 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">Click to Upload Cover</p>
+                        <p className="text-[10px] text-gray-400 dark:text-zinc-600 mt-1">PNG, JPG, WEBP</p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </div>
+            </div>
+
+            {/* File Upload Card */}
+            <div className="bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] flex flex-col h-full group">
+              <div className="border-b-2 border-black dark:border-white bg-gray-50 dark:bg-zinc-800 px-4 py-2 flex items-center justify-between">
+                <span className="font-black text-xs uppercase flex items-center gap-2 text-black dark:text-white">
+                  <FileText className="h-3.5 w-3.5" /> Book File <span className="text-red-500">*</span>
+                </span>
+                {bookData.bookFile && <span className="text-[10px] font-bold bg-blue-400 text-black border border-black px-1.5 shadow-sm">READY</span>}
+              </div>
+
+              <div className="p-4 flex-1 flex flex-col">
+                <div
+                  className={`flex-1 relative border-2 ${bookData.bookFile ? 'border-solid border-black dark:border-white bg-blue-50/50 dark:bg-blue-900/10' : 'border-dashed border-gray-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:border-black dark:hover:border-white'} transition-all cursor-pointer min-h-[220px] flex flex-col items-center justify-center overflow-hidden`}
+                  onClick={() => document.getElementById('simple-book-upload')?.click()}
+                >
+                  <input type="file" accept=".pdf,.epub,.docx,.txt" className="hidden" id="simple-book-upload" onChange={(e) => e.target.files?.[0] && handleFileUpload('bookFile', e.target.files[0])} />
+
+                  <AnimatePresence mode='wait'>
+                    {bookData.bookFile ? (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="relative w-full h-full flex flex-col items-center justify-center p-6"
+                      >
+                        <FileText className="h-16 w-16 text-black dark:text-white mb-4 drop-shadow-md" strokeWidth={1.5} />
+
+                        <div className="text-center w-full">
+                          <p className="text-sm font-black uppercase truncate max-w-[200px] mx-auto bg-white dark:bg-black border border-black dark:border-white px-2 py-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] text-black dark:text-white">
+                            {bookData.bookFile.name}
                           </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Author */}
-                    <div className="space-y-2">
-                      <Label htmlFor="author" className="text-sm font-bold text-black dark:text-white flex items-center gap-2 uppercase">
-                        Author <span className="text-red-500">*</span>
-                      </Label>
-                      <Input
-                        id="author"
-                        type="text"
-                        placeholder="Your name or pen name..."
-                        value={bookData.author}
-                        onChange={(e) => {
-                          handleInputChange('author', e.target.value)
-                          setValidationErrors(prev => ({ ...prev, author: '' }))
-                        }}
-                        className={`h-12 border-2 border-black dark:border-white rounded-lg focus:ring-0 focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] dark:bg-zinc-900 dark:text-white text-black transition-all ${validationErrors.author ? 'border-red-500' : ''}`}
-                      />
-                      <div className="min-h-[20px]">
-                        {validationErrors.author && (
-                          <p className="text-xs text-red-500 flex items-center gap-1 mt-1 font-bold">
-                            <AlertCircle className="h-3 w-3" />
-                            {validationErrors.author}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-
-
-            {/* Media Upload Tab */}
-            <TabsContent value="media">
-              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-xl">
-                <CardHeader className="border-b-2 border-black dark:border-white pb-6">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 border-2 border-black dark:border-white bg-purple-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                      <Upload className="h-6 w-6 text-black" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-2xl font-bold uppercase font-display text-black dark:text-white">Upload Files</CardTitle>
-                      <CardDescription className="mt-1.5 font-mono text-black dark:text-gray-300">
-                        Add your cover image and book file for readers
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-6 p-8">
-
-                  {/* Cover Image Upload */}
-                  <div className="space-y-4">
-                    <Label className="text-sm font-bold flex items-center gap-2 uppercase text-black dark:text-white">
-                      <Image className="h-4 w-4 text-black dark:text-white" />
-                      Book Cover Image
-                    </Label>
-                    <div className="group relative border-2 border-dashed border-black dark:border-white hover:bg-gray-50 dark:hover:bg-zinc-700 p-12 text-center transition-all duration-300 rounded-xl">
-                      {bookData.coverImage ? (
-                        <div className="space-y-4">
-                          <div className="relative inline-block">
-                            <div className="relative p-4 bg-green-100 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                              <Image className="h-12 w-12 mx-auto text-black" />
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-black dark:text-white mb-1 uppercase">
-                              {bookData.coverImage.name}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-mono">
-                              {formatFileSize(bookData.coverImage.size)}
-                            </p>
-                            <ModernButton
-                              variant="danger"
-                              size="sm"
-                              onClick={() => handleFileUpload('coverImage', null)}
-                              className="h-8 text-xs"
-                            >
-                              Remove Image
-                            </ModernButton>
-                          </div>
+                          <span className="inline-block mt-2 text-[10px] font-mono font-bold text-gray-500 dark:text-zinc-400 uppercase tracking-widest">
+                            {formatFileSize(bookData.bookFile.size)}
+                          </span>
                         </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <div className="relative inline-block">
-                            <div className="relative p-4 bg-white dark:bg-zinc-800 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] transition-transform">
-                              <Image className="h-12 w-12 mx-auto text-black dark:text-white" />
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-base font-bold text-black dark:text-white mb-1 uppercase">Upload book cover</p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 font-mono">
-                              PNG or JPG • Maximum 10MB
-                            </p>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              onChange={(e) => e.target.files?.[0] && handleFileUpload('coverImage', e.target.files[0])}
-                              className="hidden"
-                              id="cover-upload"
-                            />
-                            <ModernButton
-                              icon={Upload}
-                              variant="secondary"
-                              onClick={() => document.getElementById('cover-upload')?.click()}
-                            >
-                              Choose File
-                            </ModernButton>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
 
-                  {/* Book File Upload */}
-                  <div className="space-y-4">
-                    <Label className="text-sm font-bold flex items-center gap-2 uppercase text-black dark:text-white">
-                      <FileText className="h-4 w-4 text-black dark:text-white" />
-                      Book File (Optional)
-                    </Label>
-                    <div className="group relative border-2 border-dashed border-black dark:border-white hover:bg-gray-50 dark:hover:bg-zinc-700 p-12 text-center transition-all duration-300 rounded-xl">
-                      {bookData.bookFile ? (
-                        <div className="space-y-4">
-                          <div className="relative inline-block">
-                            <div className="relative p-4 bg-green-100 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                              <FileText className="h-12 w-12 mx-auto text-black" />
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-black dark:text-white mb-1 uppercase">
-                              {bookData.bookFile.name}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 font-mono">
-                              {formatFileSize(bookData.bookFile.size)}
-                            </p>
-                            <ModernButton
-                              variant="danger"
-                              size="sm"
-                              onClick={() => handleFileUpload('bookFile', null)}
-                              className="h-8 text-xs"
-                            >
-                              Remove File
-                            </ModernButton>
-                          </div>
+                        {/* Action Buttons */}
+                        <div className="absolute top-2 right-2 flex gap-2">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); document.getElementById('simple-book-upload')?.click() }}
+                            className="p-1.5 bg-white border border-black hover:bg-gray-100 shadow-sm transition-colors text-black"
+                            title="Replace"
+                          >
+                            <RefreshCw className="h-3.5 w-3.5" />
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleFileUpload('bookFile', null) }}
+                            className="p-1.5 bg-red-500 border border-black hover:bg-red-600 shadow-sm transition-colors text-white"
+                            title="Remove"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
                         </div>
-                      ) : (
-                        <div className="space-y-4">
-                          <div className="relative inline-block">
-                            <div className="relative p-4 bg-white dark:bg-zinc-800 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] group-hover:translate-x-[-2px] group-hover:translate-y-[-2px] transition-transform">
-                              <FileText className="h-12 w-12 mx-auto text-black dark:text-white" />
-                            </div>
-                          </div>
-                          <div>
-                            <p className="text-base font-bold text-black dark:text-white mb-1 uppercase">Upload book file</p>
-                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 font-mono">
-                              PDF, EPUB, DOCX, or TXT • Maximum 50MB
-                            </p>
-                            <input
-                              type="file"
-                              accept=".pdf,.epub,.docx,.txt"
-                              onChange={(e) => e.target.files?.[0] && handleFileUpload('bookFile', e.target.files[0])}
-                              className="hidden"
-                              id="book-upload"
-                            />
-                            <ModernButton
-                              icon={Upload}
-                              variant="secondary"
-                              onClick={() => document.getElementById('book-upload')?.click()}
-                            >
-                              Choose File
-                            </ModernButton>
-                          </div>
+                      </motion.div>
+                    ) : (
+                      <div className="text-center p-6">
+                        <div className="border-2 border-dashed border-gray-300 dark:border-zinc-700 rounded-full p-4 inline-block mb-3 group-hover:border-black dark:group-hover:border-white transition-colors">
+                          <Upload className="h-8 w-8 text-gray-400 dark:text-zinc-500 group-hover:text-black dark:group-hover:text-white transition-colors" />
                         </div>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Preview Tab */}
-            <TabsContent value="preview">
-              <Card className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-xl">
-                <CardHeader className="border-b-2 border-black dark:border-white pb-6">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 border-2 border-black dark:border-white bg-amber-400 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                      <Eye className="h-6 w-6 text-black" />
-                    </div>
-                    <div>
-                      <CardTitle className="text-2xl font-bold uppercase font-display text-black dark:text-white">Book Preview</CardTitle>
-                      <CardDescription className="mt-1.5 font-mono text-black dark:text-gray-300">
-                        See how your book will appear to readers
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-8">
-                  <div className="max-w-4xl mx-auto">
-                    {/* Book Card Preview */}
-                    {/* Book Card Preview */}
-                    <div className="border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-800 rounded-xl overflow-hidden">
-                      <div className="flex flex-col sm:flex-row p-8 gap-6">
-                        <div className="flex-shrink-0 w-full sm:w-40 h-56 sm:h-52 bg-gray-100 dark:bg-zinc-700 border-2 border-black dark:border-white flex items-center justify-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                          {bookData.coverImage ? (
-                            <img
-                              src={URL.createObjectURL(bookData.coverImage)}
-                              alt="Book cover"
-                              className="w-full h-full object-cover"
-                            />
-                          ) : (
-                            <Image className="h-16 w-16 text-gray-400" />
-                          )}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="text-xl font-bold text-black dark:text-white mb-2 uppercase font-display">
-                            {bookData.title || 'Book Title'}
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-300 mb-2 font-mono uppercase text-sm">
-                            by {bookData.author || 'Author Name'}
-                          </p>
-                          <div className="flex gap-2 mb-3">
-                            <Badge className="bg-green-400 text-black border-2 border-black rounded-md font-bold uppercase">
-                              ✍️ User Created
-                            </Badge>
-                          </div>
-                          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 font-mono leading-relaxed">
-                            No description available.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Content Preview */}
-                    {bookData.bookFile && (
-                      <div className="mt-6 p-6 bg-white dark:bg-zinc-800 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
-                        <h4 className="font-bold mb-3 uppercase text-sm text-black dark:text-white">Uploaded Book File:</h4>
-                        <div className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-300 font-mono">
-                          <FileText className="h-5 w-5" />
-                          <span>{bookData.bookFile.name}</span>
-                          <Badge variant="outline" className="text-xs border-black dark:border-white rounded-md bg-gray-100 dark:bg-zinc-700 dark:text-white">
-                            {(bookData.bookFile.size / (1024 * 1024)).toFixed(2)} MB
-                          </Badge>
-                        </div>
+                        <p className="text-xs font-bold uppercase text-gray-500 dark:text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors">Click to Upload PDF</p>
+                        <p className="text-[10px] text-gray-400 dark:text-zinc-600 mt-1">PDF, EPUB, DOCX</p>
                       </div>
                     )}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-
-          {/* Action Buttons */}
-          <div className="mt-8 flex flex-col items-center gap-4">
-            {activeTab === 'info' ? (
-              <div className="flex flex-col items-center gap-3">
-                <ModernButton
-                  size="lg"
-                  icon={ChevronRight}
-                  iconPosition="right"
-                  variant="primary"
-                  onClick={() => {
-                    if (validateForm()) {
-                      setActiveTab('media')
-                    } else {
-                      toast({
-                        title: "Validation Error",
-                        description: "Please complete all required fields correctly.",
-                        variant: "destructive"
-                      })
-                    }
-                  }}
-                  className="px-8"
-                >
-                  Continue to Upload Files
-                </ModernButton>
-                {(!bookData.title || !bookData.author) && (
-                  <p className="text-xs text-red-500 flex items-center gap-1.5 font-bold uppercase">
-                    <AlertCircle className="h-3.5 w-3.5" />
-                    Complete all required (*) fields to continue
-                  </p>
-                )}
+                  </AnimatePresence>
+                </div>
               </div>
-            ) : activeTab === 'media' ? (
-              <ModernButton
-                size="lg"
-                icon={ChevronRight}
-                iconPosition="right"
-                variant="primary"
-                onClick={() => setActiveTab('preview')}
-              >
-                Continue to Preview
-              </ModernButton>
-            ) : (
-              <div className="flex flex-col gap-4 w-full max-w-md">
-                {isUploading && (
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm text-black font-bold font-mono">
-                      <span>Uploading...</span>
-                      <span>{uploadProgress}%</span>
-                    </div>
-                    <Progress value={uploadProgress} className="w-full h-4 border-2 border-black rounded-full bg-white [&>div]:bg-primary" />
-                  </div>
-                )}
-                <ModernButton
-                  variant="secondary"
-                  size="lg"
-                  icon={Save}
-                  disabled={isUploading}
-                >
-                  Save Draft
-                </ModernButton>
-                <ModernButton
-                  size="lg"
-                  variant="primary"
-                  icon={isUploading ? AlertCircle : Check}
-                  onClick={handlePublish}
-                  disabled={!bookData.title || !bookData.author || isUploading}
-                >
-                  {isUploading ? 'Publishing...' : 'Publish Book'}
-                </ModernButton>
-              </div>
-            )}
+            </div>
           </div>
         </motion.div>
+
+
+        {/* RIGHT PANEL: Live Preview */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="lg:col-span-5 h-full hidden lg:flex flex-col pb-10"
+        >
+          <div className="bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] h-full flex flex-col overflow-hidden">
+            <div className="border-b-2 border-black dark:border-white p-3 bg-yellow-300 dark:bg-yellow-500 flex items-center justify-between">
+              <h2 className="font-black text-sm uppercase flex items-center gap-2 text-black">
+                <Eye className="h-4 w-4" /> Live Preview
+              </h2>
+              <div className="flex gap-1.5">
+                <div className="w-2.5 h-2.5 rounded-full border border-black bg-white" />
+                <div className="w-2.5 h-2.5 rounded-full border border-black bg-white" />
+              </div>
+            </div>
+
+            <div className="flex-1 bg-white dark:bg-zinc-900 relative p-8 flex items-center justify-center overflow-hidden">
+              {/* Decorative Background for Preview */}
+              <div className="absolute inset-0 opacity-10 dark:opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #000 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+              <div className="absolute inset-0 opacity-0 dark:opacity-10 pointer-events-none" style={{ backgroundImage: 'radial-gradient(circle, #fff 1px, transparent 1px)', backgroundSize: '24px 24px' }} />
+
+              {/* The Book Card Container */}
+              <div className="w-[300px] bg-white dark:bg-zinc-950 border-2 border-black dark:border-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] transition-transform duration-300 hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[12px_12px_0px_0px_rgba(255,255,255,1)]">
+                {/* Book Cover Area */}
+                <div className="aspect-[2/3] w-full border-b-2 border-black dark:border-white relative bg-gray-100 dark:bg-zinc-800 flex items-center justify-center overflow-hidden group">
+                  {bookData.coverImage ? (
+                    <img src={URL.createObjectURL(bookData.coverImage)} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Cover" />
+                  ) : (
+                    <div className="text-center opacity-30 p-4">
+                      <div className="border-2 border-black dark:border-white p-4 rounded-full inline-block mb-3">
+                        <ImageIcon className="h-10 w-10 text-black dark:text-white" />
+                      </div>
+                      <p className="font-bold uppercase text-sm text-black dark:text-white">Cover Preview</p>
+                    </div>
+                  )}
+
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                    <span className="text-white font-bold uppercase tracking-widest border-2 border-white px-4 py-2">Read Book</span>
+                  </div>
+                </div>
+
+                {/* Book Info Area */}
+                <div className="p-5 bg-white dark:bg-zinc-950">
+                  <h3 className="font-black text-2xl uppercase leading-none mb-2 line-clamp-2 text-black dark:text-white">
+                    {bookData.title || "UNTITLED"}
+                  </h3>
+                  <p className="font-mono text-xs font-bold text-gray-500 dark:text-zinc-500 uppercase tracking-wider">
+                    BY {bookData.author || "UNKNOWN AUTHOR"}
+                  </p>
+
+                  <div className="mt-5 pt-4 border-t-2 border-black/10 dark:border-white/10 flex items-center justify-between">
+                    <span className="text-[10px] font-black uppercase bg-black dark:bg-white text-white dark:text-black px-2 py-1">Free Read</span>
+                    {bookData.bookFile && <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-t-2 border-black dark:border-white p-2 bg-gray-50 dark:bg-zinc-800 text-center">
+              <p className="text-[10px] font-mono font-bold text-gray-400 dark:text-zinc-500 uppercase">PREVIEW MODE • 100% SCALE</p>
+            </div>
+          </div>
+        </motion.div>
+
       </div>
     </div>
   )
