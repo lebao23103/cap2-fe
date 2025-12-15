@@ -159,6 +159,13 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     loadDashboardData()
+
+    // Real-time polling every 10 seconds
+    const interval = setInterval(() => {
+      loadDashboardData(true)
+    }, 10000)
+
+    return () => clearInterval(interval)
   }, [])
 
   // Fetch flagged notes when tab is active
@@ -169,9 +176,9 @@ export default function AdminDashboard() {
   }, [activeTab])
 
 
-  const loadDashboardData = async () => {
+  const loadDashboardData = async (silent = false) => {
     try {
-      setIsLoading(true)
+      if (!silent) setIsLoading(true)
 
       const [statsData, usersData, booksData, pendingData, dailyData, activityData] = await Promise.all([
         adminService.getReportStatistics().catch(() => null),
@@ -186,18 +193,19 @@ export default function AdminDashboard() {
       setUsers(usersData)
       setBooks(booksData)
       setPendingBooks(pendingData)
-      setPendingBooks(pendingData)
       setDailyStats(dailyData)
       setSystemLogs(activityData) // NEW
     } catch (error) {
       console.error('Error loading admin data:', error)
-      toast({
-        title: 'Error',
-        description: 'Failed to load admin dashboard data',
-        variant: 'destructive'
-      })
+      if (!silent) {
+        toast({
+          title: 'Error',
+          description: 'Failed to load admin dashboard data',
+          variant: 'destructive'
+        })
+      }
     } finally {
-      setIsLoading(false)
+      if (!silent) setIsLoading(false)
     }
   }
 
@@ -543,7 +551,7 @@ export default function AdminDashboard() {
               </div>
             </div>
             <Button
-              onClick={loadDashboardData}
+              onClick={() => loadDashboardData()}
               className="bg-white dark:bg-zinc-800 text-black dark:text-white border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:bg-primary hover:text-black dark:hover:bg-primary dark:hover:text-black transition-all font-bold uppercase"
             >
               <RefreshCw className="h-4 w-4 mr-2" />
@@ -633,6 +641,11 @@ export default function AdminDashboard() {
                                 <td className="p-3 text-xs font-mono">{new Date(book.created_at).toLocaleDateString()}</td>
                                 <td className="p-3 text-right">
                                   <div className="flex justify-end gap-1">
+                                    {book.pdf_file && (
+                                      <Button size="icon" variant="ghost" className="h-6 w-6 text-blue-600 hover:text-blue-700 hover:bg-blue-100" onClick={() => window.open(book.pdf_file || '', '_blank')}>
+                                        <Eye className="h-4 w-4" />
+                                      </Button>
+                                    )}
                                     <Button size="icon" variant="ghost" className="h-6 w-6 text-green-600 hover:text-green-700 hover:bg-green-100" onClick={() => handleApproveBook(book.id)}>
                                       <CheckCircle className="h-4 w-4" />
                                     </Button>
@@ -1198,6 +1211,16 @@ export default function AdminDashboard() {
                           </div>
 
                           <div className="flex sm:flex-col gap-2 w-full sm:w-auto shrink-0 mt-4 sm:mt-0">
+                            {book.pdf_file && (
+                              <Button
+                                variant="outline"
+                                onClick={() => window.open(book.pdf_file || '', '_blank')}
+                                className="flex-1 sm:flex-none border-4 border-black dark:border-white bg-white dark:bg-zinc-800 text-black dark:text-white rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:translate-y-[-1px] font-bold uppercase transition-all text-xs sm:text-sm"
+                              >
+                                <Eye className="h-4 w-4 mr-2" />
+                                View File
+                              </Button>
+                            )}
                             <Button
                               onClick={() => handleApproveBook(book.id)}
                               disabled={actionLoading === `approveBook-${book.id}`}
