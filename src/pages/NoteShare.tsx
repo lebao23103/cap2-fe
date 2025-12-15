@@ -404,6 +404,14 @@ function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any,
     })
   }
 
+  // Vibrant Neo-Brutalist Colors
+  const glowColors = ['#CCFF00', '#00FFFF', '#FF00FF', '#FFDD00']
+  // Deterministic color based on note ID to keep it consistent
+  const glowColor = useMemo(() => {
+    const total = note.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)
+    return glowColors[total % glowColors.length]
+  }, [note.id])
+
   return (
     <motion.div
       variants={fadeInUp}
@@ -419,35 +427,28 @@ function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any,
           rotateY: rotation.y,
         }}
         transition={{ type: "spring", stiffness: 100, damping: 30, mass: 0.5 }}
-        className="relative bg-card border-2 border-border rounded-xl p-0 shadow-neo hover:shadow-neo-hover transition-shadow duration-300 overflow-hidden flex flex-col h-full bg-white dark:bg-zinc-900 group transform-gpu"
+        className="relative rounded-xl p-0 transition-shadow duration-300 h-full group transform-gpu"
+        style={{
+          '--spotlight-color': glowColor,
+        } as React.CSSProperties}
       >
-        {/* Spotlight Overlay */}
+        {/* OUTER GLOW BACKLIGHT - The "Sáng quanh viền" effect */}
         <div
-          className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 rounded-xl z-10"
+          className="absolute -inset-2 opacity-0 transition-opacity duration-300 rounded-xl z-0"
           style={{
             opacity,
-            background: `radial-gradient(600px circle at ${position.x}px ${position.y}px, rgba(var(--primary-rgb), 0.15), transparent 40%)`,
+            // A blurred, larger radial gradient that sits BEHIND the card
+            background: `radial-gradient(300px circle at ${position.x}px ${position.y}px, var(--spotlight-color), transparent 60%)`,
+            // Blur it to make it look like light spilling out
+            filter: 'blur(15px)',
           }}
         />
 
-        {/* Border Highlighting Spotlight */}
-        <div
-          className="pointer-events-none absolute -inset-[2px] opacity-0 transition-opacity duration-300 rounded-xl z-20"
-          style={{
-            opacity,
-            background: `radial-gradient(400px circle at ${position.x}px ${position.y}px, rgba(0,0,0, 0.4), transparent 40%)`,
-            maskImage: 'linear-gradient(black, black), linear-gradient(black, black)',
-            maskClip: 'content-box, padding-box',
-            maskComposite: 'exclude', // Show only border
-            WebkitMaskComposite: 'xor',
-          }}
-        />
-
-        {/* Content Container (z-index to stay above spotlight bg) */}
-        <div className="relative z-0">
+        {/* MAIN CARD CONTENT - Solid, sits on top */}
+        <div className="relative z-10 bg-card border-2 border-border dark:border-zinc-800 rounded-xl shadow-neo hover:shadow-neo-hover overflow-hidden flex flex-col h-full bg-white dark:bg-zinc-950 transition-all">
 
           {/* Header: User Info */}
-          <div className="p-4 border-b-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between bg-gray-50 dark:bg-zinc-800/50">
+          <div className="p-4 border-b-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between bg-gray-50 dark:bg-zinc-900">
             <div className="flex items-center gap-3">
               <img src={note.userAvatar} className="w-8 h-8 rounded-lg border-2 border-white shadow-sm" alt={note.userName} />
               <div>
@@ -463,7 +464,7 @@ function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any,
           {/* Body: Note Content */}
           <div className="p-5 flex-1">
             {/* Quote Block */}
-            <div className="relative bg-amber-50 dark:bg-amber-900/10 border-l-4 border-primary pl-4 pr-3 py-3 mb-4 rounded-r-lg group-hover:border-black dark:group-hover:border-white transition-colors">
+            <div className="relative bg-amber-50 dark:bg-amber-900/20 border-l-4 border-primary pl-4 pr-3 py-3 mb-4 rounded-r-lg group-hover:border-black dark:group-hover:border-amber-400 transition-colors">
               <p className="font-serif text-sm italic text-foreground/90 leading-relaxed line-clamp-4">
                 "{note.noteText}"
               </p>
@@ -492,7 +493,7 @@ function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any,
           </div>
 
           {/* Footer: Actions */}
-          <div className="p-3 bg-gray-50 dark:bg-zinc-800/50 border-t-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between gap-2">
+          <div className="p-3 bg-gray-50 dark:bg-zinc-900 border-t-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between gap-2">
             <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
