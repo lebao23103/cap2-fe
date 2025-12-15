@@ -21,10 +21,11 @@ export interface Review {
   id: number;
   user: {
     id: number;
+    username: string;
     first_name: string;
     last_name: string;
     email: string;
-  };
+  } | string;
   book: number;
   rating: number;
   comment: string;

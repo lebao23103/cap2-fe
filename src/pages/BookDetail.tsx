@@ -586,14 +586,21 @@ export default function BookDetail() {
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
                           <Avatar className="h-10 w-10 border-2 border-black dark:border-white rounded-lg">
-                            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${review.user?.email || 'anonymous'}`} />
-                            <AvatarFallback className="rounded-lg bg-primary text-black font-bold">{review.user?.first_name?.[0] || 'U'}</AvatarFallback>
+                            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${typeof review.user === 'string' ? review.user : (review.user?.email || 'anonymous')}`} />
+                            <AvatarFallback className="rounded-lg bg-primary text-black font-bold">
+                              {typeof review.user === 'string' ? review.user[0].toUpperCase() : (review.user?.first_name?.[0] || 'U')}
+                            </AvatarFallback>
                           </Avatar>
                           <div className="flex-1">
                             <div className="flex justify-between items-start mb-2">
                               <div>
                                 <h4 className="font-bold text-black dark:text-white uppercase">
-                                  {review.user?.first_name || 'Unknown'} {review.user?.last_name || 'User'}
+                                  {typeof review.user === 'string'
+                                    ? review.user
+                                    : (review.user?.first_name || review.user?.last_name)
+                                      ? `${review.user?.first_name || ''} ${review.user?.last_name || ''}`.trim()
+                                      : (review.user?.username || 'Unknown User')
+                                  }
                                 </h4>
                                 <p className="text-xs text-gray-600 dark:text-gray-400 font-mono">
                                   {new Date(review.created_at).toLocaleDateString(undefined, {
@@ -608,7 +615,6 @@ export default function BookDetail() {
                             <p className="text-gray-800 dark:text-gray-300 leading-relaxed mb-4 font-mono">
                               {review.comment}
                             </p>
-
                           </div>
                         </div>
                       </CardContent>
