@@ -78,7 +78,67 @@ export default function NoteHighlightOverlay({
             if (!note.text) continue
 
             try {
+
                 const textSpans = Array.from(textLayer.querySelectorAll('span'))
+
+                // HIGHLIGHT V2: Use precise positions if available
+                if (typeof note.position_start === 'number' &&
+                    typeof note.position_end === 'number' &&
+                    note.position_end > note.position_start) {
+
+                    let currentPos = 0
+                    const referenceRect = containerRef?.current?.getBoundingClientRect() || textLayer.getBoundingClientRect()
+
+                    for (let i = 0; i < textSpans.length; i++) {
+                        const span = textSpans[i]
+                        const text = span.textContent || ''
+                        const spanStart = currentPos
+                        const spanEnd = currentPos + text.length
+
+                        // Check if span overlaps with note range
+                        if (spanEnd > note.position_start && spanStart < note.position_end) {
+                            // Calculate local offsets for this span
+                            const startOffset = Math.max(0, note.position_start - spanStart)
+                            const endOffset = Math.min(text.length, note.position_end - spanStart)
+
+                            if (startOffset < endOffset) {
+                                try {
+                                    const range = document.createRange()
+                                    const textNode = span.firstChild
+
+                                    if (textNode) {
+                                        range.setStart(textNode, startOffset)
+                                        range.setEnd(textNode, endOffset)
+                                        const clientRects = range.getClientRects()
+
+                                        for (let j = 0; j < clientRects.length; j++) {
+                                            const r = clientRects[j]
+                                            rects.push({
+                                                x: r.left - referenceRect.left,
+                                                y: r.top - referenceRect.top,
+                                                width: r.width,
+                                                height: r.height,
+                                                noteId: note.id,
+                                                color: HIGHLIGHT_COLORS[note.color || 'yellow'],
+                                            })
+                                        }
+                                    } else {
+                                        // Fallback for empty spans or spans without text node?
+                                        // Usually shouldn't happen if text.length > 0
+                                    }
+                                } catch (e) {
+                                    console.warn("Error highlighting span", e)
+                                }
+                            }
+                        }
+
+                        currentPos += text.length
+                        if (currentPos >= note.position_end) break
+                    }
+                    continue // Skip legacy logic
+                }
+
+                // LEGACY LOGIC: Clean text matching
                 const visibleSpans: { span: HTMLElement, text: string }[] = []
                 const cleanIndexMap: { spanIndex: number, offset: number }[] = []
                 let fullCleanText = ''

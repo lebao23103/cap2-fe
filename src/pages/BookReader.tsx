@@ -84,6 +84,8 @@ interface BookNote {
   timestamp: string
   color?: 'yellow' | 'blue' | 'green' | 'pink'
   isPublic?: boolean
+  position_start?: number
+  position_end?: number
 }
 
 interface BookData {
@@ -145,6 +147,7 @@ export default function BookReader() {
   const [popoverPosition, setPopoverPosition] = useState<{ x: number; y: number; arrowOffset?: number } | null>(null)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [highlightStyle, setHighlightStyle] = useState<'classic' | 'box' | 'glow'>('classic')
+  const [selectionRange, setSelectionRange] = useState<{ start: number; end: number } | null>(null)
 
   // Handle click outside to close popover
   useEffect(() => {
@@ -284,7 +287,9 @@ export default function BookReader() {
         page: note.page_number || 1,
         timestamp: note.created_at,
         color: note.color === '#FFEB3B' ? 'yellow' : note.color === '#2196F3' ? 'blue' : note.color === '#4CAF50' ? 'green' : 'pink',
-        isPublic: note.is_public
+        isPublic: note.is_public,
+        position_start: note.position_start,
+        position_end: note.position_end
       }))
 
       // Inject preview note if exists
@@ -551,6 +556,34 @@ export default function BookReader() {
 
     // Only trigger note dialog if selection is within PDF
     if (pdfContainer) {
+      // Calculate absolute offsets
+      try {
+        const textLayer = pdfContainer.querySelector('.react-pdf__Page__textContent') || pdfContainer
+        if (textLayer) {
+          const spans = Array.from(textLayer.querySelectorAll('span'))
+          const range = selection.getRangeAt(0)
+
+          const getOffset = (node: Node, offset: number) => {
+            let currentOffset = 0
+            for (const span of spans) {
+              if (span === node || span.contains(node)) {
+                return currentOffset + offset
+              }
+              currentOffset += span.textContent?.length || 0
+            }
+            return 0
+          }
+
+          const start = getOffset(range.startContainer, range.startOffset)
+          const end = getOffset(range.endContainer, range.endOffset)
+
+          setSelectionRange({ start, end })
+        }
+      } catch (e) {
+        console.warn("Failed to calculate offset", e)
+        setSelectionRange(null)
+      }
+
       setSelectedText(selectedText)
       setShowNoteDialog(true)
     }
@@ -604,6 +637,51 @@ export default function BookReader() {
           }
           setEditingNote(null)
         } else {
+          // Check for overlaps with existing notes
+          const currentStart = selectionRange?.start || 0
+          const currentEnd = selectionRange?.end || 0
+
+          if (currentStart < currentEnd) {
+            const hasOverlap = notes.some(note => {
+              // Skip check if note doesn't have valid positions or is on a different page (though notes list is likely refined, double check)
+              // The `notes` state currently contains ALL notes for the book based on loadBookData logic? 
+              // Let's verify loadBookData. It fetches all notes for the book.
+              if (note.page !== currentPage) return false
+
+              // 1. POSITION-BASED CHECK (If both have valid positions)
+              if (typeof note.position_start === 'number' && typeof note.position_end === 'number') {
+                const overlapStart = Math.max(currentStart, note.position_start)
+                const overlapEnd = Math.min(currentEnd, note.position_end)
+
+                if (overlapStart < overlapEnd) return true
+              }
+
+              // 2. TEXT-BASED FALLBACK CHECK
+              const cleanSelection = selectedText.trim().toLowerCase().replace(/\s+/g, '')
+              const cleanNote = note.text.trim().toLowerCase().replace(/\s+/g, '')
+
+              if (cleanSelection.length > 5 && cleanNote.length > 5) {
+                if (cleanSelection.includes(cleanNote) || cleanNote.includes(cleanSelection)) {
+                  // Block only if positions look invalid (0 or missing)
+                  if ((!note.position_start && !note.position_end) ||
+                    (selectionRange?.start === 0 && selectionRange?.end === 0)) {
+                    return true
+                  }
+                }
+              }
+              return false
+            })
+
+            if (hasOverlap) {
+              toast({
+                title: 'Overlap Detected',
+                description: 'You have already highlighted this text area.',
+                variant: 'destructive'
+              })
+              return // Stop execution
+            }
+          }
+
           // Create new note
           const response = await fetch(`/api/books/${id}/notes/create/`, {
             method: 'POST',
@@ -617,8 +695,8 @@ export default function BookReader() {
               page_number: currentPage,
               color: colorHex,
               is_public: false,
-              position_start: 0,
-              position_end: selectedText.length
+              position_start: selectionRange?.start || 0,
+              position_end: selectionRange?.end || 0
             })
           })
 
