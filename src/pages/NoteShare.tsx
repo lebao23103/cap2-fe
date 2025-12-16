@@ -361,6 +361,8 @@ export default function NoteShare() {
 
 function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any, onVote: (id: string, type: 'helpful' | 'awful') => void }) {
   const [copiedQuote, setCopiedQuote] = useState<boolean>(false)
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [isQuoteExpanded, setIsQuoteExpanded] = useState(false)
 
   // Spotlight State
   const divRef = useRef<HTMLDivElement>(null)
@@ -464,16 +466,44 @@ function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any,
           {/* Body: Note Content */}
           <div className="p-5 flex-1">
             {/* Quote Block */}
-            <div className="relative bg-amber-50 dark:bg-amber-900/20 border-l-4 border-primary pl-4 pr-3 py-3 mb-4 rounded-r-lg group-hover:border-black dark:group-hover:border-amber-400 transition-colors">
-              <p className="font-serif text-sm italic text-foreground/90 leading-relaxed line-clamp-4">
+            <div className={`relative bg-amber-50 dark:bg-amber-900/20 border-l-4 border-primary pl-4 pr-3 py-3 mb-4 rounded-r-lg group-hover:border-black dark:group-hover:border-amber-400 transition-colors`}>
+              <p className={`font-serif text-sm italic text-foreground/90 leading-relaxed ${!isQuoteExpanded ? 'line-clamp-4' : 'max-h-60 overflow-y-auto pr-1 custom-scrollbar'}`}>
                 "{note.noteText}"
               </p>
+              {note.noteText.length > 200 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setIsQuoteExpanded(!isQuoteExpanded)
+                  }}
+                  className="text-[10px] font-black uppercase mt-1 text-muted-foreground hover:text-foreground transition-colors opacity-70 hover:opacity-100"
+                >
+                  [{isQuoteExpanded ? 'Collapse' : 'Expand Context'}]
+                </button>
+              )}
             </div>
 
             {/* User Comment */}
-            <p className="text-sm font-bold text-foreground leading-relaxed mb-4">
-              {note.userNote}
-            </p>
+            <div className="mb-4">
+              <p className={`text-sm font-bold text-foreground leading-relaxed ${!isExpanded ? 'line-clamp-4' : 'max-h-60 overflow-y-auto pr-1 custom-scrollbar'}`}>
+                {note.userNote}
+              </p>
+              {note.userNote.length > 150 && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setIsExpanded(!isExpanded)
+                  }}
+                  className="text-[10px] font-black uppercase mt-2 text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
+                >
+                  {isExpanded ? (
+                    <>SHOW LESS <ChevronDown className="h-3 w-3 rotate-180" /></>
+                  ) : (
+                    <>READ MORE <ChevronDown className="h-3 w-3" /></>
+                  )}
+                </button>
+              )}
+            </div>
 
             {/* Book Context (Mini) */}
             <div className="flex items-center gap-3 mt-4 pt-4 border-t border-dashed border-gray-200 dark:border-zinc-700">

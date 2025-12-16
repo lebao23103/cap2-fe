@@ -1463,7 +1463,7 @@ export default function BookReader() {
                 Page {currentPage}
               </DialogDescription>
             </DialogHeader>
-            <div className={`mt-4 p-3 border-2 ${themeStyles.border} text-sm font-medium italic font-mono shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ${theme === 'dark' ? 'bg-gray-900 text-gray-300' : theme === 'sepia' ? 'bg-[#fdf5e6] text-[#5c4033]' : 'bg-white text-black'}`}>
+            <div className={`mt-4 p-3 border-2 ${themeStyles.border} text-sm font-medium italic font-mono shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] max-h-48 overflow-y-auto ${theme === 'dark' ? 'bg-gray-900 text-gray-300' : theme === 'sepia' ? 'bg-[#fdf5e6] text-[#5c4033]' : 'bg-white text-black'}`}>
               "{selectedText}"
             </div>
           </div>
