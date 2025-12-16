@@ -10,6 +10,11 @@ import authService from '@/lib/api/auth'
 import { useToast } from '@/components/ui/use-toast'
 import NoteHighlightOverlay from '@/components/reader/NoteHighlightOverlay'
 import NotePopover from '@/components/reader/NotePopover'
+import SearchDialog from '@/components/reader/SearchDialog'
+import ChapterDisplay from '@/components/reader/ChapterDisplay'
+import TransientHighlightOverlay from '@/components/reader/TransientHighlightOverlay'
+import { usePdfSearch } from '@/hooks/usePdfSearch'
+import { usePdfChapter } from '@/hooks/usePdfChapter'
 import { FocusTapeDeck } from '@/components/FocusTapeDeck'
 import {
   ChevronLeft,
@@ -33,6 +38,7 @@ import {
   Lock,
   Copy,
   Highlighter,
+  Search,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -117,7 +123,8 @@ export default function BookReader() {
   const [loading, setLoading] = useState(true)
   const [pdfUrl, setPdfUrl] = useState<string>('')
   const [notes, setNotes] = useState<BookNote[]>([])
-  const [numPages, setNumPages] = useState<number | null>(null)
+  const [numPages, setNumPages] = useState<number>(0)
+  const [pdfDocument, setPdfDocument] = useState<any>(null)
 
   // UI state
   const [currentPage, setCurrentPage] = useState(location.state?.page || 1)
@@ -148,6 +155,15 @@ export default function BookReader() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [highlightStyle, setHighlightStyle] = useState<'classic' | 'box' | 'glow'>('classic')
   const [selectionRange, setSelectionRange] = useState<{ start: number; end: number } | null>(null)
+
+  // Search State
+  const [showSearch, setShowSearch] = useState(false)
+  const [tempHighlight, setTempHighlight] = useState<{ page: number, text: string } | null>(null)
+  const { searchPdf, results, isSearching, clearResults } = usePdfSearch()
+
+  // Chapter State
+  const { extractChapters, currentChapter, updateCurrentChapter } = usePdfChapter()
+
 
   // Handle click outside to close popover
   useEffect(() => {
@@ -434,6 +450,7 @@ export default function BookReader() {
       const nextPage = currentPage + 1
       setCurrentPage(nextPage)
       updateReadingProgress(nextPage)
+      updateCurrentChapter(nextPage)
 
       // Show review dialog when reaching the last page for the first time
       if (nextPage === bookData.totalPages && !hasSubmittedReview) {
@@ -442,6 +459,7 @@ export default function BookReader() {
     } else if (direction === 'prev' && currentPage > 1) {
       setPageDirection('backward')
       setCurrentPage((prev: number) => prev - 1)
+      updateCurrentChapter(currentPage - 1)
     }
   }
 
@@ -493,7 +511,6 @@ export default function BookReader() {
         // If we are in a text node, verify if we split a word
         if (startContainer.nodeType === Node.TEXT_NODE && startContainer.textContent) {
           const content = startContainer.textContent
-          // If char before selection is a word char, and char at selection is a word char
           // Regex for word char including unicode letters
           const isWordChar = (char: string) => /^\w$/.test(char) || /^[\u00C0-\u00FF]$/.test(char)
 
@@ -1091,6 +1108,17 @@ export default function BookReader() {
               </Button>
             )}
 
+            {/* Search Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => { setShowSearch(true); clearResults() }}
+              className={`rounded-lg border border-transparent transition-all ${themeStyles.text} hover:opacity-70`}
+              title="Search Book"
+            >
+              <Search className="h-4 w-4" />
+            </Button>
+
 
 
             {/* Highlight Toggle - Modern & Theme Aware */}
@@ -1249,10 +1277,12 @@ export default function BookReader() {
                 <div className={`flex flex-col relative transition-all duration-300 ${showNavbar ? 'h-[calc(100vh-6rem)]' : 'h-[calc(100vh-2rem)]'}`}>
                   <Document
                     file={pdfUrl}
-                    onLoadSuccess={({ numPages }) => {
-                      setNumPages(numPages)
+                    onLoadSuccess={(pdf) => {
+                      setNumPages(pdf.numPages)
+                      setPdfDocument(pdf) // Capture PDF object
+                      extractChapters(pdf) // Get TOC
                       if (bookData) {
-                        setBookData({ ...bookData, totalPages: numPages })
+                        setBookData({ ...bookData, totalPages: pdf.numPages })
                       }
                     }}
                     onLoadError={(error) => {
@@ -1357,6 +1387,14 @@ export default function BookReader() {
                             }}
                           />
 
+                          {/* Temporary Blinking Highlight */}
+                          <TransientHighlightOverlay
+                            page={currentPage}
+                            text={tempHighlight && tempHighlight.page === currentPage ? tempHighlight.text : ''}
+                            activePage={currentPage}
+                            containerRef={pageContainerRef}
+                          />
+
                           {/* Note Popover - Moved internal so it scrolls with page */}
                           <NotePopover
                             note={selectedNote}
@@ -1414,6 +1452,7 @@ export default function BookReader() {
                               setCurrentPage(page)
                               updateReadingProgress(page)
                             }
+                            updateCurrentChapter(page)
                           }}
                           className={`w-12 text-center font-black text-sm sm:text-base bg-transparent focus:outline-none ${themeStyles.text} p-0 appearance-none m-0 leading-none h-5`}
                           style={{ lineHeight: '100%' }}
@@ -1421,11 +1460,8 @@ export default function BookReader() {
                         <span className={`text-[10px] sm:text-xs font-bold uppercase ${themeStyles.text} opacity-60`}>/ {bookData?.totalPages || 0}</span>
                       </div>
 
-                      {/* Progress Bar Inline - Hidden on very small screens, compact on others */}
-                      <div className="hidden sm:flex items-center gap-2 flex-1 max-w-[200px]">
-                        <Progress value={bookData?.readingProgress || 0} className={`h-2.5 flex-1 border-2 ${themeStyles.border} rounded-full [&>div]:bg-primary`} />
-                        <span className="text-[10px] font-bold uppercase opacity-50 w-8 text-right">{Math.round(bookData?.readingProgress || 0)}%</span>
-                      </div>
+                      {/* Chapter Display (Replaces Progress Bar) */}
+                      <ChapterDisplay chapter={currentChapter} themeStyles={themeStyles} />
                     </div>
 
                     <Button
@@ -1477,7 +1513,7 @@ export default function BookReader() {
 
                     <Button
                       onClick={() => navigate('/readnex')}
-                      className="w-full h-14 text-lg rounded-xl bg-white text-black border-4 border-black hover:bg-black hover:text-white hover:translate-x-[2px] hover:translate-y-[2px] transition-all shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-none uppercase font-black tracking-widest"
+                      className="w-full h-14 text-lg rounded-xl bg-white text-black border-4 border-black hover:bg-black hover:text-white hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none uppercase font-black tracking-widest"
                     >
                       Escape to Library
                     </Button>
@@ -1641,6 +1677,20 @@ export default function BookReader() {
         </div>
       </div>
 
+      <SearchDialog
+        open={showSearch}
+        onOpenChange={setShowSearch}
+        onSearch={(q) => searchPdf(pdfDocument, q)}
+        results={results}
+        isSearching={isSearching}
+        onResultClick={(page, text) => {
+          setCurrentPage(page)
+          // Set temporary highlight
+          setTempHighlight({ page, text })
+          // Clear after 4s (3 blinks * 1s + buffer)
+          setTimeout(() => setTempHighlight(null), 4000)
+        }}
+      />
 
 
       {/* Note Dialog */}
