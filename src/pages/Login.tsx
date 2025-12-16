@@ -18,6 +18,8 @@ export default function Login() {
   const [isSuccess, setIsSuccess] = useState(false)
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
+  const [emailTouched, setEmailTouched] = useState(false)
+  const [passwordTouched, setPasswordTouched] = useState(false)
   const [generalError, setGeneralError] = useState('')
 
   // Accessibility: Announce errors and success
@@ -57,24 +59,38 @@ export default function Login() {
     const value = e.target.value
     setEmail(value)
     setGeneralError('') // Clear general error on input
-    // Only validate if user has already interacted with the field
-    if (email || value) {
+    // Only validate if field was already touched (to clear errors when correcting)
+    if (emailTouched) {
       validateEmail(value)
     }
+  }
+
+  const handleEmailBlur = () => {
+    setEmailTouched(true)
+    validateEmail(email)
   }
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     setPassword(value)
     setGeneralError('') // Clear general error on input
-    // Only validate if user has already interacted with the field
-    if (password || value) {
+    // Only validate if field was already touched (to clear errors when correcting)
+    if (passwordTouched) {
       validatePassword(value)
     }
   }
 
+  const handlePasswordBlur = () => {
+    setPasswordTouched(true)
+    validatePassword(password)
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    // Mark all fields as touched on submit
+    setEmailTouched(true)
+    setPasswordTouched(true)
 
     // Validate all fields
     const isEmailValid = validateEmail(email)
@@ -196,8 +212,8 @@ export default function Login() {
                   placeholder="your.name@example.com"
                   value={email}
                   onChange={handleEmailChange}
-                  onBlur={() => validateEmail(email)}
-                  error={emailError}
+                  onBlur={handleEmailBlur}
+                  error={emailTouched ? emailError : ''}
                   success={!emailError && email.length > 0}
                   disabled={isLoading || isSuccess}
                   required
@@ -221,8 +237,8 @@ export default function Login() {
                     placeholder="Enter your password"
                     value={password}
                     onChange={handlePasswordChange}
-                    onBlur={() => validatePassword(password)}
-                    error={passwordError}
+                    onBlur={handlePasswordBlur}
+                    error={passwordTouched ? passwordError : ''}
                     success={!passwordError && password.length >= 6}
                     showPasswordToggle
                     showPassword={showPassword}

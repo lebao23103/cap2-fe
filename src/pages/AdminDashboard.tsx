@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+﻿import { useState, useEffect, useMemo } from 'react'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
@@ -156,6 +156,51 @@ export default function AdminDashboard() {
   // Widget Dialog States
   const [isSecurityOpen, setIsSecurityOpen] = useState(false)
   const [isContributorsOpen, setIsContributorsOpen] = useState(false)
+
+  // --- Pagination & Sorting State ---
+  const ITEMS_PER_PAGE = 10
+  const [userPage, setUserPage] = useState(1)
+  const [bookPage, setBookPage] = useState(1)
+
+  type SortConfig = { key: string; direction: 'asc' | 'desc' } | null
+  const [sortConfig, setSortConfig] = useState<SortConfig>(null)
+
+  const handleSort = (key: string) => {
+    setSortConfig(current => {
+      if (current?.key === key) {
+        return { key, direction: current.direction === 'asc' ? 'desc' : 'asc' }
+      }
+      return { key, direction: 'asc' }
+    })
+  }
+
+  // Generic function to sort and paginate
+  const getSortedAndPaginatedData = (data: any[], page: number) => {
+    let sortedData = [...data]
+
+    if (sortConfig) {
+      sortedData.sort((a, b) => {
+        // Handle nested properties (e.g., user.username) if needed, simple implementation for now
+        const aValue = sortConfig.key.includes('.')
+          ? sortConfig.key.split('.').reduce((o, i) => (o as any)?.[i], a)
+          : a[sortConfig.key]
+        const bValue = sortConfig.key.includes('.')
+          ? sortConfig.key.split('.').reduce((o, i) => (o as any)?.[i], b)
+          : b[sortConfig.key]
+
+        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1
+        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1
+        return 0
+      })
+    }
+
+    const startIndex = (page - 1) * ITEMS_PER_PAGE
+    const endIndex = startIndex + ITEMS_PER_PAGE
+    return {
+      data: sortedData.slice(startIndex, endIndex),
+      totalPages: Math.ceil(data.length / ITEMS_PER_PAGE)
+    }
+  }
 
   useEffect(() => {
     loadDashboardData()
@@ -584,7 +629,7 @@ export default function AdminDashboard() {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 h-auto p-0 bg-transparent gap-2">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 h-auto p-0 bg-transparent gap-2">
             {[
               { value: 'overview', label: 'Overview', icon: BarChart3 },
               { value: 'users', label: 'Users', icon: Users },
@@ -873,7 +918,7 @@ export default function AdminDashboard() {
                               {log.type === 'user_join' && (
                                 <span>
                                   <span className="text-white font-bold hover:underline cursor-help" title={log.user}>{getDisplayName({ ...log, username: log.user })}</span>
-                                  <span className="ml-1">joined the party 🎉</span>
+                                  <span className="ml-1">joined the party ðŸŽ‰</span>
                                 </span>
                               )}
                               {log.type === 'book_submit' && (
@@ -885,7 +930,7 @@ export default function AdminDashboard() {
                               {log.type === 'review' && (
                                 <span>
                                   <span className="text-white font-bold hover:underline cursor-help" title={log.user}>{getDisplayName({ ...log, username: log.user })}</span>
-                                  <span className="ml-1">reviewed <span className="text-blue-400">"{log.details.book}"</span> ({log.details.rating}★)</span>
+                                  <span className="ml-1">reviewed <span className="text-blue-400">"{log.details.book}"</span> ({log.details.rating}â˜…)</span>
                                 </span>
                               )}
                               {log.type === 'flag' && (
@@ -924,7 +969,7 @@ export default function AdminDashboard() {
                     User Management
                   </CardTitle>
                   <CardDescription className="font-mono text-gray-600 dark:text-gray-300">
-                    {users.length} total users registered
+                    {filteredUsers.length} active users
                   </CardDescription>
                 </div>
                 <div className="flex w-full sm:w-auto items-center gap-2">
@@ -933,7 +978,7 @@ export default function AdminDashboard() {
                     <Input
                       placeholder="SEARCH USERS..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => { setSearchTerm(e.target.value); setUserPage(1); }} // Reset page on search
                       className="pl-9 h-10 w-full sm:w-[250px] border-2 border-black dark:border-white bg-white dark:bg-zinc-800 font-bold uppercase placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
                     />
                   </div>
@@ -945,7 +990,7 @@ export default function AdminDashboard() {
                     className="w-full sm:w-auto bg-primary text-black border-4 border-black dark:border-white rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:hover:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] transition-all font-bold uppercase"
                   >
                     <UserPlus className="h-4 w-4 mr-2" />
-                    Add User
+                    New User
                   </Button>
                 </div>
               </CardHeader>
@@ -954,49 +999,52 @@ export default function AdminDashboard() {
                   <thead>
                     <tr className="bg-gray-100 dark:bg-zinc-800 border-b-4 border-black dark:border-white">
                       <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white w-[80px]">Avatar</th>
-                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white">User Identity</th>
-                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white w-[180px]">Status</th>
-                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white w-[120px]">Role</th>
+                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors" onClick={() => handleSort('id')}>
+                        ID {sortConfig?.key === 'id' && (sortConfig.direction === 'asc' ? 'â†‘' : 'â†“')}
+                      </th>
+                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors" onClick={() => handleSort('username')}>
+                        User Info {sortConfig?.key === 'username' && (sortConfig.direction === 'asc' ? 'â†‘' : 'â†“')}
+                      </th>
+                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white hidden sm:table-cell cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors" onClick={() => handleSort('email')}>
+                        Contact {sortConfig?.key === 'email' && (sortConfig.direction === 'asc' ? 'â†‘' : 'â†“')}
+                      </th>
+                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white w-[100px] cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors" onClick={() => handleSort('is_staff')}>
+                        Role {sortConfig?.key === 'is_staff' && (sortConfig.direction === 'asc' ? 'â†‘' : 'â†“')}
+                      </th>
                       <th className="p-4 font-black uppercase text-sm text-right w-[100px]">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredUsers.length === 0 ? (
+                    {getSortedAndPaginatedData(filteredUsers, userPage).data.length === 0 ? (
                       <tr>
-                        <td colSpan={4} className="p-8 text-center text-gray-500 font-mono">No users found.</td>
+                        <td colSpan={6} className="p-8 text-center text-gray-500 font-mono">No users found.</td>
                       </tr>
                     ) : (
-                      filteredUsers.map((user) => (
+                      getSortedAndPaginatedData(filteredUsers, userPage).data.map((user) => (
                         <tr key={user.id} className="border-b-2 border-gray-100 dark:border-zinc-800 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-colors group">
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
-                            <div className="w-10 h-10 bg-blue-200 dark:bg-blue-900 border-2 border-black dark:border-white flex items-center justify-center font-black text-lg text-black dark:text-white rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
-                              {getDisplayName(user)[0]?.toUpperCase()}
-                            </div>
-                          </td>
-                          <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
-                            <div className="flex flex-col">
-                              <span className="font-black text-base leading-none mb-1">{getDisplayName(user)}</span>
-                              <span className="text-[10px] text-gray-500 font-mono text-xs">{user.email}</span>
-                            </div>
-                          </td>
-                          <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
-                            <div className="flex flex-col gap-1">
-                              <div className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full border-2 border-black ${user.is_online ? 'bg-green-500' : 'bg-gray-300'}`} />
-                                <span className={`font-bold text-xs uppercase ${user.is_online ? 'text-green-600' : 'text-gray-500'}`}>
-                                  {user.is_online ? 'Online' : 'Offline'}
-                                </span>
+                            <div className="relative">
+                              <div className="w-10 h-10 bg-blue-200 dark:bg-blue-900 border-2 border-black dark:border-white flex items-center justify-center font-black text-lg text-black dark:text-white rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)]">
+                                {getDisplayName(user)[0]?.toUpperCase()}
                               </div>
-                              {user.last_login ? (
-                                <span className="text-[10px] text-gray-500 font-mono">
-                                  Seen: {timeAgo(user.last_login)}
-                                </span>
-                              ) : (
-                                <span className="text-[10px] text-gray-400 font-mono">Never seen</span>
-                              )}
-                              {!user.is_active && (
-                                <Badge variant="destructive" className="h-4 px-1 text-[9px] w-fit">DISABLED</Badge>
-                              )}
+                              {/* Online Status Indicator */}
+                              <span className={`absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-zinc-900 ${user.is_online ? 'bg-green-500' : 'bg-gray-400'}`} title={user.is_online ? 'Online' : 'Offline'} />
+                            </div>
+                          </td>
+                          <td className="p-4 font-mono font-bold border-r-2 border-gray-100 dark:border-zinc-800 text-gray-500">#{user.id}</td>
+                          <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
+                            <div className="flex items-center gap-3">
+                              <div>
+                                <div className="font-bold text-black dark:text-white">{getDisplayName(user)}</div>
+                                <div className="text-xs text-gray-400 font-mono">@{user.username}</div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800 hidden sm:table-cell">
+                            <div className="flex flex-col gap-1">
+                              <span className="text-sm font-mono truncate max-w-[200px]">{user.email}</span>
+                              <span className="text-[10px] text-gray-500 font-bold uppercase">Last Seen: {timeAgo(user.last_login)}</span>
+                              <span className="text-[10px] text-gray-400 font-bold uppercase">Joined: {timeAgo(user.date_joined)}</span>
                             </div>
                           </td>
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
@@ -1035,6 +1083,32 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+              {/* User Pagination */}
+              {getSortedAndPaginatedData(filteredUsers, userPage).totalPages > 1 && (
+                <div className="p-4 border-t-4 border-black dark:border-white flex items-center justify-between bg-gray-50 dark:bg-zinc-900/50">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setUserPage(p => Math.max(1, p - 1))}
+                    disabled={userPage === 1}
+                    className="border-2 border-black dark:border-white font-bold uppercase disabled:opacity-50"
+                  >
+                    Previous
+                  </Button>
+                  <span className="font-mono font-bold text-xs uppercase">
+                    Page {userPage} of {getSortedAndPaginatedData(filteredUsers, userPage).totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setUserPage(p => Math.min(getSortedAndPaginatedData(filteredUsers, userPage).totalPages, p + 1))}
+                    disabled={userPage === getSortedAndPaginatedData(filteredUsers, userPage).totalPages}
+                    className="border-2 border-black dark:border-white font-bold uppercase disabled:opacity-50"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
             </Card>
           </TabsContent>
 
@@ -1057,7 +1131,7 @@ export default function AdminDashboard() {
                     <Input
                       placeholder="SEARCH BOOKS..."
                       value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onChange={(e) => { setSearchTerm(e.target.value); setBookPage(1); }} // Reset page on search
                       className="pl-9 h-10 w-full sm:w-[250px] border-2 border-black dark:border-white bg-white dark:bg-zinc-800 font-bold uppercase placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0 shadow-[4px_4px_0px_0px_rgba(0,0,0,0.1)] focus:shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:focus:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] transition-all"
                     />
                   </div>
@@ -1078,18 +1152,22 @@ export default function AdminDashboard() {
                   <thead>
                     <tr className="bg-gray-100 dark:bg-zinc-800 border-b-4 border-black dark:border-white">
                       <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white w-[60px]">Cover</th>
-                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white">Title & Author</th>
-                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white hidden sm:table-cell">Details</th>
+                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors" onClick={() => handleSort('title')}>
+                        Title & Author {sortConfig?.key === 'title' && (sortConfig.direction === 'asc' ? 'â†‘' : 'â†“')}
+                      </th>
+                      <th className="p-4 font-black uppercase text-sm border-r-2 border-black dark:border-white hidden sm:table-cell cursor-pointer hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors" onClick={() => handleSort('pages')}>
+                        Details {sortConfig?.key === 'pages' && (sortConfig.direction === 'asc' ? 'â†‘' : 'â†“')}
+                      </th>
                       <th className="p-4 font-black uppercase text-sm text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredBooks.length === 0 ? (
+                    {getSortedAndPaginatedData(filteredBooks, bookPage).data.length === 0 ? (
                       <tr>
                         <td colSpan={4} className="p-8 text-center text-gray-500 font-mono">No books found.</td>
                       </tr>
                     ) : (
-                      filteredBooks.map((book) => (
+                      getSortedAndPaginatedData(filteredBooks, bookPage).data.map((book) => (
                         <tr key={book.id} className="border-b-2 border-gray-100 dark:border-zinc-800 hover:bg-green-50 dark:hover:bg-green-900/10 transition-colors group">
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
                             <div className="w-20 h-28 bg-gray-200 dark:bg-gray-700 border-2 border-black dark:border-white flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] rounded-sm overflow-hidden">
@@ -1160,6 +1238,32 @@ export default function AdminDashboard() {
                   </tbody>
                 </table>
               </div>
+              {/* Book Pagination */}
+              {getSortedAndPaginatedData(filteredBooks, bookPage).totalPages > 1 && (
+                <div className="p-4 border-t-4 border-black dark:border-white flex items-center justify-between bg-gray-50 dark:bg-zinc-900/50">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setBookPage(p => Math.max(1, p - 1))}
+                    disabled={bookPage === 1}
+                    className="border-2 border-black dark:border-white font-bold uppercase disabled:opacity-50"
+                  >
+                    Previous
+                  </Button>
+                  <span className="font-mono font-bold text-xs uppercase">
+                    Page {bookPage} of {getSortedAndPaginatedData(filteredBooks, bookPage).totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setBookPage(p => Math.min(getSortedAndPaginatedData(filteredBooks, bookPage).totalPages, p + 1))}
+                    disabled={bookPage === getSortedAndPaginatedData(filteredBooks, bookPage).totalPages}
+                    className="border-2 border-black dark:border-white font-bold uppercase disabled:opacity-50"
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
             </Card>
           </TabsContent>
 
