@@ -1168,7 +1168,7 @@ export default function BookReader() {
 
             <div className={`h-6 w-0.5 mx-1 ${theme === 'dark' ? 'bg-gray-600' : theme === 'sepia' ? 'bg-[#8b7355]' : 'bg-black'}`} />
 
-            <DropdownMenu>
+            <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className={`rounded-lg border border-transparent transition-all ${themeStyles.text} hover:opacity-70`}>
                   <Settings className="h-4 w-4" />
