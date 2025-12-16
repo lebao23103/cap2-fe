@@ -6,6 +6,7 @@ import '@/styles/pdf-viewer.css'
 import '@/styles/pdf-layers.css'
 import booksService from '@/lib/api/books'
 import userService from '@/lib/api/user'
+import authService from '@/lib/api/auth'
 import { useToast } from '@/components/ui/use-toast'
 import NoteHighlightOverlay from '@/components/reader/NoteHighlightOverlay'
 import NotePopover from '@/components/reader/NotePopover'
@@ -15,8 +16,6 @@ import {
   ChevronRight,
   Minus,
   Settings,
-
-
   Sun,
   Moon,
   Clock,
@@ -32,6 +31,8 @@ import {
   EyeOff,
   Globe,
   Lock,
+  Copy,
+  Highlighter,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -99,6 +100,7 @@ interface BookData {
   hasQuiz: boolean
   readingTime: string
   rating: number
+  userRating?: number
 }
 
 export default function BookReader() {
@@ -136,6 +138,7 @@ export default function BookReader() {
   const [pageDirection, setPageDirection] = useState<'forward' | 'backward'>('forward')
   const [isFavorite, setIsFavorite] = useState(false)
   const [showNavbar, setShowNavbar] = useState(true)
+  const [showHighlights, setShowHighlights] = useState(true)
 
   // New state for highlight overlay and popover
   const [selectedNote, setSelectedNote] = useState<BookNote | null>(null)
@@ -178,8 +181,8 @@ export default function BookReader() {
     try {
       setLoading(true)
 
-      // Fetch book details, PDF URL, notes, favorite status, AND history
-      const [bookDetails, pdfContent, bookNotes, favorites, history] = await Promise.all([
+      // Fetch book details, PDF URL, notes, favorite status, AND history, AND reviews, AND current user
+      const [bookDetails, pdfContent, bookNotes, favorites, history, reviews, currentUser] = await Promise.all([
         booksService.getBookById(Number(id)),
         booksService.getBookContent(Number(id)),
         // Only fetch my notes if NOT in read-only mode, or if we want to show them alongside preview note?
@@ -193,8 +196,26 @@ export default function BookReader() {
         userService.getFavorites().catch(() => []),
         fetch(`/api/reading-history/`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('access_token')}` }
-        }).then(res => res.json()).catch(() => [])
+        }).then(res => res.json()).catch(() => []),
+        booksService.getBookReviews(Number(id)).catch(() => []),
+        Promise.resolve(authService.getCurrentUser())
       ])
+
+      // Determine user rating
+      let userRating = 0
+      if (currentUser && Array.isArray(reviews)) {
+        const myReview = reviews.find((r: any) => {
+          // Handle both object user and ID user
+          const reviewUserId = typeof r.user === 'object' ? r.user.id : r.user
+          return reviewUserId === currentUser.id
+        })
+        if (myReview) {
+          userRating = myReview.rating
+          setUserRating(userRating) // Update local input state too
+          setReviewText(myReview.comment || '') // Update local input state
+          setHasSubmittedReview(true)
+        }
+      }
 
       // Transform to BookData format
       const transformedBook: BookData = {
@@ -202,7 +223,7 @@ export default function BookReader() {
         title: bookDetails.title,
         author: bookDetails.author,
         content: [], // Will use PDF instead
-        totalPages: numPages || 10, // Will be updated when PDF loads
+        totalPages: numPages || bookDetails.pages || 10, // Prefer API pages if PDF not loaded
         currentPage: location.state?.page || (() => {
           const bookHistory = Array.isArray(history) ? history.filter((h: any) => h.book_id === Number(id)) : []
           const maxPage = bookHistory.length > 0 ? Math.max(...bookHistory.map((h: any) => h.page_number)) : 1
@@ -214,10 +235,21 @@ export default function BookReader() {
 
           return maxPage
         })(),
-        readingProgress: 0,
+
+        readingProgress: (() => {
+          const total = bookDetails.pages || numPages || 10
+          // Use the same logic as currentPage to ensure sync
+          const bookHistory = Array.isArray(history) ? history.filter((h: any) => h.book_id === Number(id)) : []
+          const maxPage = bookHistory.length > 0 ? Math.max(...bookHistory.map((h: any) => h.page_number)) : 1
+          const startPage = !location.state?.page ? maxPage : location.state.page
+
+          const rawProgress = (startPage / total) * 100
+          return Math.min(100, Math.round(rawProgress))
+        })(),
+
         notes: [],
         bookmarks: [],
-        isFavorite: favorites.some((fav: any) => fav?.book?.id === Number(id)),
+        isFavorite: favorites.some((fav: any) => fav.id === Number(id)),
         hasQuiz: true,
         readingTime: (() => {
           const totalMinutes = (bookDetails.pages || 0) * 1.5
@@ -225,7 +257,8 @@ export default function BookReader() {
           const minutes = Math.floor(totalMinutes % 60)
           return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
         })(),
-        rating: bookDetails.rating || 0
+        rating: bookDetails.rating || 0,
+        userRating: userRating > 0 ? userRating : undefined
       }
 
       setBookData(transformedBook)
@@ -272,7 +305,7 @@ export default function BookReader() {
       }
 
       setNotes(allNotes)
-      setIsFavorite(favorites.some((fav: any) => fav?.book?.id === Number(id)))
+      setIsFavorite(favorites.some((fav: any) => fav.id === Number(id)))
 
       // Track reading history
       await fetch(`/api/reading-history/add/`, {
@@ -295,6 +328,46 @@ export default function BookReader() {
       setLoading(false)
     }
   }
+
+  // ... (existing code) ...
+
+  // This is a placeholder for where the Book Info card would be rendered in the JSX.
+  // The actual placement would be within the component's return statement.
+  // Assuming themeStyles and renderStars are defined elsewhere in the component.
+  // For the purpose of this edit, we're placing it here as per the instruction's context.
+  {/* Book Info - Compact Redesign */ }
+  {/* This JSX block would typically be inside the component's `return` statement */ }
+  {/* and integrated with other UI elements, likely within a sidebar or main content area. */ }
+  {/* For this edit, it's placed here as a direct replacement based on the provided snippet. */ }
+  {/* <Card className={`shrink-0 border-2 ${themeStyles.border} shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] overflow-hidden rounded-xl ${themeStyles.cardBg}`}>
+    <CardContent className="p-0">
+      <div className={`px-3 py-2 border-b ${themeStyles.border} ${themeStyles.navBg}`}>
+        <div className="flex items-center justify-between mb-1">
+          <span className={`text-[10px] font-bold uppercase tracking-wider ${themeStyles.text} opacity-70`}>Progress</span>
+          <span className={`text-xs font-bold font-mono ${themeStyles.text}`}>{bookData?.readingProgress || 0}%</span>
+        </div>
+        <Progress value={bookData?.readingProgress || 0} className={`h-2 border ${themeStyles.border} rounded-full [&>div]:bg-primary`} />
+      </div>
+      
+      <div className={`grid grid-cols-2 divide-x ${theme === 'dark' ? 'divide-gray-600' : theme === 'sepia' ? 'divide-[#8b7355]' : 'divide-black'}`}>
+        <div className="p-2 flex flex-col items-center justify-center">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <Clock className={`h-3.5 w-3.5 ${themeStyles.text} opacity-70`} />
+            <span className={`text-xs font-bold font-mono ${themeStyles.text}`}>{bookData?.readingTime || '0m'}</span>
+          </div>
+          <span className={`text-[9px] uppercase font-bold tracking-tight ${theme === 'dark' ? 'text-gray-400' : theme === 'sepia' ? 'text-[#8b7355]' : 'text-gray-500'}`}>Reading Time</span>
+        </div>
+        
+        <div className="p-2 flex flex-col items-center justify-center">
+          <div className="flex items-center gap-1 mb-0.5">
+            {renderStars(bookData?.rating || 0)}
+            <span className={`ml-1 text-xs font-bold font-mono ${themeStyles.text}`}>{bookData?.rating || 0}</span>
+          </div>
+          <span className={`text-[9px] uppercase font-bold tracking-tight ${theme === 'dark' ? 'text-gray-400' : theme === 'sepia' ? 'text-[#8b7355]' : 'text-gray-500'}`}>Rating</span>
+        </div>
+      </div>
+    </CardContent>
+  </Card> */}
 
   useEffect(() => {
     if (bookData) {
@@ -584,13 +657,29 @@ export default function BookReader() {
     }
   }
 
-  const editNote = (note: BookNote) => {
+  const editNote = async (note: BookNote) => {
     if (isReadOnly) return
     setEditingNote(note)
     setSelectedText(note.text)
     setNewNote(note.note)
     setHighlightColor(note.color || 'yellow')
     setShowNoteDialog(true)
+
+    // Fetch fresh details to ensure full content (in case list view was truncated)
+    try {
+      const response = await fetch(`/api/books/${id}/notes/${note.id}/`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+        }
+      })
+      if (response.ok) {
+        const data = await response.json()
+        setNewNote(data.note_content)
+        setSelectedText(data.selected_text)
+      }
+    } catch (error) {
+      console.error("Failed to fetch fresh note details", error)
+    }
   }
 
   const shareNote = async (noteId: string) => {
@@ -643,6 +732,14 @@ export default function BookReader() {
 
         setHasSubmittedReview(true)
         setShowReviewDialog(false)
+
+        // Update local state to reflect new rating
+        if (bookData) {
+          setBookData({
+            ...bookData,
+            userRating: userRating
+          })
+        }
 
         toast({
           title: 'Review submitted!',
@@ -918,12 +1015,38 @@ export default function BookReader() {
 
 
 
+            {/* Highlight Toggle - Modern & Theme Aware */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowHighlights(!showHighlights)}
+              className={`rounded-lg transition-all duration-300 border ${showHighlights
+                ? theme === 'dark'
+                  ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30 shadow-[0_0_10px_rgba(234,179,8,0.2)]'
+                  : theme === 'sepia'
+                    ? 'bg-[#e6c200]/20 text-[#5c4033] border-[#8b7355]/30'
+                    : 'bg-yellow-100 text-yellow-700 border-yellow-200'
+                : `${themeStyles.text} opacity-40 hover:opacity-100 border-transparent`
+                }`}
+              title={showHighlights ? "Hide Highlights" : "Show Highlights"}
+            >
+              <Highlighter className={`h-4 w-4 ${showHighlights ? 'fill-current' : ''}`} />
+            </Button>
+
+            {/* Favorite Button - Premium & Theme Aware */}
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleFavorite}
-              className={`rounded-lg transition-all border border-transparent ${isFavorite ? 'text-black bg-red-400 border-red-500' : `${themeStyles.text} hover:opacity-70`}`}
-              title="Add to Favorites"
+              className={`rounded-lg transition-all duration-300 border ${isFavorite
+                ? theme === 'dark'
+                  ? 'bg-rose-500/20 text-rose-400 border-rose-500/30 shadow-[0_0_10px_rgba(244,63,94,0.2)]'
+                  : theme === 'sepia'
+                    ? 'bg-[#dba39a]/30 text-[#8a4b3e] border-[#bc8f85]/50'
+                    : 'bg-rose-100 text-rose-600 border-rose-200'
+                : `${themeStyles.text} hover:opacity-70 border-transparent`
+                }`}
+              title={isFavorite ? "Remove from Favorites" : "Add to Favorites"}
             >
               <Heart className={`h-4 w-4 ${isFavorite ? 'fill-current' : ''}`} />
             </Button>
@@ -1104,7 +1227,7 @@ export default function BookReader() {
                           <NoteHighlightOverlay
                             key={`${currentPage}-${fontSize}`}
                             highlightStyle={highlightStyle}
-                            notes={notes.filter(n => n.page === currentPage)}
+                            notes={showHighlights ? notes.filter(n => n.page === currentPage) : []}
                             currentPage={currentPage}
                             containerRef={pageContainerRef}
                             onHighlightClick={(note, position) => {
@@ -1309,28 +1432,32 @@ export default function BookReader() {
                   </Button>
                 </div>
 
-                {/* Book Info */}
+                {/* Book Info - Compact Redesign */}
                 <Card className={`shrink-0 border-2 ${themeStyles.border} shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] overflow-hidden rounded-xl ${themeStyles.cardBg}`}>
                   <CardContent className="p-0">
-                    <div className={`p-4 border-b-2 ${themeStyles.border} ${themeStyles.navBg}`}>
-                      <div className="flex items-center justify-between">
-                        <span className={`text-xs font-bold uppercase tracking-wider ${themeStyles.text}`}>Progress</span>
-                        <span className={`text-sm font-bold font-mono ${themeStyles.text}`}>{bookData?.readingProgress || 0}%</span>
+                    <div className={`px-3 py-2 border-b ${themeStyles.border} ${themeStyles.navBg}`}>
+                      <div className="flex items-center justify-between mb-1">
+                        <span className={`text-[10px] font-bold uppercase tracking-wider ${themeStyles.text} opacity-70`}>Progress</span>
+                        <span className={`text-xs font-bold font-mono ${themeStyles.text}`}>{bookData?.readingProgress || 0}%</span>
                       </div>
-                      <Progress value={bookData?.readingProgress || 0} className={`h-3 mt-2 border ${themeStyles.border} rounded-full [&>div]:bg-primary`} />
+                      <Progress value={bookData?.readingProgress || 0} className={`h-2 border ${themeStyles.border} rounded-full [&>div]:bg-primary`} />
                     </div>
-                    <div className={`grid grid-cols-2 divide-x-2 ${theme === 'dark' ? 'divide-gray-600' : theme === 'sepia' ? 'divide-[#8b7355]' : 'divide-black'}`}>
-                      <div className="p-4 text-center">
-                        <Clock className={`h-5 w-5 mx-auto mb-1 ${themeStyles.text}`} />
-                        <div className={`text-sm font-bold font-mono ${themeStyles.text}`}>{bookData?.readingTime || '0m'}</div>
-                        <div className={`text-xs uppercase font-bold ${theme === 'dark' ? 'text-gray-400' : theme === 'sepia' ? 'text-[#8b7355]' : 'text-gray-600'}`}>Reading Time</div>
-                      </div>
-                      <div className="p-4 text-center">
-                        <div className="flex justify-center mb-1">
-                          {renderStars(bookData?.rating || 0)}
+
+                    <div className={`grid grid-cols-2 divide-x ${theme === 'dark' ? 'divide-gray-600' : theme === 'sepia' ? 'divide-[#8b7355]' : 'divide-black'}`}>
+                      <div className="p-2 flex flex-col items-center justify-center">
+                        <div className="flex items-center gap-1.5 mb-0.5">
+                          <Clock className={`h-3.5 w-3.5 ${themeStyles.text} opacity-70`} />
+                          <span className={`text-xs font-bold font-mono ${themeStyles.text}`}>{bookData?.readingTime || '0m'}</span>
                         </div>
-                        <div className={`text-sm font-bold font-mono ${themeStyles.text}`}>{bookData?.rating || 0}</div>
-                        <div className={`text-xs uppercase font-bold ${theme === 'dark' ? 'text-gray-400' : theme === 'sepia' ? 'text-[#8b7355]' : 'text-gray-600'}`}>Rating</div>
+                        <span className={`text-[9px] uppercase font-bold tracking-tight ${theme === 'dark' ? 'text-gray-400' : theme === 'sepia' ? 'text-[#8b7355]' : 'text-gray-500'}`}>Reading Time</span>
+                      </div>
+
+                      <div className="p-2 flex flex-col items-center justify-center">
+                        <div className="flex items-center gap-1 mb-0.5">
+                          {renderStars(bookData?.userRating || bookData?.rating || 0)}
+                          <span className={`ml-1 text-xs font-bold font-mono ${themeStyles.text}`}>{bookData?.userRating || bookData?.rating || 0}</span>
+                        </div>
+                        <span className={`text-[9px] uppercase font-bold tracking-tight ${theme === 'dark' ? 'text-gray-400' : theme === 'sepia' ? 'text-[#8b7355]' : 'text-gray-500'}`}>Rating</span>
                       </div>
                     </div>
                   </CardContent>
@@ -1492,8 +1619,21 @@ export default function BookReader() {
             />
           </div>
 
-          <DialogFooter className={`p-4 border-t-2 ${themeStyles.border} ${themeStyles.navBg}`}>
-            <Button variant="ghost" onClick={() => setShowNoteDialog(false)} className={`rounded-lg border-2 border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}>Cancel</Button>
+          <DialogFooter className={`p-4 border-t-2 ${themeStyles.border} ${themeStyles.navBg} flex sm:justify-between items-center gap-2`}>
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={() => setShowNoteDialog(false)} className={`rounded-lg border-2 border-transparent uppercase font-bold ${themeStyles.text} hover:opacity-70`}>Cancel</Button>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  navigator.clipboard.writeText(selectedText)
+                  toast({ title: "Copied!", description: "Text copied to clipboard" })
+                  setShowNoteDialog(false)
+                }}
+                className={`rounded-lg border-2 ${themeStyles.border} uppercase font-bold ${themeStyles.text} hover:bg-black/5 dark:hover:bg-white/10`}
+              >
+                <Copy className="h-4 w-4 mr-2" /> Copy Text
+              </Button>
+            </div>
             <Button onClick={saveNote} disabled={!newNote.trim()} className="rounded-lg border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all uppercase font-bold bg-primary text-black hover:bg-primary/90">Save Note</Button>
           </DialogFooter>
         </DialogContent>
