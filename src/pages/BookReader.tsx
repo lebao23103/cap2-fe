@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Document, Page, pdfjs } from 'react-pdf'
@@ -162,7 +162,7 @@ export default function BookReader() {
   const { searchPdf, results, isSearching, clearResults } = usePdfSearch()
 
   // Chapter State
-  const { extractChapters, currentChapter, updateCurrentChapter } = usePdfChapter()
+  const { extractChapters, currentChapter, updateCurrentChapter, outline } = usePdfChapter()
 
 
   // Handle click outside to close popover
@@ -489,6 +489,13 @@ export default function BookReader() {
       console.error('Failed to save progress', error)
     }
   }
+
+
+  const handleChapterNavigate = useCallback((page: number) => {
+    setCurrentPage(page)
+    updateReadingProgress(page)
+    updateCurrentChapter(page)
+  }, [updateCurrentChapter])
 
   const handleTextSelection = () => {
     if (isReadOnly) return // Disable selection in read-only mode
@@ -1045,6 +1052,8 @@ export default function BookReader() {
 
   const themeStyles = getThemeStyles()
 
+
+
   return (
     <div className={`min-h-screen transition-colors duration-500 ${themeStyles.bg} ${theme === 'dark' ? 'dark' : ''} font-mono`}>
       <FocusTapeDeck theme={theme} />
@@ -1460,9 +1469,14 @@ export default function BookReader() {
                         <span className={`text-[10px] sm:text-xs font-bold uppercase ${themeStyles.text} opacity-60`}>/ {bookData?.totalPages || 0}</span>
                       </div>
 
-                      {/* Chapter Display (Replaces Progress Bar) */}
-                      <ChapterDisplay chapter={currentChapter} themeStyles={themeStyles} />
+                      <ChapterDisplay
+                        chapter={currentChapter}
+                        outline={outline}
+                        themeStyles={themeStyles}
+                        onNavigate={handleChapterNavigate}
+                      />
                     </div>
+
 
                     <Button
                       variant="ghost"
