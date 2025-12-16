@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {
-    Dialog, DialogContent, DialogHeader, DialogTitle,
+    Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -40,6 +40,9 @@ export default function SearchDialog({
                         <Search className="h-5 w-5" />
                         Search in Book
                     </DialogTitle>
+                    <DialogDescription className="sr-only">
+                        Enter keywords to search within the PDF document.
+                    </DialogDescription>
                 </DialogHeader>
 
                 <div className="p-4 border-b-2 border-black dark:border-gray-700 bg-white dark:bg-slate-900">
