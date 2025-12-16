@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar'
 import { Input } from '../components/ui/input'
 import { Label } from '../components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import {
   Dialog,
   DialogContent,
@@ -40,6 +41,8 @@ import userService from '../lib/api/user'
 import booksService from '../lib/api/books'
 import notesService from '../lib/api/notes'
 import { getCoverImageUrl } from '../lib/utils/mediaUtils'
+
+import { Upload, CheckCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { fadeInUp, stagger } from '@/lib/animations'
 
@@ -52,6 +55,7 @@ export default function Dashboard() {
   const [favorites, setFavorites] = useState<BookData[]>([])
   const [readingHistory, setReadingHistory] = useState<BookData[]>([])
   const [userNotes, setUserNotes] = useState<any[]>([])
+  const [myUploads, setMyUploads] = useState<(BookData & { status: 'approved' | 'pending' | 'rejected' })[]>([])
 
   // Dashboard Metrics
   const [stats, setStats] = useState({
@@ -100,15 +104,30 @@ export default function Dashboard() {
     try {
       setIsLoading(true)
 
-      const [booksData, favoritesData, historyData, notesStats, allUserNotes] = await Promise.all([
+
+      const [booksData, favoritesData, historyData, notesStats, allUserNotes, myBooksData] = await Promise.all([
         booksService.getApprovedBooks().catch(() => []),
         userService.getFavorites().catch(() => []),
         userService.getReadingHistory().catch(() => []),
         notesService.getUserNotesStatistics().catch(() => ({ total_notes: 0 })),
-        notesService.getAllUserNotes().catch(() => [])
+        notesService.getAllUserNotes().catch(() => []),
+        booksService.getMyBooks().catch(() => [])
       ])
 
       setUserNotes(allUserNotes || [])
+
+      // Process My Uploads (Using new API)
+      const transformedMyBooks = myBooksData.map((book: any) => ({
+        id: book.id.toString(),
+        title: book.title,
+        author: book.author || 'Unknown Author',
+        cover: getCoverImageUrl(book.cover_image),
+        rating: book.rating || 0,
+        genre: book.subject ? [book.subject] : ['General'],
+        status: (book.is_approved ? 'approved' : 'pending') as 'approved' | 'pending' | 'rejected' // Determine status from is_approved flag
+      }))
+
+      setMyUploads(transformedMyBooks)
 
       const transformedRecommendations: BookData[] = booksData
         .filter((book: any) => book && book.id && book.title)
@@ -449,6 +468,7 @@ export default function Dashboard() {
                     <TabsTrigger value="overview" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-primary data-[state=active]:text-black transition-all rounded-lg">Overview</TabsTrigger>
                     <TabsTrigger value="library" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-black data-[state=active]:text-white dark:data-[state=active]:bg-white dark:data-[state=active]:text-black transition-all rounded-lg">My Library</TabsTrigger>
                     <TabsTrigger value="notes" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-amber-400 data-[state=active]:text-black transition-all rounded-lg">My Notes</TabsTrigger>
+                    <TabsTrigger value="uploads" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-purple-400 data-[state=active]:text-black transition-all rounded-lg">My Uploads</TabsTrigger>
                     <TabsTrigger value="discover" className="h-9 px-4 font-bold uppercase text-xs data-[state=active]:bg-blue-400 data-[state=active]:text-black transition-all rounded-lg">Discover</TabsTrigger>
                   </TabsList>
 
@@ -530,29 +550,98 @@ export default function Dashboard() {
                   </div>
                 </TabsContent>
 
+                {/* TAB: MY UPLOADS */}
+                <TabsContent value="uploads">
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between bg-purple-100 dark:bg-purple-900/10 p-4 border-2 border-purple-400 dark:border-purple-700/50 rounded-xl">
+                      <div className="flex items-center gap-3">
+                        <div className="p-2 bg-purple-400 rounded-lg border-2 border-black text-black">
+                          <Upload className="h-5 w-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-black uppercase text-sm">My Contributions</h3>
+                          <p className="text-xs font-mono text-muted-foreground">Manage books you've uploaded to the community</p>
+                        </div>
+                      </div>
+                      <Button size="sm" className="bg-black text-white dark:bg-white dark:text-black font-bold uppercase text-xs rounded-lg shadow-neo-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition-all" onClick={() => navigate('/create')}>
+                        + Upload New
+                      </Button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                      {myUploads.map((book) => (
+                        <div key={book.id} className="relative group">
+                          <BookCard book={book} size="md" />
+                          <div className="absolute top-2 right-2 z-10">
+                            {book.status === 'pending' && (
+                              <span className="bg-yellow-400 text-black text-[10px] font-black uppercase px-2 py-1 rounded-md border-2 border-black shadow-sm flex items-center gap-1">
+                                <Clock className="h-3 w-3" /> Pending
+                              </span>
+                            )}
+                            {book.status === 'approved' && (
+                              <span className="bg-green-400 text-black text-[10px] font-black uppercase px-2 py-1 rounded-md border-2 border-black shadow-sm flex items-center gap-1">
+                                <CheckCircle className="h-3 w-3" /> Live
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      {myUploads.length === 0 && (
+                        <div className="col-span-full py-20 text-center border-2 border-dashed border-border rounded-xl">
+                          <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
+                          <p className="font-bold uppercase text-muted-foreground">No uploads yet.</p>
+                          <p className="text-xs text-muted-foreground mt-1">Share your knowledge with the community!</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </TabsContent>
+
                 {/* TAB: MY NOTES */}
                 <TabsContent value="notes">
+
                   <div className="space-y-4">
                     {userNotes.length > 0 ? (
-                      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-                        {userNotes.map((note: any) => (
-                          <div key={note.id} className="break-inside-avoid">
-                            <DashboardNoteCard
-                              note={note}
-                              navigate={navigate}
-                              onTogglePublic={async () => {
-                                try {
-                                  await notesService.updateNote(note.book, note.id, { is_public: !note.is_public })
-                                  setUserNotes(prev => prev.map(n => n.id === note.id ? { ...n, is_public: !n.is_public } : n))
-                                  toast({ title: note.is_public ? 'Note made private' : 'Note shared publicly' })
-                                } catch {
-                                  toast({ title: 'Error', variant: 'destructive' })
-                                }
-                              }}
-                            />
-                          </div>
+                      <Accordion type="multiple" className="space-y-4">
+                        {Object.entries(userNotes.reduce((acc: any, note: any) => {
+                          const key = note.book_title || `Book #${note.book}`
+                          if (!acc[key]) acc[key] = []
+                          acc[key].push(note)
+                          return acc
+                        }, {})).map(([bookTitle, notes]: [string, any]) => (
+                          <AccordionItem key={bookTitle} value={bookTitle} className="border-2 border-border rounded-xl px-4 bg-card shadow-sm">
+                            <AccordionTrigger className="hover:no-underline py-4">
+                              <div className="flex items-center gap-3 text-left">
+                                <BookOpen className="h-5 w-5 text-primary" />
+                                <span className="font-black uppercase text-lg">{bookTitle}</span>
+                                <span className="bg-black text-white dark:bg-white dark:text-black rounded-full px-2 py-0.5 text-xs font-bold">
+                                  {notes.length}
+                                </span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="pt-2 pb-6">
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {notes.map((note: any) => (
+                                  <DashboardNoteCard
+                                    key={note.id}
+                                    note={note}
+                                    navigate={navigate}
+                                    onTogglePublic={async () => {
+                                      try {
+                                        await notesService.updateNote(note.book, note.id, { is_public: !note.is_public })
+                                        setUserNotes(prev => prev.map(n => n.id === note.id ? { ...n, is_public: !n.is_public } : n))
+                                        toast({ title: note.is_public ? 'Note made private' : 'Note shared publicly' })
+                                      } catch {
+                                        toast({ title: 'Error', variant: 'destructive' })
+                                      }
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
                         ))}
-                      </div>
+                      </Accordion>
                     ) : (
                       <div className="col-span-full py-20 text-center border-2 border-dashed border-border rounded-xl">
                         <StickyNote className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />

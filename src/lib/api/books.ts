@@ -1,4 +1,5 @@
 import apiClient from './config';
+import { API_ENDPOINTS } from './endpoints';
 
 export interface Book {
   id: number;
@@ -138,6 +139,16 @@ class BooksService {
   async getApprovedUserBooks(): Promise<Book[]> {
     const response = await apiClient.get('/api/list-approved-books/');
     return response.data;
+  }
+
+  // Get current user's uploaded books (pending & approved)
+  async getMyBooks(): Promise<Book[]> {
+    const response = await apiClient.get(API_ENDPOINTS.BOOKS.GET_MY_BOOKS);
+    return response.data;
+  }
+
+  async deleteMyBook(bookId: string): Promise<void> {
+    await apiClient.delete(`/api/my-books/${bookId}/delete/`);
   }
 }
 

@@ -47,21 +47,21 @@ function isAdmin(token: string | null): boolean {
  */
 const listApprovedBooks = http.get('/api/list-approved-books', async ({ request }) => {
   await delay(300)
-  
+
   try {
     const url = new URL(request.url)
     const page = parseInt(url.searchParams.get('page') || '1')
     const limit = parseInt(url.searchParams.get('limit') || '10')
-    
+
     // Filter approved books
     const approvedBooks = mockBooks.filter(book => book.is_approved)
-    
+
     // Paginate if requested
     if (url.searchParams.has('page') || url.searchParams.has('limit')) {
       const result = paginateBooks(approvedBooks, page, limit)
       return HttpResponse.json(result)
     }
-    
+
     // Return all approved books
     return HttpResponse.json(approvedBooks)
   } catch (error) {
@@ -77,7 +77,7 @@ const listApprovedBooks = http.get('/api/list-approved-books', async ({ request 
  */
 const getBookById = http.get('/api/books/:id/', async ({ params }) => {
   await delay(250)
-  
+
   const bookId = parseInt(params.id as string)
   if (isNaN(bookId)) {
     return HttpResponse.json(
@@ -85,7 +85,7 @@ const getBookById = http.get('/api/books/:id/', async ({ params }) => {
       { status: 400 }
     )
   }
-  
+
   const book = findBookById(bookId)
   if (!book) {
     return HttpResponse.json(
@@ -93,7 +93,7 @@ const getBookById = http.get('/api/books/:id/', async ({ params }) => {
       { status: 404 }
     )
   }
-  
+
   return HttpResponse.json(book)
 })
 
@@ -102,7 +102,7 @@ const getBookById = http.get('/api/books/:id/', async ({ params }) => {
  */
 const getBookReviews = http.get('/api/books/:id/reviews', async ({ params }) => {
   await delay(200)
-  
+
   const bookId = parseInt(params.id as string)
   if (isNaN(bookId)) {
     return HttpResponse.json(
@@ -110,7 +110,7 @@ const getBookReviews = http.get('/api/books/:id/reviews', async ({ params }) => 
       { status: 400 }
     )
   }
-  
+
   const book = findBookById(bookId)
   if (!book) {
     return HttpResponse.json(
@@ -118,7 +118,7 @@ const getBookReviews = http.get('/api/books/:id/reviews', async ({ params }) => 
       { status: 404 }
     )
   }
-  
+
   const reviews = getReviewsByBookId(bookId)
   return HttpResponse.json(reviews)
 })
@@ -129,7 +129,7 @@ const getBookReviews = http.get('/api/books/:id/reviews', async ({ params }) => 
  */
 const addBookReview = http.post('/api/books/:id/add_review/', async ({ request, params }) => {
   await delay(350)
-  
+
   const token = getAuthToken(request)
   if (!token) {
     return HttpResponse.json(
@@ -137,7 +137,7 @@ const addBookReview = http.post('/api/books/:id/add_review/', async ({ request, 
       { status: 401 }
     )
   }
-  
+
   const bookId = parseInt(params.id as string)
   if (isNaN(bookId)) {
     return HttpResponse.json(
@@ -145,7 +145,7 @@ const addBookReview = http.post('/api/books/:id/add_review/', async ({ request, 
       { status: 400 }
     )
   }
-  
+
   const book = findBookById(bookId)
   if (!book) {
     return HttpResponse.json(
@@ -153,10 +153,10 @@ const addBookReview = http.post('/api/books/:id/add_review/', async ({ request, 
       { status: 404 }
     )
   }
-  
+
   try {
     const body = await request.json() as { rating: number; comment: string }
-    
+
     // Validation
     if (!body.rating || !body.comment) {
       return HttpResponse.json(
@@ -164,21 +164,21 @@ const addBookReview = http.post('/api/books/:id/add_review/', async ({ request, 
         { status: 400 }
       )
     }
-    
+
     if (body.rating < 1 || body.rating > 5) {
       return HttpResponse.json(
         { message: 'Rating must be between 1 and 5' },
         { status: 400 }
       )
     }
-    
+
     if (body.comment.length < 50) {
       return HttpResponse.json(
         { message: 'Comment must be at least 50 characters' },
         { status: 400 }
       )
     }
-    
+
     // Create review
     const newReview = addReview({
       book: bookId,
@@ -192,9 +192,9 @@ const addBookReview = http.post('/api/books/:id/add_review/', async ({ request, 
       comment: body.comment,
       created_at: new Date().toISOString(),
     })
-    
+
     console.log(`[MSW] Added review for book ${bookId}:`, newReview)
-    
+
     return HttpResponse.json(newReview, { status: 201 })
   } catch (error) {
     return HttpResponse.json(
@@ -210,7 +210,7 @@ const addBookReview = http.post('/api/books/:id/add_review/', async ({ request, 
  */
 const createUserBook = http.post('/api/create-user-book/', async ({ request }) => {
   await delay(400)
-  
+
   const token = getAuthToken(request)
   if (!token) {
     return HttpResponse.json(
@@ -218,10 +218,10 @@ const createUserBook = http.post('/api/create-user-book/', async ({ request }) =
       { status: 401 }
     )
   }
-  
+
   try {
     const body = await request.json() as { title: string; description: string; text: string }
-    
+
     // Validation
     if (!body.title || !body.description || !body.text) {
       return HttpResponse.json(
@@ -229,7 +229,7 @@ const createUserBook = http.post('/api/create-user-book/', async ({ request }) =
         { status: 400 }
       )
     }
-    
+
     // Create new book (pending approval)
     const newBook: MockBook = {
       id: mockBooks.length + 1,
@@ -249,11 +249,11 @@ const createUserBook = http.post('/api/create-user-book/', async ({ request }) =
       pdf_file: `/media/books/user-book-${mockBooks.length + 1}.pdf`,
       publication_date: new Date().toISOString().split('T')[0],
     }
-    
+
     mockBooks.push(newBook)
-    
+
     console.log('[MSW] User book created (pending approval):', newBook)
-    
+
     return HttpResponse.json(newBook, { status: 201 })
   } catch (error) {
     return HttpResponse.json(
@@ -268,7 +268,7 @@ const createUserBook = http.post('/api/create-user-book/', async ({ request }) =
  */
 const editBook = http.put('/api/books/:id/edit', async ({ request, params }) => {
   await delay(350)
-  
+
   const token = getAuthToken(request)
   if (!token) {
     return HttpResponse.json(
@@ -276,14 +276,14 @@ const editBook = http.put('/api/books/:id/edit', async ({ request, params }) => 
       { status: 401 }
     )
   }
-  
+
   if (!isAdmin(token)) {
     return HttpResponse.json(
       { detail: 'You do not have permission to perform this action.' },
       { status: 403 }
     )
   }
-  
+
   const bookId = parseInt(params.id as string)
   if (isNaN(bookId)) {
     return HttpResponse.json(
@@ -291,7 +291,7 @@ const editBook = http.put('/api/books/:id/edit', async ({ request, params }) => 
       { status: 400 }
     )
   }
-  
+
   const book = findBookById(bookId)
   if (!book) {
     return HttpResponse.json(
@@ -299,17 +299,17 @@ const editBook = http.put('/api/books/:id/edit', async ({ request, params }) => 
       { status: 404 }
     )
   }
-  
+
   try {
     const body = await request.json() as Partial<MockBook>
-    
+
     // Update book fields
     Object.assign(book, body, {
       updated_at: new Date().toISOString(),
     })
-    
+
     console.log(`[MSW] Book ${bookId} updated by admin`)
-    
+
     return HttpResponse.json(book)
   } catch (error) {
     return HttpResponse.json(
@@ -324,7 +324,7 @@ const editBook = http.put('/api/books/:id/edit', async ({ request, params }) => 
  */
 const deleteBook = http.delete('/api/books/:id/delete', async ({ request, params }) => {
   await delay(300)
-  
+
   const token = getAuthToken(request)
   if (!token) {
     return HttpResponse.json(
@@ -332,14 +332,14 @@ const deleteBook = http.delete('/api/books/:id/delete', async ({ request, params
       { status: 401 }
     )
   }
-  
+
   if (!isAdmin(token)) {
     return HttpResponse.json(
       { detail: 'You do not have permission to perform this action.' },
       { status: 403 }
     )
   }
-  
+
   const bookId = parseInt(params.id as string)
   if (isNaN(bookId)) {
     return HttpResponse.json(
@@ -347,7 +347,7 @@ const deleteBook = http.delete('/api/books/:id/delete', async ({ request, params
       { status: 400 }
     )
   }
-  
+
   const bookIndex = mockBooks.findIndex(b => b.id === bookId)
   if (bookIndex === -1) {
     return HttpResponse.json(
@@ -355,11 +355,11 @@ const deleteBook = http.delete('/api/books/:id/delete', async ({ request, params
       { status: 404 }
     )
   }
-  
+
   mockBooks.splice(bookIndex, 1)
-  
+
   console.log(`[MSW] Book ${bookId} deleted by admin`)
-  
+
   return HttpResponse.json({ message: 'Book deleted successfully' })
 })
 
@@ -368,7 +368,7 @@ const deleteBook = http.delete('/api/books/:id/delete', async ({ request, params
  */
 const approveUserBook = http.put('/api/approve-user-book/:id', async ({ request, params }) => {
   await delay(300)
-  
+
   const token = getAuthToken(request)
   if (!token) {
     return HttpResponse.json(
@@ -376,14 +376,14 @@ const approveUserBook = http.put('/api/approve-user-book/:id', async ({ request,
       { status: 401 }
     )
   }
-  
+
   if (!isAdmin(token)) {
     return HttpResponse.json(
       { detail: 'You do not have permission to perform this action.' },
       { status: 403 }
     )
   }
-  
+
   const bookId = parseInt(params.id as string)
   if (isNaN(bookId)) {
     return HttpResponse.json(
@@ -391,7 +391,7 @@ const approveUserBook = http.put('/api/approve-user-book/:id', async ({ request,
       { status: 400 }
     )
   }
-  
+
   const book = findBookById(bookId)
   if (!book) {
     return HttpResponse.json(
@@ -399,12 +399,12 @@ const approveUserBook = http.put('/api/approve-user-book/:id', async ({ request,
       { status: 404 }
     )
   }
-  
+
   book.is_approved = true
   book.updated_at = new Date().toISOString()
-  
+
   console.log(`[MSW] Book ${bookId} approved by admin`)
-  
+
   return HttpResponse.json({ message: 'Book approved successfully' })
 })
 
@@ -413,7 +413,7 @@ const approveUserBook = http.put('/api/approve-user-book/:id', async ({ request,
  */
 const rejectUserBook = http.delete('/api/reject-delete-book/:id', async ({ request, params }) => {
   await delay(300)
-  
+
   const token = getAuthToken(request)
   if (!token) {
     return HttpResponse.json(
@@ -421,14 +421,14 @@ const rejectUserBook = http.delete('/api/reject-delete-book/:id', async ({ reque
       { status: 401 }
     )
   }
-  
+
   if (!isAdmin(token)) {
     return HttpResponse.json(
       { detail: 'You do not have permission to perform this action.' },
       { status: 403 }
     )
   }
-  
+
   const bookId = parseInt(params.id as string)
   if (isNaN(bookId)) {
     return HttpResponse.json(
@@ -436,7 +436,7 @@ const rejectUserBook = http.delete('/api/reject-delete-book/:id', async ({ reque
       { status: 400 }
     )
   }
-  
+
   const bookIndex = mockBooks.findIndex(b => b.id === bookId)
   if (bookIndex === -1) {
     return HttpResponse.json(
@@ -444,11 +444,11 @@ const rejectUserBook = http.delete('/api/reject-delete-book/:id', async ({ reque
       { status: 404 }
     )
   }
-  
+
   mockBooks.splice(bookIndex, 1)
-  
+
   console.log(`[MSW] Book ${bookId} rejected and deleted by admin`)
-  
+
   return HttpResponse.json({ message: 'Book deleted successfully' })
 })
 
@@ -457,7 +457,7 @@ const rejectUserBook = http.delete('/api/reject-delete-book/:id', async ({ reque
  */
 const getAllBooksAdmin = http.get('/api/admin/books', async ({ request }) => {
   await delay(300)
-  
+
   const token = getAuthToken(request)
   if (!token) {
     return HttpResponse.json(
@@ -465,14 +465,14 @@ const getAllBooksAdmin = http.get('/api/admin/books', async ({ request }) => {
       { status: 401 }
     )
   }
-  
+
   if (!isAdmin(token)) {
     return HttpResponse.json(
       { detail: 'You do not have permission to perform this action.' },
       { status: 403 }
     )
   }
-  
+
   // Return all books (including unapproved)
   return HttpResponse.json(mockBooks)
 })
@@ -482,7 +482,7 @@ const getAllBooksAdmin = http.get('/api/admin/books', async ({ request }) => {
  */
 const fetchBooksByGenre = http.post('/api/admin/fetch-books-genre', async ({ request }) => {
   await delay(350)
-  
+
   const token = getAuthToken(request)
   if (!token) {
     return HttpResponse.json(
@@ -490,32 +490,32 @@ const fetchBooksByGenre = http.post('/api/admin/fetch-books-genre', async ({ req
       { status: 401 }
     )
   }
-  
+
   if (!isAdmin(token)) {
     return HttpResponse.json(
       { detail: 'You do not have permission to perform this action.' },
       { status: 403 }
     )
   }
-  
+
   try {
     const body = await request.json() as { keyword: string; size?: number }
-    
+
     if (!body.keyword) {
       return HttpResponse.json(
         { message: 'Keyword is required' },
         { status: 400 }
       )
     }
-    
+
     const keyword = body.keyword.toLowerCase()
     const size = body.size || 20
-    
+
     // Search by subject/genre
     const matchingBooks = mockBooks.filter(book =>
       book.subject?.toLowerCase().includes(keyword)
     ).slice(0, size)
-    
+
     return HttpResponse.json(matchingBooks)
   } catch (error) {
     return HttpResponse.json(
@@ -530,7 +530,7 @@ const fetchBooksByGenre = http.post('/api/admin/fetch-books-genre', async ({ req
  */
 const getBooksByAuthor = http.get('/api/books/author/:author', async ({ params }) => {
   await delay(250)
-  
+
   const authorName = params.author as string
   if (!authorName) {
     return HttpResponse.json(
@@ -538,16 +538,16 @@ const getBooksByAuthor = http.get('/api/books/author/:author', async ({ params }
       { status: 400 }
     )
   }
-  
+
   const books = findBooksByAuthor(authorName)
-  
+
   if (books.length === 0) {
     return HttpResponse.json(
       { message: `No books found for author: ${authorName}` },
       { status: 404 }
     )
   }
-  
+
   return HttpResponse.json(books)
 })
 
@@ -556,26 +556,26 @@ const getBooksByAuthor = http.get('/api/books/author/:author', async ({ params }
  */
 const searchBooksEndpoint = http.get('/api/search-books/', async ({ request }) => {
   await delay(300)
-  
+
   const url = new URL(request.url)
   const query = url.searchParams.get('q')
-  
+
   if (!query) {
     return HttpResponse.json(
       { error: 'Query parameter "q" is required.' },
       { status: 400 }
     )
   }
-  
+
   const results = searchBooks(query)
-  
+
   if (results.length === 0) {
     return HttpResponse.json(
       { message: 'No books found matching your query.' },
       { status: 404 }
     )
   }
-  
+
   return HttpResponse.json(results)
 })
 
@@ -584,7 +584,7 @@ const searchBooksEndpoint = http.get('/api/search-books/', async ({ request }) =
  */
 const getBookContent = http.get('/api/books/:id/content/', async ({ params }) => {
   await delay(200)
-  
+
   const bookId = parseInt(params.id as string)
   if (isNaN(bookId)) {
     return HttpResponse.json(
@@ -592,7 +592,7 @@ const getBookContent = http.get('/api/books/:id/content/', async ({ params }) =>
       { status: 400 }
     )
   }
-  
+
   const book = findBookById(bookId)
   if (!book) {
     return HttpResponse.json(
@@ -600,14 +600,14 @@ const getBookContent = http.get('/api/books/:id/content/', async ({ params }) =>
       { status: 404 }
     )
   }
-  
+
   if (!book.pdf_file) {
     return HttpResponse.json(
       { error: 'No PDF available for this book.' },
       { status: 404 }
     )
   }
-  
+
   return HttpResponse.json({
     title: book.title,
     author: book.author,
@@ -620,10 +620,13 @@ const getBookContent = http.get('/api/books/:id/content/', async ({ params }) =>
  */
 const getRatingStats = http.get('/api/rating-statistics/', async () => {
   await delay(200)
-  
+
   const stats = getRatingStatistics()
   return HttpResponse.json(stats)
 })
+
+
+
 
 /**
  * Export all book handlers

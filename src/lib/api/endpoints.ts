@@ -20,6 +20,7 @@ export const API_ENDPOINTS = {
   BOOKS: {
     LIST_APPROVED: '/api/list-approved-books/',
     GET_ALL: '/api/books/',
+    GET_MY_BOOKS: '/api/my-books/',
     SEARCH: '/api/search-books/',
     GET_BY_ID: (bookId: number) => `/api/books/${bookId}/`,
     GET_BY_AUTHOR: (authorName: string) => `/api/books/author/${encodeURIComponent(authorName)}/`,
