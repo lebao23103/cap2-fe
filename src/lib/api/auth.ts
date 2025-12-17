@@ -100,6 +100,10 @@ class AuthService {
     }
   }
 
+  async heartbeat() {
+    return apiClient.post('/api/heartbeat/');
+  }
+
   async forgotPassword(data: ForgotPasswordData): Promise<void> {
     await apiClient.post('/api/forgot-password/', data);
   }

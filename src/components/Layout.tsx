@@ -31,6 +31,7 @@ import {
   LogOut,
   StickyNote,
 } from 'lucide-react';
+import { useHeartbeat } from '../hooks/useHeartbeat';
 import { motion } from 'framer-motion';
 
 interface LayoutProps {
@@ -38,6 +39,7 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
+  useHeartbeat(); // Keep session alive
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();

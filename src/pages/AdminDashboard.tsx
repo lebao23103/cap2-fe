@@ -81,11 +81,13 @@ import {
   Image as ImageIcon,
   Flag, // NEW
   CheckSquare, // NEW
-  Info // NEW
+  Info, // NEW
+  MessageSquare // NEW
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import notesService from '../lib/api/notes' // NEW
+import commentsService from '@/lib/api/comments' // NEW
 import {
   BarChart,
   Bar,
@@ -136,6 +138,8 @@ export default function AdminDashboard() {
   // Moderation state
   const [flaggedNotes, setFlaggedNotes] = useState<any[]>([])
   const [loadingFlagged, setLoadingFlagged] = useState(false)
+  const [recentComments, setRecentComments] = useState<any[]>([]) // NEW
+  const [loadingComments, setLoadingComments] = useState(false) // NEW
 
   // Dialog state
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false)
@@ -204,12 +208,12 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     loadDashboardData()
-
-    // Real-time polling every 10 seconds
+    // Auto refresh every 30 seconds
     const interval = setInterval(() => {
-      loadDashboardData(true)
-    }, 10000)
-
+      if (activeTab === 'users' || activeTab === 'overview') {
+        loadDashboardData()
+      }
+    }, 30000)
     return () => clearInterval(interval)
   }, [])
 
@@ -217,6 +221,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (activeTab === 'moderation') {
       fetchFlaggedNotes()
+      fetchRecentComments() // NEW
     }
   }, [activeTab])
 
@@ -484,6 +489,37 @@ export default function AdminDashboard() {
     } finally {
       setLoadingFlagged(false)
     }
+  }
+
+  const fetchRecentComments = async () => {
+    setLoadingComments(true)
+    try {
+      const data = await commentsService.getAllComments(1)
+      setRecentComments(data.results)
+    } catch (error) {
+      console.error("Failed to fetch comments", error)
+    } finally {
+      setLoadingComments(false)
+    }
+  }
+
+  const handleDeleteComment = async (commentId: number) => {
+    confirm({
+      title: 'Delete Comment',
+      description: 'Are you sure you want to delete this comment?',
+      variant: 'danger',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        try {
+          await commentsService.deleteComment(commentId)
+          toast({ title: "Comment deleted" })
+          fetchRecentComments()
+        } catch (e) {
+          toast({ title: "Failed to delete", variant: "destructive" })
+        }
+      }
+    })
   }
 
   const handleModerateNote = async (noteId: number, action: 'restore' | 'delete') => {
@@ -1429,6 +1465,51 @@ export default function AdminDashboard() {
                             <Trash2 className="h-4 w-4 mr-2" /> DELETE
                           </Button>
                         </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Recent Comments Feed */}
+            <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden">
+              <CardHeader className="border-b-4 border-black dark:border-white bg-blue-800 text-white">
+                <CardTitle className="font-black uppercase flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5" />
+                  Recent Discussions Feed
+                </CardTitle>
+                <CardDescription className="font-mono text-gray-200">
+                  Monitor latest user comments across all notes
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-6">
+                {loadingComments ? (
+                  <div className="flex justify-center py-12"><Loader2 className="animate-spin h-8 w-8" /></div>
+                ) : recentComments.length === 0 ? (
+                  <div className="text-center py-12 text-gray-500">
+                    <MessageSquare className="h-12 w-12 mx-auto mb-3 opacity-20" />
+                    <p className="font-bold">No comments yet!</p>
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    {recentComments.map((comment: any) => (
+                      <div key={comment.id} className="border-2 border-black dark:border-white p-4 rounded-lg flex gap-4 bg-gray-50 dark:bg-zinc-800/50">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-black text-sm uppercase">{comment.user_name}</span>
+                            <span className="text-xs text-gray-500 font-mono">• {new Date(comment.created_at).toLocaleString()}</span>
+                          </div>
+                          <p className="text-sm">{comment.content}</p>
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="h-8 w-8 p-0 rounded-full shrink-0"
+                          onClick={() => handleDeleteComment(comment.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     ))}
                   </div>

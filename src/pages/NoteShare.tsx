@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
@@ -8,15 +7,16 @@ import {
   StickyNote,
   ChevronDown,
   Users,
-  Copy,
-  Check,
   Eye,
-  ThumbsUp,
+  MessageSquare,
+  Heart,
   AlertTriangle,
+  MoreHorizontal
 } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { CommentInline } from '@/components/CommentInline'
 
 import {
   DropdownMenu,
@@ -49,6 +49,7 @@ interface SharedNote {
   helpful_count: number
   awful_count: number
   status: string
+  user_vote?: 'helpful' | 'awful' | null
 }
 
 const filterOptions = ["All", "Recent", "System Books", "User Books"]
@@ -67,6 +68,10 @@ export default function NoteShare() {
     noteFilter: "All",
     searchTerm: ""
   })
+
+  // Comment Sheet State
+  const [activeNoteId, setActiveNoteId] = useState<number | null>(null)
+
   const { toast } = useToast()
 
   const fetchNotes = async () => {
@@ -343,7 +348,20 @@ export default function NoteShare() {
               >
                 {filteredNotes.length > 0 ? (
                   filteredNotes.map((note) => (
-                    <NoteCard key={note.id} note={note} navigate={navigate} onVote={handleVote} />
+                    <NoteCard
+                      key={note.id}
+                      note={note}
+                      navigate={navigate}
+                      onVote={handleVote}
+                      isCommentsOpen={activeNoteId === Number(note.id)}
+                      onToggleComments={() => {
+                        if (activeNoteId === Number(note.id)) {
+                          setActiveNoteId(null)
+                        } else {
+                          setActiveNoteId(Number(note.id))
+                        }
+                      }}
+                    />
                   ))
                 ) : (
                   <div className="text-center py-20 border-2 border-dashed border-border rounded-xl col-span-full">
@@ -355,12 +373,24 @@ export default function NoteShare() {
           </div>
         </motion.div>
       </div>
+
     </div>
   )
 }
 
-function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any, onVote: (id: string, type: 'helpful' | 'awful') => void }) {
-  const [copiedQuote, setCopiedQuote] = useState<boolean>(false)
+function NoteCard({
+  note,
+  navigate,
+  onVote,
+  isCommentsOpen,
+  onToggleComments
+}: {
+  note: SharedNote,
+  navigate: any,
+  onVote: (id: string, type: 'helpful' | 'awful') => void,
+  isCommentsOpen: boolean,
+  onToggleComments: () => void
+}) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [isQuoteExpanded, setIsQuoteExpanded] = useState(false)
 
@@ -397,13 +427,6 @@ function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any,
   const handleMouseLeave = () => {
     setOpacity(0)
     setRotation({ x: 0, y: 0 })
-  }
-
-  const copyQuoteToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text).then(() => {
-      setCopiedQuote(true)
-      setTimeout(() => setCopiedQuote(false), 2000)
-    })
   }
 
   // Vibrant Neo-Brutalist Colors
@@ -447,7 +470,7 @@ function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any,
         />
 
         {/* MAIN CARD CONTENT - Solid, sits on top */}
-        <div className="relative z-10 bg-card border-2 border-border dark:border-zinc-800 rounded-xl shadow-neo hover:shadow-neo-hover overflow-hidden flex flex-col h-full bg-white dark:bg-zinc-950 transition-all">
+        <div className="relative z-10 bg-card border-2 border-black dark:border-white p-5 h-full flex flex-col justify-between shadow-neo hover:shadow-neo-lg transition-all rounded-xl overflow-hidden group">
 
           {/* Header: User Info */}
           <div className="p-4 border-b-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between bg-gray-50 dark:bg-zinc-900">
@@ -521,46 +544,66 @@ function NoteCard({ note, navigate, onVote }: { note: SharedNote, navigate: any,
               </div>
             </div>
           </div>
-
-          {/* Footer: Actions */}
-          <div className="p-3 bg-gray-50 dark:bg-zinc-900 border-t-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1">
+          {/* Footer: User Actions usually found in community apps */}
+          <div className="mt-4 pt-3 border-t-2 border-dashed border-gray-200 dark:border-zinc-700 flex items-center justify-between">
+            <div className="flex items-center gap-2">
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 px-2 text-[10px] font-bold text-muted-foreground hover:text-green-600 hover:bg-green-50"
-                onClick={() => onVote(note.id, 'helpful')}
+                className={`h-8 min-w-[3rem] px-2 gap-1.5 hover:bg-red-50 hover:text-red-500 rounded-full transition-colors ${note.user_vote === 'helpful' ? 'text-red-500 bg-red-50' : 'text-muted-foreground'}`}
+                onClick={(e) => { e.stopPropagation(); onVote(note.id, 'helpful'); }}
               >
-                <ThumbsUp className="h-3 w-3 mr-1" /> {note.helpful_count || 0}
+                <Heart className={`h-4 w-4 ${note.user_vote === 'helpful' ? 'fill-current' : ''}`} />
+                <span className="font-bold font-mono text-xs">{note.helpful_count > 0 ? note.helpful_count : ''}</span>
               </Button>
+
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-7 px-2 text-[10px] font-bold text-muted-foreground hover:text-red-600 hover:bg-red-50"
-                onClick={() => onVote(note.id, 'awful')}
+                className={`h-8 w-8 p-0 rounded-full hover:bg-blue-50 hover:text-blue-500 transition-colors ${isCommentsOpen ? 'bg-blue-50 text-blue-500' : 'text-muted-foreground'}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggleComments();
+                }}
+                title="Discuss"
               >
-                <AlertTriangle className="h-3 w-3 mr-1" />
+                <MessageSquare className="h-4 w-4" />
               </Button>
             </div>
 
             <div className="flex items-center gap-2">
               <Button
+                size="sm"
                 variant="ghost"
-                size="sm"
-                className="h-7 w-7 p-0 rounded-full hover:bg-gray-200 dark:hover:bg-zinc-700"
-                onClick={() => copyQuoteToClipboard(note.noteText)}
-              >
-                {copiedQuote ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
-              </Button>
-              <Button
-                size="sm"
-                className="h-7 px-3 text-[10px] font-bold bg-black text-white dark:bg-white dark:text-black border border-transparent shadow-sm hover:translate-y-[-1px] transition-transform"
+                className="h-8 px-3 text-[10px] font-bold uppercase tracking-wider hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all rounded-full border border-transparent hover:border-black dark:hover:border-white"
                 onClick={() => navigate(`/book/${note.bookId}/read`, { state: { page: note.page, previewMode: true, previewNote: note } })}
               >
-                <Eye className="h-3 w-3 mr-1" /> VIEW
+                <Eye className="h-3 w-3 mr-1.5" />
+                View Context
               </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0 rounded-full text-muted-foreground hover:bg-accent">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-40 font-medium">
+                  <DropdownMenuItem
+                    className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer gap-2"
+                    onClick={(e) => { e.stopPropagation(); onVote(note.id, 'awful'); }}
+                  >
+                    <AlertTriangle className="h-4 w-4" />
+                    <span>Report Note</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
+
+          {/* Inline Comments */}
+          <CommentInline noteId={Number(note.id)} isOpen={isCommentsOpen} />
+
         </div>
       </motion.div>
     </motion.div>
