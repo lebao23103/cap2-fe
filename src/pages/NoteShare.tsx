@@ -400,7 +400,7 @@ function NoteCard({
   const [opacity, setOpacity] = useState(0)
 
   // Tilt State
-  const [rotation, setRotation] = useState({ x: 0, y: 0 })
+  // Removed to fix text blur
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!divRef.current) return
@@ -411,22 +411,10 @@ function NoteCard({
     // Spotlight calculation
     setPosition({ x: e.clientX - rect.left, y: e.clientY - rect.top })
     setOpacity(1)
-
-    // Tilt calculation (Max tilt 5 degrees)
-    const x = e.clientX - rect.left
-    const y = e.clientY - rect.top
-    const centerX = rect.width / 2
-    const centerY = rect.height / 2
-
-    const rotateX = ((y - centerY) / centerY) * -5 // Invert Y
-    const rotateY = ((x - centerX) / centerX) * 5
-
-    setRotation({ x: rotateX, y: rotateY })
   }
 
   const handleMouseLeave = () => {
     setOpacity(0)
-    setRotation({ x: 0, y: 0 })
   }
 
   // Vibrant Neo-Brutalist Colors
@@ -447,12 +435,13 @@ function NoteCard({
         ref={divRef}
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        animate={{
-          rotateX: rotation.x,
-          rotateY: rotation.y,
+        className="relative rounded-xl p-0 h-full group"
+        whileHover={{
+          y: -5,
+          scale: 1.01,
+          boxShadow: `8px 8px 0px 0px ${glowColor}`
         }}
-        transition={{ type: "spring", stiffness: 100, damping: 30, mass: 0.5 }}
-        className="relative rounded-xl p-0 transition-shadow duration-300 h-full group transform-gpu"
+        transition={{ type: "spring", stiffness: 300, damping: 20 }}
         style={{
           '--spotlight-color': glowColor,
         } as React.CSSProperties}
@@ -461,16 +450,16 @@ function NoteCard({
         <div
           className="absolute -inset-2 opacity-0 transition-opacity duration-300 rounded-xl z-0"
           style={{
-            opacity,
+            opacity: opacity * 0.7, // Reduce intensity slightly
             // A blurred, larger radial gradient that sits BEHIND the card
-            background: `radial-gradient(300px circle at ${position.x}px ${position.y}px, var(--spotlight-color), transparent 60%)`,
+            background: `radial-gradient(400px circle at ${position.x}px ${position.y}px, var(--spotlight-color), transparent 60%)`,
             // Blur it to make it look like light spilling out
-            filter: 'blur(15px)',
+            filter: 'blur(20px)',
           }}
         />
 
         {/* MAIN CARD CONTENT - Solid, sits on top */}
-        <div className="relative z-10 bg-card border-2 border-black dark:border-white p-5 h-full flex flex-col justify-between shadow-neo hover:shadow-neo-lg transition-all rounded-xl overflow-hidden group">
+        <div className="relative z-10 bg-card border-2 border-black dark:border-white p-5 h-full flex flex-col justify-between shadow-neo transition-all rounded-xl overflow-hidden group">
 
           {/* Header: User Info */}
           <div className="p-4 border-b-2 border-gray-100 dark:border-zinc-800 flex items-center justify-between bg-gray-50 dark:bg-zinc-900">
