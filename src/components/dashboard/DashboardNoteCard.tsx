@@ -25,7 +25,7 @@ export function DashboardNoteCard({ note, navigate, onTogglePublic }: DashboardN
     const topBorderClass = colorStyles[note.color] || 'border-t-gray-400'
 
     return (
-        <Card className={`border-2 border-border rounded-xl shadow-neo-sm overflow-hidden bg-card transition-all duration-300 hover:shadow-neo border-t-[6px] ${topBorderClass} group`}>
+        <Card className={`h-full flex flex-col border-2 border-border rounded-xl shadow-neo-sm overflow-hidden bg-card transition-all duration-300 hover:shadow-neo border-t-[6px] ${topBorderClass} group`}>
             {/* Header */}
             <CardHeader className="py-3 px-4 border-b-2 border-border/50 bg-muted/20 flex flex-row items-center justify-between">
                 <div className="min-w-0 pr-2">
@@ -51,7 +51,7 @@ export function DashboardNoteCard({ note, navigate, onTogglePublic }: DashboardN
                 </Button>
             </CardHeader>
 
-            <CardContent className="p-4 space-y-4">
+            <CardContent className="p-4 space-y-4 flex-1">
                 {/* Quoted Text */}
                 {note.selected_text && (
                     <div className="relative group/quote">
