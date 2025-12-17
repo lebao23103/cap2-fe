@@ -161,6 +161,34 @@ export default function AdminDashboard() {
   const [isSecurityOpen, setIsSecurityOpen] = useState(false)
   const [isContributorsOpen, setIsContributorsOpen] = useState(false)
 
+  // NEW: Activity Detail State
+  const [selectedDate, setSelectedDate] = useState<string | null>(null)
+  const [activityDetails, setActivityDetails] = useState<any | null>(null)
+  const [loadingDetails, setLoadingDetails] = useState(false)
+
+  const handleChartClick = async (data: any) => {
+    console.log("Chart Clicked:", data)
+    // Fix: Recharts AreaChart onClick often has undefined activePayload but valid activeLabel
+    if (data && (data.activeLabel || (data.activePayload && data.activePayload.length > 0))) {
+      // Use activeLabel first (it's the X-axis value, date string) or fallback to payload
+      const date = data.activeLabel || data.activePayload[0].payload.date
+
+      console.log("Selected Date:", date)
+      setSelectedDate(date)
+      setLoadingDetails(true)
+      try {
+        const details = await adminService.getDailyActivityDetails(date)
+        setActivityDetails(details)
+      } catch (e) {
+        toast({ title: 'Error', description: 'Failed to load details', variant: 'destructive' })
+      } finally {
+        setLoadingDetails(false)
+      }
+    } else {
+      console.log("No active payload or label found")
+    }
+  }
+
   // --- Pagination & Sorting State ---
   const ITEMS_PER_PAGE = 10
   const [userPage, setUserPage] = useState(1)
@@ -208,13 +236,6 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     loadDashboardData()
-    // Auto refresh every 30 seconds
-    const interval = setInterval(() => {
-      if (activeTab === 'users' || activeTab === 'overview') {
-        loadDashboardData()
-      }
-    }, 30000)
-    return () => clearInterval(interval)
   }, [])
 
   // Fetch flagged notes when tab is active
@@ -307,9 +328,7 @@ export default function AdminDashboard() {
       .slice(0, 5);
   }, [books]);
 
-  const recentUsers = useMemo(() => {
-    return [...users].sort((a, b) => b.id - a.id).slice(0, 5);
-  }, [users]);
+
 
 
 
@@ -821,60 +840,59 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-                {/* Daily Growth Trend (Replaces Traffic Peaks) */}
+                {/* Community Pulse (Stacked Area Chart) */}
                 <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl">
-                  <CardHeader className="py-3 px-4 border-b-4 border-black dark:border-white bg-green-100 dark:bg-green-900/30">
+                  <CardHeader className="py-3 px-4 border-b-4 border-black dark:border-white bg-pink-100 dark:bg-pink-900/30">
                     <CardTitle className="flex items-center gap-2 font-black uppercase text-black dark:text-white text-base">
-                      <TrendingUp className="h-4 w-4" />
-                      Daily Growth
+                      <Activity className="h-4 w-4" />
+                      Community Pulse
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button variant="ghost" size="sm" className="h-4 w-4 p-0 ml-1 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-gray-400 hover:text-black dark:hover:text-white">
                             <Info className="h-3 w-3" />
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-64 p-3 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)]">
+                        <PopoverContent className="w-64 p-3 bg-white dark:bg-zinc-900 border-2 border-black dark:border-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] z-50">
                           <h4 className="font-black uppercase text-xs mb-2 border-b-2 border-gray-100 dark:border-zinc-800 pb-1">Chart Details</h4>
-                          <ul className="space-y-2 text-xs font-mono">
-                            <li className="flex items-start gap-2">
-                              <span className="w-2 h-2 rounded-full bg-[#8884d8] mt-1 shrink-0" />
-                              <div>
-                                <span className="font-bold">New Users:</span>
-                                <p className="text-gray-500">Signups per day.</p>
-                              </div>
-                            </li>
-                            <li className="flex items-start gap-2">
-                              <span className="w-2 h-2 rounded-full bg-[#82ca9d] mt-1 shrink-0" />
-                              <div>
-                                <span className="font-bold">Activity:</span>
-                                <p className="text-gray-500">Total actions (Reviews + Books + Notes).</p>
-                              </div>
-                            </li>
+                          <p className="text-xs text-gray-500 mb-2">Track community engagement over the last 14 days.</p>
+                          <ul className="space-y-1 text-[10px] font-mono uppercase font-bold">
+                            <li className="flex items-center gap-2"><span className="w-3 h-3 bg-purple-500 rounded-sm"></span> Comments</li>
+                            <li className="flex items-center gap-2"><span className="w-3 h-3 bg-blue-500 rounded-sm"></span> Notes</li>
+                            <li className="flex items-center gap-2"><span className="w-3 h-3 bg-green-500 rounded-sm"></span> Reviews</li>
                           </ul>
+                          <p className="mt-2 text-[10px] italic text-gray-400">* Click on any data point to view detailed activity logs.</p>
                         </PopoverContent>
                       </Popover>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="p-4">
                     <ResponsiveContainer width="100%" height={180}>
-                      <AreaChart data={dailyStats}>
+                      <AreaChart data={dailyStats} onClick={handleChartClick} className="cursor-pointer">
                         <defs>
-                          <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                            <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                          <linearGradient id="colorComments" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.8} />
+                            <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                           </linearGradient>
-                          <linearGradient id="colorInteractions" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
-                            <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+                          <linearGradient id="colorNotes" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
+                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                          </linearGradient>
+                          <linearGradient id="colorReviews" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8} />
+                            <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                           </linearGradient>
                         </defs>
                         <XAxis dataKey="date" tick={{ fontSize: 9 }} tickFormatter={(val) => val.slice(5)} interval={1} />
-                        <Tooltip contentStyle={{ borderRadius: '8px', border: '2px solid black' }} />
-                        <Area type="monotone" dataKey="new_users" stroke="#8884d8" fillOpacity={1} fill="url(#colorUsers)" strokeWidth={2} name="New Users" />
-                        <Area type="monotone" dataKey="interactions" stroke="#82ca9d" fillOpacity={1} fill="url(#colorInteractions)" strokeWidth={2} name="Activity" />
+                        <Tooltip
+                          contentStyle={{ borderRadius: '8px', border: '2px solid black', fontSize: '12px' }}
+                          labelStyle={{ fontWeight: 'bold', textTransform: 'uppercase' }}
+                        />
+                        <Area type="monotone" stackId="1" dataKey="new_comments" stroke="#8b5cf6" fill="url(#colorComments)" name="Comments" />
+                        <Area type="monotone" stackId="1" dataKey="new_notes" stroke="#3b82f6" fill="url(#colorNotes)" name="Notes" />
+                        <Area type="monotone" stackId="1" dataKey="new_reviews" stroke="#22c55e" fill="url(#colorReviews)" name="Reviews" />
                       </AreaChart>
                     </ResponsiveContainer>
-                    <p className="text-center text-[10px] font-bold text-gray-500 uppercase mt-2">14-Day Performance</p>
+                    <p className="text-center text-[10px] font-bold text-gray-500 uppercase mt-2 animate-pulse">Click chart for details</p>
                   </CardContent>
                 </Card>
 
@@ -906,42 +924,44 @@ export default function AdminDashboard() {
               {/* ROW 3: New Members (1/3) + Activity Logs (2/3) */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                {/* Recent Users */}
+                {/* Daily Growth Trend (User Growth & Activity) */}
                 <Card className="lg:col-span-1 border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl">
-                  <CardHeader className="py-3 px-4 border-b-4 border-black dark:border-white bg-purple-100 dark:bg-purple-900/30">
+                  <CardHeader className="py-3 px-4 border-b-4 border-black dark:border-white bg-green-100 dark:bg-green-900/30">
                     <CardTitle className="flex items-center gap-2 font-black uppercase text-black dark:text-white text-base">
-                      <UserPlus className="h-4 w-4" />
-                      New Members
+                      <TrendingUp className="h-4 w-4" />
+                      User Growth
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="p-0">
-                    <div className="divide-y divide-gray-100 dark:divide-zinc-800">
-                      {recentUsers.map(user => {
-                        return (
-                          <div key={user.id} className="p-3 flex items-center gap-3 hover:bg-purple-50 dark:hover:bg-purple-900/10 transition-colors">
-                            <div className="h-10 w-10 rounded-lg bg-purple-200 border-2 border-black flex items-center justify-center font-black text-sm relative">
-                              {getDisplayName(user).charAt(0).toUpperCase()}
-                              {/* Online Status Dot */}
-                              {/* Online Status Dot */}
-                              <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white ${user.is_online ? 'bg-green-500' : 'bg-gray-400'}`} />
-                            </div>
-                            <div className="flex-1 min-w-0 flex flex-col justify-center">
-                              <div className="flex flex-col">
-                                <span className="text-sm font-black truncate">{getDisplayName(user)}</span>
-                                <span className="text-[10px] text-gray-500 truncate font-mono">{user.email}</span>
-                              </div>
-                            </div>
-                            {user.is_staff ? (
-                              <Badge className="bg-black text-white text-[10px]">ADMIN</Badge>
-                            ) : (
-                              <Badge className="bg-white border-2 border-black text-black text-[10px] hover:bg-gray-100">MEMBER</Badge>
-                            )}
-                          </div>
-                        )
-                      })}
+                  <CardContent className="p-4">
+                    <ResponsiveContainer width="100%" height={250}>
+                      <AreaChart data={dailyStats}>
+                        <defs>
+                          <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                            <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
+                          </linearGradient>
+                          <linearGradient id="colorInteractions" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor="#82ca9d" stopOpacity={0.8} />
+                            <stop offset="95%" stopColor="#82ca9d" stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <XAxis dataKey="date" tick={{ fontSize: 10 }} tickFormatter={(val) => val.slice(5)} interval={2} />
+                        <Tooltip contentStyle={{ borderRadius: '8px', border: '2px solid black', fontSize: '12px' }} />
+                        <Area type="monotone" dataKey="new_users" stroke="#8884d8" fillOpacity={1} fill="url(#colorUsers)" strokeWidth={2} name="New Users" />
+                        <Area type="monotone" dataKey="interactions" stroke="#82ca9d" fillOpacity={1} fill="url(#colorInteractions)" strokeWidth={2} name="Activity" />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                    <div className="flex justify-center gap-4 mt-2">
+                      <div className="flex items-center gap-1 text-[10px] font-bold uppercase">
+                        <span className="w-2 h-2 bg-[#8884d8] rounded-full"></span> New Users
+                      </div>
+                      <div className="flex items-center gap-1 text-[10px] font-bold uppercase">
+                        <span className="w-2 h-2 bg-[#82ca9d] rounded-full"></span> Interactions
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
+
 
                 {/* System Live Logs (Aggregated) */}
                 <Card className="col-span-1 lg:col-span-2 border-4 border-black dark:border-white bg-black text-white shadow-[4px_4px_0px_0px_rgba(128,128,128,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden flex flex-col">
@@ -955,7 +975,7 @@ export default function AdminDashboard() {
                       Real-time
                     </Badge>
                   </CardHeader>
-                  <CardContent className="p-0 h-[300px] overflow-y-auto custom-scrollbar bg-black text-green-400 font-mono text-xs p-4">
+                  <CardContent className="p-0 h-[300px] overflow-y-auto bg-black text-green-400 font-mono text-xs p-4">
                     {systemLogs.length > 0 ? (
                       <div className="space-y-1">
                         {systemLogs.map((log, idx) => (
@@ -1000,14 +1020,14 @@ export default function AdminDashboard() {
                   </CardContent>
                 </Card>
 
-              </div>
+              </div >
 
-            </div>
-          </TabsContent>
+            </div >
+          </TabsContent >
 
 
           {/* Users Tab */}
-          <TabsContent value="users" className="space-y-6">
+          < TabsContent value="users" className="space-y-6" >
             <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden">
               <CardHeader className="border-b-4 border-black dark:border-white bg-blue-100 dark:bg-blue-900/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
@@ -1157,10 +1177,10 @@ export default function AdminDashboard() {
                 </div>
               )}
             </Card>
-          </TabsContent>
+          </TabsContent >
 
           {/* Books Tab */}
-          <TabsContent value="books" className="space-y-6">
+          < TabsContent value="books" className="space-y-6" >
             <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden">
               <CardHeader className="border-b-4 border-black dark:border-white bg-green-100 dark:bg-green-900/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
@@ -1312,10 +1332,10 @@ export default function AdminDashboard() {
                 </div>
               )}
             </Card>
-          </TabsContent>
+          </TabsContent >
 
           {/* Pending Approvals Tab */}
-          <TabsContent value="pending" className="space-y-6">
+          < TabsContent value="pending" className="space-y-6" >
             <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden">
               <CardHeader className="border-b-4 border-black dark:border-white bg-red-100 dark:bg-red-900/30">
                 <CardTitle className="font-black uppercase flex items-center gap-2 text-black dark:text-white">
@@ -1409,10 +1429,10 @@ export default function AdminDashboard() {
                 )}
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent >
 
           {/* Moderation Tab */}
-          <TabsContent value="moderation" className="space-y-6">
+          < TabsContent value="moderation" className="space-y-6" >
             <Card className="border-4 border-black dark:border-white bg-white dark:bg-zinc-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_0px_rgba(255,255,255,1)] rounded-xl overflow-hidden">
               <CardHeader className="border-b-4 border-black dark:border-white bg-red-800 text-white">
                 <CardTitle className="font-black uppercase flex items-center gap-2">
@@ -1432,7 +1452,7 @@ export default function AdminDashboard() {
                     <p className="font-bold">No flagged content!</p>
                   </div>
                 ) : (
-                  <div className="grid gap-4">
+                  <div className="space-y-4 max-h-[600px] overflow-y-auto pr-2">
                     {flaggedNotes.map((note) => (
                       <div key={note.id} className="border-4 border-black dark:border-white p-4 rounded-xl flex flex-col md:flex-row gap-4 justify-between items-start bg-white dark:bg-zinc-800 shadow-sm">
                         <div className="flex-1">
@@ -1492,7 +1512,7 @@ export default function AdminDashboard() {
                     <p className="font-bold">No comments yet!</p>
                   </div>
                 ) : (
-                  <div className="grid gap-4">
+                  <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2">
                     {recentComments.map((comment: any) => (
                       <div key={comment.id} className="border-2 border-black dark:border-white p-4 rounded-lg flex gap-4 bg-gray-50 dark:bg-zinc-800/50">
                         <div className="flex-1">
@@ -1516,12 +1536,12 @@ export default function AdminDashboard() {
                 )}
               </CardContent>
             </Card>
-          </TabsContent>
-        </Tabs>
-      </main>
+          </TabsContent >
+        </Tabs >
+      </main >
 
       {/* Create User Dialog */}
-      <Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen}>
+      < Dialog open={isCreateUserOpen} onOpenChange={setIsCreateUserOpen} >
         <DialogContent className="border-4 border-black dark:border-white rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
           <DialogHeader className="border-b-4 border-black dark:border-white pb-4">
             <DialogTitle className="font-black uppercase flex items-center gap-2">
@@ -1580,10 +1600,10 @@ export default function AdminDashboard() {
             </DialogFooter>
           </form>
         </DialogContent>
-      </Dialog>
+      </Dialog >
 
       {/* Edit User Dialog */}
-      <Dialog open={isEditUserOpen} onOpenChange={setIsEditUserOpen}>
+      < Dialog open={isEditUserOpen} onOpenChange={setIsEditUserOpen} >
         <DialogContent className="border-4 border-black dark:border-white rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] dark:shadow-[8px_8px_0px_0px_rgba(255,255,255,1)] bg-white dark:bg-zinc-900 text-black dark:text-white">
           <DialogHeader className="border-b-4 border-black dark:border-white pb-4">
             <DialogTitle className="font-black uppercase flex items-center gap-2">
@@ -1655,7 +1675,7 @@ export default function AdminDashboard() {
             </DialogFooter>
           </form>
         </DialogContent>
-      </Dialog>
+      </Dialog >
 
 
 
@@ -1990,7 +2010,7 @@ export default function AdminDashboard() {
       />
 
       {/* Security Monitor Dialog */}
-      <Dialog open={isSecurityOpen} onOpenChange={setIsSecurityOpen}>
+      < Dialog open={isSecurityOpen} onOpenChange={setIsSecurityOpen} >
         <DialogContent className="max-w-2xl border-4 border-black dark:border-white bg-white dark:bg-zinc-900 p-6">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 font-black uppercase text-2xl">
@@ -2093,12 +2113,12 @@ export default function AdminDashboard() {
             </div>
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog >
 
 
 
       {/* Top Contributors Dialog */}
-      <Dialog open={isContributorsOpen} onOpenChange={setIsContributorsOpen}>
+      < Dialog open={isContributorsOpen} onOpenChange={setIsContributorsOpen} >
         <DialogContent className="max-w-2xl border-4 border-black dark:border-white bg-white dark:bg-zinc-900 p-6">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 font-black uppercase text-2xl">
@@ -2109,7 +2129,7 @@ export default function AdminDashboard() {
               Breakdown of top authors and their library contributions.
             </DialogDescription>
           </DialogHeader>
-          <div className="mt-4 space-y-4 max-h-[500px] overflow-y-auto custom-scrollbar">
+          <div className="mt-4 space-y-4 max-h-[500px] overflow-y-auto">
             {topAuthorsData.map((author, idx) => (
               <div key={idx} className="border-2 border-gray-100 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
@@ -2136,10 +2156,99 @@ export default function AdminDashboard() {
             ))}
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog >
+
+      {/* Activity Details Dialog */}
+      < Dialog open={!!selectedDate} onOpenChange={(open) => !open && setSelectedDate(null)}>
+        <DialogContent className="max-w-2xl border-4 border-black dark:border-white bg-white dark:bg-zinc-900 p-6 max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader className="border-b-4 border-black dark:border-white pb-4 mb-4">
+            <DialogTitle className="flex items-center gap-2 font-black uppercase text-2xl">
+              <Activity className="h-6 w-6 text-pink-500" />
+              Activity: {selectedDate}
+            </DialogTitle>
+            <DialogDescription>Detailed breakdown of community engagement.</DialogDescription>
+          </DialogHeader>
+
+          {loadingDetails ? (
+            <div className="flex justify-center py-10"><Loader2 className="h-8 w-8 animate-spin" /></div>
+          ) : activityDetails ? (
+            <Tabs defaultValue="comments" className="flex-1 overflow-hidden flex flex-col">
+              <TabsList className="w-full grid grid-cols-4 bg-muted/20 p-1 border-2 border-black dark:border-white rounded-lg mb-2">
+                <TabsTrigger value="comments" className="font-bold uppercase text-[10px]">Comments ({activityDetails.comments.length})</TabsTrigger>
+                <TabsTrigger value="notes" className="font-bold uppercase text-[10px]">Notes ({activityDetails.notes.length})</TabsTrigger>
+                <TabsTrigger value="reviews" className="font-bold uppercase text-[10px]">Reviews ({activityDetails.reviews.length})</TabsTrigger>
+                <TabsTrigger value="users" className="font-bold uppercase text-[10px]">Users ({activityDetails.users.length})</TabsTrigger>
+              </TabsList>
+
+              <div className="flex-1 overflow-y-auto pr-2">
+                <TabsContent value="comments" className="space-y-3 mt-0">
+                  {activityDetails.comments.length === 0 && <p className="text-center text-sm text-gray-500 py-4">No comments.</p>}
+                  {activityDetails.comments.map((c: any) => (
+                    <div key={c.id} className="p-3 border-2 border-gray-100 dark:border-zinc-800 rounded-lg bg-pink-50 dark:bg-pink-900/10">
+                      <div className="flex justify-between mb-1">
+                        <span className="font-bold text-xs">{c.user}</span>
+                        <span className="text-[10px] font-mono text-gray-500">{c.time}</span>
+                      </div>
+                      <p className="text-sm italic">"{c.content}"</p>
+                      <div className="mt-1 text-[10px] font-bold text-gray-400 uppercase">On: {c.book}</div>
+                    </div>
+                  ))}
+                </TabsContent>
+
+                <TabsContent value="notes" className="space-y-3 mt-0">
+                  {activityDetails.notes.length === 0 && <p className="text-center text-sm text-gray-500 py-4">No notes.</p>}
+                  {activityDetails.notes.map((n: any) => (
+                    <div key={n.id} className="p-3 border-2 border-gray-100 dark:border-zinc-800 rounded-lg bg-blue-50 dark:bg-blue-900/10">
+                      <div className="flex justify-between mb-1">
+                        <span className="font-bold text-xs">{n.user}</span>
+                        <span className="text-[10px] font-mono text-gray-500">{n.time}</span>
+                      </div>
+                      <div className="text-xs bg-white dark:bg-black/20 p-2 rounded border border-gray-200 mb-2 italic">
+                        "{n.selected_text}"
+                      </div>
+                      <p className="text-sm font-bold">{n.note_content}</p>
+                      <div className="mt-1 text-[10px] uppercase text-gray-400 flex gap-2">
+                        <span>Bk: {n.book}</span>
+                        <span>{n.is_public ? '(Public)' : '(Private)'}</span>
+                      </div>
+                    </div>
+                  ))}
+                </TabsContent>
+
+                <TabsContent value="reviews" className="space-y-3 mt-0">
+                  {activityDetails.reviews.length === 0 && <p className="text-center text-sm text-gray-500 py-4">No reviews.</p>}
+                  {activityDetails.reviews.map((r: any) => (
+                    <div key={r.id} className="p-3 border-2 border-gray-100 dark:border-zinc-800 rounded-lg bg-green-50 dark:bg-green-900/10">
+                      <div className="flex justify-between mb-1">
+                        <span className="font-bold text-xs">{r.user}</span>
+                        <span className="flex items-center gap-1 text-yellow-600 font-bold text-xs"><Star className="h-3 w-3 fill-current" /> {r.rating}</span>
+                      </div>
+                      <p className="text-sm">"{r.comment}"</p>
+                      <div className="mt-1 text-[10px] font-bold text-gray-400 uppercase">Book: {r.book}</div>
+                    </div>
+                  ))}
+                </TabsContent>
+
+                <TabsContent value="users" className="space-y-3 mt-0">
+                  {activityDetails.users.length === 0 && <p className="text-center text-sm text-gray-500 py-4">No new users.</p>}
+                  {activityDetails.users.map((u: any) => (
+                    <div key={u.id} className="p-3 border-2 border-gray-100 dark:border-zinc-800 rounded-lg flex items-center justify-between">
+                      <div>
+                        <p className="font-bold text-sm">{u.username}</p>
+                        <p className="text-xs text-gray-500">{u.email}</p>
+                      </div>
+                      <span className="font-mono text-xs font-bold border-2 border-black px-2 py-0.5 rounded">{u.time}</span>
+                    </div>
+                  ))}
+                </TabsContent>
+              </div>
+            </Tabs>
+          ) : null}
+        </DialogContent>
+      </Dialog >
 
       {/* Confirm Dialog for Delete/Reject actions */}
-      <ConfirmDialog />
+      < ConfirmDialog />
     </div >
   )
 }

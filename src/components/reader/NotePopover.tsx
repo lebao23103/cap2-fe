@@ -155,7 +155,7 @@ export default function NotePopover({
 
                         <div>
                             <span className={`text-[10px] uppercase font-bold opacity-50 block mb-1 ${currentTheme.text}`}>Your Note</span>
-                            <div className={`font-sans text-sm whitespace-pre-wrap min-h-[40px] max-h-[120px] overflow-y-auto custom-scrollbar ${currentTheme.text}`}>
+                            <div className={`font-sans text-sm whitespace-pre-wrap min-h-[40px] max-h-[120px] overflow-y-auto ${currentTheme.text}`}>
                                 {note.note}
                             </div>
                         </div>

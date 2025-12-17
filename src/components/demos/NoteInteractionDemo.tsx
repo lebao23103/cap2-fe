@@ -204,7 +204,7 @@ export default function NoteInteractionDemo() {
 
                                                     <div>
                                                         <span className="text-[10px] uppercase font-bold opacity-50 block mb-1 text-slate-900">Your Note</span>
-                                                        <div className="text-xs font-sans leading-relaxed min-h-[40px] max-h-[120px] overflow-y-auto custom-scrollbar text-slate-900">
+                                                        <div className="text-xs font-sans leading-relaxed min-h-[40px] max-h-[120px] overflow-y-auto text-slate-900">
                                                             {notes[0].note}
                                                         </div>
                                                     </div>

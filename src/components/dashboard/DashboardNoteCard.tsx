@@ -60,7 +60,7 @@ export function DashboardNoteCard({ note, navigate, onTogglePublic }: DashboardN
               pl-3 border-l-4 border-primary/50 dark:border-primary/30 
               bg-amber-50/50 dark:bg-amber-900/10 rounded-r-lg p-3
               transition-all duration-200
-              ${!isQuoteExpanded ? 'line-clamp-4' : 'max-h-60 overflow-y-auto custom-scrollbar pr-1'}
+              ${!isQuoteExpanded ? 'line-clamp-4' : 'max-h-60 overflow-y-auto pr-1'}
             `}>
                             "{note.selected_text}"
                         </div>
@@ -79,7 +79,7 @@ export function DashboardNoteCard({ note, navigate, onTogglePublic }: DashboardN
                 <div>
                     <p className={`
             font-mono text-sm font-bold leading-relaxed text-foreground
-             ${!isNoteExpanded ? 'line-clamp-4' : 'max-h-60 overflow-y-auto custom-scrollbar pr-1'}
+             ${!isNoteExpanded ? 'line-clamp-4' : 'max-h-60 overflow-y-auto pr-1'}
           `}>
                         {note.note_content}
                     </p>

@@ -1713,13 +1713,13 @@ export default function BookReader() {
                       </div>
 
                       <div className="flex-1 min-h-0 bg-transparent flex flex-col w-full overflow-hidden">
-                        <TabsContent value="all" className="flex-1 overflow-y-auto overflow-x-hidden m-0 !mt-0 outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none w-full [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent" style={{ marginTop: 0 }}>
+                        <TabsContent value="all" className="flex-1 overflow-y-auto overflow-x-hidden m-0 !mt-0 outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none w-full" style={{ marginTop: 0 }}>
                           {renderNotesList(notes)}
                         </TabsContent>
-                        <TabsContent value="private" className="flex-1 overflow-y-auto overflow-x-hidden m-0 !mt-0 outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none w-full [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent" style={{ marginTop: 0 }}>
+                        <TabsContent value="private" className="flex-1 overflow-y-auto overflow-x-hidden m-0 !mt-0 outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none w-full" style={{ marginTop: 0 }}>
                           {renderNotesList(notes.filter(n => !n.isPublic))}
                         </TabsContent>
-                        <TabsContent value="shared" className="flex-1 overflow-y-auto overflow-x-hidden m-0 !mt-0 outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none w-full [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent" style={{ marginTop: 0 }}>
+                        <TabsContent value="shared" className="flex-1 overflow-y-auto overflow-x-hidden m-0 !mt-0 outline-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none w-full" style={{ marginTop: 0 }}>
                           {renderNotesList(notes.filter(n => n.isPublic))}
                         </TabsContent>
                       </div>

@@ -36,6 +36,17 @@ export interface DailyStats {
     new_users: number;
     new_books: number;
     interactions: number;
+    new_comments: number; // NEW
+    new_notes: number; // NEW
+    new_reviews: number; // NEW
+}
+
+export interface DailyActivityDetail {
+    comments: Array<{ id: number; user: string; content: string; book: string; time: string }>;
+    notes: Array<{ id: number; user: string; note_content: string; selected_text: string; book: string; is_public: boolean; time: string }>;
+    reviews: Array<{ id: number; user: string; rating: number; comment: string; book: string; time: string }>;
+    users: Array<{ id: number; username: string; email: string; time: string }>;
+    date: string;
 }
 
 export interface SystemLog {
@@ -129,6 +140,11 @@ class AdminService {
 
     async getDailyStats(): Promise<DailyStats[]> {
         const response = await apiClient.get('/api/admin/stats/daily/');
+        return response.data;
+    }
+
+    async getDailyActivityDetails(date: string): Promise<DailyActivityDetail> {
+        const response = await apiClient.get(`/api/admin/dashboard/activity-details/?date=${date}`);
         return response.data;
     }
 

@@ -490,7 +490,7 @@ function NoteCard({
           <div className="p-5 flex-1">
             {/* Quote Block */}
             <div className={`relative bg-amber-50 dark:bg-amber-900/20 border-l-4 border-primary pl-4 pr-3 py-3 mb-4 rounded-r-lg group-hover:border-black dark:group-hover:border-amber-400 transition-colors`}>
-              <p className={`font-serif text-sm italic text-foreground/90 leading-relaxed ${!isQuoteExpanded ? 'line-clamp-4' : 'max-h-60 overflow-y-auto pr-1 custom-scrollbar'}`}>
+              <p className={`font-serif text-sm italic text-foreground/90 leading-relaxed ${!isQuoteExpanded ? 'line-clamp-4' : 'max-h-60 overflow-y-auto pr-1'}`}>
                 "{note.noteText}"
               </p>
               {note.noteText.length > 200 && (
@@ -508,7 +508,7 @@ function NoteCard({
 
             {/* User Comment */}
             <div className="mb-4">
-              <p className={`text-sm font-bold text-foreground leading-relaxed ${!isExpanded ? 'line-clamp-4' : 'max-h-60 overflow-y-auto pr-1 custom-scrollbar'}`}>
+              <p className={`text-sm font-bold text-foreground leading-relaxed ${!isExpanded ? 'line-clamp-4' : 'max-h-60 overflow-y-auto pr-1'}`}>
                 {note.userNote}
               </p>
               {note.userNote.length > 150 && (
