@@ -39,6 +39,7 @@ import {
   Copy,
   Highlighter,
   Search,
+  RefreshCw,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -245,14 +246,34 @@ export default function BookReader() {
         totalPages: numPages || bookDetails.pages || 10, // Prefer API pages if PDF not loaded
         currentPage: location.state?.page || (() => {
           const bookHistory = Array.isArray(history) ? history.filter((h: any) => h.book_id === Number(id)) : []
-          const maxPage = bookHistory.length > 0 ? Math.max(...bookHistory.map((h: any) => h.page_number)) : 1
 
-          // Sync UI state
-          if (!location.state?.page) {
-            setCurrentPage(maxPage)
+          // Logic Change: Sort by 'updated_at' descending to get the LATEST read page,
+          // instead of the 'furthest' page. This allows users to manual sync to an earlier position.
+          // Assuming backend returns 'updated_at'. If not present, fallback to ID (usually higher ID = newer).
+          const latestEntry = bookHistory.sort((a: any, b: any) => {
+            return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+          })[0]
+
+          const initialPage = latestEntry ? latestEntry.page_number : 1
+
+          // Initialize maxPageRef with the *MAX* page found in history, 
+          // to prevent auto-saving if we are just reviewing.
+          // BUT - if we just manually synced, we might want to respect that?
+          // Actually, if I sync to page 50, and my history has 100...
+          // If I persist "100" as maxPageRef, then reading 51 won't save. 
+          // That's bad.
+          // Correct Logic: maxPageRef should start at the CURRENT loaded page,
+          // OR we should trust the user's manual sync as the new "truth".
+
+          // Let's set maxPageRef to the initialPage. 
+          // If there WAS a "further" page (100) but I synced to 50, 
+          // clearly I want to resume from 50.
+          // Anything > 50 should trigger a save.
+          if (maxPageRef.current < initialPage) {
+            maxPageRef.current = initialPage
           }
 
-          return maxPage
+          return initialPage
         })(),
 
         readingProgress: (() => {
@@ -281,6 +302,7 @@ export default function BookReader() {
       }
 
       setBookData(transformedBook)
+      setCurrentPage(transformedBook.currentPage) // Sync valid page
       console.log('PDF Content Response:', pdfContent)
 
       // Set PDF URL if available
@@ -350,45 +372,7 @@ export default function BookReader() {
     }
   }
 
-  // ... (existing code) ...
 
-  // This is a placeholder for where the Book Info card would be rendered in the JSX.
-  // The actual placement would be within the component's return statement.
-  // Assuming themeStyles and renderStars are defined elsewhere in the component.
-  // For the purpose of this edit, we're placing it here as per the instruction's context.
-  {/* Book Info - Compact Redesign */ }
-  {/* This JSX block would typically be inside the component's `return` statement */ }
-  {/* and integrated with other UI elements, likely within a sidebar or main content area. */ }
-  {/* For this edit, it's placed here as a direct replacement based on the provided snippet. */ }
-  {/* <Card className={`shrink-0 border-2 ${themeStyles.border} shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)] overflow-hidden rounded-xl ${themeStyles.cardBg}`}>
-    <CardContent className="p-0">
-      <div className={`px-3 py-2 border-b ${themeStyles.border} ${themeStyles.navBg}`}>
-        <div className="flex items-center justify-between mb-1">
-          <span className={`text-[10px] font-bold uppercase tracking-wider ${themeStyles.text} opacity-70`}>Progress</span>
-          <span className={`text-xs font-bold font-mono ${themeStyles.text}`}>{bookData?.readingProgress || 0}%</span>
-        </div>
-        <Progress value={bookData?.readingProgress || 0} className={`h-2 border ${themeStyles.border} rounded-full [&>div]:bg-primary`} />
-      </div>
-      
-      <div className={`grid grid-cols-2 divide-x ${theme === 'dark' ? 'divide-gray-600' : theme === 'sepia' ? 'divide-[#8b7355]' : 'divide-black'}`}>
-        <div className="p-2 flex flex-col items-center justify-center">
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <Clock className={`h-3.5 w-3.5 ${themeStyles.text} opacity-70`} />
-            <span className={`text-xs font-bold font-mono ${themeStyles.text}`}>{bookData?.readingTime || '0m'}</span>
-          </div>
-          <span className={`text-[9px] uppercase font-bold tracking-tight ${theme === 'dark' ? 'text-gray-400' : theme === 'sepia' ? 'text-[#8b7355]' : 'text-gray-500'}`}>Reading Time</span>
-        </div>
-        
-        <div className="p-2 flex flex-col items-center justify-center">
-          <div className="flex items-center gap-1 mb-0.5">
-            {renderStars(bookData?.rating || 0)}
-            <span className={`ml-1 text-xs font-bold font-mono ${themeStyles.text}`}>{bookData?.rating || 0}</span>
-          </div>
-          <span className={`text-[9px] uppercase font-bold tracking-tight ${theme === 'dark' ? 'text-gray-400' : theme === 'sepia' ? 'text-[#8b7355]' : 'text-gray-500'}`}>Rating</span>
-        </div>
-      </div>
-    </CardContent>
-  </Card> */}
 
   useEffect(() => {
     if (bookData) {
@@ -463,30 +447,69 @@ export default function BookReader() {
     }
   }
 
-  const updateReadingProgress = async (page: number) => {
+  // Ref for debouncing progress saves
+  const progressTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  // Ref for Smart Progress (furthest page tracking)
+  const maxPageRef = useRef<number>(1)
+
+  // Clear timeout on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (progressTimeoutRef.current) {
+        clearTimeout(progressTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  const updateReadingProgress = async (page: number, force: boolean = false) => {
     if (!bookData) return
 
     const progress = Math.round((page / bookData.totalPages) * 100)
 
-    // Update local state
+    // Update local state IMMEDIATELY so UI is snappy
     setBookData(prev => prev ? {
       ...prev,
       currentPage: page,
       readingProgress: progress
     } : null)
 
-    // Update backend
-    try {
-      await fetch(`/api/reading-history/${id}/update/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        },
-        body: JSON.stringify({ page_number: page })
-      })
-    } catch (error) {
-      console.error('Failed to save progress', error)
+    // Smart Progress Logic:
+    // Only save if user has advanced BEYOND their furthest reached page.
+    // OR if 'force' is true (Manual Sync).
+    if (!force && page <= maxPageRef.current) {
+      return
+    }
+
+    // Update furthest page reached
+    maxPageRef.current = page
+
+    // Debounce Backend API Call
+    // If user changes page again within 2 seconds (e.g. skimming or accidental click),
+    // the previous timer is cleared and the save is cancelled.
+    if (progressTimeoutRef.current) {
+      clearTimeout(progressTimeoutRef.current)
+    }
+
+    const saveToBackend = async () => {
+      try {
+        await fetch(`/api/reading-history/${id}/update/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+          },
+          body: JSON.stringify({ page_number: page })
+        })
+        // console.log(`[SmartSave] Saved page ${page} to backend (Force: ${force})`)
+      } catch (error) {
+        console.error('Failed to save reading progress', error)
+      }
+    }
+
+    if (force) {
+      saveToBackend()
+    } else {
+      progressTimeoutRef.current = setTimeout(saveToBackend, 2000)
     }
   }
 
@@ -1105,6 +1128,26 @@ export default function BookReader() {
           </div>
 
           <div className="flex items-center gap-1 md:gap-2">
+            {/* Manual Sync Button - Moved to Navbar for persistence */}
+            {currentPage < maxPageRef.current && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  updateReadingProgress(currentPage, true)
+                  toast({
+                    title: "Progress Synced",
+                    description: `Reading progress reset to page ${currentPage}.`,
+                  })
+                }}
+                className={`h-9 px-2.5 rounded-lg border-2 border-black/20 bg-yellow-400 text-black hover:bg-yellow-500 font-bold uppercase text-[10px] shadow-[2px_2px_0_0_rgba(0,0,0,1)] animate-in fade-in zoom-in duration-300 mr-2`}
+                title="Sync progress to this page"
+              >
+                <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                Sync Here
+              </Button>
+            )}
+
             {bookData?.hasQuiz && (
               <Button
                 variant="ghost"
@@ -1435,6 +1478,7 @@ export default function BookReader() {
 
                   {/* Navigation Bar */}
                   <div className={`px-4 pr-20 py-2 border-t-4 ${themeStyles.border} flex items-center justify-between ${themeStyles.navBg} absolute bottom-0 left-0 right-0 z-20 shadow-neo-sm h-14 gap-2 sm:gap-4`}>
+
                     <Button
                       variant="ghost"
                       onClick={() => handlePageChange('prev')}

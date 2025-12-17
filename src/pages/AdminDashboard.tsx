@@ -541,6 +541,28 @@ export default function AdminDashboard() {
     setIsEditUserOpen(true)
   }
 
+  // Filtered Data (memoized to avoid recalculation) - MUST be before early return
+  const filteredUsers = useMemo(() => users.filter(u =>
+    u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    u.email.toLowerCase().includes(searchTerm.toLowerCase())
+  ), [users, searchTerm])
+
+  const filteredBooks = useMemo(() => books.filter(b =>
+    b.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    b.author.toLowerCase().includes(searchTerm.toLowerCase())
+  ), [books, searchTerm])
+
+  // Memoized paginated data (avoids calling getSortedAndPaginatedData multiple times in JSX)
+  const paginatedUsers = useMemo(() =>
+    getSortedAndPaginatedData(filteredUsers, userPage),
+    [filteredUsers, userPage, sortConfig]
+  )
+
+  const paginatedBooks = useMemo(() =>
+    getSortedAndPaginatedData(filteredBooks, bookPage),
+    [filteredBooks, bookPage, sortConfig]
+  )
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -564,17 +586,6 @@ export default function AdminDashboard() {
     link.download = `${filename}_${new Date().toISOString().split('T')[0]}.csv`
     link.click()
   }
-
-  // Filtered Data
-  const filteredUsers = users.filter(u =>
-    u.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    u.email.toLowerCase().includes(searchTerm.toLowerCase())
-  )
-
-  const filteredBooks = books.filter(b =>
-    b.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    b.author.toLowerCase().includes(searchTerm.toLowerCase())
-  )
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden font-mono selection:bg-primary selection:text-black">
@@ -1015,12 +1026,12 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {getSortedAndPaginatedData(filteredUsers, userPage).data.length === 0 ? (
+                    {paginatedUsers.data.length === 0 ? (
                       <tr>
                         <td colSpan={6} className="p-8 text-center text-gray-500 font-mono">No users found.</td>
                       </tr>
                     ) : (
-                      getSortedAndPaginatedData(filteredUsers, userPage).data.map((user) => (
+                      paginatedUsers.data.map((user) => (
                         <tr key={user.id} className="border-b-2 border-gray-100 dark:border-zinc-800 hover:bg-yellow-50 dark:hover:bg-yellow-900/10 transition-colors group">
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
                             <div className="relative">
@@ -1084,7 +1095,7 @@ export default function AdminDashboard() {
                 </table>
               </div>
               {/* User Pagination */}
-              {getSortedAndPaginatedData(filteredUsers, userPage).totalPages > 1 && (
+              {paginatedUsers.totalPages > 1 && (
                 <div className="p-4 border-t-4 border-black dark:border-white flex items-center justify-between bg-gray-50 dark:bg-zinc-900/50">
                   <Button
                     variant="outline"
@@ -1096,13 +1107,13 @@ export default function AdminDashboard() {
                     Previous
                   </Button>
                   <span className="font-mono font-bold text-xs uppercase">
-                    Page {userPage} of {getSortedAndPaginatedData(filteredUsers, userPage).totalPages}
+                    Page {userPage} of {paginatedUsers.totalPages}
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setUserPage(p => Math.min(getSortedAndPaginatedData(filteredUsers, userPage).totalPages, p + 1))}
-                    disabled={userPage === getSortedAndPaginatedData(filteredUsers, userPage).totalPages}
+                    onClick={() => setUserPage(p => Math.min(paginatedUsers.totalPages, p + 1))}
+                    disabled={userPage === paginatedUsers.totalPages}
                     className="border-2 border-black dark:border-white font-bold uppercase disabled:opacity-50"
                   >
                     Next
@@ -1162,12 +1173,12 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {getSortedAndPaginatedData(filteredBooks, bookPage).data.length === 0 ? (
+                    {paginatedBooks.data.length === 0 ? (
                       <tr>
                         <td colSpan={4} className="p-8 text-center text-gray-500 font-mono">No books found.</td>
                       </tr>
                     ) : (
-                      getSortedAndPaginatedData(filteredBooks, bookPage).data.map((book) => (
+                      paginatedBooks.data.map((book) => (
                         <tr key={book.id} className="border-b-2 border-gray-100 dark:border-zinc-800 hover:bg-green-50 dark:hover:bg-green-900/10 transition-colors group">
                           <td className="p-4 border-r-2 border-gray-100 dark:border-zinc-800">
                             <div className="w-20 h-28 bg-gray-200 dark:bg-gray-700 border-2 border-black dark:border-white flex items-center justify-center shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_0px_rgba(255,255,255,1)] rounded-sm overflow-hidden">
@@ -1239,7 +1250,7 @@ export default function AdminDashboard() {
                 </table>
               </div>
               {/* Book Pagination */}
-              {getSortedAndPaginatedData(filteredBooks, bookPage).totalPages > 1 && (
+              {paginatedBooks.totalPages > 1 && (
                 <div className="p-4 border-t-4 border-black dark:border-white flex items-center justify-between bg-gray-50 dark:bg-zinc-900/50">
                   <Button
                     variant="outline"
@@ -1251,13 +1262,13 @@ export default function AdminDashboard() {
                     Previous
                   </Button>
                   <span className="font-mono font-bold text-xs uppercase">
-                    Page {bookPage} of {getSortedAndPaginatedData(filteredBooks, bookPage).totalPages}
+                    Page {bookPage} of {paginatedBooks.totalPages}
                   </span>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setBookPage(p => Math.min(getSortedAndPaginatedData(filteredBooks, bookPage).totalPages, p + 1))}
-                    disabled={bookPage === getSortedAndPaginatedData(filteredBooks, bookPage).totalPages}
+                    onClick={() => setBookPage(p => Math.min(paginatedBooks.totalPages, p + 1))}
+                    disabled={bookPage === paginatedBooks.totalPages}
                     className="border-2 border-black dark:border-white font-bold uppercase disabled:opacity-50"
                   >
                     Next
