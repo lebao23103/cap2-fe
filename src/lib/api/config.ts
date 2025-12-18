@@ -28,7 +28,7 @@ const processQueue = (error: any, token: string | null = null) => {
       prom.resolve(token);
     }
   });
-  
+
   failedQueue = [];
 };
 
@@ -51,7 +51,7 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         // Token refresh in progress, queue this request
@@ -67,41 +67,43 @@ apiClient.interceptors.response.use(
 
       originalRequest._retry = true;
       isRefreshing = true;
-      
+
       const refreshToken = localStorage.getItem('refresh_token');
       if (refreshToken) {
         try {
           const response = await axios.post(`${API_BASE_URL}/api/token/refresh/`, {
             refresh: refreshToken,
           });
-          
+
           const { access } = response.data;
           localStorage.setItem('access_token', access);
-          
+
           isRefreshing = false;
           processQueue(null, access);
-          
+
           // Retry original request with new token
           originalRequest.headers.Authorization = `Bearer ${access}`;
           return apiClient(originalRequest);
         } catch (refreshError) {
           isRefreshing = false;
           processQueue(refreshError, null);
-          
+
           // Refresh failed, redirect to login
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
           localStorage.removeItem('user');
+          sessionStorage.setItem('authRedirect', window.location.pathname);
           window.location.href = '/login';
           return Promise.reject(refreshError);
         }
       } else {
         isRefreshing = false;
         // No refresh token, redirect to login
+        sessionStorage.setItem('authRedirect', window.location.pathname);
         window.location.href = '/login';
       }
     }
-    
+
     return Promise.reject(error);
   }
 );

@@ -65,8 +65,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         description: `Logged in as ${response.user.first_name} ${response.user.last_name}`,
       });
 
-      // Navigate based on user role
-      if (response.user.is_staff) {
+      // Navigate based on user role or saved redirect
+      const redirectPath = sessionStorage.getItem('authRedirect');
+      if (redirectPath) {
+        sessionStorage.removeItem('authRedirect');
+        navigate(redirectPath);
+      } else if (response.user.is_staff) {
         navigate('/admin');
       } else {
         navigate('/dashboard');

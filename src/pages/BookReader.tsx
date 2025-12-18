@@ -13,6 +13,7 @@ import NotePopover from '@/components/reader/NotePopover'
 import SearchDialog from '@/components/reader/SearchDialog'
 import ChapterDisplay from '@/components/reader/ChapterDisplay'
 import TransientHighlightOverlay from '@/components/reader/TransientHighlightOverlay'
+import { useAuth } from '@/contexts/AuthContext'
 import { usePdfSearch } from '@/hooks/usePdfSearch'
 import { usePdfChapter } from '@/hooks/usePdfChapter'
 import { FocusTapeDeck } from '@/components/FocusTapeDeck'
@@ -117,6 +118,7 @@ export default function BookReader() {
   const navigate = useNavigate()
   const location = useLocation()
   const { toast } = useToast()
+  const { isAuthenticated } = useAuth()
   const pageContainerRef = useRef<HTMLDivElement>(null)
 
   // Real data from API
@@ -522,6 +524,7 @@ export default function BookReader() {
 
   const handleTextSelection = () => {
     if (isReadOnly) return // Disable selection in read-only mode
+    if (!isAuthenticated) return // Disable selection for guests
 
     const selection = window.getSelection()
     if (!selection || selection.rangeCount === 0 || !selection.toString().trim()) return
