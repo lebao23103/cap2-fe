@@ -172,11 +172,11 @@ export default function BookDetail() {
       return;
     }
 
-    if (userReview.length < 50) {
-      announce('Review must be at least 50 characters', 'assertive');
+    if (userReview.trim().length === 0) {
+      announce('Please write a review', 'assertive');
       toast({
-        title: 'Review too short',
-        description: 'Please write at least 50 characters',
+        title: 'Review required',
+        description: 'Please write a review to submit',
         variant: 'destructive',
       });
       return;
@@ -541,13 +541,13 @@ export default function BookDetail() {
                     className="resize-none bg-white dark:bg-zinc-900 border-2 border-black dark:border-white rounded-lg focus:ring-0 focus:border-black dark:focus:border-white font-mono text-black dark:text-white"
                   />
                   <p className="text-xs text-gray-600 dark:text-gray-400 mt-1.5 text-right font-mono">
-                    {userReview.length} / 50 min chars
+                    {userReview.length} chars
                   </p>
                 </div>
                 <Button
                   className="w-full bg-black dark:bg-white hover:bg-primary hover:text-black text-white dark:text-black border-2 border-black dark:border-white rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_0px_rgba(255,255,255,1)] uppercase font-bold transition-all"
                   onClick={handleSubmitReview}
-                  disabled={submittingReview || !userRating || userReview.length < 50}
+                  disabled={submittingReview || !userRating || userReview.trim().length === 0}
                 >
                   {submittingReview ? 'Submitting...' : 'Submit Review'}
                 </Button>
