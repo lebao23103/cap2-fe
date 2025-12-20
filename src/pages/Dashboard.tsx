@@ -117,15 +117,27 @@ export default function Dashboard() {
       setUserNotes(allUserNotes || [])
 
       // Process My Uploads (Using new API)
-      const transformedMyBooks = myBooksData.map((book: any) => ({
-        id: book.id.toString(),
-        title: book.title,
-        author: book.author || 'Unknown Author',
-        cover: getCoverImageUrl(book.cover_image),
-        rating: book.rating || 0,
-        genre: book.subject ? [book.subject] : ['General'],
-        status: (book.is_approved ? 'approved' : 'pending') as 'approved' | 'pending' | 'rejected' // Determine status from is_approved flag
-      }))
+      // Process My Uploads (Using new API)
+      const transformedMyBooks = myBooksData.map((book: any) => {
+        // If approved, try to find the matching SYSTEM book by exact title to get the correct navigable ID
+        let navigableId = book.id.toString();
+        if (book.is_approved) {
+          const systemBook = booksData.find((b: any) => b.title === book.title);
+          if (systemBook) {
+            navigableId = systemBook.id.toString();
+          }
+        }
+
+        return {
+          id: navigableId,
+          title: book.title,
+          author: book.author || 'Unknown Author',
+          cover: getCoverImageUrl(book.cover_image),
+          rating: book.rating || 0,
+          genre: book.subject ? [book.subject] : ['General'],
+          status: (book.is_approved ? 'approved' : 'pending') as 'approved' | 'pending' | 'rejected'
+        };
+      })
 
       setMyUploads(transformedMyBooks)
 
