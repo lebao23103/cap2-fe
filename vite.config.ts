@@ -43,12 +43,7 @@ export default defineConfig({
   server: {
     headers: {
       "Content-Security-Policy": "default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob: 'unsafe-inline'; frame-src *; style-src * 'unsafe-inline';"
-    }
-  },
-  preview: {
-    port: 4173,
-    host: true,
-    allowedHosts: true,
+    },
     proxy: {
       '/api': {
         target: 'http://localhost:8000',
@@ -76,5 +71,10 @@ export default defineConfig({
         secure: false,
       }
     }
+  },
+  preview: {
+    port: 4173,
+    host: true,
+    allowedHosts: true,
   }
 })
